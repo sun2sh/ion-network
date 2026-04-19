@@ -1,0 +1,889 @@
+meta:
+  id: ion-trade-b2c-sf-fashion-batikkeris-v1
+  sector: trade
+  sector_code: A
+  resource_type: TradeResource
+  resource_type_code: A03
+  commerce_pattern: B2C Single Fulfilment
+  resource_shape: VARIANT
+  priority: core
+  status: ready-to-spec
+  ion_spec_version: '1.0'
+  beckn_version: 2.0.1
+  domain: ion:trade:fashion
+  categories:
+  - fashion
+  - apparel
+  - batik
+  reference_product: Batik Keris Kemeja Pria Parang Kusumo Sogan
+  reference_seller: Griya Batik Kencana Solo — Surakarta, Jawa Tengah
+  roles_covered:
+  - BAP
+  - BPP
+  role_guide:
+    BAP: Buyer Application — consumer-facing app. Reads on_* callbacks, sends forward calls.
+    BPP: Buyer-Provided Participant — seller app. Reads forward calls, sends on_* callbacks.
+    ION: ION Central platform — enforces policy IRIs, validates mandatory fields, routes catalog.
+    field_tag_legend:
+      declared_by: Which role sets this field value
+      consumed_by: Which role(s) read and act on this field
+      enforced_by: Which system enforces correctness of this field
+      appears_at: Which API call this field first appears in
+      bap_action: 'What BAP does with this API call: SEND | RECEIVE | NONE'
+      bpp_action: 'What BPP does with this API call: SEND | RECEIVE | NONE'
+participants:
+  bap:
+    role: Buyer App (e.g. fashion marketplace or batik specialist platform)
+    responsibilities:
+    - Render size guide (chest width + length in cm per variant)
+    - Display fabric composition and care instructions
+    - Display batik motif name and cultural description
+    - Show return policy — 7 days, seller pays shipping
+    - Surface country of origin (Indonesia) and maker city (Surakarta)
+    must_not:
+    - Fabricate size measurements — use BPP-declared cm values per variant
+    role_tag: BAP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - status
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - discover
+    - select
+    - init
+    - confirm
+    - status
+    - update
+    - cancel
+  bpp:
+    role: Seller App (Griya Batik Kencana)
+    responsibilities:
+    - Declare all size variants with chest_width_cm and length_cm
+    - Declare fabric composition and care instructions
+    - Ship nationwide via courier (JNE/J&T — not hyperlocal)
+    - Return policy — 7 days for defect/wrong item, seller pays return shipping
+    must_not:
+    - Declare garment sizes without accompanying measurements (Indonesian sizing ≠ international)
+    role_tag: BPP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - on_discover
+    - on_select
+    - on_init
+    - on_confirm
+    - on_status
+    - on_update
+    - on_cancel
+provider:
+  id: SEL-JTG-GRIYABATIK-001
+  descriptor:
+    name: Griya Batik Kencana Solo
+    short_desc: Batik tulis dan cap autentik dari Surakarta sejak 1985
+  available_at:
+  - geo:
+      type: Point
+      coordinates:
+      - 110.8167
+      - -7.5666
+    address:
+      locality: Laweyan
+      city: Surakarta
+      state: Jawa Tengah
+      area_code: '57146'
+      country: Indonesia
+  provider_attributes:
+    store_status: OPEN
+    operating_hours:
+    - type: ORDER
+      day_from: 1
+      day_to: 6
+      time_from: 0800
+      time_to: '1700'
+    provider_category: FASHION
+    nib_registered: true
+    nib: '5634567890123'
+    npwp: '45678901201200'
+    invoicing_model: PER_FULFILMENT_CENTRE
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_discover
+    note: BPP declares provider record. BAP renders store info and uses geo polygon for display.
+resources:
+- id: RES-FAS-KERIS-PARANG-S
+  type: VARIANT
+  descriptor:
+    name: Batik Keris Kemeja Parang Kusumo Sogan — S
+  resource_attributes:
+    name:
+      id: Kemeja Batik Parang Kusumo Sogan — Ukuran S
+      en: Batik Keris Parang Kusumo Sogan Shirt — Size S
+    short_desc:
+      id: Kemeja batik pria motif parang kusumo dengan kain katun primisima
+      en: Men's batik shirt with parang kusumo motif in primisima cotton
+    long_desc:
+      id: Kemeja batik pria Batik Keris bermotif Parang Kusumo Sogan, kain katun primisima merserize berkualitas tinggi. Motif
+        parang adalah motif batik klasik Jawa yang melambangkan kekuatan dan ketangkasan. Warna sogan (cokelat keemasan) adalah
+        warna khas batik Solo.
+      en: Batik Keris men's batik shirt in Parang Kusumo Sogan motif, premium merserized primisima cotton. The Parang motif
+        is a classic Javanese batik pattern symbolising strength and agility. Sogan (golden brown) is the signature colour
+        of Solo batik.
+    images:
+    - https://cdn.batikkeris.co.id/parang-kusumo-sogan-s.jpg
+    - https://cdn.batikkeris.co.id/parang-kusumo-sogan-detail.jpg
+    sku: KERIS-PARANG-SOG-S
+    resource_type: VARIANT
+    parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+    is_default_variant: false
+    gender: MALE
+    category: APPAREL
+    sub_category: KEMEJA_BATIK
+    country_of_origin: IDN
+    maker_city: Surakarta
+    batik_motif:
+      name:
+        id: Parang Kusumo Sogan
+        en: Parang Kusumo Sogan
+      description:
+        id: Motif parang klasik Jawa dengan pewarna sogan khas Solo. Parang melambangkan keteguhan dan keberanian.
+        en: Classic Javanese parang motif with Solo's signature sogan dye. Parang symbolises steadfastness and courage.
+      technique: CAP_TULIS
+    fabric_composition: 100% Katun Primisima Merserize
+    care_instructions:
+      id: Cuci manual dengan air dingin menggunakan lerak atau detergen batik. Jangan merendam. Hindari pemutih. Jemur dalam
+        keadaan terbalik dan hindari sinar matahari langsung.
+      en: Hand wash in cold water with batik-specific detergent. Do not soak. No bleach. Hang inside-out away from direct
+        sunlight.
+    fit_type: REGULAR
+    variant_group:
+      id: VG-KERIS-SIZE
+      name:
+        id: Ukuran
+        en: Size
+      variant_on: size
+    variant_attributes:
+      size: S
+      chest_width_cm: 52
+      length_cm: 70
+      shoulder_cm: 43
+    stock_count:
+      available: 10
+      maximum: 3
+- id: RES-FAS-KERIS-PARANG-M
+  type: VARIANT
+  descriptor:
+    name: Batik Keris Kemeja Parang Kusumo Sogan — M
+  resource_attributes:
+    name:
+      id: Kemeja Batik Parang Kusumo Sogan — Ukuran M
+      en: Batik Keris Parang Kusumo Sogan Shirt — Size M
+    sku: KERIS-PARANG-SOG-M
+    resource_type: VARIANT
+    parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+    is_default_variant: true
+    gender: MALE
+    fabric_composition: 100% Katun Primisima Merserize
+    care_instructions:
+      id: Cuci manual dengan lerak. Hindari sinar matahari langsung saat menjemur.
+      en: Hand wash with batik detergent. Hang away from direct sunlight.
+    variant_attributes:
+      size: M
+      chest_width_cm: 55
+      length_cm: 72
+      shoulder_cm: 45
+    stock_count:
+      available: 15
+      maximum: 3
+- id: RES-FAS-KERIS-PARANG-L
+  type: VARIANT
+  descriptor:
+    name: Batik Keris Kemeja Parang Kusumo Sogan — L
+  resource_attributes:
+    name:
+      id: Kemeja Batik Parang Kusumo Sogan — Ukuran L
+      en: Batik Keris Parang Kusumo Sogan Shirt — Size L
+    sku: KERIS-PARANG-SOG-L
+    resource_type: VARIANT
+    parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+    is_default_variant: false
+    variant_attributes:
+      size: L
+      chest_width_cm: 58
+      length_cm: 74
+      shoulder_cm: 47
+    stock_count:
+      available: 12
+      maximum: 3
+- id: RES-FAS-KERIS-PARANG-XL
+  type: VARIANT
+  descriptor:
+    name: Batik Keris Kemeja Parang Kusumo Sogan — XL
+  resource_attributes:
+    name:
+      id: Kemeja Batik Parang Kusumo Sogan — Ukuran XL
+      en: Batik Keris Parang Kusumo Sogan Shirt — Size XL
+    sku: KERIS-PARANG-SOG-XL
+    resource_type: VARIANT
+    parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+    is_default_variant: false
+    variant_attributes:
+      size: XL
+      chest_width_cm: 61
+      length_cm: 76
+      shoulder_cm: 49
+    stock_count:
+      available: 8
+      maximum: 3
+- id: RES-FAS-KERIS-PARANG-XXL
+  type: VARIANT
+  descriptor:
+    name: Batik Keris Kemeja Parang Kusumo Sogan — XXL
+  resource_attributes:
+    name:
+      id: Kemeja Batik Parang Kusumo Sogan — Ukuran XXL
+      en: Batik Keris Parang Kusumo Sogan Shirt — Size XXL
+    sku: KERIS-PARANG-SOG-XXL
+    resource_type: VARIANT
+    parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+    is_default_variant: false
+    variant_attributes:
+      size: XXL
+      chest_width_cm: 64
+      length_cm: 78
+      shoulder_cm: 51
+    stock_count:
+      available: 5
+      maximum: 3
+offers:
+- id: OFF-KERIS-PARANG-S
+  resource_id: RES-FAS-KERIS-PARANG-S
+  proposed_consideration:
+    amount:
+      value: 455000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: true
+    return_window_days: 7
+    return_allowed_reasons:
+    - DEFECTIVE
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.7d.sellerpays
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+- id: OFF-KERIS-PARANG-M
+  resource_id: RES-FAS-KERIS-PARANG-M
+  proposed_consideration:
+    amount:
+      value: 465000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: true
+    return_window_days: 7
+    return_allowed_reasons:
+    - DEFECTIVE
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.7d.sellerpays
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    available_on_cod: true
+- id: OFF-KERIS-PARANG-L
+  resource_id: RES-FAS-KERIS-PARANG-L
+  proposed_consideration:
+    amount:
+      value: 475000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: true
+    return_window_days: 7
+    return_allowed_reasons:
+    - DEFECTIVE
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.7d.sellerpays
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    available_on_cod: true
+- id: OFF-KERIS-PARANG-XL
+  resource_id: RES-FAS-KERIS-PARANG-XL
+  proposed_consideration:
+    amount:
+      value: 490000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: true
+    return_window_days: 7
+    return_allowed_reasons:
+    - DEFECTIVE
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.7d.sellerpays
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    available_on_cod: true
+- id: OFF-KERIS-PARANG-XXL
+  resource_id: RES-FAS-KERIS-PARANG-XXL
+  proposed_consideration:
+    amount:
+      value: 525000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: true
+    return_window_days: 7
+    return_allowed_reasons:
+    - DEFECTIVE
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.7d.sellerpays
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    available_on_cod: true
+consideration:
+  currency: IDR
+  ppn_rate: 0.11
+  ppn_basis: ITEM_SUBTOTAL
+  line_types:
+  - type: ITEM
+    example:
+      title: Kemeja Batik Parang Kusumo Sogan — Ukuran M
+      value: 465000
+  - type: DELIVERY
+    example:
+      title: Pengiriman JNE Regular (Solo → Jakarta)
+      value: 32000
+  - type: TAX_PPN
+    rate: 0.11
+    example:
+      title: PPN 11%
+      value: 51150
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_select
+    - on_init
+    - on_confirm
+    note: BPP computes and declares price breakup. ION validates PPN declaration. BAP renders to consumer.
+examples:
+- api: on_discover
+  role: BPP → BAP
+  notes:
+  - Seller in Solo — national courier delivery, no polygon check needed
+  - All 5 size variants returned
+  - Measurements in cm per variant — BAP renders size guide
+  payload:
+    context:
+      domain: ion:trade:fashion
+      action: on_discover
+      version: 2.0.1
+      bpp_id: griyabatik.bpp.ion.id
+      transaction_id: TXN-FAS-20260419-001
+      message_id: MSG-DIS-FAS-001-ACK
+      timestamp: '2026-04-19T11:00:01+07:00'
+      currency: IDR
+    message:
+      catalogs:
+      - id: CAT-GRIYABATIK-001
+        provider:
+          id: SEL-JTG-GRIYABATIK-001
+          descriptor:
+            name: Griya Batik Kencana Solo
+            short_desc: Batik autentik dari Surakarta sejak 1985
+          available_at:
+          - geo:
+              type: Point
+              coordinates:
+              - 110.8167
+              - -7.5666
+            address:
+              locality: Laweyan
+              city: Surakarta
+              state: Jawa Tengah
+          provider_attributes:
+            store_status: OPEN
+            provider_category: FASHION
+            nib_registered: true
+        resources:
+        - id: RES-FAS-KERIS-PARANG-S
+          descriptor:
+            name: Batik Keris Kemeja Parang Kusumo Sogan — S
+          resource_attributes:
+            name:
+              id: Kemeja Batik Parang Kusumo Sogan — Ukuran S
+              en: Batik Keris Parang Kusumo Sogan Shirt — Size S
+            images:
+            - https://cdn.batikkeris.co.id/parang-kusumo-sogan-s.jpg
+            sku: KERIS-PARANG-SOG-S
+            resource_type: VARIANT
+            parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+            is_default_variant: false
+            gender: MALE
+            batik_motif:
+              name:
+                id: Parang Kusumo Sogan
+                en: Parang Kusumo Sogan
+              technique: CAP_TULIS
+            fabric_composition: 100% Katun Primisima Merserize
+            care_instructions:
+              id: Cuci manual dengan lerak. Hindari sinar matahari langsung saat menjemur.
+              en: Hand wash with batik detergent. Hang away from direct sunlight.
+            variant_attributes:
+              size: S
+              chest_width_cm: 52
+              length_cm: 70
+              shoulder_cm: 43
+            stock_count:
+              available: 10
+              maximum: 3
+        - id: RES-FAS-KERIS-PARANG-M
+          descriptor:
+            name: Batik Keris Kemeja Parang Kusumo Sogan — M
+          resource_attributes:
+            name:
+              id: Kemeja Batik Parang Kusumo Sogan — Ukuran M
+              en: Batik Keris Parang Kusumo Sogan Shirt — Size M
+            sku: KERIS-PARANG-SOG-M
+            resource_type: VARIANT
+            parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+            is_default_variant: true
+            variant_attributes:
+              size: M
+              chest_width_cm: 55
+              length_cm: 72
+              shoulder_cm: 45
+            stock_count:
+              available: 15
+              maximum: 3
+        - id: RES-FAS-KERIS-PARANG-XXL
+          descriptor:
+            name: Batik Keris Kemeja Parang Kusumo Sogan — XXL
+          resource_attributes:
+            name:
+              id: Kemeja Batik Parang Kusumo Sogan — Ukuran XXL
+              en: Batik Keris Parang Kusumo Sogan Shirt — Size XXL
+            sku: KERIS-PARANG-SOG-XXL
+            resource_type: VARIANT
+            parent_resource_id: RES-FAS-KERIS-PARANG-BASE
+            is_default_variant: false
+            variant_attributes:
+              size: XXL
+              chest_width_cm: 64
+              length_cm: 78
+              shoulder_cm: 51
+            stock_count:
+              available: 5
+              maximum: 3
+        offers:
+        - id: OFF-KERIS-PARANG-M
+          resource_id: RES-FAS-KERIS-PARANG-M
+          proposed_consideration:
+            amount:
+              value: 465000
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P2D
+            cancellable: true
+            returnable: true
+            return_window_days: 7
+            return_allowed_reasons:
+            - DEFECTIVE
+            - WRONG_ITEM_SENT
+            - DAMAGED_IN_TRANSIT
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.7d.sellerpays
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+- api: on_select
+  role: BPP → BAP
+  notes:
+  - Consumer chose size M
+  - Delivery computed from Solo to consumer city (national courier)
+  payload:
+    context:
+      domain: ion:trade:fashion
+      action: on_select
+      transaction_id: TXN-FAS-20260419-001
+      timestamp: '2026-04-19T11:01:01+07:00'
+      currency: IDR
+    message:
+      order:
+        quote:
+          price:
+            value: 548150
+            currency: IDR
+          breakup:
+          - title: Kemeja Batik Parang Kusumo Sogan M
+            type: ITEM
+            price:
+              value: 465000
+              currency: IDR
+          - title: Pengiriman JNE Regular
+            type: DELIVERY
+            price:
+              value: 32000
+              currency: IDR
+          - title: PPN 11%
+            type: TAX_PPN
+            price:
+              value: 51150
+              currency: IDR
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+_resources_role:
+  declared_by: BPP
+  consumed_by: BAP
+  appears_in:
+  - on_discover
+  note: BPP declares all available resources. BAP renders the catalog/menu.
+_offers_role:
+  declared_by: BPP
+  consumed_by:
+  - BAP
+  - ION
+  appears_in:
+  - on_discover
+  note: BPP declares prices and policy IRIs. ION enforces policy. BAP renders price and policy UI.
+_resource_attribute_field_roles:
+  _description: Role metadata for every field in resourceAttributes. All declared by BPP in on_discover, consumed by BAP for
+    rendering.
+  fields:
+    name:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      language_object: true
+    short_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    long_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    images:
+      declared_by: BPP
+      consumed_by: BAP
+    sku:
+      declared_by: BPP
+      consumed_by: BPP
+      note: Internal seller reference — not rendered to consumer
+    resource_type:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to determine rendering — COMPOSED triggers customisation UI
+    parent_resource_id:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to group variants
+    is_default_variant:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders this variant first
+    menu_category:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses for menu section grouping
+    dietary_classification:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders HALAL badge
+    allergens:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: BAP must display warning
+    halal_cert_number:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      mandatory_for: BPP
+      note: Mandatory when dietary_classification=HALAL
+    bpom_registration_number:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    bpom_na_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Cosmetics — Notifikasi Kosmetik
+    kementan_pd_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Agricultural produce registration
+    postel_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Mandatory for telco devices
+    tkdn_percentage:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Local content percentage — trust signal
+    sni_compliance:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty_policy: &id001
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    nutritional_info:
+      declared_by: BPP
+      consumed_by: BAP
+    shelf_life_months:
+      declared_by: BPP
+      consumed_by: BAP
+    net_quantity:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    unit_of_measure:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    customisation_groups:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders customisation UI from this structure
+    stock_count:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses available for in-stock display
+    produce_grade:
+      declared_by: BPP
+      consumed_by: BAP
+    milling_date:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Freshness signal for rice/grain
+    variant_attributes:
+      declared_by: BPP
+      consumed_by: BAP
+    variant_group:
+      declared_by: BPP
+      consumed_by: BAP
+    electronics_specs:
+      declared_by: BPP
+      consumed_by: BAP
+    fabric_composition:
+      declared_by: BPP
+      consumed_by: BAP
+    care_instructions:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    batik_motif:
+      declared_by: BPP
+      consumed_by: BAP
+    active_ingredients:
+      declared_by: BPP
+      consumed_by: BAP
+    finish:
+      declared_by: BPP
+      consumed_by: BAP
+    skin_type:
+      declared_by: BPP
+      consumed_by: BAP
+_offer_attribute_field_roles:
+  _description: Role metadata for every field in offerAttributes. Policy IRIs enforced by ION Central — not by BPP or BAP
+    directly.
+  fields:
+    time_to_ship:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides cancel button. ION enforces via policy IRI.
+    returnable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides return button. ION enforces via policy IRI.
+    return_window_days:
+      declared_by: BPP
+      consumed_by: BAP
+    return_allowed_reasons:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    return_evidence_required:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellation_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    return_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    warranty_policy: *id001
+    dispute_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    display_language:
+      declared_by: BPP
+      consumed_by: BAP
+    available_on_cod:
+      declared_by: BPP
+      consumed_by: BAP
+    fulfillment_types_supported:
+      declared_by: BPP
+      consumed_by: BAP
+_contract_attribute_field_roles:
+  _description: Role metadata for contractAttributes fields. All created by BPP at on_confirm.
+  fields:
+    fulfilling_location_id:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: on_confirm
+      note: CRITICAL — first and only appearance is in on_confirm. BPP selects internally.
+    invoicing_model:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+    invoicing_entity:
+      declared_by: BPP
+      consumed_by: BAP
+    nib:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+    npwp:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+_performance_attribute_field_roles:
+  _description: Role metadata for performanceAttributes fields. All updated by BPP via on_status as order progresses.
+  fields:
+    agent_name:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_phone:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_photo:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    tracking_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    estimated_delivery_time:
+      declared_by: BPP
+      consumed_by: BAP
+    delivery_proof_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DELIVERED
+
+settlement:
+  # v0.1: Settlement terms declared in on_confirm contractAttributes (nib, npwp).
+  # v0.2 — IN DEVELOPMENT: /reconcile + /on_reconcile, /support (RaisedMatter),
+  # /rate, and /track APIs are being built now and land in the coming weeks.
+  # See CHANGELOG.md for the full v0.2 scope.
+  basis: AFTER_DELIVERY
+  window: P2D
+  payment_rails_supported:
+    - BI_FAST
+    - QRIS
+    - VIRTUAL_ACCOUNT
+    - COD
+  _v02_note: reconcile, support/RaisedMatter, rate, track — see CHANGELOG.md

@@ -1,0 +1,810 @@
+meta:
+  id: ion-trade-b2c-sf-agritech-berasPandan-v1
+  sector: trade
+  sector_code: A
+  resource_type: TradeResource
+  resource_type_code: A07
+  commerce_pattern: B2C Single Fulfilment
+  resource_shape: VARIANT
+  priority: core
+  status: ready-to-spec
+  ion_spec_version: '1.0'
+  beckn_version: 2.0.1
+  domain: ion:trade:agritech
+  categories:
+  - agritech
+  - produce
+  - staple-food
+  reference_product: Beras Pandan Wangi Cianjur Premium Grade
+  reference_seller: Mitra Tani Cianjur — Cianjur, Jawa Barat
+  roles_covered:
+  - BAP
+  - BPP
+  role_guide:
+    BAP: Buyer Application — consumer-facing app. Reads on_* callbacks, sends forward calls.
+    BPP: Buyer-Provided Participant — seller app. Reads forward calls, sends on_* callbacks.
+    ION: ION Central platform — enforces policy IRIs, validates mandatory fields, routes catalog.
+    field_tag_legend:
+      declared_by: Which role sets this field value
+      consumed_by: Which role(s) read and act on this field
+      enforced_by: Which system enforces correctness of this field
+      appears_at: Which API call this field first appears in
+      bap_action: 'What BAP does with this API call: SEND | RECEIVE | NONE'
+      bpp_action: 'What BPP does with this API call: SEND | RECEIVE | NONE'
+participants:
+  bap:
+    role: Buyer App (e.g. agri marketplace or grocery super-app)
+    responsibilities:
+    - Display produce grade (Premium) prominently
+    - Display origin (Cianjur, Jawa Barat) — GI protected variety
+    - Display milling date for freshness signal
+    - Display Kementan PD registration number
+    - Render weight variant selector (5kg vs 25kg)
+    - Show broken grain percentage as quality indicator
+    - Display Gapoktan (farmer cooperative) as producer — builds trust
+    must_not:
+    - Display BPOM registration — raw agricultural produce is not BPOM regulated
+    role_tag: BAP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - status
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - discover
+    - select
+    - init
+    - confirm
+    - status
+    - update
+    - cancel
+  bpp:
+    role: Seller App (Mitra Tani Cianjur)
+    responsibilities:
+    - Declare Kementan PD registration number
+    - Declare produce grade, milling date, broken percentage
+    - Ship nationally — JNE Cargo or J&T Cargo for 25kg
+    - Return policy — food, non-returnable unless wrong item
+    - Update milling_date field at each harvest cycle
+    role_tag: BPP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - on_discover
+    - on_select
+    - on_init
+    - on_confirm
+    - on_status
+    - on_update
+    - on_cancel
+provider:
+  id: SEL-BJB-MITRATANI-001
+  descriptor:
+    name: Mitra Tani Cianjur
+    short_desc: Beras premium langsung dari petani Cianjur — Gapoktan Tani Berkah
+  available_at:
+  - geo:
+      type: Point
+      coordinates:
+      - 107.1422
+      - -6.8172
+    address:
+      locality: Cianjur Kota
+      city: Cianjur
+      state: Jawa Barat
+      area_code: '43211'
+      country: Indonesia
+  provider_attributes:
+    store_status: OPEN
+    operating_hours:
+    - type: ORDER
+      day_from: 1
+      day_to: 6
+      time_from: '0700'
+      time_to: '1700'
+    - type: DELIVERY
+      day_from: 1
+      day_to: 6
+      time_from: '0700'
+      time_to: '1500'
+    provider_category: AGRITECH
+    nib_registered: true
+    nib: '3267890123456'
+    npwp: '67890123401200'
+    invoicing_model: PER_FULFILMENT_CENTRE
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_discover
+    note: BPP declares provider record. BAP renders store info and uses geo polygon for display.
+resources:
+- id: RES-AGR-PANDAN-5KG
+  type: VARIANT
+  descriptor:
+    name: Beras Pandan Wangi Cianjur Premium 5kg
+  resource_attributes:
+    name:
+      id: Beras Pandan Wangi Cianjur Premium 5kg
+      en: Cianjur Pandan Wangi Premium Rice 5kg
+    short_desc:
+      id: Beras putih aromatik khas Cianjur grade premium, wangi pandan alami
+      en: Aromatic white rice from Cianjur, premium grade, natural pandan fragrance
+    long_desc:
+      id: Beras Pandan Wangi Cianjur adalah salah satu beras paling harum di Indonesia, berasal dari ketinggian Cianjur Jawa
+        Barat. Grade Premium dengan persentase butir patah di bawah 5%. Dipanen dan digiling oleh Gapoktan Tani Berkah dan
+        tersedia dalam kemasan 5kg higienis.
+      en: Cianjur Pandan Wangi is one of Indonesia's most aromatic rice varieties, grown in the highlands of Cianjur, West
+        Java. Premium grade with less than 5% broken grain. Harvested and milled by Gapoktan Tani Berkah and packaged in hygienic
+        5kg bags.
+    images:
+    - https://cdn.mitratani.id/beras-pandan-5kg.jpg
+    sku: AGR-PANDAN-PREM-5KG
+    resource_type: VARIANT
+    parent_resource_id: RES-AGR-PANDAN-BASE
+    is_default_variant: true
+    kementan_pd_registration: PD 32.03-A.I.000-01-00123
+    producer:
+      name: Gapoktan Tani Berkah
+      type: GAPOKTAN
+      location: Cianjur, Jawa Barat
+    manufacturer_name:
+      id: Gapoktan Tani Berkah — Cianjur
+      en: Gapoktan Tani Berkah — Cianjur
+    country_of_origin: IDN
+    origin_region: Cianjur, Jawa Barat
+    produce_grade: PREMIUM
+    milling_date: 04/2026
+    broken_grain_percentage: < 5%
+    is_organic: false
+    moisture_content: < 14%
+    dietary_classification: HALAL
+    allergens: []
+    unit_of_measure:
+      unit: KILOGRAM
+      value: '5'
+    variant_group:
+      id: VG-PANDAN-WEIGHT
+      name:
+        id: Ukuran Kemasan
+        en: Pack Size
+      variant_on: weight
+    packaging_type: WOVEN_SACK
+    stock_count:
+      available: 200
+      maximum: 50
+- id: RES-AGR-PANDAN-25KG
+  type: VARIANT
+  descriptor:
+    name: Beras Pandan Wangi Cianjur Premium 25kg
+  resource_attributes:
+    name:
+      id: Beras Pandan Wangi Cianjur Premium 25kg (Karung)
+      en: Cianjur Pandan Wangi Premium Rice 25kg (Sack)
+    short_desc:
+      id: Karung beras pandan wangi Cianjur grade premium — untuk restoran dan keluarga besar
+      en: Premium Cianjur pandan wangi rice sack — for restaurants and large families
+    images:
+    - https://cdn.mitratani.id/beras-pandan-25kg.jpg
+    sku: AGR-PANDAN-PREM-25KG
+    resource_type: VARIANT
+    parent_resource_id: RES-AGR-PANDAN-BASE
+    is_default_variant: false
+    kementan_pd_registration: PD 32.03-A.I.000-01-00123
+    producer:
+      name: Gapoktan Tani Berkah
+      type: GAPOKTAN
+      location: Cianjur, Jawa Barat
+    country_of_origin: IDN
+    produce_grade: PREMIUM
+    milling_date: 04/2026
+    broken_grain_percentage: < 5%
+    is_organic: false
+    dietary_classification: HALAL
+    allergens: []
+    unit_of_measure:
+      unit: KILOGRAM
+      value: '25'
+    variant_attributes:
+      weight: '25'
+      weight_unit: KILOGRAM
+      packaging: Karung goni
+    packaging_type: WOVEN_SACK
+    stock_count:
+      available: 50
+      maximum: 10
+offers:
+- id: OFF-PANDAN-5KG
+  resource_id: RES-AGR-PANDAN-5KG
+  proposed_consideration:
+    amount:
+      value: 95000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P1D
+    cancellable: true
+    returnable: false
+    return_allowed_reasons:
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+    fulfillment_types_supported:
+    - DELIVERY
+- id: OFF-PANDAN-25KG
+  resource_id: RES-AGR-PANDAN-25KG
+  proposed_consideration:
+    amount:
+      value: 450000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P2D
+    cancellable: true
+    returnable: false
+    return_allowed_reasons:
+    - WRONG_ITEM_SENT
+    - DAMAGED_IN_TRANSIT
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+    fulfillment_types_supported:
+    - DELIVERY
+consideration:
+  currency: IDR
+  ppn_rate: 0.0
+  ppn_basis: ITEM_SUBTOTAL
+  ppn_note: Beras termasuk sembako yang dibebaskan dari PPN per PP 49/2022 tentang Pajak Pertambahan Nilai atas Barang Kebutuhan
+    Pokok.
+  regulatory_source: PP 49/2022 tentang PPN atas Barang Kebutuhan Pokok Sembako
+  line_types:
+  - type: ITEM
+    mandatory: true
+    example:
+      title: Beras Pandan Wangi Cianjur Premium 5kg × 2
+      value: 190000
+  - type: DELIVERY
+    mandatory: conditional
+    example:
+      title: Biaya Pengiriman JNE Cargo
+      value: 28000
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_select
+    - on_init
+    - on_confirm
+    note: BPP computes and declares price breakup. ION validates PPN declaration. BAP renders to consumer.
+examples:
+- api: on_discover
+  role: BPP → BAP
+  notes:
+  - Seller in Cianjur — national delivery, no polygon needed
+  - Both weight variants returned
+  - milling_date shows freshness — April 2026
+  - No BPOM — Kementan PD registration for agricultural produce
+  - PPN exempt — no TAX_PPN line will appear in quote
+  payload:
+    context:
+      domain: ion:trade:agritech
+      action: on_discover
+      version: 2.0.1
+      bpp_id: mitratani.bpp.ion.id
+      transaction_id: TXN-AGR-20260419-001
+      message_id: MSG-DIS-AGR-001-ACK
+      timestamp: '2026-04-19T07:00:01+07:00'
+      currency: IDR
+    message:
+      catalogs:
+      - id: CAT-MITRATANI-001
+        provider:
+          id: SEL-BJB-MITRATANI-001
+          descriptor:
+            name: Mitra Tani Cianjur
+            short_desc: Beras premium langsung dari petani Cianjur
+          available_at:
+          - geo:
+              type: Point
+              coordinates:
+              - 107.1422
+              - -6.8172
+            address:
+              locality: Cianjur Kota
+              city: Cianjur
+              state: Jawa Barat
+          provider_attributes:
+            store_status: OPEN
+            provider_category: AGRITECH
+            nib_registered: true
+        resources:
+        - id: RES-AGR-PANDAN-5KG
+          descriptor:
+            name: Beras Pandan Wangi Cianjur Premium 5kg
+          resource_attributes:
+            name:
+              id: Beras Pandan Wangi Cianjur Premium 5kg
+              en: Cianjur Pandan Wangi Premium Rice 5kg
+            short_desc:
+              id: Beras putih aromatik khas Cianjur grade premium
+              en: Aromatic white rice from Cianjur, premium grade
+            images:
+            - https://cdn.mitratani.id/beras-pandan-5kg.jpg
+            sku: AGR-PANDAN-PREM-5KG
+            resource_type: VARIANT
+            parent_resource_id: RES-AGR-PANDAN-BASE
+            is_default_variant: true
+            kementan_pd_registration: PD 32.03-A.I.000-01-00123
+            producer:
+              name: Gapoktan Tani Berkah
+              type: GAPOKTAN
+              location: Cianjur, Jawa Barat
+            country_of_origin: IDN
+            origin_region: Cianjur, Jawa Barat
+            produce_grade: PREMIUM
+            milling_date: 04/2026
+            broken_grain_percentage: < 5%
+            is_organic: false
+            dietary_classification: HALAL
+            allergens: []
+            unit_of_measure:
+              unit: KILOGRAM
+              value: '5'
+            variant_attributes:
+              weight: '5'
+              weight_unit: KILOGRAM
+            stock_count:
+              available: 200
+              maximum: 50
+        - id: RES-AGR-PANDAN-25KG
+          descriptor:
+            name: Beras Pandan Wangi Cianjur Premium 25kg
+          resource_attributes:
+            name:
+              id: Beras Pandan Wangi Cianjur Premium 25kg (Karung)
+              en: Cianjur Pandan Wangi Premium Rice 25kg (Sack)
+            images:
+            - https://cdn.mitratani.id/beras-pandan-25kg.jpg
+            sku: AGR-PANDAN-PREM-25KG
+            resource_type: VARIANT
+            parent_resource_id: RES-AGR-PANDAN-BASE
+            is_default_variant: false
+            kementan_pd_registration: PD 32.03-A.I.000-01-00123
+            produce_grade: PREMIUM
+            milling_date: 04/2026
+            unit_of_measure:
+              unit: KILOGRAM
+              value: '25'
+            variant_attributes:
+              weight: '25'
+              weight_unit: KILOGRAM
+            stock_count:
+              available: 50
+              maximum: 10
+        offers:
+        - id: OFF-PANDAN-5KG
+          resource_id: RES-AGR-PANDAN-5KG
+          proposed_consideration:
+            amount:
+              value: 95000
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P1D
+            cancellable: true
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+        - id: OFF-PANDAN-25KG
+          resource_id: RES-AGR-PANDAN-25KG
+          proposed_consideration:
+            amount:
+              value: 450000
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P2D
+            cancellable: true
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+- api: on_select
+  role: BPP → BAP
+  notes:
+  - Consumer orders 2× 5kg packs
+  - No TAX_PPN line — rice is PPN-exempt under PP 49/2022
+  - Delivery computed for cargo (beras is heavy)
+  payload:
+    context:
+      domain: ion:trade:agritech
+      action: on_select
+      transaction_id: TXN-AGR-20260419-001
+      timestamp: '2026-04-19T07:01:01+07:00'
+      currency: IDR
+    message:
+      order:
+        quote:
+          price:
+            value: 218000
+            currency: IDR
+          breakup:
+          - title: Beras Pandan Wangi Cianjur Premium 5kg × 2
+            type: ITEM
+            price:
+              value: 190000
+              currency: IDR
+          - title: Biaya Pengiriman JNE Cargo
+            type: DELIVERY
+            price:
+              value: 28000
+              currency: IDR
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+settlement:
+  # v0.1: Settlement terms are declared in on_confirm contractAttributes (nib, npwp).
+  # v0.2 — IN DEVELOPMENT: /reconcile + /on_reconcile, /support (RaisedMatter),
+  # /rate, and /track APIs are being built now and land in the coming weeks.
+  # See CHANGELOG.md for the full v0.2 scope.
+  basis: AFTER_DELIVERY
+  window: P2D
+  payment_rails_supported:
+    - BI_FAST
+    - QRIS
+    - VIRTUAL_ACCOUNT
+    - COD
+  _v02_note: reconcile, support/RaisedMatter, rate, track — see CHANGELOG.md
+
+
+validation:
+  bpp_rules:
+  - rule: kementan_pd_registration must be declared for agricultural produce
+    error: ION-5050 — Missing Kementan PD registration for agricultural product
+    regulatory: Permentan No. 56/2015 tentang Produksi, Sertifikasi dan Peredaran Benih
+  - rule: 'produce_grade must be one of: PREMIUM, GRADE_I, GRADE_II'
+    error: ION-5051 — Invalid produce grade
+  - rule: milling_date must be declared for rice and grain products (freshness signal)
+    error: ION-5052 — Missing milling date
+  - rule: unit_of_measure is mandatory for weight-based agricultural products
+    error: ION-5053 — Missing unit of measure
+  - rule: PPN must be declared at 0% for sembako items (beras, jagung, kedelai, gula, dll) per PP 49/2022. TAX_PPN line must
+      be omitted or declared at 0.
+    error: ION-5054 — Incorrect PPN applied to PPN-exempt agricultural produce
+    regulatory: PP 49/2022 tentang PPN atas Barang Kebutuhan Pokok
+  bap_rules:
+  - rule: BAP must display milling_date as freshness indicator for rice products
+    note: Consumer trust signal — stale milling date reduces purchase confidence
+  - rule: BAP must display produce_grade prominently
+  - rule: BAP must display origin_region — Cianjur Pandan Wangi has GI significance
+_resources_role:
+  declared_by: BPP
+  consumed_by: BAP
+  appears_in:
+  - on_discover
+  note: BPP declares all available resources. BAP renders the catalog/menu.
+_offers_role:
+  declared_by: BPP
+  consumed_by:
+  - BAP
+  - ION
+  appears_in:
+  - on_discover
+  note: BPP declares prices and policy IRIs. ION enforces policy. BAP renders price and policy UI.
+_resource_attribute_field_roles:
+  _description: Role metadata for every field in resourceAttributes. All declared by BPP in on_discover, consumed by BAP for
+    rendering.
+  fields:
+    name:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      language_object: true
+    short_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    long_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    images:
+      declared_by: BPP
+      consumed_by: BAP
+    sku:
+      declared_by: BPP
+      consumed_by: BPP
+      note: Internal seller reference — not rendered to consumer
+    resource_type:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to determine rendering — COMPOSED triggers customisation UI
+    parent_resource_id:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to group variants
+    is_default_variant:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders this variant first
+    menu_category:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses for menu section grouping
+    dietary_classification:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders HALAL badge
+    allergens:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: BAP must display warning
+    halal_cert_number:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      mandatory_for: BPP
+      note: Mandatory when dietary_classification=HALAL
+    bpom_registration_number:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    bpom_na_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Cosmetics — Notifikasi Kosmetik
+    kementan_pd_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Agricultural produce registration
+    postel_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Mandatory for telco devices
+    tkdn_percentage:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Local content percentage — trust signal
+    sni_compliance:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty_policy: &id001
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    nutritional_info:
+      declared_by: BPP
+      consumed_by: BAP
+    shelf_life_months:
+      declared_by: BPP
+      consumed_by: BAP
+    net_quantity:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    unit_of_measure:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    customisation_groups:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders customisation UI from this structure
+    stock_count:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses available for in-stock display
+    produce_grade:
+      declared_by: BPP
+      consumed_by: BAP
+    milling_date:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Freshness signal for rice/grain
+    variant_attributes:
+      declared_by: BPP
+      consumed_by: BAP
+    variant_group:
+      declared_by: BPP
+      consumed_by: BAP
+    electronics_specs:
+      declared_by: BPP
+      consumed_by: BAP
+    fabric_composition:
+      declared_by: BPP
+      consumed_by: BAP
+    care_instructions:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    batik_motif:
+      declared_by: BPP
+      consumed_by: BAP
+    active_ingredients:
+      declared_by: BPP
+      consumed_by: BAP
+    finish:
+      declared_by: BPP
+      consumed_by: BAP
+    skin_type:
+      declared_by: BPP
+      consumed_by: BAP
+_offer_attribute_field_roles:
+  _description: Role metadata for every field in offerAttributes. Policy IRIs enforced by ION Central — not by BPP or BAP
+    directly.
+  fields:
+    time_to_ship:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides cancel button. ION enforces via policy IRI.
+    returnable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides return button. ION enforces via policy IRI.
+    return_window_days:
+      declared_by: BPP
+      consumed_by: BAP
+    return_allowed_reasons:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    return_evidence_required:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellation_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    return_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    warranty_policy: *id001
+    dispute_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    display_language:
+      declared_by: BPP
+      consumed_by: BAP
+    available_on_cod:
+      declared_by: BPP
+      consumed_by: BAP
+    fulfillment_types_supported:
+      declared_by: BPP
+      consumed_by: BAP
+_contract_attribute_field_roles:
+  _description: Role metadata for contractAttributes fields. All created by BPP at on_confirm.
+  fields:
+    fulfilling_location_id:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: on_confirm
+      note: CRITICAL — first and only appearance is in on_confirm. BPP selects internally.
+    invoicing_model:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+    invoicing_entity:
+      declared_by: BPP
+      consumed_by: BAP
+    nib:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+    npwp:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+_performance_attribute_field_roles:
+  _description: Role metadata for performanceAttributes fields. All updated by BPP via on_status as order progresses.
+  fields:
+    agent_name:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_phone:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_photo:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    tracking_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    estimated_delivery_time:
+      declared_by: BPP
+      consumed_by: BAP
+    delivery_proof_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DELIVERED

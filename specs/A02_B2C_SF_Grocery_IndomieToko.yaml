@@ -1,0 +1,1135 @@
+meta:
+  id: ion-trade-b2c-sf-grocery-indomie-v1
+  sector: trade
+  sector_code: A
+  resource_type: TradeResource
+  resource_type_code: A02
+  commerce_pattern: B2C Single Fulfilment
+  resource_shape: VARIANT
+  priority: core
+  status: ready-to-spec
+  ion_spec_version: '1.0'
+  beckn_version: 2.0.1
+  domain: ion:trade:grocery
+  categories:
+  - grocery
+  - fmcg
+  reference_product: Indomie Mi Instan Goreng Spesial 85g
+  reference_seller: Toko Sembako Abadi Jaya — Tebet, Jakarta Selatan
+  roles_covered:
+  - BAP
+  - BPP
+  role_guide:
+    BAP: Buyer Application — consumer-facing app. Reads on_* callbacks, sends forward calls.
+    BPP: Buyer-Provided Participant — seller app. Reads forward calls, sends on_* callbacks.
+    ION: ION Central platform — enforces policy IRIs, validates mandatory fields, routes catalog.
+    field_tag_legend:
+      declared_by: Which role sets this field value
+      consumed_by: Which role(s) read and act on this field
+      enforced_by: Which system enforces correctness of this field
+      appears_at: Which API call this field first appears in
+      bap_action: 'What BAP does with this API call: SEND | RECEIVE | NONE'
+      bpp_action: 'What BPP does with this API call: SEND | RECEIVE | NONE'
+participants:
+  bap:
+    role: Buyer App (e.g. grocery delivery super-app)
+    responsibilities:
+    - Send /discover with consumer GPS
+    - Render variant selector (single pack vs multipack)
+    - Display HALAL badge and BPOM registration number
+    - Display allergen warning (GLUTEN, SOY) on product detail
+    - Send /select with chosen variant and quantity
+    - Handle COD or prepaid payment at /init
+    must_not:
+    - Display seller NPWP to consumer
+    - Cache catalog beyond BPP-declared TTL
+    role_tag: BAP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - status
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - discover
+    - select
+    - init
+    - confirm
+    - status
+    - update
+    - cancel
+  bpp:
+    role: Seller App (Toko Sembako Abadi Jaya)
+    responsibilities:
+    - Return catalog only when consumer GPS is inside serviceability polygon
+    - Declare BPOM registration, halal cert, SNI on resource
+    - Compute PPN 11% at on_select and declare as TAX_PPN line
+    - Declare stock_count — deduct on confirm
+    - Ship within time_to_ship = P1D (1 day)
+    must_not:
+    - Apply PPN on delivery charge
+    - Return catalog when storeStatus is TEMPORARILY_CLOSED or DISABLED
+    role_tag: BPP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - on_discover
+    - on_select
+    - on_init
+    - on_confirm
+    - on_status
+    - on_update
+    - on_cancel
+flow:
+  pattern: async_callback
+  entry_point: /discover
+  apis:
+  - api: discover
+    direction: BAP → BPP
+    mandatory: true
+    bap_sends:
+      required:
+      - context.domain
+      - context.location.gps
+      - context.location.country.code
+      - context.timestamp
+      - context.bap_id
+      - context.transaction_id
+      - context.message_id
+    consumer: BAP
+    producer: BPP
+    bap_action: SEND
+    bpp_action: RECEIVE
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: on_discover
+    direction: BPP → BAP
+    mandatory: true
+    description: 'BPP returns catalog. Consumer GPS -6.2305,106.8485 (Tebet) is inside the seller''s serviceability polygon.
+      Catalog includes both variants: single 85g pack and multipack 5×85g.
+
+      '
+    consumer: BPP
+    producer: BAP
+    bap_action: RECEIVE
+    bpp_action: SEND
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: select
+    direction: BAP → BPP
+    mandatory: true
+    bap_sends:
+      required:
+      - message.order.provider.id
+      - message.order.items[].resource_id
+      - message.order.items[].offer_id
+      - message.order.items[].quantity.count
+      - message.order.fulfillments[].type
+      - message.order.fulfillments[].end.location.gps
+    consumer: BAP
+    producer: BPP
+    bap_action: SEND
+    bpp_action: RECEIVE
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: on_select
+    direction: BPP → BAP
+    mandatory: true
+    description: 'BPP returns quoted price with PPN 11% computed on item subtotal. Delivery charge added separately.
+
+      '
+    consumer: BPP
+    producer: BAP
+    bap_action: RECEIVE
+    bpp_action: SEND
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: init
+    direction: BAP → BPP
+    mandatory: true
+    consumer: BAP
+    producer: BPP
+    bap_action: SEND
+    bpp_action: RECEIVE
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: on_init
+    direction: BPP → BAP
+    mandatory: true
+    consumer: BPP
+    producer: BAP
+    bap_action: RECEIVE
+    bpp_action: SEND
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: confirm
+    direction: BAP → BPP
+    mandatory: true
+    consumer: BAP
+    producer: BPP
+    bap_action: SEND
+    bpp_action: RECEIVE
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: on_confirm
+    direction: BPP → BAP
+    mandatory: true
+    consumer: BPP
+    producer: BAP
+    bap_action: RECEIVE
+    bpp_action: SEND
+    bap_reads_this: true
+    bpp_reads_this: true
+  - api: status
+    direction: BAP → BPP
+    mandatory: false
+    consumer: BAP
+    producer: BPP
+    bap_action: SEND
+    bpp_action: RECEIVE
+    bap_reads_this: true
+    bpp_reads_this: false
+  - api: on_status
+    direction: BPP → BAP
+    mandatory: false
+    performance_states:
+    - PENDING
+    - PACKED
+    - DISPATCHED
+    - OUT_FOR_DELIVERY
+    - DELIVERED
+    consumer: BPP
+    producer: BAP
+    bap_action: RECEIVE
+    bpp_action: SEND
+    bap_reads_this: true
+    bpp_reads_this: true
+provider:
+  id: SEL-JAK-001
+  descriptor:
+    name: Toko Sembako Abadi Jaya
+  available_at:
+  - geo:
+      type: Polygon
+      coordinates:
+      - - - 106.835
+          - -6.218
+        - - 106.862
+          - -6.218
+        - - 106.862
+          - -6.244
+        - - 106.835
+          - -6.244
+        - - 106.835
+          - -6.218
+    address:
+      locality: Tebet
+      city: Jakarta Selatan
+      state: DKI Jakarta
+      area_code: '12820'
+      country: Indonesia
+  provider_attributes:
+    store_status: OPEN
+    operating_hours:
+    - type: ORDER
+      day_from: 1
+      day_to: 7
+      time_from: '0600'
+      time_to: '2200'
+    - type: DELIVERY
+      day_from: 1
+      day_to: 7
+      time_from: '0700'
+      time_to: '2100'
+    provider_category: GROCERY
+    nib_registered: true
+    nib: '1234567890123'
+    npwp: '91234567801200'
+    invoicing_model: PER_FULFILMENT_CENTRE
+    holiday_calendar: []
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_discover
+    note: BPP declares provider record. BAP renders store info and uses geo polygon for display.
+resources:
+- id: RES-GRO-INDOMIE-85G
+  type: PLAIN
+  descriptor:
+    name: Indomie Mi Instan Goreng Spesial 85g
+  resource_attributes:
+    name:
+      id: Indomie Mi Instan Goreng Spesial 85g
+      en: Indomie Instant Fried Noodles Special 85g
+    short_desc:
+      id: Mie goreng instan favorit Indonesia dengan bumbu rempah otentik
+      en: Indonesia's favourite instant fried noodles with authentic spice blend
+    long_desc:
+      id: Indomie Goreng Spesial adalah mie instan tanpa kuah paling populer di Indonesia. Dibuat dari tepung terigu berkualitas
+        tinggi dan rempah-rempah pilihan.
+      en: Indomie Goreng Special is Indonesia's most popular dry instant noodle. Made from high-quality wheat flour and selected
+        spices.
+    images:
+    - https://cdn.example.id/indomie-goreng-85g.jpg
+    sku: GRO-IND-GOR-85G
+    resource_type: PLAIN
+    menu_category:
+      id: CAT-MIEINSTANT
+      name:
+        id: Mie Instan
+        en: Instant Noodles
+      sequence: 1
+    bpom_registration_number: MD 231509051002
+    halal_cert_number: ID00410000000300799
+    sni_compliance:
+    - standard: SNI 3551:2018
+      description: Mie Instan — Standar Nasional Indonesia
+    gtin: '8998866200295'
+    country_of_origin: IDN
+    manufacturer_name:
+      id: PT Indofood CBP Sukses Makmur Tbk
+      en: PT Indofood CBP Sukses Makmur Tbk
+    manufacturer_address:
+      id: Jl. Ancol Barat I No.4-5, Jakarta Utara 14430
+      en: Jl. Ancol Barat I No.4-5, Jakarta Utara 14430
+    dietary_classification: HALAL
+    allergens:
+    - GLUTEN
+    - SOY
+    nutritional_info:
+      per_serving: 85g
+      energy: 459 kcal
+      protein: 9.4g
+      fat: 17.6g
+      carbohydrates: 65.9g
+    shelf_life_months: 12
+    net_quantity:
+      value: '85'
+      unit: GRAM
+    packaging_type: FLEXIBLE_POUCH
+    stock_count:
+      available: 500
+      maximum: 100
+- id: RES-GRO-INDOMIE-5PK
+  type: VARIANT
+  descriptor:
+    name: Indomie Mi Instan Goreng Spesial Multipack 5×85g
+  resource_attributes:
+    name:
+      id: Indomie Goreng Spesial Multipack 5×85g
+      en: Indomie Fried Noodles Special Multipack 5×85g
+    short_desc:
+      id: Paket hemat 5 bungkus Indomie Goreng Spesial
+      en: Value pack of 5 Indomie Goreng Special
+    images:
+    - https://cdn.example.id/indomie-goreng-5pk.jpg
+    sku: GRO-IND-GOR-5PK
+    resource_type: VARIANT
+    parent_resource_id: RES-GRO-INDOMIE-85G
+    is_default_variant: false
+    bpom_registration_number: MD 231509051002
+    halal_cert_number: ID00410000000300799
+    gtin: '8998866200301'
+    dietary_classification: HALAL
+    allergens:
+    - GLUTEN
+    - SOY
+    net_quantity:
+      value: '425'
+      unit: GRAM
+    packaging_type: SHRINK_WRAP
+    stock_count:
+      available: 200
+      maximum: 20
+offers:
+- id: OFF-INDOMIE-85G
+  resource_id: RES-GRO-INDOMIE-85G
+  proposed_consideration:
+    amount:
+      value: 3100
+      currency: IDR
+    mrp:
+      value: 3500
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P1D
+    cancellable: false
+    returnable: false
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+    fulfillment_types_supported:
+    - DELIVERY
+    - SELF_PICKUP
+- id: OFF-INDOMIE-5PK
+  resource_id: RES-GRO-INDOMIE-5PK
+  proposed_consideration:
+    amount:
+      value: 15200
+      currency: IDR
+    mrp:
+      value: 17500
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P1D
+    cancellable: false
+    returnable: false
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+consideration:
+  currency: IDR
+  ppn_rate: 0.11
+  ppn_basis: ITEM_SUBTOTAL
+  regulatory_source: UU HPP No. 7/2021; PMK 60/2022
+  line_types:
+  - type: ITEM
+    mandatory: true
+    who_absorbs: SELLER
+    example:
+      title: Indomie Goreng Spesial 85g × 10
+      value: 31000
+  - type: DELIVERY
+    mandatory: conditional
+    condition: Present when fulfillment.type = DELIVERY
+    who_absorbs: BUYER
+    example:
+      title: Biaya Pengiriman
+      value: 12000
+  - type: TAX_PPN
+    mandatory: true
+    rate: 0.11
+    who_absorbs: BUYER
+    example:
+      title: PPN 11%
+      value: 3410
+  - type: PROVIDER_BENEFIT
+    mandatory: false
+    description: Seller promotional discount — e.g. buy 10 get 5% off
+    who_absorbs: SELLER
+  - type: BUYER_BENEFIT
+    mandatory: false
+    description: BAP voucher or promo. Hidden from seller unless COD.
+    who_absorbs: BAP
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_select
+    - on_init
+    - on_confirm
+    note: BPP computes and declares price breakup. ION validates PPN declaration. BAP renders to consumer.
+performance:
+  fulfillment_type: LSP_PARTNER
+  lsp_involved: true
+  states:
+  - state: PENDING
+    when: Immediately after on_confirm
+  - state: PACKED
+    when: Items packed, awaiting pickup by logistics partner
+    added_fields:
+    - performanceAttributes.awbNumber
+  - state: DISPATCHED
+    when: Logistics partner picked up
+    added_fields:
+    - performanceAttributes.trackingUrl
+  - state: OUT_FOR_DELIVERY
+    when: Out for last-mile delivery
+  - state: DELIVERED
+    when: Delivered to consumer
+    added_fields:
+    - performanceAttributes.deliveryProofUrl
+  _role:
+    declared_by: BPP
+    consumed_by: BAP
+    appears_in:
+    - on_status
+    - on_update
+    note: BPP updates performance state. BAP renders tracking UI to consumer.
+contract:
+  created_at: on_confirm
+  attributes:
+  - name: nib
+    value: '1234567890123'
+    description: Nomor Induk Berusaha — Toko Sembako Abadi Jaya
+    mandatory: true
+  - name: npwp
+    value: '91234567801200'
+    description: 16-digit NPWP — seller tax identity
+    regulatory_source: PMK 136/2023
+    mandatory: true
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_confirm
+    note: BPP creates contract at on_confirm. Contains fulfillingLocationId (first appearance here).
+settlement:
+  # v0.1: Declare these fields in your on_confirm response.
+  # v0.2 — IN DEVELOPMENT: /reconcile + /on_reconcile, /support (RaisedMatter),
+  # /rate, and /track APIs land in the coming weeks. See CHANGELOG.md.
+  basis: AFTER_DELIVERY
+  window: P2D
+  payment_rails_supported:
+  - BI_FAST
+  - QRIS
+  - VIRTUAL_ACCOUNT
+  - COD
+  _role:
+    declared_by: BPP
+    consumed_by: ION
+    appears_in:
+    - on_confirm
+    note: BPP declares settlement terms. ION Central orchestrates the money movement.
+examples:
+- api: discover
+  role: BAP → BPP
+  payload:
+    context:
+      domain: ion:trade:grocery
+      action: discover
+      version: 2.0.1
+      bap_id: belanja.bap.ion.id
+      bap_uri: https://belanja.bap.ion.id/beckn
+      transaction_id: TXN-GRO-20260419-001
+      message_id: MSG-DIS-GRO-001
+      timestamp: '2026-04-19T09:00:00+07:00'
+      currency: IDR
+      location:
+        country:
+          code: IDN
+        city:
+          code: std:3174
+        gps: -6.2305,106.8485
+    _meta:
+      sent_by: BAP
+      received_by: BPP
+      bap_action: SEND
+      bpp_action: RECEIVE
+  _role_meta:
+    sent_by: BAP
+    received_by: BPP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: SEND
+    bpp_action: RECEIVE
+- api: on_discover
+  role: BPP → BAP
+  notes:
+  - Consumer GPS is inside seller's Tebet polygon — catalog returned
+  - Both variants (single + multipack) appear in resources[]
+  - BPOM registration and halal cert visible on resource
+  payload:
+    context:
+      domain: ion:trade:grocery
+      action: on_discover
+      version: 2.0.1
+      bpp_id: sembako-abadi.bpp.ion.id
+      bpp_uri: https://sembako-abadi.bpp.ion.id/beckn
+      transaction_id: TXN-GRO-20260419-001
+      message_id: MSG-DIS-GRO-001-ACK
+      timestamp: '2026-04-19T09:00:01+07:00'
+      currency: IDR
+    message:
+      catalogs:
+      - id: CAT-SEMBAKO-001
+        provider:
+          id: SEL-JAK-001
+          descriptor:
+            name: Toko Sembako Abadi Jaya
+            short_desc: Kebutuhan dapur segar setiap hari — Tebet, Jakarta Selatan
+          available_at:
+          - geo:
+              type: Polygon
+              coordinates:
+              - - - 106.835
+                  - -6.218
+                - - 106.862
+                  - -6.218
+                - - 106.862
+                  - -6.244
+                - - 106.835
+                  - -6.244
+                - - 106.835
+                  - -6.218
+            address:
+              locality: Tebet
+              city: Jakarta Selatan
+              state: DKI Jakarta
+              area_code: '12820'
+          provider_attributes:
+            store_status: OPEN
+            operating_hours:
+            - type: ORDER
+              day_from: 1
+              day_to: 7
+              time_from: '0600'
+              time_to: '2200'
+            provider_category: GROCERY
+            nib_registered: true
+        resources:
+        - id: RES-GRO-INDOMIE-85G
+          descriptor:
+            name: Indomie Mi Instan Goreng Spesial 85g
+          resource_attributes:
+            name:
+              id: Indomie Mi Instan Goreng Spesial 85g
+              en: Indomie Instant Fried Noodles Special 85g
+            short_desc:
+              id: Mie goreng instan favorit Indonesia dengan bumbu rempah otentik
+              en: Indonesia's favourite instant fried noodles
+            images:
+            - https://cdn.example.id/indomie-goreng-85g.jpg
+            sku: GRO-IND-GOR-85G
+            resource_type: PLAIN
+            dietary_classification: HALAL
+            halal_cert_number: ID00410000000300799
+            bpom_registration_number: MD 231509051002
+            sni_compliance:
+            - standard: SNI 3551:2018
+            allergens:
+            - GLUTEN
+            - SOY
+            nutritional_info:
+              per_serving: 85g
+              energy: 459 kcal
+              protein: 9.4g
+              fat: 17.6g
+              carbohydrates: 65.9g
+            net_quantity:
+              value: '85'
+              unit: GRAM
+            shelf_life_months: 12
+            gtin: '8998866200295'
+            stock_count:
+              available: 500
+              maximum: 100
+        - id: RES-GRO-INDOMIE-5PK
+          descriptor:
+            name: Indomie Mi Instan Goreng Spesial Multipack 5×85g
+          resource_attributes:
+            name:
+              id: Indomie Goreng Spesial Multipack 5×85g
+              en: Indomie Fried Noodles Multipack 5×85g
+            images:
+            - https://cdn.example.id/indomie-goreng-5pk.jpg
+            sku: GRO-IND-GOR-5PK
+            resource_type: VARIANT
+            parent_resource_id: RES-GRO-INDOMIE-85G
+            dietary_classification: HALAL
+            halal_cert_number: ID00410000000300799
+            bpom_registration_number: MD 231509051002
+            allergens:
+            - GLUTEN
+            - SOY
+            net_quantity:
+              value: '425'
+              unit: GRAM
+            stock_count:
+              available: 200
+              maximum: 20
+        offers:
+        - id: OFF-INDOMIE-85G
+          resource_id: RES-GRO-INDOMIE-85G
+          proposed_consideration:
+            amount:
+              value: 3100
+              currency: IDR
+            mrp:
+              value: 3500
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P1D
+            cancellable: false
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+        - id: OFF-INDOMIE-5PK
+          resource_id: RES-GRO-INDOMIE-5PK
+          proposed_consideration:
+            amount:
+              value: 15200
+              currency: IDR
+            mrp:
+              value: 17500
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P1D
+            cancellable: false
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+- api: select
+  role: BAP → BPP
+  notes:
+  - Consumer selects 10× single pack
+  payload:
+    context:
+      domain: ion:trade:grocery
+      action: select
+      version: 2.0.1
+      transaction_id: TXN-GRO-20260419-001
+      message_id: MSG-SEL-GRO-001
+      timestamp: '2026-04-19T09:01:00+07:00'
+      currency: IDR
+    message:
+      order:
+        provider:
+          id: SEL-JAK-001
+        items:
+        - id: ITEM-001
+          resource_id: RES-GRO-INDOMIE-85G
+          offer_id: OFF-INDOMIE-85G
+          quantity:
+            count: 10
+        fulfillments:
+        - id: FUL-001
+          type: DELIVERY
+          end:
+            location:
+              gps: -6.2310,106.8490
+    _meta:
+      sent_by: BAP
+      received_by: BPP
+      bap_action: SEND
+      bpp_action: RECEIVE
+  _role_meta:
+    sent_by: BAP
+    received_by: BPP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: SEND
+    bpp_action: RECEIVE
+- api: on_select
+  role: BPP → BAP
+  notes:
+  - 10 × Rp 3,100 = Rp 31,000 items
+  - Delivery = Rp 12,000
+  - PPN 11% on items = Rp 3,410
+  - Total = Rp 46,410
+  payload:
+    context:
+      domain: ion:trade:grocery
+      action: on_select
+      version: 2.0.1
+      transaction_id: TXN-GRO-20260419-001
+      message_id: MSG-SEL-GRO-001-ACK
+      timestamp: '2026-04-19T09:01:01+07:00'
+      currency: IDR
+    message:
+      order:
+        quote:
+          price:
+            value: 46410
+            currency: IDR
+          breakup:
+          - title: Indomie Goreng Spesial 85g × 10
+            type: ITEM
+            price:
+              value: 31000
+              currency: IDR
+          - title: Biaya Pengiriman
+            type: DELIVERY
+            price:
+              value: 12000
+              currency: IDR
+          - title: PPN 11%
+            type: TAX_PPN
+            price:
+              value: 3410
+              currency: IDR
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+- api: on_confirm
+  role: BPP → BAP
+  payload:
+    context:
+      domain: ion:trade:grocery
+      action: on_confirm
+      version: 2.0.1
+      transaction_id: TXN-GRO-20260419-001
+      message_id: MSG-CON-GRO-001-ACK
+      timestamp: '2026-04-19T09:03:00+07:00'
+      currency: IDR
+    message:
+      order:
+        id: SBA-2026041900123
+        state: ACTIVE
+        fulfillments:
+        - id: FUL-001
+          state:
+            descriptor:
+              code: PENDING
+        contract_attributes:
+          nib: '1234567890123'
+          npwp: '91234567801200'
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+validation:
+  bpp_rules:
+  - rule: bpom_registration_number is mandatory for all packaged food resources
+    error: ION-5020 — Missing BPOM registration
+  - rule: halal_cert_number is mandatory when dietary_classification=HALAL
+    error: ION-5021 — Missing halal cert for HALAL classified resource
+  - rule: 'allergens[] must be declared if the product contains any of: GLUTEN, CRUSTACEAN, EGG, FISH, PEANUT, SOY, MILK,
+      TREE_NUT, SESAME'
+    error: ION-5022 — Missing mandatory allergen declaration
+    regulatory: PerBPOM No. 22/2019
+  - rule: net_quantity must be declared for all packaged FMCG and grocery resources
+    error: ION-5023 — Missing net quantity declaration
+  - rule: PPN 11% must be declared as separate TAX_PPN line in quote.breakup. Applied on item subtotal only.
+    error: ION-5010 — Missing or incorrect PPN declaration
+  bap_rules:
+  - rule: BAP must display HALAL badge when resource dietary_classification=HALAL
+    note: UX requirement — not a protocol error
+  - rule: BAP must display allergen warning when allergens[] is non-empty
+    note: UX requirement per consumer protection standards
+  - rule: BAP must display bpom_registration_number on product detail page
+    note: Consumer information requirement
+_resources_role:
+  declared_by: BPP
+  consumed_by: BAP
+  appears_in:
+  - on_discover
+  note: BPP declares all available resources. BAP renders the catalog/menu.
+_offers_role:
+  declared_by: BPP
+  consumed_by:
+  - BAP
+  - ION
+  appears_in:
+  - on_discover
+  note: BPP declares prices and policy IRIs. ION enforces policy. BAP renders price and policy UI.
+_resource_attribute_field_roles:
+  _description: Role metadata for every field in resourceAttributes. All declared by BPP in on_discover, consumed by BAP for
+    rendering.
+  fields:
+    name:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      language_object: true
+    short_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    long_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    images:
+      declared_by: BPP
+      consumed_by: BAP
+    sku:
+      declared_by: BPP
+      consumed_by: BPP
+      note: Internal seller reference — not rendered to consumer
+    resource_type:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to determine rendering — COMPOSED triggers customisation UI
+    parent_resource_id:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to group variants
+    is_default_variant:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders this variant first
+    menu_category:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses for menu section grouping
+    dietary_classification:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders HALAL badge
+    allergens:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: BAP must display warning
+    halal_cert_number:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      mandatory_for: BPP
+      note: Mandatory when dietary_classification=HALAL
+    bpom_registration_number:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    bpom_na_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Cosmetics — Notifikasi Kosmetik
+    kementan_pd_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Agricultural produce registration
+    postel_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Mandatory for telco devices
+    tkdn_percentage:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Local content percentage — trust signal
+    sni_compliance:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty_policy: &id001
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    nutritional_info:
+      declared_by: BPP
+      consumed_by: BAP
+    shelf_life_months:
+      declared_by: BPP
+      consumed_by: BAP
+    net_quantity:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    unit_of_measure:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    customisation_groups:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders customisation UI from this structure
+    stock_count:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses available for in-stock display
+    produce_grade:
+      declared_by: BPP
+      consumed_by: BAP
+    milling_date:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Freshness signal for rice/grain
+    variant_attributes:
+      declared_by: BPP
+      consumed_by: BAP
+    variant_group:
+      declared_by: BPP
+      consumed_by: BAP
+    electronics_specs:
+      declared_by: BPP
+      consumed_by: BAP
+    fabric_composition:
+      declared_by: BPP
+      consumed_by: BAP
+    care_instructions:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    batik_motif:
+      declared_by: BPP
+      consumed_by: BAP
+    active_ingredients:
+      declared_by: BPP
+      consumed_by: BAP
+    finish:
+      declared_by: BPP
+      consumed_by: BAP
+    skin_type:
+      declared_by: BPP
+      consumed_by: BAP
+_offer_attribute_field_roles:
+  _description: Role metadata for every field in offerAttributes. Policy IRIs enforced by ION Central — not by BPP or BAP
+    directly.
+  fields:
+    time_to_ship:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides cancel button. ION enforces via policy IRI.
+    returnable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides return button. ION enforces via policy IRI.
+    return_window_days:
+      declared_by: BPP
+      consumed_by: BAP
+    return_allowed_reasons:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    return_evidence_required:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellation_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    return_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    warranty_policy: *id001
+    dispute_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    display_language:
+      declared_by: BPP
+      consumed_by: BAP
+    available_on_cod:
+      declared_by: BPP
+      consumed_by: BAP
+    fulfillment_types_supported:
+      declared_by: BPP
+      consumed_by: BAP
+_contract_attribute_field_roles:
+  _description: Role metadata for contractAttributes fields. All created by BPP at on_confirm.
+  fields:
+    fulfilling_location_id:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: on_confirm
+      note: CRITICAL — first and only appearance is in on_confirm. BPP selects internally.
+    invoicing_model:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+    invoicing_entity:
+      declared_by: BPP
+      consumed_by: BAP
+    nib:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+    npwp:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+_performance_attribute_field_roles:
+  _description: Role metadata for performanceAttributes fields. All updated by BPP via on_status as order progresses.
+  fields:
+    agent_name:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_phone:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_photo:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    tracking_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    estimated_delivery_time:
+      declared_by: BPP
+      consumed_by: BAP
+    delivery_proof_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DELIVERED

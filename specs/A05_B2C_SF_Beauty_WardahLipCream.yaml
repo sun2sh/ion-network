@@ -1,0 +1,832 @@
+meta:
+  id: ion-trade-b2c-sf-beauty-wardahlip-v1
+  sector: trade
+  sector_code: A
+  resource_type: TradeResource
+  resource_type_code: A05
+  commerce_pattern: B2C Single Fulfilment
+  resource_shape: VARIANT
+  priority: core
+  status: ready-to-spec
+  ion_spec_version: '1.0'
+  beckn_version: 2.0.1
+  domain: ion:trade:beauty
+  categories:
+  - beauty
+  - personal-care
+  - cosmetics
+  reference_product: Wardah Exclusive Lip Cream
+  reference_seller: Beauty Hub Bandung — Bandung, Jawa Barat
+  roles_covered:
+  - BAP
+  - BPP
+  role_guide:
+    BAP: Buyer Application — consumer-facing app. Reads on_* callbacks, sends forward calls.
+    BPP: Buyer-Provided Participant — seller app. Reads forward calls, sends on_* callbacks.
+    ION: ION Central platform — enforces policy IRIs, validates mandatory fields, routes catalog.
+    field_tag_legend:
+      declared_by: Which role sets this field value
+      consumed_by: Which role(s) read and act on this field
+      enforced_by: Which system enforces correctness of this field
+      appears_at: Which API call this field first appears in
+      bap_action: 'What BAP does with this API call: SEND | RECEIVE | NONE'
+      bpp_action: 'What BPP does with this API call: SEND | RECEIVE | NONE'
+participants:
+  bap:
+    role: Buyer App (e.g. beauty marketplace or multi-brand platform)
+    responsibilities:
+    - Display HALAL badge prominently (Wardah brand identity)
+    - Display BPOM NA registration number on product detail
+    - Render shade variant selector with hex colour preview
+    - Display active ingredients and skin type suitability
+    - Show non-returnable policy clearly (hygiene — cosmetics)
+    - Display expiry date information
+    must_not:
+    - Allow returns for cosmetics unless defective or wrong item
+    role_tag: BAP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - status
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - discover
+    - select
+    - init
+    - confirm
+    - status
+    - update
+    - cancel
+  bpp:
+    role: Seller App (Beauty Hub Bandung)
+    responsibilities:
+    - Declare BPOM NA registration for each shade variant
+    - Declare halal cert number (BPJPH)
+    - Declare skin type, active ingredients, finish on resource
+    - Declare shade name with hex code for BAP rendering
+    - Return only products within consumer GPS serviceability polygon
+    - Compute PPN 11% on item subtotal
+    must_not:
+    - List cosmetics without valid BPOM NA registration
+    role_tag: BPP
+    reads_apis:
+    - discover
+    - on_discover
+    - select
+    - on_select
+    - init
+    - on_init
+    - confirm
+    - on_confirm
+    - on_status
+    - update
+    - on_update
+    - cancel
+    - on_cancel
+    sends_apis:
+    - on_discover
+    - on_select
+    - on_init
+    - on_confirm
+    - on_status
+    - on_update
+    - on_cancel
+provider:
+  id: SEL-BJB-BEAUTYHUB-001
+  descriptor:
+    name: Beauty Hub Bandung
+    short_desc: Kosmetik halal dan produk kecantikan original — Bandung
+  available_at:
+  - geo:
+      type: Polygon
+      coordinates:
+      - - - 107.57
+          - -6.87
+        - - 107.68
+          - -6.87
+        - - 107.68
+          - -6.96
+        - - 107.57
+          - -6.96
+        - - 107.57
+          - -6.87
+    address:
+      locality: Sumur Bandung
+      city: Bandung
+      state: Jawa Barat
+      area_code: '40111'
+      country: Indonesia
+  provider_attributes:
+    store_status: OPEN
+    operating_hours:
+    - type: ORDER
+      day_from: 1
+      day_to: 7
+      time_from: 0800
+      time_to: '2100'
+    - type: DELIVERY
+      day_from: 1
+      day_to: 7
+      time_from: 0900
+      time_to: '2000'
+    provider_category: BEAUTY
+    nib_registered: true
+    nib: '2356789012345'
+    npwp: '89012345601200'
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_discover
+    note: BPP declares provider record. BAP renders store info and uses geo polygon for display.
+resources:
+- id: RES-BEA-WARD-LIP-03
+  type: VARIANT
+  descriptor:
+    name: Wardah Exclusive Lip Cream No. 03 See You Latte
+  resource_attributes:
+    name:
+      id: Wardah Exclusive Lip Cream No. 03 See You Latte
+      en: Wardah Exclusive Lip Cream No. 03 See You Latte
+    short_desc:
+      id: Lip cream matte lembut dengan warna nude latte yang elegan
+      en: Velvety matte lip cream in an elegant nude latte shade
+    long_desc:
+      id: Wardah Exclusive Lip Cream hadir dengan formula Lushlip Liquid yang memberikan warna intensif dan kelembapan tahan
+        lama. Mengandung Vitamin E dan antioksidan untuk menutrisi bibir. Hasil akhir matte beludru yang nyaman dipakai seharian.
+      en: Wardah Exclusive Lip Cream features Lushlip Liquid formula delivering intense colour and lasting moisture. Contains
+        Vitamin E and antioxidants to nourish lips. Velvety matte finish comfortable for all-day wear.
+    images:
+    - https://cdn.wardah.com/lip-cream-03-see-you-latte.jpg
+    sku: WARD-LIP-03-LATTE
+    resource_type: VARIANT
+    parent_resource_id: RES-BEA-WARD-LIP-BASE
+    is_default_variant: true
+    bpom_na_registration: NA18161301037
+    halal_cert_number: ID00410000000100220
+    brand:
+      name: Wardah
+      id: BR-WARD-001
+    manufacturer_name:
+      id: PT Paragon Technology and Innovation
+      en: PT Paragon Technology and Innovation
+    country_of_origin: IDN
+    skin_type:
+      id: Semua Jenis Kulit
+      en: All Skin Types
+    active_ingredients:
+    - Vitamin E
+    - Lushlip Liquid
+    - Antioksidan
+    finish: VELVETY_MATTE
+    application_area: LIPS
+    dietary_classification: HALAL
+    variant_group:
+      id: VG-WARD-LIP-SHADE
+      name:
+        id: Warna
+        en: Shade
+      variant_on: shade
+    variant_attributes:
+      shade_number: '03'
+      shade_name:
+        id: See You Latte
+        en: See You Latte
+      shade_description:
+        id: Nude latte hangat yang cocok untuk tampilan sehari-hari
+        en: Warm nude latte perfect for everyday looks
+      hex: '#D2B48C'
+    net_quantity:
+      value: '5.5'
+      unit: GRAM
+    shelf_life_months: 36
+    stock_count:
+      available: 50
+      maximum: 6
+- id: RES-BEA-WARD-LIP-09
+  type: VARIANT
+  descriptor:
+    name: Wardah Exclusive Lip Cream No. 09 Mauve On
+  resource_attributes:
+    name:
+      id: Wardah Exclusive Lip Cream No. 09 Mauve On
+      en: Wardah Exclusive Lip Cream No. 09 Mauve On
+    short_desc:
+      id: Lip cream matte warna mauve elegan untuk kesan anggun
+      en: Velvety matte lip cream in an elegant mauve shade
+    images:
+    - https://cdn.wardah.com/lip-cream-09-mauve-on.jpg
+    sku: WARD-LIP-09-MAUVE
+    resource_type: VARIANT
+    parent_resource_id: RES-BEA-WARD-LIP-BASE
+    is_default_variant: false
+    bpom_na_registration: NA18161301037
+    halal_cert_number: ID00410000000100220
+    skin_type:
+      id: Semua Jenis Kulit
+      en: All Skin Types
+    active_ingredients:
+    - Vitamin E
+    - Lushlip Liquid
+    - Antioksidan
+    finish: VELVETY_MATTE
+    application_area: LIPS
+    dietary_classification: HALAL
+    variant_attributes:
+      shade_number: 09
+      shade_name:
+        id: Mauve On
+        en: Mauve On
+      shade_description:
+        id: Mauve keunguan yang timeless untuk tampilan elegan
+        en: Timeless purplish mauve for an elegant look
+      hex: '#AF868E'
+    net_quantity:
+      value: '5.5'
+      unit: GRAM
+    shelf_life_months: 36
+    stock_count:
+      available: 45
+      maximum: 6
+offers:
+- id: OFF-WARD-LIP-03
+  resource_id: RES-BEA-WARD-LIP-03
+  proposed_consideration:
+    amount:
+      value: 62000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P1D
+    cancellable: true
+    returnable: false
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+    fulfillment_types_supported:
+    - DELIVERY
+    - SELF_PICKUP
+- id: OFF-WARD-LIP-09
+  resource_id: RES-BEA-WARD-LIP-09
+  proposed_consideration:
+    amount:
+      value: 62000
+      currency: IDR
+  offer_attributes:
+    time_to_ship: P1D
+    cancellable: true
+    returnable: false
+    cancellation_policy: ion://policy/cancel.prepacked.free
+    return_policy: ion://policy/return.none
+    warranty_policy: ion://policy/warranty.none
+    dispute_policy: ion://policy/dispute.consumer.bpsk
+    display_language:
+    - id
+    - en
+    available_on_cod: true
+consideration:
+  currency: IDR
+  ppn_rate: 0.11
+  ppn_basis: ITEM_SUBTOTAL
+  line_types:
+  - type: ITEM
+    example:
+      title: Wardah Exclusive Lip Cream (2 item)
+      value: 124000
+  - type: DELIVERY
+    example:
+      title: Biaya Pengiriman
+      value: 12000
+  - type: TAX_PPN
+    rate: 0.11
+    example:
+      title: PPN 11%
+      value: 13640
+  _role:
+    declared_by: BPP
+    consumed_by:
+    - BAP
+    - ION
+    appears_in:
+    - on_select
+    - on_init
+    - on_confirm
+    note: BPP computes and declares price breakup. ION validates PPN declaration. BAP renders to consumer.
+examples:
+- api: on_discover
+  role: BPP → BAP
+  notes:
+  - Consumer in Bandung — inside seller polygon
+  - Both shades returned with hex codes for colour swatch rendering
+  - BPOM NA and halal cert visible on resources
+  payload:
+    context:
+      domain: ion:trade:beauty
+      action: on_discover
+      version: 2.0.1
+      bpp_id: beautyhub-bdg.bpp.ion.id
+      transaction_id: TXN-BEA-20260419-001
+      message_id: MSG-DIS-BEA-001-ACK
+      timestamp: '2026-04-19T13:00:01+07:00'
+      currency: IDR
+    message:
+      catalogs:
+      - id: CAT-BEAUTYHUB-001
+        provider:
+          id: SEL-BJB-BEAUTYHUB-001
+          descriptor:
+            name: Beauty Hub Bandung
+          available_at:
+          - geo:
+              type: Polygon
+              coordinates:
+              - - - 107.57
+                  - -6.87
+                - - 107.68
+                  - -6.87
+                - - 107.68
+                  - -6.96
+                - - 107.57
+                  - -6.96
+                - - 107.57
+                  - -6.87
+          provider_attributes:
+            store_status: OPEN
+            provider_category: BEAUTY
+            nib_registered: true
+        resources:
+        - id: RES-BEA-WARD-LIP-03
+          descriptor:
+            name: Wardah Exclusive Lip Cream No. 03 See You Latte
+          resource_attributes:
+            name:
+              id: Wardah Exclusive Lip Cream No. 03 See You Latte
+              en: Wardah Exclusive Lip Cream No. 03 See You Latte
+            images:
+            - https://cdn.wardah.com/lip-cream-03-see-you-latte.jpg
+            sku: WARD-LIP-03-LATTE
+            resource_type: VARIANT
+            parent_resource_id: RES-BEA-WARD-LIP-BASE
+            is_default_variant: true
+            bpom_na_registration: NA18161301037
+            halal_cert_number: ID00410000000100220
+            dietary_classification: HALAL
+            skin_type:
+              id: Semua Jenis Kulit
+              en: All Skin Types
+            active_ingredients:
+            - Vitamin E
+            - Lushlip Liquid
+            - Antioksidan
+            finish: VELVETY_MATTE
+            application_area: LIPS
+            variant_attributes:
+              shade_number: '03'
+              shade_name:
+                id: See You Latte
+                en: See You Latte
+              hex: '#D2B48C'
+            net_quantity:
+              value: '5.5'
+              unit: GRAM
+            stock_count:
+              available: 50
+              maximum: 6
+        - id: RES-BEA-WARD-LIP-09
+          descriptor:
+            name: Wardah Exclusive Lip Cream No. 09 Mauve On
+          resource_attributes:
+            name:
+              id: Wardah Exclusive Lip Cream No. 09 Mauve On
+              en: Wardah Exclusive Lip Cream No. 09 Mauve On
+            images:
+            - https://cdn.wardah.com/lip-cream-09-mauve-on.jpg
+            sku: WARD-LIP-09-MAUVE
+            resource_type: VARIANT
+            parent_resource_id: RES-BEA-WARD-LIP-BASE
+            is_default_variant: false
+            bpom_na_registration: NA18161301037
+            halal_cert_number: ID00410000000100220
+            dietary_classification: HALAL
+            finish: VELVETY_MATTE
+            variant_attributes:
+              shade_number: 09
+              shade_name:
+                id: Mauve On
+                en: Mauve On
+              hex: '#AF868E'
+            net_quantity:
+              value: '5.5'
+              unit: GRAM
+            stock_count:
+              available: 45
+              maximum: 6
+        offers:
+        - id: OFF-WARD-LIP-03
+          resource_id: RES-BEA-WARD-LIP-03
+          proposed_consideration:
+            amount:
+              value: 62000
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P1D
+            cancellable: true
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+        - id: OFF-WARD-LIP-09
+          resource_id: RES-BEA-WARD-LIP-09
+          proposed_consideration:
+            amount:
+              value: 62000
+              currency: IDR
+          offer_attributes:
+            time_to_ship: P1D
+            cancellable: true
+            returnable: false
+            cancellation_policy: ion://policy/cancel.prepacked.free
+            return_policy: ion://policy/return.none
+            dispute_policy: ion://policy/dispute.consumer.bpsk
+            available_on_cod: true
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+- api: on_select
+  role: BPP → BAP
+  notes:
+  - Consumer selected both shades (1 each)
+  payload:
+    context:
+      domain: ion:trade:beauty
+      action: on_select
+      transaction_id: TXN-BEA-20260419-001
+      timestamp: '2026-04-19T13:01:01+07:00'
+      currency: IDR
+    message:
+      order:
+        quote:
+          price:
+            value: 149640
+            currency: IDR
+          breakup:
+          - title: Wardah Exclusive Lip Cream (2 item)
+            type: ITEM
+            price:
+              value: 124000
+              currency: IDR
+          - title: Biaya Pengiriman
+            type: DELIVERY
+            price:
+              value: 12000
+              currency: IDR
+          - title: PPN 11%
+            type: TAX_PPN
+            price:
+              value: 13640
+              currency: IDR
+    _meta:
+      sent_by: BPP
+      received_by: BAP
+      bap_action: RECEIVE
+      bpp_action: SEND
+  _role_meta:
+    sent_by: BPP
+    received_by: BAP
+    bap_reads_this: true
+    bpp_reads_this: true
+    bap_action: RECEIVE
+    bpp_action: SEND
+settlement:
+  # v0.1: Settlement terms are declared in on_confirm contractAttributes (nib, npwp).
+  # v0.2 — IN DEVELOPMENT: /reconcile + /on_reconcile, /support (RaisedMatter),
+  # /rate, and /track APIs are being built now and land in the coming weeks.
+  # See CHANGELOG.md for the full v0.2 scope.
+  basis: AFTER_DELIVERY
+  window: P2D
+  payment_rails_supported:
+    - BI_FAST
+    - QRIS
+    - VIRTUAL_ACCOUNT
+    - COD
+  _v02_note: reconcile, support/RaisedMatter, rate, track — see CHANGELOG.md
+
+
+validation:
+  bpp_rules:
+  - rule: bpom_na_registration is mandatory for all cosmetic products
+    error: ION-5040 — Missing BPOM NA registration
+    regulatory: PerBPOM No. 12/2020 tentang Tata Cara Pengajuan Notifikasi Kosmetika
+  - rule: 'BPOM NA format must match: NA followed by 11 digits'
+    error: ION-5041 — Invalid BPOM NA format
+  - rule: halal_cert_number mandatory when dietary_classification=HALAL
+    error: ION-5021 — Missing halal cert
+  - rule: Cosmetics must declare application_area and skin_type
+    error: ION-5042 — Missing cosmetics mandatory attributes
+  - rule: Cosmetics return_policy must be return.none unless defective
+    note: Hygiene standard — returns not permitted for cosmetics
+  bap_rules:
+  - rule: BAP must display bpom_na_registration on product detail
+    note: Allows consumer verification at cekbpom.pom.go.id
+  - rule: BAP must display shade hex colour as swatch in variant selector
+    note: UX requirement for cosmetics — consumers need colour preview
+  - rule: BAP must show non-returnable badge for cosmetics
+_resources_role:
+  declared_by: BPP
+  consumed_by: BAP
+  appears_in:
+  - on_discover
+  note: BPP declares all available resources. BAP renders the catalog/menu.
+_offers_role:
+  declared_by: BPP
+  consumed_by:
+  - BAP
+  - ION
+  appears_in:
+  - on_discover
+  note: BPP declares prices and policy IRIs. ION enforces policy. BAP renders price and policy UI.
+_resource_attribute_field_roles:
+  _description: Role metadata for every field in resourceAttributes. All declared by BPP in on_discover, consumed by BAP for
+    rendering.
+  fields:
+    name:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      language_object: true
+    short_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    long_desc:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    images:
+      declared_by: BPP
+      consumed_by: BAP
+    sku:
+      declared_by: BPP
+      consumed_by: BPP
+      note: Internal seller reference — not rendered to consumer
+    resource_type:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to determine rendering — COMPOSED triggers customisation UI
+    parent_resource_id:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses to group variants
+    is_default_variant:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders this variant first
+    menu_category:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses for menu section grouping
+    dietary_classification:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders HALAL badge
+    allergens:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: BAP must display warning
+    halal_cert_number:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      mandatory_for: BPP
+      note: Mandatory when dietary_classification=HALAL
+    bpom_registration_number:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    bpom_na_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Cosmetics — Notifikasi Kosmetik
+    kementan_pd_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Agricultural produce registration
+    postel_registration:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+      note: Mandatory for telco devices
+    tkdn_percentage:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Local content percentage — trust signal
+    sni_compliance:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty:
+      declared_by: BPP
+      consumed_by: BAP
+    warranty_policy: &id001
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    nutritional_info:
+      declared_by: BPP
+      consumed_by: BAP
+    shelf_life_months:
+      declared_by: BPP
+      consumed_by: BAP
+    net_quantity:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    unit_of_measure:
+      declared_by: BPP
+      consumed_by: BAP
+      mandatory_for: BPP
+    customisation_groups:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP renders customisation UI from this structure
+    stock_count:
+      declared_by: BPP
+      consumed_by: BAP
+      note: BAP uses available for in-stock display
+    produce_grade:
+      declared_by: BPP
+      consumed_by: BAP
+    milling_date:
+      declared_by: BPP
+      consumed_by: BAP
+      note: Freshness signal for rice/grain
+    variant_attributes:
+      declared_by: BPP
+      consumed_by: BAP
+    variant_group:
+      declared_by: BPP
+      consumed_by: BAP
+    electronics_specs:
+      declared_by: BPP
+      consumed_by: BAP
+    fabric_composition:
+      declared_by: BPP
+      consumed_by: BAP
+    care_instructions:
+      declared_by: BPP
+      consumed_by: BAP
+      language_object: true
+    batik_motif:
+      declared_by: BPP
+      consumed_by: BAP
+    active_ingredients:
+      declared_by: BPP
+      consumed_by: BAP
+    finish:
+      declared_by: BPP
+      consumed_by: BAP
+    skin_type:
+      declared_by: BPP
+      consumed_by: BAP
+_offer_attribute_field_roles:
+  _description: Role metadata for every field in offerAttributes. Policy IRIs enforced by ION Central — not by BPP or BAP
+    directly.
+  fields:
+    time_to_ship:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides cancel button. ION enforces via policy IRI.
+    returnable:
+      declared_by: BPP
+      consumed_by: BAP
+      note: UI HINT — BAP shows/hides return button. ION enforces via policy IRI.
+    return_window_days:
+      declared_by: BPP
+      consumed_by: BAP
+    return_allowed_reasons:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    return_evidence_required:
+      declared_by: BPP
+      consumed_by: BAP
+    cancellation_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    return_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+      note: IRI — machine-enforced by ION Central
+    warranty_policy: *id001
+    dispute_policy:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+      enforced_by: ION
+    display_language:
+      declared_by: BPP
+      consumed_by: BAP
+    available_on_cod:
+      declared_by: BPP
+      consumed_by: BAP
+    fulfillment_types_supported:
+      declared_by: BPP
+      consumed_by: BAP
+_contract_attribute_field_roles:
+  _description: Role metadata for contractAttributes fields. All created by BPP at on_confirm.
+  fields:
+    fulfilling_location_id:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: on_confirm
+      note: CRITICAL — first and only appearance is in on_confirm. BPP selects internally.
+    invoicing_model:
+      declared_by: BPP
+      consumed_by:
+      - BAP
+      - ION
+    invoicing_entity:
+      declared_by: BPP
+      consumed_by: BAP
+    nib:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+    npwp:
+      declared_by: BPP
+      consumed_by:
+      - ION
+      - BAP
+      mandatory_for: BPP
+_performance_attribute_field_roles:
+  _description: Role metadata for performanceAttributes fields. All updated by BPP via on_status as order progresses.
+  fields:
+    agent_name:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_phone:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    agent_photo:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    tracking_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DISPATCHED
+    estimated_delivery_time:
+      declared_by: BPP
+      consumed_by: BAP
+    delivery_proof_url:
+      declared_by: BPP
+      consumed_by: BAP
+      appears_at: DELIVERED
