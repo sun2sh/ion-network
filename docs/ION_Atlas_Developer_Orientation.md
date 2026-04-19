@@ -5,6 +5,29 @@
 
 ---
 
+## ONIX — the ION reference implementation
+
+Before diving into Atlas, one practical note on how developers are expected to build on ION.
+
+ION provides **ONIX**, a reference implementation that handles the Beckn transport layer. ONIX is strongly recommended for all developers building on ION — whether BAP or BPP. It handles HTTP signatures, ACK routing, async callback management, catalog publication, and subscriber registry integration. Developers implement their business logic on top of ONIX, not underneath it.
+
+ONIX is available via ION DevLabs (`devlabs.ion.id` — coming soon). It is separate from this spec repo. This repo defines what the payloads look like and what the fields mean. ONIX is the toolkit that moves those payloads correctly across the network.
+
+The relationship between the three components:
+
+```
+ION Network Spec (this repo)
+    ↓  defines the payloads, fields, and rules
+ONIX
+    ↓  handles transport, signatures, routing
+Your business logic
+    ↓  catalog content (BPP) | consumer UI and order flow (BAP)
+```
+
+Atlas — described in the rest of this document — is the schema governance registry that underlies the spec. ONIX reads from Atlas to stay in sync with field definitions and validation rules as the network evolves.
+
+---
+
 ## What Atlas is
 
 Atlas is ION's schema governance registry. It is the system that owns the authoritative definition of every field, every type, every valid enum value, and every validation rule on the ION network.
@@ -36,6 +59,44 @@ Fields specific to a sector (Trade, Logistics, Mobility, etc.) but applicable ac
 Fields specific to a particular commerce pattern within a sector. `creditTermsDays` for B2B wholesale, `subscriptionBillingCycle` for subscription commerce, `minimumOrderQuantity` for wholesale. These have the lightest governance — a working group review is sufficient for non-breaking additions.
 
 ---
+
+
+## The two-service catalog architecture
+
+The catalog layer in ION is split across two distinct services. Understanding the split is essential before you implement anything.
+
+**Catalogue Service — hosted by Beckn Fabric**
+
+The Catalogue Service is the authoritative store of all BPP catalogs on the ION network. Beckn Fabric hosts and operates it. BPPs interact with it via `/publish_catalog` to push their catalog and incremental updates.
+
+The Catalogue Service is network infrastructure — neither BAP developers nor BPP developers need to build or host it. BPPs call the `/publish_catalog` endpoint. That is the full extent of BPP interaction with this service.
+
+**Discover Service — hosted by ION or by the BAP**
+
+The Discover Service is the subscription and delivery layer. It sits between the Catalogue Service and BAPs. BAPs subscribe to it declaring what they want — sector, category, location context. The Discover Service pulls matching catalogs from the Catalogue Service and delivers them to subscribed BAPs via `/on_discover`.
+
+Three options exist for how a BAP interacts with the Discover Service:
+
+**Option 1 — ION shared Discover Service**
+ION operates a shared Discover Service that any BAP can subscribe to. No infrastructure to run. The BAP subscribes to ION's endpoint and starts receiving matching catalogs immediately. The simplest way to understand the flow end-to-end.
+
+**Option 2 — BAP-hosted Discover Service**
+The BAP runs their own Discover Service instance, connected to the Catalogue Service. Full control over filtering, ranking, caching, and how catalog data feeds into their own search infrastructure.
+
+**Option 3 — Integrated (vertically integrated BAP/BPP)**
+A BAP that is also a BPP — same organisation on both sides — may host their own DS and wire up directly. Still formally subscribes.
+
+In all three options, the BAP formally subscribes and delivery follows the standard `/on_discover` API into their discovery pipeline. The right option depends on scale, control needs, and architecture — all three are valid ION configurations.
+
+**What this means for each role:**
+
+*BPP developer:* You implement `/publish_catalog` to push your catalog to the Catalogue Service. You do not implement `/on_discover` — that is sent by the Discover Service, not by you. You also implement all transaction callbacks from `/on_select` onwards, which are direct BAP-to-BPP calls.
+
+*BAP developer:* You implement a `/subscribe` call to the Discover Service (ION-hosted or your own). You implement a `/on_discover` handler to receive and index incoming catalogs. You do not query individual BPPs for catalog. From `/select` onwards, you call BPPs directly.
+
+**Open question — polygon matching location**
+
+GeoJSON serviceability polygon matching determines which BPP catalogs reach which BAPs based on consumer GPS. Where this check happens — in the Catalogue Service, the Discover Service, or at the BAP — is pending ION Council decision and is tracked as an open question in the Atlas issue tracker.
 
 ## How a field gets into Atlas
 

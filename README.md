@@ -1,8 +1,88 @@
 # ION — Indonesia Open Network
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Spec Version](https://img.shields.io/badge/Spec-v0.1.0--draft-orange.svg)](CHANGELOG.md)
+[![Beckn](https://img.shields.io/badge/Beckn-v2.0.1-green.svg)](https://beckn.io)
+
 Open network for digital commerce in Indonesia, built on Beckn Protocol v2.0.
 
 ION lets any buyer app and any seller app transact with each other without bilateral integration. A seller onboarded to ION is instantly reachable by every buyer app on the network. A buyer app connected to ION can discover every seller — across Food, Grocery, Fashion, Electronics, Beauty, Agritech, Logistics, Mobility, Finance, and Services.
+
+---
+
+## How ION works — the architecture in 2 minutes
+
+Before you write a single line of code, understand this. ION has two distinct phases and two distinct services. Getting this wrong wastes days.
+
+**Phase 1 — Catalog (async, subscription-based)**
+
+```
+BPP publishes catalog → Catalogue Service (Beckn Fabric)
+                                ↕
+                        Discover Service
+                        (hosted by ION  ←→  or hosted by BAP)
+                                ↕
+BAP subscribes → Discover Service → /on_discover → BAP pipeline
+```
+
+- **Catalogue Service** is hosted by Beckn Fabric. BPPs push their catalog here via `/publish_catalog`. This is the single store of all catalogs on the ION network.
+- **Discover Service** sits between the Catalogue Service and BAPs. It takes subscriptions from BAPs and delivers matching catalogs via `/on_discover`. Three options exist — the right choice depends on your scale, control needs, and architecture:
+
+| | Who hosts it | Characteristics |
+|---|---|---|
+| **Option 1 — ION shared DS** | ION Network | No infrastructure to run. Subscribe to ION's endpoint and start receiving catalogs. Simplest way to understand the flow end-to-end. |
+| **Option 2 — BAP-hosted DS** | BAP themselves | Full control over filtering, ranking, and caching. BAP runs their own Discover Service instance connected to the Catalogue Service. |
+| **Option 3 — Integrated** | BAP (vertically integrated) | BAP and BPP are the same organisation. Still formally subscribes — but to their own DS. |
+
+> **If you are getting started and want to understand the flow:** Option 1 is the fastest path. Subscribe to ION's shared Discover Service, see catalogs arrive, then decide which option fits your production architecture.
+
+- **In all three options, the BAP formally subscribes.** The subscription declares what you want (sector, category, location context). Delivery follows the standard `/on_discover` API into your discovery pipeline.
+- **BPPs do not implement `/on_discover`**. They publish to the Catalogue Service via `/publish_catalog`. The Discover Service handles delivery to BAPs. BPP does not send `/on_discover` — it comes from the Discover Service.
+- **BAPs do not query BPPs for catalog**. They subscribe once and receive catalog via `/on_discover` as BPPs publish and update.
+
+**Phase 2 — Transaction (direct, BAP ↔ BPP)**
+
+From `/select` onwards, the BAP talks directly to the BPP. No Catalogue Service. No Discover Service. Pure Beckn peer-to-peer.
+
+```
+BAP → /select  → BPP
+BAP → /init    → BPP
+BAP → /confirm → BPP
+BAP → /status  → BPP
+```
+
+**The YAMLs in this repo cover Phase 2 in full.** The Phase 1 catalog structure (what BPPs publish, what BAPs receive in `/on_discover`) is documented in each YAML's `examples` section — but the routing through Catalogue Service and Discover Service is infrastructure, not something you implement in your application logic.
+
+> **Open question — polygon matching location:** Does the GeoJSON serviceability polygon check (which BPP catalogs reach which BAPs based on consumer GPS) happen in the Catalogue Service, the Discover Service, or both? Pending ION Council decision. Flagged in the Atlas issue tracker.
+
+---
+
+## Before you start — two questions
+
+## Building on ION — start with ONIX
+
+ION provides **ONIX**, a reference implementation that handles the entire Beckn transport layer. It is strongly recommended for all developers building on ION.
+
+**Download:** ION DevLabs — coming soon at `devlabs.ion.id`
+
+**What ONIX handles for you — so you do not have to build it:**
+- HTTP signatures on every request and response
+- ACK/callback routing and async flow management
+- Subscriber registry integration
+- `/publish_catalog` to the Catalogue Service — BPP catalog publishing
+- `/subscribe` to the Discover Service — BAP catalog subscription
+- Request validation and error response formatting
+
+**What you implement on top of ONIX — your actual business logic:**
+
+| Role | What you build |
+|---|---|
+| **BPP developer** | Your catalog content (resources, offers, policies) · Transaction callback handlers (`on_select`, `on_init`, `on_confirm`, `on_status`) · Fulfilment state updates |
+| **BAP developer** | Consumer search and discovery UI · Order flow and payment · `/on_discover` catalog indexing handler |
+
+**The YAML specs in this repo are your reference for exactly what those callbacks should return and what the payloads look like.** ONIX handles the plumbing. The spec tells you what goes inside it.
+
+You can build without ONIX — the spec is complete and implementation-agnostic. But ONIX saves weeks of transport layer work and ensures you are compliant with ION network requirements from day one.
 
 ---
 

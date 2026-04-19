@@ -34,6 +34,9 @@ meta:
       appears_at: Which API call this field first appears in
       bap_action: 'What BAP does with this API call: SEND | RECEIVE | NONE'
       bpp_action: 'What BPP does with this API call: SEND | RECEIVE | NONE'
+  architecture_note: 'Phase 1 (catalog): BPP publishes to Catalogue Service (Beckn Fabric). Discover Service (ION or BAP-hosted)
+    delivers to subscribed BAPs via /on_discover. Phase 2 (transaction): BAP talks directly to BPP from /select onwards. This
+    YAML covers Phase 2 in full and shows the Phase 1 payload structure in examples[].'
 participants:
   bap:
     role: Buyer App
@@ -118,12 +121,37 @@ participants:
     - on_status
     - on_update
     - on_cancel
+  catalogue_service:
+    role_tag: CDS
+    hosted_by: Beckn Fabric
+    description: Central catalog store for the ION network. BPPs publish catalogs here via /publish_catalog. Beckn Fabric
+      owns and operates this service.
+    responsibilities:
+    - Receive and store BPP catalog publications
+    - Serve catalog data to the Discover Service
+    - Maintain incremental catalog update history
+    bpp_interaction: BPP calls /publish_catalog on this service — not on individual BAPs
+    bap_interaction: BAP does not interact with Catalogue Service directly
+  discover_service:
+    role_tag: DS
+    hosted_by: ION Network (Option 1 — shared) | BAP themselves (Option 2 — self-hosted) | BAP/BPP integrated (Option 3)
+    description: 'Three options: Option 1 — ION shared DS (no infrastructure, simplest way to understand the flow). Option
+      2 — BAP-hosted DS (full control over filtering, ranking, caching). Option 3 — Integrated (BAP and BPP same organisation,
+      own DS). All three are valid ION configurations. In all cases the BAP formally subscribes and delivery follows the standard
+      /on_discover API. Option 1 is the fastest path to understanding the flow end-to-end.'
+    responsibilities:
+    - Receive BAP subscriptions (sector, category, location context)
+    - Pull matching catalogs from Catalogue Service
+    - Deliver catalogs to subscribed BAPs via /on_discover
+    - Handle incremental updates as BPPs republish
+    open_question: 'OQ-DS-01: GeoJSON polygon matching — does serviceability polygon filtering (which BPP catalogs reach which
+      BAPs based on consumer GPS) happen in the Catalogue Service, the Discover Service, or both? Pending ION Council decision.'
 flow:
   pattern: async_callback
   entry_point: /discover
   apis:
   - api: discover
-    direction: BAP → BPP
+    direction: BAP → Discover Service
     mandatory: true
     description: 'BAP sends consumer intent with GPS location. BPP evaluates which Dominos stores have a serviceability polygon
       containing that point and returns only those stores'' catalogs.
@@ -146,13 +174,18 @@ flow:
     - BAP must not send expected FC or store preference
     - context.currency must be IDR for domestic ION Trade transactions
     consumer: BAP
-    producer: BPP
-    bap_action: SEND
-    bpp_action: RECEIVE
+    producer: DS
+    bap_action: SUBSCRIBE
+    bpp_action: NONE
     bap_reads_this: true
     bpp_reads_this: true
+    ds_action: RECEIVE_SUBSCRIPTION
+    corrected_description: 'BAP subscribes to the Discover Service declaring intent: sector, category, location context. This
+      is a one-time setup call (or updated when search context changes). BAP does NOT query individual BPPs for catalog.'
+    bap_note: 'Send /subscribe to the Discover Service (ION-hosted endpoint or your own DS). Declare: domain, location.gps,
+      category. You will receive /on_discover callbacks as matching BPP catalogs arrive.'
   - api: on_discover
-    direction: BPP → BAP
+    direction: Discover Service → BAP
     mandatory: true
     description: 'BPP returns multi-provider catalog. Each provider record represents one Dominos store (FC). Only stores
       whose GeoJSON Polygon (providerAttributes.serviceabilityPolygon) contains the consumer GPS are returned. BAP renders
@@ -174,12 +207,20 @@ flow:
     - BAP must enforce SINGLE_REQUIRED groups — consumer cannot proceed without selection
     - BAP must show halalCertNumber or halal badge when dietaryClassification=HALAL
     - BAP must NOT show fulfillingLocationId — it is not present yet
-    consumer: BPP
+    consumer: DS
     producer: BAP
     bap_action: RECEIVE
-    bpp_action: SEND
+    bpp_action: NONE
     bap_reads_this: true
     bpp_reads_this: true
+    ds_action: SEND
+    corrected_description: Discover Service pushes matching BPP catalogs to the BAP. Triggered when a BPP publishes or updates
+      their catalog on the Catalogue Service and the update matches an active BAP subscription. BAP receives this and updates
+      its local catalog store / search index.
+    bap_note: You receive this at your /on_discover callback URL. Parse the catalog, update your local index, make it searchable
+      for consumers. This is NOT a response to a consumer search — it is a push from the network.
+    bpp_note: BPP does NOT send /on_discover. BPP publishes to the Catalogue Service via /publish_catalog. The Discover Service
+      handles delivery to BAPs automatically.
   - api: select
     direction: BAP → BPP
     mandatory: true
@@ -1066,10 +1107,6 @@ settlement:
   - QRIS
   - VIRTUAL_ACCOUNT
   - COD
-  # v0.1: Declare settlement terms above in your on_confirm response.
-  # v0.2 — IN DEVELOPMENT: /reconcile + /on_reconcile, /support (RaisedMatter),
-  # /rate, and /track APIs will wire up to these declared terms.
-  # See CHANGELOG.md for what v0.2 adds and when it lands.
   reconciliation:
     method: ION_CENTRAL
     batch: DAILY
