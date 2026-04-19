@@ -10,7 +10,7 @@ ION lets any buyer app and any seller app transact with each other without bilat
 
 ---
 
-## How ION works — the architecture in 2 minutes
+## How ION works — the architecture in 2 minutes - Note this is under review and will undergo certain updates
 
 Before you write a single line of code, understand this. ION has two distinct phases and two distinct services. Getting this wrong wastes days.
 
