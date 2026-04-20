@@ -1,0 +1,52 @@
+iri: ion://policy/grievance.sla.b2b_businesshours
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: GRIEVANCE_SLA
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "SLA keluhan B2B - jam kerja"
+  en: "B2B grievance SLA - business hours"
+
+firstResponseSla: PT4H
+resolutionSla: P3D
+
+escalationLevels:
+  - level: SELLER
+    slaHours: 72
+    autoEscalateOnMiss: true
+  - level: MARKETPLACE_MEDIATION
+    slaHours: 120
+    autoEscalateOnMiss: true
+  - level: BANI_ARBITRATION
+    slaHours: 720
+    autoEscalateOnMiss: true
+
+consequenceOnBreach:
+  firstResponseMissed:
+    action: AUTO_ESCALATE_TO_MARKETPLACE
+    penalty: ion://policy/penalty.seller-sla-breach.standard
+  resolutionMissed:
+    action: AUTO_ESCALATE_TO_BPSK
+    penalty: ion://policy/penalty.seller-sla-breach.standard
+  marketplaceBreached:
+    action: ION_RAISE_AUTO
+    penalty: ion://policy/penalty.marketplace-escalation-miss.standard
+
+# Marketplace minimum - seller cannot commit to weaker SLA than this
+isMarketplaceMinimum: true
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - b2b
+  - wholesale
+  - b2g
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 45"
+  - "Permendag 50/2020 Pasal 6"
+  - "ION Network Policy - Grievance SLA Minimum Standards"
+
+supersededBy: null
+deprecatedAt: null

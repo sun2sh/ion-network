@@ -1,0 +1,22 @@
+{
+  "id": "ion-core-raise-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Raise Extension (v1)",
+  "description": "NP-to-NP and NP-to-ION issue ticketing system. Disputes, violations, technical failures.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "raiseAttributes": [
+      "IONTicket"
+    ]
+  },
+  "apis": [
+    "raise",
+    "on_raise",
+    "raise_status",
+    "on_raise_status",
+    "raise_details",
+    "on_raise_details"
+  ]
+}

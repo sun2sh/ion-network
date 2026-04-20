@@ -1,0 +1,10 @@
+{
+  "@context": "https://schema.ion.id/extensions/core/identity/v1/context.jsonld",
+  "@type": "ion:BusinessIdentity",
+  "npwp": "1234567890123456",
+  "nib": "1234567890123",
+  "pkpStatus": "PKP",
+  "legalEntityType": "PT",
+  "legalEntityName": "PT Paragon Technology and Innovation",
+  "siupNumber": "SIUP.3201.001.2024"
+}

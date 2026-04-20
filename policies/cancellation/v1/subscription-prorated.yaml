@@ -1,0 +1,39 @@
+iri: ion://policy/cancel.subscription.prorated-midcycle
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: CANCELLATION
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Langganan - pembatalan dengan pembagian pro-rata tengah siklus"
+  en: "Subscription - cancellation with mid-cycle pro-rated refund"
+
+cancellationWindowCloses: NEXT_BILLING
+
+cancellationFee:
+  type: NONE
+  value: 0
+
+cancellationReasonsAllowed:
+  - CHANGE_OF_MIND
+  - ITEM_NO_LONGER_NEEDED
+  - PAYMENT_METHOD_CHANGE
+  - SELLER_UNRESPONSIVE
+
+refundPercentageOnCancel: 1.0
+refundTimelineFromCancel: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+sellerPenaltyOnCancelWithoutCause: ion://policy/penalty.seller-cancel-without-cause.standard.standard
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - subscription
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 4"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,33 @@
+iri: ion://policy/penalty.buyer-restocking.15pct
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: BUYER_RESTOCKING
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Biaya restocking 15%"
+  en: "15% restocking fee"
+
+triggerConditions:
+  - condition: CHANGE_OF_MIND_RETURN
+    severity: MINOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.15
+
+appliedVia: payment.refundAmount
+settledTo: SELLER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy"
+  - "UU 8/1999 Pasal 19"
+
+supersededBy: null
+deprecatedAt: null

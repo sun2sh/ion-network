@@ -1,0 +1,20 @@
+{
+  "id": "ion-core-localization-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Localization Extension (v1)",
+  "description": "Multilingual text objects for catalog content. Bahasa Indonesia always required.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "resourceAttributes": [
+      "IONCatalogLocalization"
+    ],
+    "providerAttributes": [
+      "IONCatalogLocalization"
+    ]
+  },
+  "regulatory": [
+    "ION Network Policy \u2014 bilingual catalog requirement"
+  ]
+}

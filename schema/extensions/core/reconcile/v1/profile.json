@@ -1,0 +1,18 @@
+{
+  "id": "ion-core-reconcile-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Reconcile Extension (v1)",
+  "description": "Inter-NP financial reconciliation \u2014 amounts, adjustments, withholding, settlement.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "settlementAttributes": [
+      "IONReconcileAttributes"
+    ]
+  },
+  "apis": [
+    "reconcile",
+    "on_reconcile"
+  ]
+}

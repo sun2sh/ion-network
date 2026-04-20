@@ -1,0 +1,63 @@
+{
+  "@context": "https://schema.ion.id/trade/resource/v1/context.jsonld",
+  "@type": "ion:TradeResourceAttributes",
+  "resourceStructure": "PLAIN",
+  "resourceTangibility": "PHYSICAL",
+  "_comment": "Example: Beras Pandan Wangi — PLAIN resource (agritech category)",
+  "brand": "Pertanian Pak Harto",
+  "name": {
+    "id": "Beras Pandan Wangi Premium",
+    "en": "Premium Pandan Wangi Rice"
+  },
+  "shortDesc": {
+    "id": "Beras pandan wangi organik grade A dari Cianjur",
+    "en": "Organic grade A pandan wangi rice from Cianjur"
+  },
+  "halalStatus": "HALAL",
+  "halalCertNumber": "ID12340000087650322",
+  "bpomRegNumber": "BPOM MD 123456789012",
+  "dietaryClassification": "VEG",
+  "countryOfOrigin": "IDN",
+  "manufacturerName": "UD Pertanian Pak Harto",
+  "manufacturerAddress": "Desa Sukaresmi, Kec. Sukaresmi, Kab. Cianjur, Jawa Barat 43264",
+  "harvestDate": "2026-03-15",
+  "produceGrade": "GRADE_A",
+  "pesticideDeclaration": "ORGANIC_CERTIFIED",
+  "organicCertification": "Lembaga Sertifikasi Organik Seloliman — LSO-2026-001",
+  "mandiReferencePrice": 14000,
+  "netQuantity": {
+    "value": 5,
+    "unit": "KILOGRAM"
+  },
+  "unitOfMeasure": {
+    "unit": "KILOGRAM",
+    "value": "5"
+  },
+  "expiryDate": "2027-03-15",
+  "batchNumber": "BATCH-2026-0315-01",
+  "barcode": "8991234567890",
+  "hsnCode": "1006.30",
+  "freshProduce": {
+    "netQuantityDeclaration": "5 kg per karung",
+    "gradeDescription": "Butir panjang putih bersih, kadar air <14%, bebas kotoran"
+  },
+  "images": [
+    "https://cdn.pertanian.id/beras-pw-5kg.jpg"
+  ],
+  "availability": {
+    "status": "IN_STOCK",
+    "maxOrderQty": 20,
+    "backorderAllowed": false,
+    "substitutionAllowed": false
+  },
+  "credentials": [
+    {
+      "type": "ORGANIC",
+      "uri": "https://lsosi.id/cert/LSO-2026-001",
+      "issuer": "Lembaga Sertifikasi Organik Seloliman",
+      "validUntil": "2027-04-01"
+    }
+  ],
+  "isAvailable": true,
+  "itemRating": 4.7
+}

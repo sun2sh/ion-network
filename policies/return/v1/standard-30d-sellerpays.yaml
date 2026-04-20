@@ -1,0 +1,77 @@
+iri: ion://policy/return.standard.30d-sellerpays
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: RETURN
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pengembalian 30 hari - penjual menanggung ongkos kirim balik"
+  en: "30-day return - seller pays return shipping"
+
+returnWindowDays: 30
+windowStart: DELIVERED
+windowBusinessDaysOnly: false
+
+returnReasonsAllowed:
+  - DEFECTIVE
+  - NOT_AS_DESCRIBED
+  - WRONG_ITEM_SENT
+  - DAMAGED_IN_TRANSIT
+  - INCOMPLETE_ORDER
+  - CHANGE_OF_MIND
+  - QUALITY_ISSUE
+  - MISSING_PARTS
+  - PERFORMANCE_NOT_AS_EXPECTED
+
+returnReasonsConditional:
+  - reason: CHANGE_OF_MIND
+    condition: "Item must be in resellable condition"
+
+evidenceRequired: PHOTO_REQUIRED
+evidenceMinPhotos: 3
+
+pickupArrangedBy: SELLER
+pickupCostBorneBy: SELLER
+
+refundAfterQC: true
+refundTimelineFromReturnDelivered:
+  # Op-19 v0.5: timeline varies by original payment method. BPP MUST honour the
+  # method-specific window. Default applies if method not listed.
+  default: P5D
+  QRIS: PT1H
+  EWALLET: PT1H
+  VIRTUAL_ACCOUNT: P3D
+  BANK_TRANSFER: P3D
+  BI_FAST: PT1H
+  CREDIT_CARD: P14D
+  DEBIT_CARD: P7D
+  BNPL: P5D
+  COD_TO_WALLET: PT0S
+  COD_TO_BANK: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+partialRefundOnQC:
+  QC_PASSED: 1.0
+  QC_PARTIAL: 0.7
+  QC_FAILED_USED_DAMAGED: 0.5
+  QC_FAILED_TAMPERED: 0.0
+  QC_FAILED_MISSING_PARTS: 0.5
+  QC_FAILED_DIFFERENT_ITEM: 0.0
+
+# Referenced penalty policies
+buyerPenaltyOnChangeOfMind: ion://policy/penalty.buyer-restocking.15pct
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - electronics
+  - home-kitchen
+  - sports-outdoors
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 19"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/core/tax/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "taxRegime": "ion:taxRegime",
+    "taxCategory": "ion:taxCategory",
+    "taxRate": "ion:taxRate",
+    "taxAmount": "ion:taxAmount",
+    "taxIncluded": "ion:taxIncluded",
+    "eFakturRef": "ion:eFakturRef",
+    "taxBaseAmount": "ion:taxBaseAmount",
+    "IONTaxDetail": "ion:IONTaxDetail"
+  }
+}

@@ -1,0 +1,34 @@
+iri: ion://policy/penalty.creator-counterfeit.standard_products
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: CREATOR_COUNTERFEIT
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda produk palsu dari kreator"
+  en: "Counterfeit products promoted by creator"
+
+triggerConditions:
+  - condition: CONFIRMED_COUNTERFEIT
+    severity: CRITICAL
+    penalty:
+      type: PERCENTAGE
+      value: 1.0
+    additionalAction: PERMANENT_COMMISSION_BAN
+
+appliedVia: reconcile.streamerCommissionAmount
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "UU 20/2016 tentang Merek"
+  - "UU 28/2014 tentang Hak Cipta"
+
+supersededBy: null
+deprecatedAt: null

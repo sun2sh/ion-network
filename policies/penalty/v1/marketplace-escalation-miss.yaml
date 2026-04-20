@@ -1,0 +1,39 @@
+iri: ion://policy/penalty.marketplace-escalation-miss.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: MARKETPLACE_ESCALATION_MISS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda marketplace - gagal eskalasi"
+  en: "Marketplace escalation miss penalty"
+
+triggerConditions:
+  - condition: MARKETPLACE_MEDIATION_SLA_MISSED
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.05
+  - condition: REPEAT_10X_30D
+    severity: CRITICAL
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: ION_NETWORK_NOTICE
+
+appliedVia: ion_network_settlement
+settledTo: NETWORK_FUND
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy"
+  - "UU 8/1999 Pasal 45"
+
+supersededBy: null
+deprecatedAt: null

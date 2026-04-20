@@ -1,0 +1,43 @@
+iri: ion://policy/warranty.refurbished.30d-limited
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: WARRANTY
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Garansi terbatas 30 hari - produk refurbished"
+  en: "30-day limited warranty - refurbished products"
+
+warrantyType: SELLER
+warrantyDuration: P30D
+coverageType: LIMITED
+serviceMode: SELLER_MANAGED
+
+coverageIncludes:
+  - MANUFACTURING_DEFECT
+
+coverageExcludes:
+  - PHYSICAL_DAMAGE
+  - WATER_DAMAGE
+  - UNAUTHORIZED_MODIFICATION
+  - NORMAL_WEAR_AND_TEAR
+  - CONSUMABLES
+
+claimProcedure:
+  firstContact: SELLER
+  documentationRequired:
+    - PROOF_OF_PURCHASE
+    - SERIAL_NUMBER
+  resolutionOptions: [REFUND, REPLACE]
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - electronics
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 25"
+  - "PP 36/2023 tentang Perlindungan Konsumen"
+
+supersededBy: null
+deprecatedAt: null

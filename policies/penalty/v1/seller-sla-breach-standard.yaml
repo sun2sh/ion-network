@@ -1,0 +1,55 @@
+iri: ion://policy/penalty.seller-sla-breach.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: SELLER_SLA_BREACH
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda SLA penjual - standar"
+  en: "Seller SLA breach penalty - standard tier"
+
+triggerConditions:
+  - condition: FIRST_RESPONSE_SLA_MISSED
+    severity: WARNING
+    penalty:
+      type: FIXED
+      amount: 0
+  - condition: RESOLUTION_SLA_MISSED
+    severity: MINOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.05
+  - condition: ESCALATION_TO_BPSK
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.1
+  - condition: REPEAT_OFFENDER_3X_30D
+    severity: CRITICAL
+    penalty:
+      type: PERCENTAGE
+      value: 0.25
+    additionalAction: SELLER_LISTING_DEMOTED
+  - condition: REPEAT_OFFENDER_5X_30D
+    severity: CRITICAL
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: SELLER_ACCOUNT_SUSPENDED
+
+appliedVia: reconcile.slaPenaltyDeduction
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 45"
+  - "ION Network Policy - Seller Performance Standards"
+
+supersededBy: null
+deprecatedAt: null

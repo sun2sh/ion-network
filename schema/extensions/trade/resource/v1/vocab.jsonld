@@ -1,0 +1,263 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/resource/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:LocalisedText",
+      "@type": "rdfs:Class",
+      "rdfs:label": "LocalisedText",
+      "rdfs:comment": "Language-keyed text. \"id\" always required. \"en\" required for XB pattern."
+    },
+    {
+      "@id": "ion:id",
+      "@type": "rdf:Property",
+      "rdfs:label": "id"
+    },
+    {
+      "@id": "ion:en",
+      "@type": "rdf:Property",
+      "rdfs:label": "en"
+    },
+    {
+      "@id": "ion:TradeResourceAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeResourceAttributes",
+      "rdfs:comment": "TradeResourceAttributes"
+    },
+    {
+      "@id": "ion:resourceStructure",
+      "@type": "rdf:Property",
+      "rdfs:label": "resourceStructure",
+      "rdfs:comment": "PLAIN: single SKU, no choices. VARIANT: one of several pre-defined options of a parent. WITH_EXTRAS: base item with optional add-ons. COMPOSED: base with mandatory and optional customisation groups. BUNDLE: composite of multiple component resources (see bundleComposition).\n"
+    },
+    {
+      "@id": "ion:resourceTangibility",
+      "@type": "rdf:Property",
+      "rdfs:label": "resourceTangibility",
+      "rdfs:comment": "PHYSICAL: tangible goods requiring logistics fulfilment. DIGITAL_VOUCHER: voucher code, gift card, in-game currency (delivered electronically). DIGITAL_TOP_UP: mobile pulsa, data package, utility bill top-up. DIGITAL_SUBSCRIPTION: time-bound digital subscription access.\n"
+    },
+    {
+      "@id": "ion:parentResourceId",
+      "@type": "rdf:Property",
+      "rdfs:label": "parentResourceId",
+      "rdfs:comment": "ID of parent resource. Present on VARIANT and WITH_EXTRAS."
+    },
+    {
+      "@id": "ion:isDefaultVariant",
+      "@type": "rdf:Property",
+      "rdfs:label": "isDefaultVariant",
+      "rdfs:comment": "Whether this is the default variant shown to consumer."
+    },
+    {
+      "@id": "ion:variantGroup",
+      "@type": "rdf:Property",
+      "rdfs:label": "variantGroup"
+    },
+    {
+      "@id": "ion:variantMatrix",
+      "@type": "rdf:Property",
+      "rdfs:label": "variantMatrix",
+      "rdfs:comment": "Multi-axis variant declaration. Use instead of explicit VARIANT resources when combinations are derivable. BPP MUST resolve the specific variant at on_select and compute final price via priceDeltaByCombination or per-axis priceDelta. Only valid on parent resources with resourceStructure=PLAIN; child"
+    },
+    {
+      "@id": "ion:customisationGroups",
+      "@type": "rdf:Property",
+      "rdfs:label": "customisationGroups"
+    },
+    {
+      "@id": "ion:menuCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "menuCategory"
+    },
+    {
+      "@id": "ion:preparationTime",
+      "@type": "rdf:Property",
+      "rdfs:label": "preparationTime",
+      "rdfs:comment": "ISO 8601 duration. Time from order confirm to item ready."
+    },
+    {
+      "@id": "ion:productCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "productCode"
+    },
+    {
+      "@id": "ion:images",
+      "@type": "rdf:Property",
+      "rdfs:label": "images",
+      "rdfs:comment": "First image is primary thumbnail. Additional images for gallery."
+    },
+    {
+      "@id": "ion:itemRating",
+      "@type": "rdf:Property",
+      "rdfs:label": "itemRating",
+      "rdfs:comment": "Aggregate seller-maintained rating 1-5. Base items only."
+    },
+    {
+      "@id": "ion:logisticsServiceType",
+      "@type": "rdf:Property",
+      "rdfs:label": "logisticsServiceType",
+      "rdfs:comment": "Logistics service type. Determines flow and performance states."
+    },
+    {
+      "@id": "ion:availability",
+      "@type": "rdf:Property",
+      "rdfs:label": "availability"
+    },
+    {
+      "@id": "ion:identity",
+      "@type": "rdf:Property",
+      "rdfs:label": "identity"
+    },
+    {
+      "@id": "ion:physical",
+      "@type": "rdf:Property",
+      "rdfs:label": "physical"
+    },
+    {
+      "@id": "ion:packaged",
+      "@type": "rdf:Property",
+      "rdfs:label": "packaged"
+    },
+    {
+      "@id": "ion:regulatory",
+      "@type": "rdf:Property",
+      "rdfs:label": "regulatory"
+    },
+    {
+      "@id": "ion:food",
+      "@type": "rdf:Property",
+      "rdfs:label": "food"
+    },
+    {
+      "@id": "ion:preparation",
+      "@type": "rdf:Property",
+      "rdfs:label": "preparation"
+    },
+    {
+      "@id": "ion:fashion",
+      "@type": "rdf:Property",
+      "rdfs:label": "fashion"
+    },
+    {
+      "@id": "ion:electronics",
+      "@type": "rdf:Property",
+      "rdfs:label": "electronics"
+    },
+    {
+      "@id": "ion:beauty",
+      "@type": "rdf:Property",
+      "rdfs:label": "beauty"
+    },
+    {
+      "@id": "ion:agritech",
+      "@type": "rdf:Property",
+      "rdfs:label": "agritech"
+    },
+    {
+      "@id": "ion:pharmacy",
+      "@type": "rdf:Property",
+      "rdfs:label": "pharmacy"
+    },
+    {
+      "@id": "ion:installation",
+      "@type": "rdf:Property",
+      "rdfs:label": "installation"
+    },
+    {
+      "@id": "ion:usage",
+      "@type": "rdf:Property",
+      "rdfs:label": "usage"
+    },
+    {
+      "@id": "ion:warranty",
+      "@type": "rdf:Property",
+      "rdfs:label": "warranty"
+    },
+    {
+      "@id": "ion:ageRestricted",
+      "@type": "rdf:Property",
+      "rdfs:label": "ageRestricted",
+      "rdfs:comment": "Whether product requires age verification at purchase"
+    },
+    {
+      "@id": "ion:minAge",
+      "@type": "rdf:Property",
+      "rdfs:label": "minAge",
+      "rdfs:comment": "Minimum purchaser age when ageRestricted is true"
+    },
+    {
+      "@id": "ion:countryOfOrigin",
+      "@type": "rdf:Property",
+      "rdfs:label": "countryOfOrigin",
+      "rdfs:comment": "ISO 3166-1 alpha-3 country code"
+    },
+    {
+      "@id": "ion:canonicalId",
+      "@type": "rdf:Property",
+      "rdfs:label": "canonicalId",
+      "rdfs:comment": "Cross-provider product identity. Multiple providers selling the same product share the same canonicalId. Enables Buy Box selection on BAP side and cross-seller price comparison. GTIN preferred when available; otherwise ION-assigned canonical ID via Atlas.\n"
+    },
+    {
+      "@id": "ion:featuredOfferEligible",
+      "@type": "rdf:Property",
+      "rdfs:label": "featuredOfferEligible",
+      "rdfs:comment": "Whether this offer is eligible for \"featured offer\" / Buy Box selection. BPP declares eligibility; BAP runs selection algorithm. Eligibility typically requires: verified seller, positive rating history, standard return policy, Prime-equivalent SLA.\n"
+    },
+    {
+      "@id": "ion:featuredOfferScore",
+      "@type": "rdf:Property",
+      "rdfs:label": "featuredOfferScore",
+      "rdfs:comment": "BPP-computed score used by BAP Buy Box algorithm. Factors in price competitiveness, rating, SLA reliability, stock depth. Decimal 0-1.\n"
+    },
+    {
+      "@id": "ion:imageSet",
+      "@type": "rdf:Property",
+      "rdfs:label": "imageSet",
+      "rdfs:comment": "Structured images with role metadata. More expressive than the flat images[] array. BAPs can render appropriate images per surface. When imageSet is present, images[] may still exist for backward compatibility but imageSet is authoritative.\n"
+    },
+    {
+      "@id": "ion:videos",
+      "@type": "rdf:Property",
+      "rdfs:label": "videos"
+    },
+    {
+      "@id": "ion:bundleComposition",
+      "@type": "rdf:Property",
+      "rdfs:label": "bundleComposition",
+      "rdfs:comment": "Components of a bundle SKU. Required for bundle offers where individual components carry their own regulatory registrations (BPOM, POSTEL, TKDN, warranty).\n"
+    },
+    {
+      "@id": "ion:brandIdentity",
+      "@type": "rdf:Property",
+      "rdfs:label": "brandIdentity",
+      "rdfs:comment": "Structured brand identity. Replaces string-only identity.brand for Official Store / Brand Registry programmes.\n"
+    },
+    {
+      "@id": "ion:regionOfOrigin",
+      "@type": "rdf:Property",
+      "rdfs:label": "regionOfOrigin",
+      "rdfs:comment": "ISO 3166-2 sub-national region code for geographic indication. Required when product claims origin-protected status (Kopi Gayo from Aceh IDN-AC, Beras Cianjur from West Java IDN-JB).\n"
+    },
+    {
+      "@id": "ion:geographicIndicationCert",
+      "@type": "rdf:Property",
+      "rdfs:label": "geographicIndicationCert",
+      "rdfs:comment": "Geographic Indication certificate number from DJKI (Direktorat Jenderal Kekayaan Intelektual).\n"
+    },
+    {
+      "@id": "ion:digital",
+      "@type": "rdf:Property",
+      "rdfs:label": "digital",
+      "rdfs:comment": "Digital goods attributes. Required for DIGITAL_VOUCHER, DIGITAL_TOP_UP, and DIGITAL_SUBSCRIPTION resource types.\n"
+    },
+    {
+      "@id": "ion:dataResidency",
+      "@type": "rdf:Property",
+      "rdfs:label": "dataResidency",
+      "rdfs:comment": "Data residency requirement for this resource. DOMESTIC_ONLY means all PII and transaction data must be processed and stored within Indonesia; BAPs with foreign data processing must skip or refuse transactions for this resource. Required for pharmacy, health data, financial services, and regulated bi"
+    }
+  ]
+}

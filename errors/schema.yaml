@@ -1,0 +1,62 @@
+# ION Error Registry — Schema (ION-8xxx)
+# Field validation, type mismatches
+
+- code: ION-8001
+  http_status: 400
+  category: schema
+  title:
+    id: Bidang wajib tidak ada
+    en: Required field missing
+  description:
+    en: A field declared as mandatory (x-ion-mandatory:always) in the schema is absent from the payload.
+  affected_field: varies
+  affected_apis: [all]
+  schema_ref: null
+  flow_ref: null
+  resolution:
+    en: Check the attributes.yaml for the relevant schema pack. Fields marked x-ion-mandatory:always must always be present. Fields marked conditional require presence when their x-ion-condition is met.
+
+- code: ION-8002
+  http_status: 400
+  category: schema
+  title:
+    id: Format NPWP tidak valid
+    en: Invalid NPWP format
+  description:
+    en: NPWP must be exactly 16 digits (new format post-2024). Old 15-digit format is not accepted.
+  affected_field: contractAttributes.npwp
+  affected_apis: [confirm, on_confirm]
+  schema_ref: schema/extensions/core/identity/v1
+  flow_ref: null
+  resolution:
+    en: Use the 16-digit NPWP format as per PMK 136/2023. Do not include dots or dashes.
+
+- code: ION-8003
+  http_status: 400
+  category: schema
+  title:
+    id: Bidang 'id' Bahasa Indonesia wajib ada
+    en: Bahasa Indonesia 'id' field required in localised text
+  description:
+    en: A LocalisedText object is missing the mandatory 'id' (Bahasa Indonesia) key. ION network policy requires all catalog content to have Bahasa Indonesia text.
+  affected_field: resourceAttributes.name.id or shortDesc.id
+  affected_apis: [discover, on_discover]
+  schema_ref: schema/extensions/core/localization/v1
+  flow_ref: null
+  resolution:
+    en: Always include 'id' key in all LocalisedText objects with Bahasa Indonesia content. English 'en' is also required for XB (cross-border) pattern.
+
+- code: ION-8004
+  http_status: 400
+  category: schema
+  title:
+    id: Status halal tidak valid untuk produk makanan
+    en: Invalid halal status for food product
+  description:
+    en: Food and beverage resources must declare halalStatus. The field is absent or has an invalid value.
+  affected_field: resourceAttributes.food.classification
+  affected_apis: [discover, on_discover]
+  schema_ref: schema/extensions/core/product/v1
+  flow_ref: null
+  resolution:
+    en: Declare halalStatus (HALAL/HALAL_PENDING/NON_HALAL) for all food and beverage products. If HALAL, halalCertNumber is required.

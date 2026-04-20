@@ -1,0 +1,42 @@
+iri: ion://policy/cancel.preorder.5d-before-release
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: CANCELLATION
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pre-order - batalkan hingga 5 hari sebelum rilis"
+  en: "Pre-order - cancel until 5 days before release date"
+
+cancellationWindowCloses: T_MINUS_5D_RELEASE
+
+cancellationFee:
+  type: NONE
+  value: 0
+
+cancellationReasonsAllowed:
+  - CHANGE_OF_MIND
+  - ORDERED_WRONG_VARIANT
+  - PAYMENT_METHOD_CHANGE
+  - ITEM_NO_LONGER_NEEDED
+
+refundPercentageOnCancel: 1.0
+refundTimelineFromCancel: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+sellerPenaltyOnCancelWithoutCause: ion://policy/penalty.seller-cancel-without-cause.standard.standard
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - electronics
+  - fashion
+  - toys-games
+  - books-stationery
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 4"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,153 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/provider/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:TradeProviderAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeProviderAttributes",
+      "rdfs:comment": "TradeProviderAttributes"
+    },
+    {
+      "@id": "ion:invoicingModel",
+      "@type": "rdf:Property",
+      "rdfs:label": "invoicingModel",
+      "rdfs:comment": "Whether the brand invoices centrally (one NPWP for all fulfilment centres) or each fulfilment centre invoices separately. CENTRAL: single legal entity invoices for all outlets. PER_FULFILMENT_CENTRE: each FC has own NPWP and invoices independently.\n"
+    },
+    {
+      "@id": "ion:invoicingEntity",
+      "@type": "rdf:Property",
+      "rdfs:label": "invoicingEntity",
+      "rdfs:comment": "Legal entity name of the invoicing entity when invoicingModel is CENTRAL. This is the brand's registered legal entity — not the store name.\n"
+    },
+    {
+      "@id": "ion:storeStatus",
+      "@type": "rdf:Property",
+      "rdfs:label": "storeStatus",
+      "rdfs:comment": "Operational status of this provider location. OPEN: accepting orders normally. TEMPORARILY_CLOSED: closed for a defined period (temporaryClosureEnd required). DISABLED: permanently closed or suspended.\n"
+    },
+    {
+      "@id": "ion:operatingHours",
+      "@type": "rdf:Property",
+      "rdfs:label": "operatingHours",
+      "rdfs:comment": "Weekly operating schedule as a typed array. Each entry covers one timing type for a day range. Types: ORDER (when orders accepted), DELIVERY (delivery window), SELF_PICKUP (pickup window), PREPARATION (kitchen active hours).\n"
+    },
+    {
+      "@id": "ion:holidayCalendar",
+      "@type": "rdf:Property",
+      "rdfs:label": "holidayCalendar",
+      "rdfs:comment": "Future-dated holiday dates on which this location will not accept or fulfil orders. ISO 8601 date format. Empty array if no planned closures.\n"
+    },
+    {
+      "@id": "ion:temporaryClosureEnd",
+      "@type": "rdf:Property",
+      "rdfs:label": "temporaryClosureEnd",
+      "rdfs:comment": "ISO 8601 datetime when temporary closure ends. Required when storeStatus is TEMPORARILY_CLOSED. Timezone must be included.\n"
+    },
+    {
+      "@id": "ion:serviceabilityByCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "serviceabilityByCategory",
+      "rdfs:comment": "Per-category serviceability polygon overrides. When a provider serves different delivery zones for different categories (e.g. a larger radius for grocery vs a smaller one for hot food).\n"
+    },
+    {
+      "@id": "ion:averagePreparationTime",
+      "@type": "rdf:Property",
+      "rdfs:label": "averagePreparationTime",
+      "rdfs:comment": "Average time from order confirm to item ready for logistics pickup at this location. ISO 8601 duration. Used by BAP to compute estimated delivery time. Provider-level default; per-item preparationTime in resource/v1 overrides this.\n"
+    },
+    {
+      "@id": "ion:providerCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "providerCategory",
+      "rdfs:comment": "Category of this provider location. Used by BAP for display, filtering, and UI rendering decisions.\n"
+    },
+    {
+      "@id": "ion:nibRegistered",
+      "@type": "rdf:Property",
+      "rdfs:label": "nibRegistered",
+      "rdfs:comment": "Whether this provider has a valid active NIB registered with OSS (Online Single Submission). ION Central validates NIB at onboarding. Must be true for all active providers.\n"
+    },
+    {
+      "@id": "ion:trustedSellerBadge",
+      "@type": "rdf:Property",
+      "rdfs:label": "trustedSellerBadge",
+      "rdfs:comment": "Whether this provider has earned ION Trusted Seller status. Awarded by ION Central based on transaction volume, rating, and compliance record. Cannot be self-declared.\n"
+    },
+    {
+      "@id": "ion:handlingTimeMinutes",
+      "@type": "rdf:Property",
+      "rdfs:label": "handlingTimeMinutes",
+      "rdfs:comment": "Time in minutes from order confirm to package ready for logistics. More precise than averagePreparationTime. Used for SLA computation.\n"
+    },
+    {
+      "@id": "ion:preferredLogisticsProvider",
+      "@type": "rdf:Property",
+      "rdfs:label": "preferredLogisticsProvider",
+      "rdfs:comment": "Preferred on-network logistics provider subscriber ID for this seller's shipments. When marketplaceManagedLogistics=true, this should be the marketplace's logistics arm (e.g. lsp.spx.ion.id).\n"
+    },
+    {
+      "@id": "ion:marketplaceManagedLogistics",
+      "@type": "rdf:Property",
+      "rdfs:label": "marketplaceManagedLogistics",
+      "rdfs:comment": "Whether this provider's fulfilments use marketplace-managed logistics (Shopee Xpress, Tokopedia TokoCabang, Amazon MFN) rather than seller-selected LSP. Affects who orchestrates the on-network logistics transaction.\n"
+    },
+    {
+      "@id": "ion:liveCommerceEnabled",
+      "@type": "rdf:Property",
+      "rdfs:label": "liveCommerceEnabled",
+      "rdfs:comment": "Whether this provider supports live commerce (Shopee Live, Tokopedia Play, TikTok Shop-style sessions). Providers with this enabled may use the B2C-LIVE spine.\n"
+    },
+    {
+      "@id": "ion:liveCommerceStreamers",
+      "@type": "rdf:Property",
+      "rdfs:label": "liveCommerceStreamers",
+      "rdfs:comment": "Subscriber IDs of authorised streamers who can feature this provider's products in live sessions. Commission and settlement is pre-agreed off-network.\n"
+    },
+    {
+      "@id": "ion:ottPartnerEnabled",
+      "@type": "rdf:Property",
+      "rdfs:label": "ottPartnerEnabled",
+      "rdfs:comment": "Whether this provider allows its catalog to be surfaced through OTT-embedded shoppable content (Vidio, Netflix, Disney+ Hotstar in-video shopping). Requires separate off-network agreement with OTT partner.\n"
+    },
+    {
+      "@id": "ion:kycStatus",
+      "@type": "rdf:Property",
+      "rdfs:label": "kycStatus",
+      "rdfs:comment": "Current KYC status of this provider with the BPP platform. Only APPROVED and APPROVED_WITH_CAVEATS providers may publish catalogs. EXPIRED providers must renew before next catalog. SUSPENDED signals temporary enforcement action — spec processors must pause active transactions.\n"
+    },
+    {
+      "@id": "ion:kycLevel",
+      "@type": "rdf:Property",
+      "rdfs:label": "kycLevel",
+      "rdfs:comment": "KYC depth. Determines maximum transaction value, allowed payment methods, eligibility for Mall/Premium tiers. BASIC: NIB + NPWP only. Max per-order IDR 5M. STANDARD: BASIC + bank account verification + phone. Max per-order IDR 50M. ENHANCED: STANDARD + beneficial ownership + director ID verified. Ma"
+    },
+    {
+      "@id": "ion:kycValidUntil",
+      "@type": "rdf:Property",
+      "rdfs:label": "kycValidUntil",
+      "rdfs:comment": "Expiry date of current KYC certification. Providers MUST renew before this date. BPPs MUST block publish_catalog after expiry.\n"
+    },
+    {
+      "@id": "ion:kycEvidenceRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "kycEvidenceRef",
+      "rdfs:comment": "Opaque reference to KYC evidence bundle (encrypted off-network). Used by ION Central when audit required. Not a URL — internal ref.\n"
+    },
+    {
+      "@id": "ion:kycCaveats",
+      "@type": "rdf:Property",
+      "rdfs:label": "kycCaveats",
+      "rdfs:comment": "When kycStatus is APPROVED_WITH_CAVEATS, these describe the outstanding items. Each caveat has a deadline (tracked off-catalog); failure to clear results in SUSPENDED status.\n"
+    },
+    {
+      "@id": "ion:categoryLicenses",
+      "@type": "rdf:Property",
+      "rdfs:label": "categoryLicenses",
+      "rdfs:comment": "Category-specific operating licenses beyond NIB/NPWP. Examples: SIA for alcohol, SIKA for meat, Izin PBF for pharmacy, Izin Edar BPOM for cosmetics. Required for the corresponding providerCategory.\n"
+    }
+  ]
+}

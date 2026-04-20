@@ -1,0 +1,180 @@
+# ION Trade Flow - B2C Live Commerce (B2C-LIVE) Spine v1
+# NOT OAS. ION flow specification document.
+# Orders placed from live streams, short-form video, OTT shoppable content, group buys
+
+id: ion-trade-B2C-LIVE-v1
+version: "1.0.0"
+pattern: B2C Live Commerce
+sectorCode: A
+status: ready
+description: >
+  Commerce pattern for orders originating from live or social commerce surfaces.
+  Covers: Shopee Live, Tokopedia Play, TikTok Shop-style live sessions,
+  short-form reel commerce, OTT-embedded shoppable content (Vidio, Netflix
+  shoppable moments, Disney+ Hotstar match-day commerce), affiliate links,
+  and group-buy mechanics. Extends B2C-SF with source attribution, creator
+  commission handling, and time-bounded live offers.
+  Regulated by Kemendag Permen 31/2023 (separation of social commerce from
+  e-commerce) — ION Live Commerce is a compliant e-commerce flow with
+  source-channel attribution, not a social media transaction.
+
+applicableCategories:
+  - fashion
+  - beauty
+  - electronics
+  - fmcg
+  - home-kitchen
+  - agritech
+  - food-qsr
+
+extendsFrom: flows/trade/spines/B2C-SF/v1/spine.yaml
+
+keyDifferences_vs_B2C_SF:
+  - Offer has startAt and endAt enforced — live-window-only availability
+  - reservationWindowSeconds typically very short (60-180s) due to flash nature
+  - contractAttributes.liveCommerceContext required — source channel attribution
+  - streamer/affiliate commission declared in consideration breakup
+  - Settlement includes STREAMER_COMMISSION / AFFILIATE_COMMISSION line
+  - Group-buy variant: contract not confirmed until minimum participants reached
+
+performanceStateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+
+phases:
+
+  phase1:
+    name: Catalog (live session binding)
+    description: >
+      Providers pre-publish live-commerce-eligible offers with session binding.
+      At session start, BPP publishes an incremental catalog update with the
+      live session context. At session end, offers auto-expire via endAt.
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        requiredFields:
+          - message.catalog.providers[].providerAttributes.liveCommerceEnabled  # value: true
+          - message.catalog.providers[].offers[].offerAttributes.startAt
+          - message.catalog.providers[].offers[].offerAttributes.endAt
+          - message.catalog.providers[].offers[].offerAttributes.reservationWindowSeconds
+        conditionalFields:
+          - field: message.catalog.providers[].offers[].offerAttributes.isFlashSale  # condition: for time-limited exclusive live offers
+          - field: message.catalog.providers[].offers[].offerAttributes.totalStockCap  # condition: for quantity-capped flash offers
+          - field: message.catalog.providers[].offers[].offerAttributes.queueEnabled  # condition: for high-demand live drops
+
+  phase2:
+    name: Transaction (with source attribution)
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        description: >
+          Buyer selects during live stream / OTT shoppable moment / short video.
+          BAP must populate liveCommerceContext at select time so BPP can
+          compute correct commissions and validate session still active.
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.performance[].performanceAttributes.performanceMode
+          - message.contract.contractAttributes.liveCommerceContext.sourceChannel
+        conditionalFields:
+          - field: message.contract.contractAttributes.liveCommerceContext.liveSessionId  # condition: when sourceChannel=LIVE_STREAM
+          - field: message.contract.contractAttributes.liveCommerceContext.streamerId  # condition: when sourceChannel IN [LIVE_STREAM, SHORT_VIDEO, AFFILIATE_LINK]
+          - field: message.contract.contractAttributes.liveCommerceContext.ottPlatform  # condition: when sourceChannel=OTT_EMBEDDED
+          - field: message.contract.contractAttributes.liveCommerceContext.ottContentId  # condition: when sourceChannel=OTT_EMBEDDED
+          - field: message.contract.contractAttributes.liveCommerceContext.groupBuyId  # condition: when sourceChannel=GROUP_BUY
+        businessRules:
+          - BPP validates that current time is within offer.startAt to endAt
+          - BPP validates session liveSessionId is still ACTIVE
+          - For OTT_EMBEDDED: BPP may accept orders after broadcast if offer.endAt permits
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        description: >
+          BPP returns quote including streamer commission line. Checks flash
+          stock cap and queue position if applicable. Short
+          reservationWindowSeconds - consumer must proceed quickly.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.performance[].performanceAttributes.supportedPerformanceModes[]
+          - message.contract.performance[].performanceAttributes.sla
+        conditionalFields:
+          - field: message.contract.consideration.considerationAttributes.breakup[breakupLineType=STREAMER_COMMISSION]  # condition: when contract has streamerId
+          - field: message.contract.consideration.considerationAttributes.breakup[breakupLineType=AFFILIATE_COMMISSION]  # condition: when sourceChannel=AFFILIATE_LINK
+          - field: message.contract.commitments[].offer.offerAttributes.queuePosition  # condition: when queueEnabled=true
+          - field: message.contract.commitments[].offer.offerAttributes.estimatedWaitSeconds  # condition: when queuePosition is present
+          - field: message.contract.contractAttributes.liveCommerceContext.groupBuyActivated  # condition: when sourceChannel=GROUP_BUY
+        errors:
+          - ION-3015  # OFFER_STOCK_CAP_REACHED
+          - ION-3017  # LIVE_SESSION_ENDED
+
+      - step: init
+        from: BAP
+        to: BPP
+        description: Standard init; reservation now hard-held until TTL.
+        requiredFields:
+          - message.contract.performance[].stops[].location
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.paymentRail
+          - message.contract.settlements[].settlementAttributes.collectedBy
+          - message.contract.contractAttributes.liveCommerceContext
+
+      - step: on_init  # note: Identical to B2C-SF on_init. Reservation window enforces urgency.
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        description: >
+          Confirm must arrive within reservationWindowSeconds of on_select.
+          Late confirm returns ION-3013. For group-buy, confirm creates
+          a pending commitment; final confirm fires when minimum participants reached.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+          - message.contract.contractAttributes.liveCommerceContext
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        description: Order confirmed. For group-buy, may return PENDING_GROUP_COMPLETION.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.contractAttributes.fulfillingLocationId
+        conditionalFields:
+          - field: message.contract.contractAttributes.liveCommerceContext.groupBuyActivated  # condition: updated when min participants reached
+
+  phase3:
+    name: Fulfilment
+    description: >
+      Standard fulfilment per B2C-SF. For group-buy, fulfilment only begins
+      after group minimum is reached — until then, status is ACTIVE_PENDING_GROUP.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+
+branchWindows:
+  during-transaction:
+    earliest: select
+    latest: on_confirm
+    note: reservationWindowSeconds is typically short for flash sales
+  cancellation:
+    earliest: on_confirm
+    latest: on_status[DISPATCHED]
+  returns:
+    earliest: on_status[DELIVERED]
+    latest: returnWindow_expiry
+  updates:
+    earliest: on_confirm
+    latest: on_status[DELIVERED]
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+settlementAdditions:
+  - STREAMER_COMMISSION line in consideration breakup
+  - AFFILIATE_COMMISSION line in consideration breakup
+  - reconcile.amounts.streamerCommissionAmount required for LIVE_STREAM orders
+  - reconcile.amounts.affiliateCommissionAmount required for AFFILIATE_LINK orders

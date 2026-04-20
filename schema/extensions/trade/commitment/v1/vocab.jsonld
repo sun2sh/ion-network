@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/commitment/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:TradeCommitmentAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeCommitmentAttributes",
+      "rdfs:comment": "TradeCommitmentAttributes"
+    },
+    {
+      "@id": "ion:lineId",
+      "@type": "rdf:Property",
+      "rdfs:label": "lineId",
+      "rdfs:comment": "Unique identifier for this commitment line within the contract. Assigned by BAP at select. Persists through the contract lifecycle. Used to reference specific lines in updates, cancellations, returns.\n"
+    },
+    {
+      "@id": "ion:resourceId",
+      "@type": "rdf:Property",
+      "rdfs:label": "resourceId",
+      "rdfs:comment": "ID of the resource being committed. References beckn:Resource.id from the catalog. For VARIANT resources, this is the specific variant ID, not the parent.\n"
+    },
+    {
+      "@id": "ion:offerId",
+      "@type": "rdf:Property",
+      "rdfs:label": "offerId",
+      "rdfs:comment": "ID of the offer under which this resource is being committed. References beckn:Offer.id from the catalog.\n"
+    },
+    {
+      "@id": "ion:quantity",
+      "@type": "rdf:Property",
+      "rdfs:label": "quantity",
+      "rdfs:comment": "Quantity of this resource being committed."
+    },
+    {
+      "@id": "ion:price",
+      "@type": "rdf:Property",
+      "rdfs:label": "price",
+      "rdfs:comment": "Locked price for this commitment line as agreed at select. Price is fixed at on_select and does not change unless a price adjustment branch is triggered.\n"
+    },
+    {
+      "@id": "ion:customisationSelections",
+      "@type": "rdf:Property",
+      "rdfs:label": "customisationSelections",
+      "rdfs:comment": "Buyer's selections from customisationGroups for COMPOSED and WITH_EXTRAS resources. One entry per group selected.\n"
+    },
+    {
+      "@id": "ion:specialInstructions",
+      "@type": "rdf:Property",
+      "rdfs:label": "specialInstructions",
+      "rdfs:comment": "Per-line buyer note. e.g. \"Extra crispy base\", \"No onion\", \"Gift wrap this item separately\". Visible to seller at fulfilment.\n"
+    }
+  ]
+}

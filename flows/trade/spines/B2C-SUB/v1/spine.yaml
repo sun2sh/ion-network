@@ -1,0 +1,186 @@
+# ION Trade Flow - B2C Subscription (B2C-SUB) Spine v1
+# NOT OAS. ION flow specification document.
+# Covers recurring purchase subscriptions — groceries, meal kits, supplements, milk delivery.
+
+id: ion-trade-B2C-SUB-v1
+version: "1.0.0"
+pattern: B2C Subscription
+sectorCode: A
+status: ready
+extends: flows/trade/spines/B2C-SF/v1
+description: >
+  Consumer subscribes to recurring delivery of a product on a defined billing cycle.
+  Covers: grocery subscriptions, meal kit delivery, supplement auto-reorder,
+  dairy delivery, water delivery, pet food subscriptions, newspaper delivery.
+  Key differences from B2C-SF: billing cycle, auto-renewal, pause/resume/modify sub.
+
+applicableCategories:
+  - grocery
+  - fmcg
+  - pharmacy
+  - agritech
+  - food-qsr (meal kits)
+  - pet-supplies
+
+deltaFrom_B2C_SF:
+  - context.action:
+      adds: [subscribe, on_subscribe, subscription_status, on_subscription_status]
+  - contractAttributes:
+      subscriptionBillingCycle: REQUIRED
+      subscriptionNextBillingDate: REQUIRED
+      linkedSubscriptionId: tracks parent subscription across billing cycles
+
+phases:
+  phase1:
+    name: Catalog
+    note: Same as B2C-SF. Subscription flag declared in offer.
+
+  phase2:
+    name: Subscription Setup
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        description: BAP selects item with subscription intent.
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - context.bapId
+          - context.bppId
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.performance[].performanceAttributes.performanceMode
+          - message.contract.tags.subscription.billing_cycle
+        additionalRequiredFields:
+          - field: message.contract.tags.subscription.billing_cycle
+            note: WEEKLY / FORTNIGHTLY / MONTHLY / QUARTERLY / ANNUAL
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        description: BPP confirms subscription pricing and first delivery quote.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+          - message.contract.tags.subscription.next_billing_date
+          - message.contract.tags.subscription.billing_cycle
+
+      - step: init
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.contract.performance[].stops[].location
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.collectedBy
+          - message.contract.contractAttributes.subscriptionBillingCycle
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        description: Payment mandate instructions. For auto-debit — UPI Autopay or e-mandate.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail[]
+          - message.contract.tags.subscription.mandate_type
+        conditionalFields:
+          - field: message.contract.tags.subscription.mandate_url  # condition: if payment requires e-mandate setup
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        description: Buyer confirms subscription. Mandate activated.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.subscriptionBillingCycle
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        description: Subscription created. First delivery scheduled.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.contractAttributes.subscriptionBillingCycle
+          - message.contract.contractAttributes.subscriptionNextBillingDate
+
+  phase3:
+    name: Recurring Fulfilment
+    description: Each billing cycle triggers a new delivery. Follows standard state machine.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    steps:
+      - step: on_status
+        stepContext: "per delivery cycle"
+        note: "Each delivery cycle emits PACKED → DISPATCHED → DELIVERED as per B2C-SF."
+
+  phase4:
+    name: Subscription Lifecycle Management
+    description: Pause, resume, skip, modify, cancel subscription.
+    steps:
+      - step: update
+        stepContext: "PAUSE"
+        from: BAP
+        to: BPP
+        description: Buyer pauses subscription for N billing cycles.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.subscriptionAction
+          - message.contract.contractAttributes.subscriptionPauseUntil
+
+      - step: update
+        stepContext: "SKIP"
+        from: BAP
+        to: BPP
+        description: Buyer skips the next delivery cycle.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.subscriptionAction
+          - message.update.target.order.subscription.skip_count
+
+      - step: update
+        stepContext: "MODIFY_QUANTITY"
+        from: BAP
+        to: BPP
+        description: Buyer changes quantity or frequency.
+        requiredFields:
+          - message.contract.id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.contractAttributes.subscriptionBillingCycle
+
+      - step: update
+        stepContext: "RESUME"
+        from: BAP
+        to: BPP
+        description: Buyer resumes a paused subscription.
+
+      - step: cancel
+        stepContext: "SUBSCRIPTION"
+        from: BAP
+        to: BPP
+        description: Buyer cancels recurring subscription entirely.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.id
+        businessRules:
+          - Cancellation applies to future cycles only
+          - Current in-progress delivery completes normally
+          - Mandate deactivated by BPP after cancellation confirm
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: subscription_active
+    note: Can cancel entire subscription at any time; individual delivery cancel before DISPATCHED
+  returns:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+  cross-cutting:
+    earliest: on_confirm
+    latest: subscription_TERMINATED
+
+contractAttributeAdditions:
+  subscriptionBillingCycle: REQUIRED
+  subscriptionNextBillingDate: REQUIRED
+  linkedContractId: links each delivery contract to parent subscription

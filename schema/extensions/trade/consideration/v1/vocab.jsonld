@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/consideration/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:TradeConsiderationAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeConsiderationAttributes",
+      "rdfs:comment": "TradeConsiderationAttributes"
+    },
+    {
+      "@id": "ion:ppnRate",
+      "@type": "rdf:Property",
+      "rdfs:label": "ppnRate",
+      "rdfs:comment": "PPN (Pajak Pertambahan Nilai) rate applied to this consideration line. Standard rate is 0.11 (11%). Some categories (basic foods, books, health services) may have reduced or zero rates.\n"
+    },
+    {
+      "@id": "ion:ppnbmRate",
+      "@type": "rdf:Property",
+      "rdfs:label": "ppnbmRate",
+      "rdfs:comment": "PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods. Applied in addition to PPN. Rates vary by luxury category. Common rates: 0.10, 0.20, 0.30, 0.40, 0.50, 0.75, 1.25.\n"
+    },
+    {
+      "@id": "ion:discountType",
+      "@type": "rdf:Property",
+      "rdfs:label": "discountType",
+      "rdfs:comment": "Whether the discount is a percentage of item price or a fixed IDR amount. Used on PROVIDER_BENEFIT and BUYER_BENEFIT consideration lines.\n"
+    },
+    {
+      "@id": "ion:discountValue",
+      "@type": "rdf:Property",
+      "rdfs:label": "discountValue",
+      "rdfs:comment": "Value of the discount. If discountType=PERCENT, this is a decimal e.g. 0.10 for 10%. If discountType=FIXED, this is an IDR amount.\n"
+    },
+    {
+      "@id": "ion:breakupLineType",
+      "@type": "rdf:Property",
+      "rdfs:label": "breakupLineType",
+      "rdfs:comment": "Canonical type for this consideration breakup line. ITEM: per-item price line. DELIVERY: shipping/delivery charge. TAX: PPN tax line. TAX_PPNBM: luxury goods tax line. HANDLING: special handling surcharge (cold chain, oversized). PACKAGING: gift or special packaging charge. INSURANCE: shipping insur"
+    },
+    {
+      "@id": "ion:totalAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "totalAmount",
+      "rdfs:comment": "Total amount for this consideration in IDR. For the final consideration record, this is the net payable amount after all discounts and taxes.\n"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency",
+      "rdfs:comment": "Always IDR for domestic ION transactions."
+    }
+  ]
+}

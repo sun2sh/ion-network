@@ -1,0 +1,112 @@
+openapi: 3.1.1
+info:
+  title: ION Product Certification Extension (v1)
+  description: >
+    Indonesian product certifications and regulatory compliance signals.
+    Applies cross-sector: Trade for physical goods, Tourism for F&B services,
+    Healthcare for medical products. Covers halal status, BPOM, SNI, age restriction.
+    Attaches to: beckn:Resource.resourceAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    IONProductCertifications:
+      type: object
+      title: Indonesia Product Certifications
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:ProductCertifications
+
+      required: [halalStatus]
+
+      properties:
+
+        halalStatus:
+          type: string
+          enum: [HALAL, HALAL_PENDING, NON_HALAL, NOT_APPLICABLE]
+          description: >
+            Halal certification status. MANDATORY for all food and beverage
+            products. Strongly recommended for cosmetics and pharmaceuticals.
+            HALAL: MUI-certified halal. halalCertNumber required.
+            HALAL_PENDING: certification in process. halalCertNumber optional.
+            NON_HALAL: explicitly non-halal (e.g. pork products).
+            NOT_APPLICABLE: non-food product where halal is not relevant.
+          example: HALAL
+          x-ion-mandatory: always
+          x-ion-regulatory: UU 33/2014 tentang Jaminan Produk Halal; PP 39/2021
+
+        halalCertNumber:
+          type: string
+          description: >
+            MUI (Majelis Ulama Indonesia) halal certificate number.
+            Format varies by certification period.
+          example: ID38010000151020
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when halalStatus is HALAL
+          x-ion-regulatory: UU 33/2014 tentang Jaminan Produk Halal
+
+        bpomRegNumber:
+          type: string
+          description: >
+            BPOM registration number for food, cosmetics, and pharmaceuticals.
+            BPOM_MD: domestic product (e.g. MD-123456789012).
+            BPOM_ML: imported product (e.g. ML-123456789012).
+          example: MD-263510000567
+          x-ion-mandatory: optional
+          x-ion-regulatory: PerBPOM 27/2017 tentang Pendaftaran Pangan Olahan
+
+        sniCertNumber:
+          type: string
+          description: >
+            SNI (Standar Nasional Indonesia) compliance certificate number.
+            Required for products with mandatory SNI (electronics, PPE, toys).
+          example: SNI-01-3553-2006
+          x-ion-mandatory: optional
+          x-ion-regulatory: PP 34/2018 tentang Sistem Standardisasi dan Penilaian Kesesuaian Nasional
+
+        spPIRTNumber:
+          type: string
+          description: >
+            SP-P-IRT small-scale home food production license.
+            For UMKM food sellers without full BPOM registration.
+          example: SPIRT.2064701011023
+          x-ion-mandatory: optional
+          x-ion-regulatory: PerBPOM 22/2018
+
+        ageRestricted:
+          type: boolean
+          description: >
+            Whether this product requires age verification at point of purchase.
+            True for tobacco, alcohol, adult content, and certain pharmaceuticals.
+          default: false
+          x-ion-mandatory: always
+          x-ion-regulatory: PP 109/2012 tentang Pengamanan Bahan yang Mengandung Zat Adiktif
+
+        minAge:
+          type: integer
+          minimum: 0
+          maximum: 21
+          description: >
+            Minimum purchaser age in years when ageRestricted is true.
+            Indonesia: 18 for tobacco and alcohol, 21 for certain substances.
+          example: 18
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when ageRestricted is true
+
+      allOf:
+        - if:
+            properties:
+              halalStatus:
+                enum: [HALAL]
+            required: [halalStatus]
+          then:
+            required: [halalCertNumber]
+
+        - if:
+            properties:
+              ageRestricted:
+                const: true
+            required: [ageRestricted]
+          then:
+            required: [minAge]

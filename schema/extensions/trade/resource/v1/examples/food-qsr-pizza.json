@@ -1,0 +1,203 @@
+{
+  "@context": "https://schema.ion.id/trade/resource/v1/context.jsonld",
+  "@type": "ion:TradeResourceAttributes",
+  "resourceStructure": "COMPOSED",
+  "resourceTangibility": "PHYSICAL",
+  "_comment": "Example: Pepperoni Pizza — COMPOSED resource (F&B food-qsr category)",
+  "parentResourceId": null,
+  "brand": "Domino's",
+  "name": {
+    "id": "Pizza Pepperoni",
+    "en": "Pepperoni Pizza"
+  },
+  "shortDesc": {
+    "id": "Pizza dengan topping pepperoni premium dan keju mozzarella",
+    "en": "Pizza with premium pepperoni and mozzarella cheese"
+  },
+  "longDesc": {
+    "id": "Pizza oven-baked dengan saus tomat segar, topping pepperoni premium, dan keju mozzarella berlimpah. Tersedia dalam berbagai ukuran dan pilihan pinggiran.",
+    "en": "Oven-baked pizza with fresh tomato sauce, premium pepperoni topping, and generous mozzarella cheese."
+  },
+  "halalStatus": "HALAL",
+  "halalCertNumber": "ID37110000105790921",
+  "dietaryClassification": "NON_VEG",
+  "allergens": [
+    "GLUTEN",
+    "DAIRY",
+    "EGGS"
+  ],
+  "cuisineType": "Italian",
+  "spiceLevel": "NONE",
+  "preparation": {
+    "instructions": "Dipanggang dalam oven konveksi 250°C selama 8-10 menit",
+    "storage": "Konsumsi segera setelah pengiriman",
+    "shelfLife": "PT2H"
+  },
+  "countryOfOrigin": "IDN",
+  "images": [
+    "https://cdn.dominos.co.id/products/pepperoni-primary.jpg",
+    "https://cdn.dominos.co.id/products/pepperoni-slice.jpg"
+  ],
+  "availability": {
+    "status": "IN_STOCK",
+    "maxOrderQty": 10,
+    "backorderAllowed": false,
+    "preorderAllowed": false,
+    "substitutionAllowed": false
+  },
+  "customisationGroups": [
+    {
+      "id": "CG-SIZE",
+      "name": {
+        "id": "Pilih Ukuran",
+        "en": "Choose Size"
+      },
+      "selectionType": "SINGLE_REQUIRED",
+      "sequence": 1,
+      "options": [
+        {
+          "id": "OPT-REGULAR",
+          "name": {
+            "id": "Regular (25cm)",
+            "en": "Regular (25cm)"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 0
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-LARGE",
+          "name": {
+            "id": "Large (30cm)",
+            "en": "Large (30cm)"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 30000
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-JUMBO",
+          "name": {
+            "id": "Jumbo (35cm)",
+            "en": "Jumbo (35cm)"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 60000
+          },
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "CG-CRUST",
+      "name": {
+        "id": "Pilih Pinggiran",
+        "en": "Choose Crust"
+      },
+      "selectionType": "SINGLE_REQUIRED",
+      "sequence": 2,
+      "options": [
+        {
+          "id": "OPT-CLASSIC",
+          "name": {
+            "id": "Classic Hand Tossed",
+            "en": "Classic Hand Tossed"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 0
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-THIN",
+          "name": {
+            "id": "Thin Crust",
+            "en": "Thin Crust"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 0
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-CHEESE-BURST",
+          "name": {
+            "id": "Cheese Burst",
+            "en": "Cheese Burst"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 15000
+          },
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "CG-EXTRAS",
+      "name": {
+        "id": "Tambahan Topping",
+        "en": "Extra Toppings"
+      },
+      "selectionType": "MULTIPLE_OPTIONAL",
+      "maxSelections": 3,
+      "sequence": 3,
+      "options": [
+        {
+          "id": "OPT-EXTRA-CHEESE",
+          "name": {
+            "id": "Extra Keju",
+            "en": "Extra Cheese"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 8000
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-JALAPENO",
+          "name": {
+            "id": "Jalapeno",
+            "en": "Jalapeño"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 5000
+          },
+          "available": true
+        },
+        {
+          "id": "OPT-MUSHROOM",
+          "name": {
+            "id": "Jamur",
+            "en": "Mushroom"
+          },
+          "priceDelta": {
+            "type": "FIXED",
+            "value": 5000
+          },
+          "available": true
+        }
+      ]
+    }
+  ],
+  "itemRating": 4.6,
+  "isAvailable": true,
+  "menuCategory": {
+    "id": "CAT-PIZZA",
+    "name": {
+      "id": "Pizza",
+      "en": "Pizza"
+    },
+    "sequence": 1
+  },
+  "preparationTime": "PT15M"
+}

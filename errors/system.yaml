@@ -1,0 +1,32 @@
+# ION Error Registry — System (ION-9xxx)
+# Internal errors, timeouts, retries
+
+- code: ION-9001
+  http_status: 500
+  category: system
+  title:
+    id: Kesalahan internal ION
+    en: ION internal error
+  description:
+    en: An unexpected error occurred within ION infrastructure. This is not a caller error.
+  affected_field: null
+  affected_apis: [all]
+  schema_ref: null
+  flow_ref: null
+  resolution:
+    en: Retry with exponential backoff. If persists beyond 5 minutes, raise an ION-7xxx network ticket.
+
+- code: ION-9002
+  http_status: 504
+  category: system
+  title:
+    id: Timeout BPP
+    en: BPP callback timeout
+  description:
+    en: The BAP did not receive an on_ callback within the expected TTL window. BPP may have failed to respond.
+  affected_field: context.ttl
+  affected_apis: [on_select, on_init, on_confirm, on_status]
+  schema_ref: null
+  flow_ref: null
+  resolution:
+    en: "For /on_confirm timeout: initiate force-cancel flow as per flows/trade/branches/during-transaction/v1. Log incident and consider raising an ION-7xxx ticket if BPP is persistently unresponsive."

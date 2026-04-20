@@ -1,0 +1,26 @@
+{
+  "id": "ion-trade-B2C-DIG-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2C Digital Goods",
+  "patternCode": "B2C-DIG",
+  "status": "ready",
+  "description": "Digital goods: pulsa, data, PLN tokens, utility bills, BPJS, vouchers, gift cards, game currencies, streaming subscriptions.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "digital-goods"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#digital",
+  "regulatoryBasis": "UU 36/1999 Telekomunikasi (pulsa); UU 8/1999 Perlindungan Konsumen",
+  "requiredPolicyCategories": [
+    "CANCELLATION",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/trade/consideration/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "ppnRate": "ion:ppnRate",
+    "ppnbmRate": "ion:ppnbmRate",
+    "discountType": "ion:discountType",
+    "discountValue": "ion:discountValue",
+    "breakupLineType": "ion:breakupLineType",
+    "totalAmount": "ion:totalAmount",
+    "currency": "ion:currency",
+    "TradeConsiderationAttributes": "ion:TradeConsiderationAttributes"
+  }
+}

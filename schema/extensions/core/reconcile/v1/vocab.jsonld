@@ -1,0 +1,183 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/reconcile/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONReconcileAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONReconcileAttributes",
+      "rdfs:comment": "IONReconcileAttributes"
+    },
+    {
+      "@id": "ion:reconId",
+      "@type": "rdf:Property",
+      "rdfs:label": "reconId",
+      "rdfs:comment": "ION-assigned unique identifier for this reconciliation session."
+    },
+    {
+      "@id": "ion:contractId",
+      "@type": "rdf:Property",
+      "rdfs:label": "contractId",
+      "rdfs:comment": "The trade contract this reconciliation covers."
+    },
+    {
+      "@id": "ion:settlementBasis",
+      "@type": "rdf:Property",
+      "rdfs:label": "settlementBasis",
+      "rdfs:comment": "The event that triggers the settlement window countdown. Agreed at order init and locked at confirm.\n"
+    },
+    {
+      "@id": "ion:settlementWindow",
+      "@type": "rdf:Property",
+      "rdfs:label": "settlementWindow",
+      "rdfs:comment": "Time window after settlementBasis event within which settlement must be completed. ISO 8601 duration.\n"
+    },
+    {
+      "@id": "ion:collectedBy",
+      "@type": "rdf:Property",
+      "rdfs:label": "collectedBy",
+      "rdfs:comment": "Which participant collected payment from consumer."
+    },
+    {
+      "@id": "ion:amounts",
+      "@type": "rdf:Property",
+      "rdfs:label": "amounts",
+      "rdfs:comment": "Declared amounts for reconciliation."
+    },
+    {
+      "@id": "ion:returnWindowExpiry",
+      "@type": "rdf:Property",
+      "rdfs:label": "returnWindowExpiry",
+      "rdfs:comment": "Date-time when return window closes and withholding amount releases. After this date, withholdingAmount is settled to BPP if no return.\n"
+    },
+    {
+      "@id": "ion:adjustments",
+      "@type": "rdf:Property",
+      "rdfs:label": "adjustments",
+      "rdfs:comment": "Contract-level adjustments to the base order amount that must be agreed before final settlement. These are post-confirm changes due to returns, cancellations, penalties, or price corrections.\n"
+    },
+    {
+      "@id": "ion:netSettlementAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "netSettlementAmount",
+      "rdfs:comment": "Final net amount to settle to BPP/receiver after all adjustments. Computed: baseContractAmount - finderFee - withholdingAmount + adjustments sum\n"
+    },
+    {
+      "@id": "ion:netWithholdingRelease",
+      "@type": "rdf:Property",
+      "rdfs:label": "netWithholdingRelease",
+      "rdfs:comment": "Withholding amount to release to BPP after return window. withholdingAmount - returnDeductions - refunds\n"
+    },
+    {
+      "@id": "ion:counterparty",
+      "@type": "rdf:Property",
+      "rdfs:label": "counterparty",
+      "rdfs:comment": "Identification of the counterparty in this reconciliation."
+    },
+    {
+      "@id": "ion:bankDetails",
+      "@type": "rdf:Property",
+      "rdfs:label": "bankDetails",
+      "rdfs:comment": "Settlement bank account details for the receiver."
+    },
+    {
+      "@id": "ion:reconStatus",
+      "@type": "rdf:Property",
+      "rdfs:label": "reconStatus",
+      "rdfs:comment": "PENDING: recon initiated, awaiting counterparty acknowledgment. AGREED: both parties agree on amounts. DISPUTED: amounts do not match — raise ticket via raise/on_raise.\n"
+    },
+    {
+      "@id": "ion:disputeReason",
+      "@type": "rdf:Property",
+      "rdfs:label": "disputeReason",
+      "rdfs:comment": "Human-readable reason for DISPUTED status. Referenced when raising a dispute ticket via raise/on_raise.\n"
+    },
+    {
+      "@id": "ion:recon_status",
+      "@type": "rdf:Property",
+      "rdfs:label": "recon_status",
+      "rdfs:comment": "Numeric recon status compatible with ONDC RSF receiver_recon model. 01=amounts match, 02=collector paid more than expected, 03=less than expected.\n"
+    },
+    {
+      "@id": "ion:slaPenaltyDeduction",
+      "@type": "rdf:Property",
+      "rdfs:label": "slaPenaltyDeduction",
+      "rdfs:comment": "Amount deducted from BPP's net settlement due to confirmed SLA breaches on this contract. BAP tracks breaches in performanceAttributes.slaBreachCount during fulfilment and applies penalty per ION network penalty schedule at reconcile time.\n"
+    },
+    {
+      "@id": "ion:slaPenaltyBreakdown",
+      "@type": "rdf:Property",
+      "rdfs:label": "slaPenaltyBreakdown",
+      "rdfs:comment": "Per-breach penalty calculation for transparency."
+    },
+    {
+      "@id": "ion:streamerCommissionAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "streamerCommissionAmount",
+      "rdfs:comment": "Amount to settle to streamer/creator for B2C-LIVE orders. Deducted from BPP or BAP per commercial agreement.\n"
+    },
+    {
+      "@id": "ion:affiliateCommissionAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "affiliateCommissionAmount",
+      "rdfs:comment": "Amount to settle to affiliate for affiliate-sourced orders."
+    },
+    {
+      "@id": "ion:isBatch",
+      "@type": "rdf:Property",
+      "rdfs:label": "isBatch",
+      "rdfs:comment": "Whether this reconcile covers multiple contracts as a batch. Marketplace scale requires batched settlement (daily, weekly). When true, contractId may be null and contractIds[] carries the per-contract list; contractDetails[] carries per-contract breakdown.\n"
+    },
+    {
+      "@id": "ion:contractIds",
+      "@type": "rdf:Property",
+      "rdfs:label": "contractIds",
+      "rdfs:comment": "List of contract IDs covered when isBatch=true. Single-contract reconcile populates contractId instead.\n"
+    },
+    {
+      "@id": "ion:batchPeriod",
+      "@type": "rdf:Property",
+      "rdfs:label": "batchPeriod",
+      "rdfs:comment": "Time window this batch covers."
+    },
+    {
+      "@id": "ion:contractDetails",
+      "@type": "rdf:Property",
+      "rdfs:label": "contractDetails",
+      "rdfs:comment": "Per-contract financial breakdown for batch reconcile."
+    },
+    {
+      "@id": "ion:parentReconId",
+      "@type": "rdf:Property",
+      "rdfs:label": "parentReconId",
+      "rdfs:comment": "When this reconcile corrects an earlier one, references the earlier reconId. Used for clawbacks, additional payments, post-reconcile corrections discovered later.\n"
+    },
+    {
+      "@id": "ion:adjustmentType",
+      "@type": "rdf:Property",
+      "rdfs:label": "adjustmentType",
+      "rdfs:comment": "Type of adjustment being made against a prior reconcile. CLAWBACK: recover funds previously settled incorrectly. ADDITIONAL_PAYMENT: additional settlement owed. CORRECTION: neutral correction with details in adjustmentReason. LATE_FEE_CHARGE: overdue payment charge. GOODWILL_CREDIT: platform-funded "
+    },
+    {
+      "@id": "ion:adjustmentReason",
+      "@type": "rdf:Property",
+      "rdfs:label": "adjustmentReason",
+      "rdfs:comment": "Plain-language reason for the adjustment"
+    },
+    {
+      "@id": "ion:adjustmentEvidence",
+      "@type": "rdf:Property",
+      "rdfs:label": "adjustmentEvidence",
+      "rdfs:comment": "Evidence URLs supporting the adjustment (audit logs, screenshots, communications)"
+    },
+    {
+      "@id": "ion:taxWithholdings",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxWithholdings",
+      "rdfs:comment": "Indonesian tax withholdings applied to this settlement. Marketplaces in Indonesia withhold PPh 22 on certain transactions per PMK 41/2022 (marketplace tax collector appointment). PPh 23 applies on service fees. PPN remittance for PMSE. Required for Mall-tier and above sellers.\n"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "ion-trade-B2C-SF-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "sectorCode": "A",
+  "pattern": "B2C Single Fulfilment",
+  "patternCode": "B2C-SF",
+  "status": "ready",
+  "description": "Consumer discovers, selects, and purchases a physical product. Delivery or self-pickup follows. The most common commerce pattern on ION \u2014 covers Food, Grocery, Fashion, Electronics, Beauty, FMCG.",
+  "applicableCategories": [
+    "food-qsr",
+    "grocery",
+    "fashion",
+    "electronics",
+    "beauty",
+    "fmcg",
+    "agritech"
+  ],
+  "spineFile": "./spine.yaml",
+  "applicableBranches": [
+    "during-transaction/v1",
+    "cancellation/v1",
+    "returns/v1",
+    "RTO/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "schemaPacksRequired": {
+    "core": [
+      "localization/v1",
+      "identity/v1",
+      "payment/v1",
+      "tax/v1",
+      "address/v1"
+    ],
+    "trade": [
+      "provider/v1",
+      "resource/v1",
+      "offer/v1",
+      "consideration/v1",
+      "performance/v1",
+      "contract/v1",
+      "commitment/v1"
+    ]
+  },
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

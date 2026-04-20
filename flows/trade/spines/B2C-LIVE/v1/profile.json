@@ -1,0 +1,39 @@
+{
+  "id": "ion-trade-B2C-LIVE-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2C Live Commerce",
+  "patternCode": "B2C-LIVE",
+  "status": "ready",
+  "description": "Live commerce orders: Shopee Live, Tokopedia Play, TikTok-style sessions, OTT-embedded shoppable content (Vidio, Netflix, Disney+ Hotstar), short video, affiliate links, group buys.",
+  "spineFile": "./spine.yaml",
+  "extendsFrom": "flows/trade/spines/B2C-SF/v1",
+  "applicableCategories": [
+    "fashion",
+    "beauty",
+    "electronics",
+    "fmcg",
+    "home-kitchen",
+    "agritech",
+    "food-qsr"
+  ],
+  "applicableBranches": [
+    "during-transaction/v1",
+    "cancellation/v1",
+    "returns/v1",
+    "RTO/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "regulatoryBasis": "Kemendag Permen 31/2023 \u2014 separation of social commerce from e-commerce; UU 11/2008 tentang ITE",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

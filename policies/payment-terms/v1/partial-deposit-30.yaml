@@ -1,0 +1,41 @@
+iri: ion://policy/payment.deposit.30pct.balance_on_delivery
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Deposit 30% - sisa saat pengiriman"
+  en: "30% deposit, balance on delivery"
+
+paymentTiming: SPLIT
+paymentCollection: PREPAID
+depositRequired: true
+depositPercentage: 0.3
+creditTermsDays: 0
+installmentEnabled: false
+installmentTenure: 0
+
+allowedPaymentMethods:
+  - VIRTUAL_ACCOUNT
+  - BANK_TRANSFER
+  - BI_FAST
+  - RTGS
+
+latePaymentPenalty: ion://policy/penalty.buyer.late_balance_payment
+latePaymentFeePercent: 0.02
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - b2b
+  - wholesale
+  - custom
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

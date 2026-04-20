@@ -1,0 +1,40 @@
+iri: ion://policy/penalty.creator-misleading.standard_claims
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: CREATOR_MISLEADING
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda klaim menyesatkan kreator"
+  en: "Misleading claims by creator/streamer"
+
+triggerConditions:
+  - condition: CONFIRMED_MISLEADING_CLAIM
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 1.0
+    additionalAction: COMMISSION_CLAWBACK
+  - condition: REPEAT_3X_30D
+    severity: CRITICAL
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: CREATOR_ACCOUNT_SUSPENDED
+
+appliedVia: reconcile.streamerCommissionAmount
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 9"
+  - "Kemendag Permen 31/2023"
+
+supersededBy: null
+deprecatedAt: null

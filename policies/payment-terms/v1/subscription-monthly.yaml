@@ -1,0 +1,39 @@
+iri: ion://policy/payment-terms.subscription.monthly_autopay
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pembayaran langganan otomatis bulanan"
+  en: "Monthly subscription autopay"
+
+paymentTiming: RECURRING
+paymentCollection: PREPAID_AUTOPAY
+depositRequired: false
+depositPercentage: 0
+creditTermsDays: 0
+installmentEnabled: false
+installmentTenure: 0
+
+allowedPaymentMethods:
+  - CREDIT_CARD
+  - DEBIT_CARD
+  - EWALLET
+  - DIRECT_DEBIT
+
+latePaymentPenalty: ion://policy/penalty.buyer.subscription_retry_failed
+latePaymentFeePercent: 0
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - subscription
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

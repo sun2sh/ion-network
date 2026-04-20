@@ -1,0 +1,112 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/raise/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONTicket",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONTicket",
+      "rdfs:comment": "IONTicket"
+    },
+    {
+      "@id": "ion:id",
+      "@type": "rdf:Property",
+      "rdfs:label": "id",
+      "rdfs:comment": "Ticket ID assigned by ION ticketing system."
+    },
+    {
+      "@id": "ion:externalRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "externalRef",
+      "rdfs:comment": "Reference ID in external ticketing system (Freshdesk/Jira/Zendesk ticket number)"
+    },
+    {
+      "@id": "ion:title",
+      "@type": "rdf:Property",
+      "rdfs:label": "title",
+      "rdfs:comment": "Short subject line for this ticket."
+    },
+    {
+      "@id": "ion:description",
+      "@type": "rdf:Property",
+      "rdfs:label": "description",
+      "rdfs:comment": "Full description of the issue."
+    },
+    {
+      "@id": "ion:type",
+      "@type": "rdf:Property",
+      "rdfs:label": "type",
+      "rdfs:comment": "NP_DISPUTE: BAP/BPP disagreement on transaction terms. POLICY_VIOLATION: participant violating ION network policy. SETTLEMENT_DISPUTE: financial settlement disagreement (escalated from recon). TECHNICAL_FAILURE: system or API failures affecting transactions. FRAUD: suspected fraudulent activity. NET"
+    },
+    {
+      "@id": "ion:priority",
+      "@type": "rdf:Property",
+      "rdfs:label": "priority",
+      "rdfs:comment": "CRITICAL: network-wide impact or financial fraud. Escalated immediately. HIGH: significant impact on transactions. Response within 2 hours. MEDIUM: operational issue. Response within 24 hours. LOW: general query or minor issue. Response within 72 hours.\n"
+    },
+    {
+      "@id": "ion:raisedBy",
+      "@type": "rdf:Property",
+      "rdfs:label": "raisedBy",
+      "rdfs:comment": "Subscriber ID of the network participant raising the ticket."
+    },
+    {
+      "@id": "ion:assignedTo",
+      "@type": "rdf:Property",
+      "rdfs:label": "assignedTo",
+      "rdfs:comment": "Subscriber ID of counterparty NP, or \"ION\" if raised to network operator.\n"
+    },
+    {
+      "@id": "ion:contractId",
+      "@type": "rdf:Property",
+      "rdfs:label": "contractId",
+      "rdfs:comment": "Related trade contract ID, if issue is transaction-specific."
+    },
+    {
+      "@id": "ion:reconId",
+      "@type": "rdf:Property",
+      "rdfs:label": "reconId",
+      "rdfs:comment": "Related reconciliation session ID, if issue is settlement-related."
+    },
+    {
+      "@id": "ion:status",
+      "@type": "rdf:Property",
+      "rdfs:label": "status",
+      "rdfs:comment": "OPEN: ticket created, not yet acknowledged. ACKNOWLEDGED: assigned party has received and acknowledged. IN_PROGRESS: actively being worked on. PENDING_INFO: waiting for additional information from raiser. RESOLVED: issue resolved, awaiting raiser confirmation. CLOSED: fully resolved and closed. ESCA"
+    },
+    {
+      "@id": "ion:thread",
+      "@type": "rdf:Property",
+      "rdfs:label": "thread",
+      "rdfs:comment": "Complete conversation trail for this ticket."
+    },
+    {
+      "@id": "ion:resolution",
+      "@type": "rdf:Property",
+      "rdfs:label": "resolution"
+    },
+    {
+      "@id": "ion:sla",
+      "@type": "rdf:Property",
+      "rdfs:label": "sla"
+    },
+    {
+      "@id": "ion:createdAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "createdAt"
+    },
+    {
+      "@id": "ion:updatedAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "updatedAt"
+    },
+    {
+      "@id": "ion:resolvedAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "resolvedAt"
+    }
+  ]
+}

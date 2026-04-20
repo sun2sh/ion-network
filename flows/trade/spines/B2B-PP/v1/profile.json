@@ -1,0 +1,34 @@
+{
+  "id": "ion-trade-B2B-PP-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2B Wholesale Prepaid",
+  "patternCode": "B2B-PP",
+  "status": "ready",
+  "description": "B2B wholesale with upfront payment. MOQ enforcement, bulk pricing, PO reference, Faktur Pajak, BAST.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "fmcg",
+    "electronics",
+    "agritech",
+    "fashion",
+    "pharmacy",
+    "automotive-parts"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

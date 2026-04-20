@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/core/localization/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "id": "ion:id",
+    "en": "ion:en",
+    "ms": "ion:ms",
+    "zh": "ion:zh",
+    "ar": "ion:ar",
+    "ta": "ion:ta",
+    "ko": "ion:ko",
+    "ja": "ion:ja",
+    "name": "ion:name",
+    "shortDesc": "ion:shortDesc",
+    "longDesc": "ion:longDesc",
+    "LocalisedText": "ion:LocalisedText",
+    "IONCatalogLocalization": "ion:IONCatalogLocalization"
+  }
+}

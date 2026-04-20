@@ -1,0 +1,151 @@
+# ION Trade Flow - Cross-Border / Export (XB) Spine v1
+# NOT OAS. ION flow specification document.
+# Indonesian exporter (BPP) sells to international buyer (BAP).
+
+id: ion-trade-XB-v1
+version: "1.0.0"
+pattern: Cross-Border Export
+sectorCode: A
+status: ready
+description: >
+  Indonesian seller (BPP) exports physical goods to international buyer (BAP).
+  Covers: Agritech export (coffee, cocoa, palm oil, spices), Fashion export
+  (batik, garments), Handicraft export, Electronics re-export.
+  Key additions to B2C-SF: English catalog required, USD/multi-currency pricing,
+  international shipping modes, Bea Cukai (customs) reference, export documentation,
+  HS code required on all items, country-of-origin mandatory, international
+  payment rails (SWIFT/RTGS international).
+
+applicableCategories:
+  - agritech
+  - fashion
+  - handicraft
+  - fmcg
+  - electronics
+
+localizationRequirements:
+  catalogLanguage:
+    id: REQUIRED
+    en: REQUIRED (mandatory for XB — unlike domestic patterns where en is optional)
+  currency: IDR for domestic leg; USD or agreed currency for international invoice
+  countryOfOrigin: REQUIRED for all items (already in resource/v1)
+
+regulatoryRequirements:
+  hsnCode: REQUIRED for all items (customs classification)
+  beaCukaiReference: required at on_confirm (contractAttributes.beaCukaiReference)
+  exportDeclaration: PEB (Pemberitahuan Ekspor Barang) — Bea Cukai form
+  phytosanitaryCert: required for agritech exports to certain countries
+  exportLicense: certain categories require KEMENDAG export license
+
+phases:
+  phase1:
+    name: Catalog
+    description: Seller publishes catalog with full bilingual content and HS codes.
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        requiredFields:
+          - message.catalog.providers[].items[].resourceAttributes.name.id
+          - message.catalog.providers[].items[].resourceAttributes.name.en
+          - message.catalog.providers[].items[].resourceAttributes.shortDesc.id
+          - message.catalog.providers[].items[].resourceAttributes.shortDesc.en
+          - message.catalog.providers[].items[].resourceAttributes.countryOfOrigin
+          - message.catalog.providers[].items[].resourceAttributes.packaged.hsnCode
+          - message.catalog.providers[].items[].resourceAttributes.logisticsServiceType  # values="[INTERNATIONAL_AIR, INTERNATIONAL_OCEAN]"
+          - message.catalog.providers[].offers[].offerAttributes.displayLanguage  # note="must_include: [id, en]"
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select  # note: Same as B2C-SF. International BAP subscriber.
+
+      - step: on_select
+        description: >
+          Seller returns quote with international shipping options.
+          Incoterms declared (FOB, CIF, EXW, DAP).
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.performance[].performanceAttributes.sla
+          - message.contract.tags.xb.incoterms  # values="[FOB, CIF, EXW, DAP, DDP]"
+          - message.contract.tags.xb.port_of_loading
+          - message.contract.tags.xb.estimated_transit_days
+
+      - step: init
+        from: BAP
+        to: BPP
+        description: International buyer provides delivery country, import details.
+        requiredFields:
+          - message.contract.performance[].stops[].location.address
+          - message.contract.performance[].stops[].location.country
+          - message.contract.settlements[].settlementAttributes.paymentRail  # note=SWIFT for international; or IDR settlement via agreed channel
+          - message.contract.tags.xb.importer_of_record
+          - message.contract.tags.xb.import_license_number  # condition=required for regulated categories in destination country
+          - message.contract.contractAttributes.invoicePreferences.invoiceType  # value=EINVOICE (commercial invoice for customs)
+
+      - step: on_init
+        description: Seller returns payment instructions — typically SWIFT or letter of credit.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail[]
+          - message.contract.tags.xb.commercial_invoice_number
+
+      - step: confirm
+        description: Buyer confirms. Triggers export documentation preparation.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+
+      - step: on_confirm
+        description: Seller confirms. Begins export documentation and customs.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.beaCukaiReference
+          - message.contract.tags.xb.peb_reference  # note=Pemberitahuan Ekspor Barang — export customs declaration
+
+  phase3:
+    name: Export Fulfilment
+    description: International logistics. States use standard machine with XB additions.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    additionalStates:
+      - CUSTOMS_CLEARED_EXPORT  # Bea Cukai export customs cleared at Indonesian port
+      - IN_TRANSIT_INTERNATIONAL  # In transit via international carrier
+      - CUSTOMS_CLEARED_IMPORT  # Customs cleared at destination country
+    steps:
+      - step: on_status
+        stepContext: "PACKED"
+        additionalFields:
+          - message.contract.performance[].performanceAttributes.tags.xb.export_packing_list
+          - message.contract.performance[].performanceAttributes.tags.xb.total_weight_kg
+          - message.contract.performance[].performanceAttributes.tags.xb.total_cbm
+      - step: on_status
+        stepContext: "DISPATCHED"
+        additionalFields:
+          - field: message.contract.performance[].performanceAttributes.awbNumber
+            note: International AWB (IATA) or Bill of Lading (ocean)
+          - message.contract.tags.xb.vessel_or_flight
+          - message.contract.tags.xb.estimated_arrival_port
+      - step: on_status
+        stepContext: "DELIVERED"
+        additionalFields:
+          - message.contract.tags.xb.customs_cleared_import
+          - message.contract.tags.xb.import_duty_paid_by
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: CUSTOMS_CLEARED_EXPORT
+    note: Cancellation after customs clearance requires Bea Cukai re-declaration
+  returns:
+    note: International returns are complex — separate return documentation required
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+documentationGenerated:
+  - Commercial Invoice (Faktur Komersial)
+  - Packing List (Daftar Kemasan)
+  - PEB (Pemberitahuan Ekspor Barang)
+  - Certificate of Origin (Surat Keterangan Asal) — if required
+  - Phytosanitary Certificate — for agritech exports

@@ -1,0 +1,33 @@
+{
+  "id": "ion-trade-AUC-R-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "Procurement Reverse Auction",
+  "patternCode": "AUC-R",
+  "status": "ready",
+  "description": "Reverse/procurement auction. BAP publishes RFQ via /discover. BPPs bid down. Lowest wins.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "agritech",
+    "fmcg",
+    "electronics",
+    "pharmacy",
+    "automotive-parts"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

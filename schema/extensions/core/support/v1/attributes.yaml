@@ -1,0 +1,296 @@
+openapi: 3.1.1
+info:
+  title: ION Support Extension (v1)
+  description: >
+    Consumer complaint ticket — buyer raises issue about their order to seller.
+    Derived from ONDC IGM model. Covers issue creation, action trail, resolution.
+    APIs: support / on_support
+    Attaches to: beckn:Support
+  version: 1.0.0
+
+components:
+  schemas:
+    IONSupportTicket:
+      type: object
+      title: ION Consumer Support Ticket
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:SupportTicket
+      x-beckn-attaches-to: Support (as issue contents)
+      required: [id, category, complainantInfo, description, source, status, createdAt, updatedAt]
+
+      properties:
+
+        id:
+          x-ion-mandatory: always
+          type: string
+          description: Network-wide unique issue identifier. Assigned at creation.
+          example: ISSUE-2026-00001234
+
+        orderId:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when ticket relates to a specific order
+          type: string
+          description: Contract/order ID this issue relates to.
+          example: ORD-2026-00012345
+
+        category:
+          x-ion-mandatory: always
+          type: string
+          enum: [ITEM, FULFILLMENT, PAYMENT, SELLER_CONDUCT, RETURN, REFUND, OTHER]
+          description: >
+            ITEM: wrong item, damaged, not as described.
+            FULFILLMENT: delivery delay, non-delivery, wrong address.
+            PAYMENT: overcharge, payment not processed, duplicate charge.
+            SELLER_CONDUCT: rude behaviour, misleading listing.
+            RETURN: return not accepted, pickup not arranged.
+            REFUND: refund not processed, partial refund disputed.
+          example: FULFILLMENT
+
+        subCategory:
+          x-ion-mandatory: optional
+          type: string
+          description: >
+            Sub-category code for more precise classification.
+            e.g. ITM01=wrong item, ITM02=damaged, FLM01=delay, FLM02=non-delivery
+          example: FLM01
+
+        complainantInfo:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          required: [person, contact]
+          properties:
+            person:
+              type: object
+              additionalProperties: false
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  example: Ahmad Fauzi
+            contact:
+              type: object
+              additionalProperties: false
+              properties:
+                phone:
+                  type: string
+                  example: "0812345678"
+                email:
+                  type: string
+                  format: email
+                  example: ahmad@email.com
+
+        description:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          required: [shortDesc]
+          properties:
+            name:
+              type: string
+              description: Issue title
+              example: Pesanan tidak sampai setelah 3 hari
+            shortDesc:
+              type: string
+              description: Brief description of the problem
+              example: Paket masih dalam status DISPATCHED sudah 3 hari, belum ada update.
+            longDesc:
+              type: string
+              description: Full detailed description
+            images:
+              type: array
+              items:
+                type: string
+                format: uri
+              description: Evidence photos or screenshots
+
+        source:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          required: [networkParticipantId, type]
+          properties:
+            networkParticipantId:
+              type: string
+              description: Subscriber ID of the NP where issue was raised (BAP)
+              example: buyerapp.ion.id
+            type:
+              type: string
+              enum: [CONSUMER, SELLER, INTERFACING_NP]
+              description: Who raised this issue
+
+        expectedResponseTime:
+          x-ion-mandatory: optional
+          type: string
+          description: ISO 8601 duration. Time within which respondent must acknowledge.
+          example: PT2H
+
+        expectedResolutionTime:
+          x-ion-mandatory: optional
+          type: string
+          description: ISO 8601 duration. Time within which resolution must be provided.
+          example: P1D
+
+        status:
+          x-ion-mandatory: always
+          type: string
+          enum: [OPEN, PROCESSING, ESCALATED, RESOLVED, CLOSED]
+          example: OPEN
+
+        severity:
+          x-ion-mandatory: optional
+          type: string
+          enum: [CRITICAL, HIGH, MEDIUM, LOW]
+          example: MEDIUM
+
+        issueActions:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          description: Action trail — both sides of the conversation.
+          properties:
+            complainantActions:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [complainantAction, updatedAt, updatedBy]
+                properties:
+                  complainantAction:
+                    type: string
+                    enum: [OPEN, ESCALATE, CLOSE]
+                  shortDesc:
+                    type: string
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  updatedBy:
+                    $ref: "#/components/schemas/IONSupportTicket/properties/issueActions/properties/ActionParty"
+            respondentActions:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [respondentAction, updatedAt, updatedBy]
+                properties:
+                  respondentAction:
+                    type: string
+                    enum: [PROCESSING, RESOLVED, NO_ACTION, NEED_MORE_INFO]
+                  shortDesc:
+                    type: string
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  updatedBy:
+                    $ref: "#/components/schemas/IONSupportTicket/properties/issueActions/properties/ActionParty"
+                  cascadedLevel:
+                    type: integer
+                    minimum: 1
+                    maximum: 3
+                    description: >
+                      1=Interfacing NP (auto-resolution).
+                      2=GRO of counterparty NP.
+                      3=ODR external resolution.
+            ActionParty:
+              type: object
+              additionalProperties: false
+              properties:
+                org:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: sellerapp.ion.id::ion:trade
+                contact:
+                  type: object
+                  properties:
+                    phone:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                person:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+
+        resolution:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          properties:
+            shortDesc:
+              type: string
+              description: Brief summary of resolution
+            longDesc:
+              type: string
+              description: Full resolution details
+            actionTriggered:
+              type: string
+              enum: [REFUND, REPLACEMENT, RESHIP, NO_ACTION, CANCEL, PARTIAL_REFUND]
+              description: Action taken to resolve the issue
+
+        rating:
+          x-ion-mandatory: optional
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Consumer rating of resolution quality after issue is CLOSED
+
+        createdAt:
+          x-ion-mandatory: always
+          type: string
+          format: date-time
+
+        updatedAt:
+          x-ion-mandatory: always
+          type: string
+          format: date-time
+
+        # M6 — DISPUTE ESCALATION LEVELS (v0.3)
+        escalationLevel:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+            - SELLER
+            - MARKETPLACE_MEDIATION
+            - BPSK
+            - KOMINFO
+            - ION_NETWORK
+          description: >
+            Current escalation level of the dispute. Progression:
+            1. SELLER — buyer contacts seller (default support flow, 1-2 days).
+            2. MARKETPLACE_MEDIATION — marketplace intervenes (3-5 days).
+            3. BPSK — Badan Penyelesaian Sengketa Konsumen (government, 6-14 days).
+            4. KOMINFO — Kominfo consumer protection portal.
+            5. ION_NETWORK — escalated to ION via raise channel.
+            Each level has its own SLA declared in support/on_support.
+          example: MARKETPLACE_MEDIATION
+          x-ion-regulatory: UU 8/1999 Pasal 45; Permendag 72/2015 tentang BPSK
+
+        escalationTimestamp:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when escalationLevel changes
+          type: string
+          format: date-time
+          description: When the ticket was escalated to this level
+
+        escalationSlaHours:
+          x-ion-mandatory: optional
+          type: integer
+          description: SLA in hours for the current escalation level
+
+        bpskReference:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when escalationLevel=BPSK
+          type: string
+          description: BPSK case reference number
+
+        kominfoReference:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when escalationLevel=KOMINFO
+          type: string
+          description: Kominfo consumer complaint portal reference

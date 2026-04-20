@@ -1,0 +1,56 @@
+iri: ion://policy/return.agritech.perishable-defect-only
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: RETURN
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pengembalian hanya untuk cacat - produk segar"
+  en: "Defect-only return - fresh produce"
+
+returnWindowDays: 1
+windowStart: DELIVERED
+windowBusinessDaysOnly: false
+
+returnReasonsAllowed:
+  - DEFECTIVE
+  - DAMAGED_IN_TRANSIT
+  - QUALITY_ISSUE
+  - EXPIRED_PRODUCT
+
+returnReasonsConditional:
+  []
+
+evidenceRequired: PHOTO_REQUIRED
+evidenceMinPhotos: 3
+
+pickupArrangedBy: SELLER
+pickupCostBorneBy: SELLER
+
+refundAfterQC: true
+refundTimelineFromReturnDelivered: PT24H
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+partialRefundOnQC:
+  QC_PASSED: 1.0
+  QC_PARTIAL: 0.7
+  QC_FAILED_USED_DAMAGED: 0.5
+  QC_FAILED_TAMPERED: 0.0
+  QC_FAILED_MISSING_PARTS: 0.5
+  QC_FAILED_DIFFERENT_ITEM: 0.0
+
+# Referenced penalty policies
+buyerPenaltyOnChangeOfMind: ion://policy/penalty.buyer-restocking.none
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - agritech
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 19"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+
+supersededBy: null
+deprecatedAt: null

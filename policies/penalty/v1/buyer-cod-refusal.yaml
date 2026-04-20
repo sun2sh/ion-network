@@ -1,0 +1,39 @@
+iri: ion://policy/penalty.buyer-cod-refusal.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: BUYER_COD_REFUSAL
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda penolakan COD"
+  en: "COD refusal penalty"
+
+triggerConditions:
+  - condition: COD_REFUSED_WITHOUT_REASON
+    severity: MINOR
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: COD_ELIGIBILITY_REVOKED_30D
+  - condition: COD_REFUSED_2X_60D
+    severity: MAJOR
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: COD_ELIGIBILITY_REVOKED_PERMANENTLY
+
+appliedVia: buyer_account_flag
+settledTo: NETWORK_FUND
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy"
+
+supersededBy: null
+deprecatedAt: null

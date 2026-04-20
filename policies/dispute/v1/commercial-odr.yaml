@@ -1,0 +1,34 @@
+iri: ion://policy/dispute.commercial.odr
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: DISPUTE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Sengketa komersial - ODR online"
+  en: "Commercial dispute - Online Dispute Resolution"
+
+disputeBody: ION_ODR
+jurisdiction: INDONESIA
+resolutionType: MEDIATION_ONLY
+
+escalationPath:
+  - DIRECT_NEGOTIATION
+  - ION_ODR_MEDIATION
+  - BANI_ARBITRATION
+
+typicalResolutionTimeDays: 21
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - b2b
+  - wholesale
+  - b2g
+
+regulatoryBasis:
+  - "UU 30/1999 Pasal 6"
+  - "ION Network Policy"
+
+supersededBy: null
+deprecatedAt: null

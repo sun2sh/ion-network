@@ -1,0 +1,41 @@
+iri: ion://policy/cancel.b2b.until-dispatched-15pct
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: CANCELLATION
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "B2B - batalkan hingga dikirim dengan biaya restocking 15%"
+  en: "B2B - cancel until dispatched with 15% restocking fee"
+
+cancellationWindowCloses: DISPATCHED
+
+cancellationFee:
+  type: PERCENT
+  value: 0.15
+
+cancellationReasonsAllowed:
+  - CHANGE_OF_MIND
+  - WRONG_ITEM_ORDERED
+  - ORDERED_WRONG_VARIANT
+  - PAYMENT_METHOD_CHANGE
+  - ITEM_NO_LONGER_NEEDED
+
+refundPercentageOnCancel: 0.85
+refundTimelineFromCancel: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+sellerPenaltyOnCancelWithoutCause: ion://policy/penalty.seller-cancel-without-cause.standard.standard
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - b2b
+  - wholesale
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 4"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+supersededBy: null
+deprecatedAt: null

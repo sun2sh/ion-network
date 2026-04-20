@@ -1,0 +1,149 @@
+# ION Trade Flow - B2B Wholesale Credit / BNPL (B2B-CR) Spine v1
+# NOT OAS. ION flow specification document.
+# B2B credit purchase: buyer receives goods now, pays within credit terms.
+
+id: ion-trade-B2B-CR-v1
+version: "1.0.0"
+pattern: B2B Wholesale Credit / BNPL
+sectorCode: A
+status: ready
+extends: flows/trade/spines/B2B-PP/v1
+description: >
+  B2B wholesale with deferred payment. Buyer receives goods first, pays within
+  agreed credit terms (NET 7, NET 14, NET 30, NET 45, NET 60, NET 90).
+  May also use embedded BNPL financing (Kredivo Business, Akulaku for Merchant).
+  Key additions to B2B-PP: creditTermsDays, paymentDueDate, credit facility
+  management, dunning flow, PPh23 withholding on services.
+
+deltaFrom_B2B_PP:
+  - payment.timing: ON_FULFILLMENT or POST_FULFILLMENT (not ON_ORDER)
+  - contractAttributes.creditTermsDays: REQUIRED
+  - contractAttributes.paymentDueDate: REQUIRED (delivery + creditTermsDays)
+  - settlement.settlementBasis: AFTER_PAYMENT_DUE_DATE (not AFTER_DELIVERY)
+  - Dunning flow: BPP sends payment reminders via on_update before due date
+  - Late payment penalty: declared in offer considerationAttributes
+
+phases:
+  phase1:
+    name: Catalog
+    note: Offer declares creditAvailable=true and accepted credit terms options.
+
+  phase2:
+    name: Quotation and Credit Agreement
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.contract.commitments[]
+          - message.contract.performance[].performanceAttributes.performanceMode
+          - message.contract.tags.credit_request.tenure_days
+        note: Buyer declares desired credit tenure at select
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        description: BPP confirms credit eligibility and returns quote with payment terms.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.tags.credit.approved_tenure_days
+          - message.contract.tags.credit.credit_limit
+          - message.contract.tags.credit.payment_due_date
+        conditionalFields:
+          - field: message.contract.tags.credit.finance_charge
+            condition: if BNPL provider charges interest on credit period
+
+      - step: init
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.timing
+          - message.contract.contractAttributes.creditTermsDays
+          - message.contract.contractAttributes.purchaseOrderReference
+          - message.contract.contractAttributes.invoicePreferences.taxId.value
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        description: Confirms credit terms. No immediate payment instruction needed.
+        requiredFields:
+          - message.contract.contractAttributes.creditTermsDays
+          - message.contract.contractAttributes.paymentDueDate
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        description: Buyer confirms. Payment status=PENDING (to be paid by due date).
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.creditTermsDays
+          - message.contract.contractAttributes.paymentDueDate
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        description: Order confirmed on credit. Due date locked in contract.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.creditTermsDays
+          - message.contract.contractAttributes.paymentDueDate
+        conditionalFields:
+          - field: message.contract.contractAttributes.fakturPajakReference
+            condition: PKP seller, TAX_INVOICE
+
+  phase3:
+    name: Delivery
+    note: Same as B2B-PP. Delivery completes before payment.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+
+  phase4:
+    name: Credit Collection
+    description: >
+      BPP tracks payment due date. Sends reminders. Reconciles after payment.
+    steps:
+      - step: on_update
+        stepContext: "payment reminder"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: >
+          BPP sends payment reminders before due date.
+          T-7, T-3, T-1 before paymentDueDate.
+        requiredFields:
+          - message.contract.contractAttributes.paymentDueDate
+          - message.contract.settlements[].status
+          - message.contract.contractAttributes.dunningReminderSequence
+
+      - step: update
+        stepContext: "payment_confirmation"
+        from: BAP
+        to: BPP
+        description: BAP confirms payment has been made (for bank transfer/RTGS).
+        requiredFields:
+          - message.contract.id
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.settlements[].settlementAttributes.methodDetail[].biRef
+          - message.contract.settlements[].settlementAttributes.paidAt
+
+      - step: on_update
+        stepContext: "payment_acknowledged"
+        from: BPP
+        to: BAP
+        description: BPP confirms payment received. Contract SETTLED.
+
+settlementBasis: AFTER_PAYMENT_DUE_DATE
+
+contractAttributeAdditions:
+  creditTermsDays: REQUIRED
+  paymentDueDate: REQUIRED
+  purchaseOrderReference: REQUIRED
+
+considerationAdditions:
+  breakupLineType:
+    FINANCE_CHARGE: interest on BNPL credit tenure
+  pphWithholding:
+    note: PPh23 2% withheld by buyer for services components if applicable

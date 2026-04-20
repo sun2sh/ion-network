@@ -1,0 +1,49 @@
+iri: ion://policy/warranty.standard.none
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: WARRANTY
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Tanpa garansi"
+  en: "No warranty"
+
+warrantyType: NONE
+warrantyDuration: P0D
+coverageType: NONE
+serviceMode: NONE
+
+coverageIncludes:
+  []
+
+coverageExcludes:
+  - PHYSICAL_DAMAGE
+  - WATER_DAMAGE
+  - UNAUTHORIZED_MODIFICATION
+  - NORMAL_WEAR_AND_TEAR
+  - CONSUMABLES
+
+claimProcedure:
+  firstContact: SELLER
+  documentationRequired:
+    - PROOF_OF_PURCHASE
+    - SERIAL_NUMBER
+  resolutionOptions: []
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - fashion
+  - beauty
+  - fmcg
+  - grocery
+  - agritech
+  - digital-goods
+  - books-stationery
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 25"
+  - "PP 36/2023 tentang Perlindungan Konsumen"
+
+supersededBy: null
+deprecatedAt: null

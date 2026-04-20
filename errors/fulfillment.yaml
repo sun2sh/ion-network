@@ -1,0 +1,47 @@
+# ION Error Registry — Fulfillment (ION-4xxx)
+# status, track, update errors
+
+- code: ION-4001
+  http_status: 400
+  category: fulfillment
+  title:
+    id: Format GPS tidak valid
+    en: Invalid GPS coordinate format
+  description:
+    en: GPS coordinates must be in lat,lon format with minimum 4 decimal places. Longitude-first (GeoJSON) is not accepted in context.location.gps.
+  affected_field: context.location.gps
+  affected_apis: [discover, select, init, track, on_track]
+  schema_ref: schema/extensions/core/address/v1
+  flow_ref: null
+  resolution:
+    en: Format as '-6.261000,106.815000' (lat,lon). Minimum 4 decimal places. Do not swap longitude and latitude.
+
+- code: ION-4002
+  http_status: 404
+  category: fulfillment
+  title:
+    id: Performance record tidak ditemukan
+    en: Performance record not found
+  description:
+    en: The performanceId in a status or track request does not correspond to a known performance record for this contract.
+  affected_field: message.contract.fulfillment_id
+  affected_apis: [status, on_status, track, on_track]
+  schema_ref: schema/extensions/trade/performance/v1
+  flow_ref: flows/trade/branches/cross-cutting/v1
+  resolution:
+    en: Use performanceId from on_confirm. Multiple performance records may exist (main delivery + return). Reference the correct one.
+
+- code: ION-4003
+  http_status: 400
+  category: fulfillment
+  title:
+    id: Transisi state tidak valid
+    en: Invalid performance state transition
+  description:
+    en: The BPP attempted to transition the performance to a state that is not permitted from the current state per the performance-states state machine.
+  affected_field: Performance.status.code
+  affected_apis: [on_status, on_update]
+  schema_ref: schema/extensions/trade/performance-states/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Check the allowed transitions in schema/extensions/trade/performance-states/v1/states.yaml. Cannot skip states or go backwards.

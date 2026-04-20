@@ -1,0 +1,61 @@
+{
+  "id": "ion-trade-branch-returns-v1",
+  "version": "1.0.0",
+  "branchName": "returns",
+  "status": "ready",
+  "description": "Return flows after delivery. Includes return pickup, return delivery, replacement, exchange, and cancel-return.",
+  "branchFile": "./branch.yaml",
+  "applicableSpines": [
+    "B2C-SF",
+    "B2C-MTO",
+    "B2C-SUB",
+    "B2B-PP",
+    "B2B-CR",
+    "MP-IH",
+    "MP-IL",
+    "XB",
+    "B2G"
+  ],
+  "subBranches": [
+    {
+      "id": "return-initiated",
+      "window": {
+        "earliest": "on_status[DELIVERED]",
+        "latest": "return_window_expiry"
+      }
+    },
+    {
+      "id": "return-picked-up",
+      "window": {
+        "earliest": "after return-initiated"
+      }
+    },
+    {
+      "id": "return-delivered",
+      "window": {
+        "earliest": "after return-picked-up"
+      },
+      "triggers": "refund sub-step"
+    },
+    {
+      "id": "replacement",
+      "window": {
+        "earliest": "after return-initiated"
+      }
+    },
+    {
+      "id": "exchange",
+      "window": {
+        "earliest": "after return-initiated"
+      },
+      "description": "return pickup + new forward delivery"
+    },
+    {
+      "id": "cancel-return-request",
+      "window": {
+        "earliest": "after return-initiated",
+        "latest": "before return-picked-up"
+      }
+    }
+  ]
+}

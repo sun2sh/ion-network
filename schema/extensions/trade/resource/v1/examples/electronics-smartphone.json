@@ -1,0 +1,95 @@
+{
+  "@context": "https://schema.ion.id/trade/resource/v1/context.jsonld",
+  "@type": "ion:TradeResourceAttributes",
+  "resourceStructure": "VARIANT",
+  "resourceTangibility": "PHYSICAL",
+  "_comment": "Example: Samsung Galaxy smartphone — VARIANT resource (electronics category)",
+  "parentResourceId": "SAMSUNG-GALAXY-S25",
+  "isDefaultVariant": true,
+  "variantGroup": {
+    "id": "VG-COLOUR",
+    "name": {
+      "id": "Warna",
+      "en": "Colour"
+    },
+    "variantOn": "colour"
+  },
+  "brand": "Samsung",
+  "model": "Galaxy S25",
+  "modelYear": 2025,
+  "sku": "SAM-S25-8-256-BLK",
+  "productCode": {
+    "type": "GTIN",
+    "value": "8806095548227"
+  },
+  "name": {
+    "id": "Samsung Galaxy S25 Hitam",
+    "en": "Samsung Galaxy S25 Phantom Black"
+  },
+  "shortDesc": {
+    "id": "Smartphone flagship dengan kamera AI 200MP",
+    "en": "Flagship smartphone with 200MP AI camera"
+  },
+  "colour": "#1C1C1C",
+  "colourName": "Phantom Black",
+  "halalStatus": "NOT_APPLICABLE",
+  "countryOfOrigin": "KOR",
+  "manufacturerName": "Samsung Electronics Co., Ltd.",
+  "manufacturerAddress": "129, Samsung-ro, Yeongtong-gu, Suwon-si, Gyeonggi-do 16677, Korea",
+  "monthYearOfManufacture": "12/2024",
+  "warrantyDuration": "P1Y",
+  "warrantyType": "MANUFACTURER",
+  "warrantyTerms": "Garansi resmi Samsung Indonesia 1 tahun untuk kerusakan komponen. Kunjungi service centre resmi Samsung.",
+  "sniCertNumber": "SNI-2024-EL-001234",
+  "ageRestricted": false,
+  "ram": "8 GB",
+  "rom": "256 GB",
+  "screenSize": "6.2 inch",
+  "primaryCamera": "200 MP",
+  "secondaryCamera": "12 MP",
+  "cpu": "Snapdragon 8 Elite",
+  "gpu": "Adreno 830",
+  "batteryCapacity": "4000 mAh",
+  "osType": "ANDROID",
+  "osVersion": "Android 15",
+  "connectivity": [
+    "WIFI_6",
+    "BLUETOOTH_5",
+    "5G",
+    "NFC",
+    "USB_C"
+  ],
+  "voltage": "220V/50Hz",
+  "energyRating": 4,
+  "serialTracked": true,
+  "installation": {
+    "required": false,
+    "providedBySeller": false
+  },
+  "usage": {
+    "indoorOnly": false,
+    "compatibleWith": []
+  },
+  "images": [
+    "https://cdn.samsung.com/id/s25-black-front.jpg",
+    "https://cdn.samsung.com/id/s25-black-back.jpg",
+    "https://cdn.samsung.com/id/s25-black-side.jpg"
+  ],
+  "availability": {
+    "status": "IN_STOCK",
+    "maxOrderQty": 2,
+    "backorderAllowed": false,
+    "preorderAllowed": false,
+    "substitutionAllowed": false
+  },
+  "itemRating": 4.8,
+  "isAvailable": true,
+  "credentials": [
+    {
+      "type": "SNI",
+      "uri": "https://registry.bsn.go.id/sni/2024-EL-001234",
+      "issuer": "BSN",
+      "validUntil": "2026-12-31"
+    }
+  ]
+}

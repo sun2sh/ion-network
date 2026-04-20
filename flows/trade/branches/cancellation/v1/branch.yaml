@@ -1,0 +1,200 @@
+# ION Trade Branch — Cancellation v1
+# NOT OAS. ION flow specification document.
+# Four sub-branches covering all cancellation scenarios on a live contract.
+
+id: ion-trade-branch-cancellation-v1
+version: "1.0.0"
+branchType: cancellation
+sectorCode: A
+status: ready
+description: >
+  Cancellation of a confirmed (live) order. Four sub-branches:
+  buyer-initiated full cancellation, seller-initiated full cancellation,
+  partial fulfilment cancellation (multi-item orders), and force-cancel
+  after BPP TAT breach. Refund is always a sub-step inside cancellation,
+  never a standalone flow.
+
+subBranches:
+
+  cancel-full-buyer:
+    id: cancel-full-buyer
+    window:
+      earliest: on_confirm
+      latest: on_status[DELIVERED]
+    description: >
+      Buyer requests full order cancellation. Reason must be in
+      offer.cancellationAllowedReasons. A cancellation fee applies if the
+      current performance state is in offer.cancellationFeeApplicableStates.
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+        conditionalFields:
+          - field: message.contract.contractAttributes.cancellationReason.descriptor.shortDesc
+        businessRules:
+          - reason.descriptor.code must be in offer.cancellationAllowedReasons
+          - if current state is in offer.cancellationFeeApplicableStates, cancellationFee applies
+          - if current state is DISPATCHED or later, buyer cannot cancel — window is closed
+        errors:
+          - ION-5001  # Cancellation not allowed after current state
+          - ION-5002  # Reason not in cancellationAllowedReasons
+
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: callback
+        description: >
+          BPP confirms cancellation. Contract status set to CANCELLED.
+          Refund declared for prepaid orders.
+        requiredFields:
+          - message.contract.status
+          - message.contract.contractAttributes.cancellationReasonCode
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundMethod
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+          - field: message.contract.consideration.considerationAttributes.breakup[breakupLineType=CANCELLATION_FEE]
+
+  cancel-full-seller:
+    id: cancel-full-seller
+    window:
+      earliest: on_confirm
+      latest: on_status[DISPATCHED]
+    description: >
+      Seller (BPP) cancels the order — item unavailability, store closure,
+      regulatory hold, logistics failure. Seller-initiated cancellation never
+      charges a fee to the buyer. Full refund is mandatory for prepaid orders.
+    steps:
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: >
+          BPP sends unsolicited on_cancel. BAP must handle this at any time
+          after on_confirm. No /cancel request from BAP precedes this.
+        requiredFields:
+          - message.contract.status
+          - message.contract.contractAttributes.cancellationReasonCode
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundMethod
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+        businessRules:
+          - No fee to buyer under any circumstances
+          - Full refund mandatory if payment was prepaid
+          - BAP must notify consumer immediately via push notification
+          - BAP should surface reschedule or alternative product option
+
+  cancel-partial-fulfillment:
+    id: cancel-partial-fulfillment
+    window:
+      earliest: on_confirm
+      latest: on_status[DISPATCHED]
+    description: >
+      Individual line(s) in a multi-item order are cancelled, while remaining
+      lines continue to fulfilment. Requires offer.partialCancellationAllowed=true.
+      Quote trail is updated for the cancelled lines. Separate refund for
+      cancelled lines only.
+    prerequisite:
+      - contractAttributes.partialCancellationAllowed must be true
+      - Order must have more than one commitment line
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP sends /cancel with specific lineIds to cancel.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+          - message.contract.contractAttributes.cancelledCommitmentIds[]
+        businessRules:
+          - message.contract.contractAttributes.cancelledCommitmentIds[] must reference existing commitment lineIds
+          - Remaining items continue — no full cancellation implied
+
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: callback
+        description: >
+          BPP confirms partial cancellation. Order status remains ACTIVE for
+          remaining lines. Quote trail updated for cancelled lines.
+        requiredFields:
+          - message.contract.status
+          - message.contract.commitments[]
+          - message.contract.contractAttributes.quoteTrail[]
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+
+  technical-cancellation-force:
+    id: technical-cancellation-force
+    window:
+      earliest: on_confirm
+      latest: on_status[DELIVERED]
+    description: >
+      BAP force-cancels after BPP fails to respond within mandated TAT
+      (turnaround time). BAP sends /cancel with force=yes flag.
+      This overrides normal cancellation window constraints.
+      BPP's silence is treated as implicit acceptance of cancellation.
+      BAP must also raise to ION via raise/on_raise after force-cancel.
+    triggerCondition: BPP has not sent on_status within the SLA window declared at on_confirm
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP sends /cancel with force=yes. Includes timestamp of last
+          BPP interaction to document the TAT breach.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+          - message.contract.contractAttributes.cancellationTags.force
+          - message.contract.contractAttributes.cancellationTags.lastBppInteractionAt
+          - message.contract.contractAttributes.cancellationTags.expectedStatusBy
+
+      - step: on_cancel
+        stepContext: "if BPP responds"
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP acknowledges force-cancel and declares refund.
+        requiredFields:
+          - message.contract.status
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+
+      - step: raise
+        stepContext: "concurrent — mandatory"
+        description: >
+          BAP must raise to ION via raise/on_raise immediately after sending
+          force-cancel. This creates a formal record of the TAT breach.
+        requiredFields:
+          - message.ticket.type
+          - message.ticket.priority
+          - message.ticket.contractId
+
+    businessRules:
+      - BPP silence after force-cancel is treated as implicit acceptance
+      - BAP refunds consumer immediately if payment was prepaid
+      - BAP must NOT retry force-cancel — one attempt is sufficient
+      - ION Central may impose penalty on BPP for documented TAT breach
+      - Force-cancel is available regardless of normal cancellation window
+    errors:
+      - ION-9002  # BPP callback timeout
+
+subFlowNote: >
+  Refund is always a sub-step within cancel-full-buyer, cancel-full-seller,
+  or cancel-partial-fulfillment. It is never a standalone flow or API call.
+  Refund fields are declared inside on_cancel: refundAmount, refundMethod,
+  refundTimeline. The actual money movement is handled by the payment rail
+  outside of ION.

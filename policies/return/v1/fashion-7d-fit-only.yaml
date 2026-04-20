@@ -1,0 +1,74 @@
+iri: ion://policy/return.fashion.7d-fit-only-sellerpays
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: RETURN
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pengembalian 7 hari untuk masalah ukuran/fit - penjual menanggung ongkos"
+  en: "7-day return for size/fit issues only - seller pays"
+
+returnWindowDays: 7
+windowStart: DELIVERED
+windowBusinessDaysOnly: false
+
+returnReasonsAllowed:
+  - DEFECTIVE
+  - NOT_AS_DESCRIBED
+  - WRONG_ITEM_SENT
+  - DAMAGED_IN_TRANSIT
+  - SIZE_MISMATCH
+  - COLOR_MISMATCH
+
+returnReasonsConditional:
+  - reason: SIZE_MISMATCH
+    condition: "Item must have tags intact and unworn"
+  - reason: COLOR_MISMATCH
+    condition: "Item must be unworn"
+
+evidenceRequired: PHOTO_REQUIRED
+evidenceMinPhotos: 2
+
+pickupArrangedBy: SELLER
+pickupCostBorneBy: SELLER
+
+refundAfterQC: true
+refundTimelineFromReturnDelivered:
+  # Op-19 v0.5: timeline varies by original payment method. BPP MUST honour the
+  # method-specific window. Default applies if method not listed.
+  default: P3D
+  QRIS: PT1H
+  EWALLET: PT1H
+  VIRTUAL_ACCOUNT: P3D
+  BANK_TRANSFER: P3D
+  BI_FAST: PT1H
+  CREDIT_CARD: P14D
+  DEBIT_CARD: P7D
+  BNPL: P5D
+  COD_TO_WALLET: PT0S
+  COD_TO_BANK: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+partialRefundOnQC:
+  QC_PASSED: 1.0
+  QC_PARTIAL: 0.7
+  QC_FAILED_USED_DAMAGED: 0.5
+  QC_FAILED_TAMPERED: 0.0
+  QC_FAILED_MISSING_PARTS: 0.5
+  QC_FAILED_DIFFERENT_ITEM: 0.0
+
+# Referenced penalty policies
+buyerPenaltyOnChangeOfMind: ion://policy/penalty.buyer-restocking.none
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - fashion
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 19"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+
+supersededBy: null
+deprecatedAt: null

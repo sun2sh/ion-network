@@ -1,0 +1,30 @@
+{
+  "id": "ion-trade-AUC-F-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "Forward Auction",
+  "patternCode": "AUC-F",
+  "status": "ready",
+  "description": "English ascending auction. /select = bid submission. Seller sets starting price and reserve. Winner confirms.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "agritech",
+    "collectibles",
+    "excess-inventory",
+    "used-goods",
+    "art"
+  ],
+  "applicableBranches": [
+    "returns/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

@@ -1,0 +1,71 @@
+{
+  "id": "ion-trade-branch-updates-v1",
+  "version": "1.0.0",
+  "branchName": "updates",
+  "status": "ready",
+  "description": "Post-confirm order updates. Address, authorization, instructions, invoice, price, delay notification.",
+  "branchFile": "./branch.yaml",
+  "applicableSpines": [
+    "B2C-SF",
+    "B2C-MTO",
+    "B2B-PP",
+    "B2B-CR",
+    "MP-IH",
+    "MP-IL",
+    "B2G"
+  ],
+  "subBranches": [
+    {
+      "id": "fulfillment-delay",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      },
+      "trigger": "unsolicited on_update from BPP"
+    },
+    {
+      "id": "update-delivery-address",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DISPATCHED]"
+      }
+    },
+    {
+      "id": "update-delivery-authorization",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      }
+    },
+    {
+      "id": "buyer-instructions",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DISPATCHED]"
+      }
+    },
+    {
+      "id": "update-sale-invoice",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      }
+    },
+    {
+      "id": "price-adjustment",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "contract_COMPLETE"
+      },
+      "trigger": "unsolicited on_update from BPP"
+    },
+    {
+      "id": "ready-to-ship",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DISPATCHED]"
+      },
+      "trigger": "BPP signals package ready for LSP pickup"
+    }
+  ]
+}

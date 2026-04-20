@@ -1,0 +1,185 @@
+# ION Error Registry — Post-Order (ION-5xxx)
+# cancel, return, RTO, refund errors
+
+- code: ION-5001
+  http_status: 400
+  category: post-order
+  title:
+    id: Pembatalan tidak diizinkan setelah status ini
+    en: Cancellation not allowed after current state
+  description:
+    en: Buyer attempted to cancel after the performance state has passed the cancellation window declared in the offer's cancellationPolicy.
+  affected_field: offerAttributes.cancellationPolicy
+  affected_apis: [cancel, on_cancel]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/branches/cancellation/v1
+  resolution:
+    en: Enforce cancellation window in BAP UI. Check cancellationFeeApplicableStates — if current state is in this list, fee applies.
+
+- code: ION-5002
+  http_status: 400
+  category: post-order
+  title:
+    id: Alasan pembatalan tidak valid
+    en: Cancellation reason not accepted by seller
+  description:
+    en: The cancellation reason code sent is not in the seller's declared cancellationAllowedReasons list.
+  affected_field: offerAttributes.cancellationAllowedReasons
+  affected_apis: [cancel]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/branches/cancellation/v1
+  resolution:
+    en: Only send cancellation reasons that are in the offer's cancellationAllowedReasons. Display these reasons to consumer in the cancellation flow.
+
+- code: ION-5003
+  http_status: 400
+  category: post-order
+  title:
+    id: Return tidak dapat dilakukan untuk produk ini
+    en: Return not permitted for this product
+  description:
+    en: The offer has returnable=false. Return cannot be initiated for this product category.
+  affected_field: offerAttributes.returnable
+  affected_apis: [update]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/branches/returns/v1
+  resolution:
+    en: Check returnable flag before showing return option in BAP UI. Do not present return option if returnable=false.
+
+- code: ION-5004
+  http_status: 400
+  category: post-order
+  title:
+    id: Jendela return telah berakhir
+    en: Return window has expired
+  description:
+    en: The return initiation request was made after the returnWindow duration has elapsed from the DELIVERED timestamp.
+  affected_field: offerAttributes.returnWindow
+  affected_apis: [update]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/branches/returns/v1
+  resolution:
+    en: Calculate return deadline as deliveredAt + returnWindow ISO 8601 duration. Only show return option within this window.
+
+- code: ION-5005
+  http_status: 400
+  category: post-order
+  title:
+    id: Bukti pengembalian tidak memadai
+    en: Return evidence insufficient
+  description:
+    en: >
+      Return request does not meet the evidence requirement declared
+      in offer.returnEvidenceRequirement. Missing required photos or video.
+  affected_field: message.contract.performance[].performanceAttributes.tags.return_evidence
+  affected_apis: [update]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/branches/returns/v1
+  resolution:
+    en: Request additional evidence from consumer per returnEvidenceRequirement.
+
+- code: ION-5006
+  http_status: 409
+  category: post-order
+  title:
+    id: QC pengembalian gagal
+    en: Return QC failed
+  description:
+    en: >
+      Return item QC inspection failed — tampered, missing parts, different
+      item, used or damaged. Refund amount reduced or refused per seller policy.
+  affected_field: message.contract.performance[].performanceAttributes.qcResult
+  affected_apis: [on_status]
+  schema_ref: schema/extensions/trade/performance/v1
+  flow_ref: flows/trade/branches/returns/v1
+  resolution:
+    en: Consumer may escalate via support/raise if they dispute QC finding.
+
+- code: ION-5007
+  http_status: 403
+  category: post-order
+  title:
+    id: Pelanggaran SLA — penalti diterapkan
+    en: SLA breach — penalty applied
+  description:
+    en: >
+      BPP breached declared SLA. Penalty deduction applied at reconcile time
+      per ION network penalty schedule.
+  affected_field: reconcile.slaPenaltyDeduction
+  affected_apis: [reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  resolution:
+    en: BPP may dispute via raise channel if breach attribution is incorrect.
+
+- code: ION-5008
+  http_status: 403
+  category: post-order
+  title:
+    id: Aksi tidak diizinkan oleh policy
+    en: Action not permitted by declared policy
+  description:
+    en: >
+      Request attempted an action outside the bounds of the declared policy IRI.
+      Examples: cancelling past cancellationWindowCloses state, returning
+      outside returnWindow, requesting refund when refundAfterQC=false before QC.
+      ION resolves the policy IRI and applies the terms document as enforcement.
+  affected_field: offerAttributes.{policy}
+  affected_apis: [cancel, update]
+  schema_ref: policies/registry.json
+  flow_ref: policies/
+  resolution:
+    en: Read the policy terms document for the declared IRI. Respect the window/reason/condition constraints it specifies.
+
+- code: ION-5009
+  http_status: 409
+  category: post-order
+  title:
+    id: SLA dilanggar - eskalasi otomatis
+    en: SLA violated - auto escalation triggered
+  description:
+    en: >
+      Grievance SLA policy's firstResponseSla or resolutionSla was breached.
+      ION Central has auto-escalated to the next level in the policy's
+      escalationLevels and queued the linked penalty policy for application
+      at reconcile time.
+  affected_field: support.escalationLevel
+  affected_apis: [on_raise]
+  schema_ref: schema/extensions/core/support/v1
+  flow_ref: policies/grievance-sla/v1/
+  resolution:
+    en: Respond to tickets within declared firstResponseSla. SLA breaches compound - repeat offenders face harsher penalties.
+
+- code: ION-5010
+  http_status: 451
+  category: post-order
+  title:
+    id: Verifikasi umur gagal saat pengiriman
+    en: Age verification failed at delivery
+  description:
+    en: >
+      Delivery agent could not verify buyer age for age-restricted item.
+      Reasons include buyer underage, refused to show ID, no valid ID, or
+      biometric API failure. Delivery fails; RTO initiates.
+  affected_field: message.contract.performance[].performanceAttributes.ageVerificationFailedReason
+  affected_apis: [on_status]
+  schema_ref: schema/extensions/trade/performance/v1
+  flow_ref: flows/trade/branches/RTO/v1
+  resolution:
+    en: Initiate RTO flow. Buyer may be restricted from future purchases of this category per platform policy.
+
+- code: ION-5011
+  http_status: 451
+  category: post-order
+  title:
+    id: Pelanggaran residensi data
+    en: Data residency violation
+  description:
+    en: >
+      A BAP or BPP processing foreign infrastructure attempted to transact
+      a resource with dataResidency=DOMESTIC_ONLY. Transaction refused.
+      Required for pharmacy, health data, financial services under UU 27/2022.
+  affected_field: message.contract.commitments[].resources[].resourceAttributes.dataResidency
+  affected_apis: [select, init, confirm]
+  schema_ref: schema/extensions/trade/resource/v1
+  resolution:
+    en: BAP must confirm domestic-only data processing before attempting these transactions; otherwise filter such resources from discovery.

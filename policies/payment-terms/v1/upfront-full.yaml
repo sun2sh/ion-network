@@ -1,0 +1,51 @@
+iri: ion://policy/payment-terms.upfront.full
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Pembayaran penuh di muka"
+  en: "Full upfront payment"
+
+paymentTiming: ON_ORDER
+paymentCollection: PREPAID
+depositRequired: false
+depositPercentage: 0
+creditTermsDays: 0
+installmentEnabled: false
+installmentTenure: 0
+
+allowedPaymentMethods:
+  - QRIS
+  - VIRTUAL_ACCOUNT
+  - EWALLET
+  - BANK_TRANSFER
+  - CREDIT_CARD
+  - DEBIT_CARD
+
+latePaymentPenalty: null
+latePaymentFeePercent: 0
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - beauty
+  - fmcg
+  - sports-outdoors
+  - toys-games
+  - books-stationery
+  - grocery
+  - agritech
+  - digital-goods
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,40 @@
+iri: ion://policy/payment-terms.credit.net-7
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Kredit B2B - NET 7 hari"
+  en: "B2B credit - NET 7 days"
+
+paymentTiming: POST_DELIVERY
+paymentCollection: CREDIT
+depositRequired: false
+depositPercentage: 0
+creditTermsDays: 7
+installmentEnabled: false
+installmentTenure: 0
+
+allowedPaymentMethods:
+  - BANK_TRANSFER
+  - BI_FAST
+  - RTGS
+  - SKN
+
+latePaymentPenalty: ion://policy/penalty.buyer.late_credit_payment
+latePaymentFeePercent: 0.02
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - b2b
+  - wholesale
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

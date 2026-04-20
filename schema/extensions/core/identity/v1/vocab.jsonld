@@ -1,0 +1,63 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/identity/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONBusinessIdentity",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONBusinessIdentity",
+      "rdfs:comment": "IONBusinessIdentity"
+    },
+    {
+      "@id": "ion:npwp",
+      "@type": "rdf:Property",
+      "rdfs:label": "npwp",
+      "rdfs:comment": "Nomor Pokok Wajib Pajak — 16-digit tax identification number. New format post-2024 (previously 15 digits). Required for all registered sellers on ION. Validated against DJP registry.\n"
+    },
+    {
+      "@id": "ion:nib",
+      "@type": "rdf:Property",
+      "rdfs:label": "nib",
+      "rdfs:comment": "Nomor Induk Berusaha — 13-digit business registration number issued by OSS (Online Single Submission). Mandatory for all ION network participant sellers.\n"
+    },
+    {
+      "@id": "ion:nikNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "nikNumber",
+      "rdfs:comment": "Nomor Induk Kependudukan — 16-digit national identity number from e-KTP. Required for individual (non-business) sellers.\n"
+    },
+    {
+      "@id": "ion:pkpStatus",
+      "@type": "rdf:Property",
+      "rdfs:label": "pkpStatus",
+      "rdfs:comment": "PKP = Pengusaha Kena Pajak (VAT-registered, can issue Faktur Pajak). NON_PKP = non-VAT-registered (cannot issue Faktur Pajak). PKP sellers are mandated once turnover exceeds IDR 4.8 billion/year.\n"
+    },
+    {
+      "@id": "ion:legalEntityName",
+      "@type": "rdf:Property",
+      "rdfs:label": "legalEntityName",
+      "rdfs:comment": "Registered business name as per OSS/notary deed. For PT: \"PT Nama Perusahaan Tbk\". For UD/CV: \"UD Nama Usaha\". For individual: full name as per KTP.\n"
+    },
+    {
+      "@id": "ion:businessType",
+      "@type": "rdf:Property",
+      "rdfs:label": "businessType",
+      "rdfs:comment": "Legal entity type. PT=Limited company, CV=Commanditaire Vennootschap, UD=Usaha Dagang, PERORANGAN=Individual.\n"
+    },
+    {
+      "@id": "ion:siupNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "siupNumber",
+      "rdfs:comment": "Surat Izin Usaha Perdagangan — business trade license. Legacy field, being replaced by NIB under OSS but still referenced by some regulatory frameworks.\n"
+    },
+    {
+      "@id": "ion:spPIRTNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "spPIRTNumber",
+      "rdfs:comment": "SP-P-IRT (Surat Pernyataan Pemilik) — small-scale food production license for home industries. Required for UMKM food sellers who do not have BPOM registration.\n"
+    }
+  ]
+}

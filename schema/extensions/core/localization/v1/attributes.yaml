@@ -1,0 +1,101 @@
+openapi: 3.1.1
+info:
+  title: ION Localization Extension (v1)
+  description: >
+    Bilingual and multilingual text fields for ION catalog content.
+    Defines the language object pattern used across all sectors.
+    "id" (Bahasa Indonesia) is always mandatory.
+    "en" (English) is mandatory for export commerce patterns (XB spine).
+    Attaches to: beckn:Resource.resourceAttributes, beckn:Provider.descriptor
+  version: 1.0.0
+
+components:
+  schemas:
+
+    LocalisedText:
+      type: object
+      title: Localised Text Object
+      description: >
+        Language-keyed text object. Keys are ISO 639-1 language codes.
+        "id" is always mandatory per ION network policy.
+        "en" is mandatory for export commerce (XB pattern).
+        Additional languages optional: ms (Malay), zh (Chinese), ar (Arabic),
+        ta (Tamil), ko (Korean), ja (Japanese).
+      minProperties: 1
+      additionalProperties:
+        type: string
+      properties:
+        id:
+          x-ion-mandatory: optional
+          type: string
+          description: Bahasa Indonesia — always required
+        en:
+          x-ion-mandatory: optional
+          type: string
+          description: English — required for XB pattern
+        ms:
+          x-ion-mandatory: optional
+          type: string
+          description: Bahasa Melayu
+        zh:
+          x-ion-mandatory: optional
+          type: string
+          description: Mandarin Chinese (Simplified)
+        ar:
+          x-ion-mandatory: optional
+          type: string
+          description: Arabic
+        ta:
+          x-ion-mandatory: optional
+          type: string
+          description: Tamil
+        ko:
+          x-ion-mandatory: optional
+          type: string
+          description: Korean
+        ja:
+          x-ion-mandatory: optional
+          type: string
+          description: Japanese
+      required: [id]
+      example:
+        id: Nasi Goreng Spesial
+        en: Special Fried Rice
+
+    IONCatalogLocalization:
+      type: object
+      title: ION Catalog Localization
+      description: >
+        Localised text fields for catalog content — name, short description,
+        long description. All three use the LocalisedText pattern.
+        These extend beckn:descriptor fields with proper multilingual support.
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:CatalogLocalization
+
+      properties:
+
+        name:
+          $ref: "#/components/schemas/LocalisedText"
+          description: >
+            Product or service name as a language object.
+            "id" always mandatory. Replaces/extends beckn descriptor.name.
+          x-ion-mandatory: always
+          x-ion-regulatory: ION Network Policy — Bahasa Indonesia localisation requirement
+
+        shortDesc:
+          $ref: "#/components/schemas/LocalisedText"
+          description: >
+            Short description for catalog listings and search results.
+            Max 150 characters per language. "id" mandatory.
+          x-ion-mandatory: always
+          x-ion-regulatory: ION Network Policy — bilingual catalog requirement
+
+        longDesc:
+          $ref: "#/components/schemas/LocalisedText"
+          description: >
+            Full product description for product detail page.
+            "id" mandatory. "en" mandatory for XB pattern.
+          x-ion-mandatory: optional
+          x-ion-regulatory: ION Network Policy — Bahasa Indonesia localisation requirement

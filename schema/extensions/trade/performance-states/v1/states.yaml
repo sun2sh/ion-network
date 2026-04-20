@@ -1,0 +1,172 @@
+# ION Trade Sector — Canonical Performance State Machines
+# Version: 1.0.0
+#
+# B-7 (v0.5.1) — State Machine ↔ Beckn Status Field Mapping
+# -----------------------------------------------------------------
+# All ION state codes below go into Performance.status.descriptor.code
+# — NOT into Commitment.status or Contract.status.
+#
+# Beckn v2.0 status fields and their usage in ION:
+#
+#   Contract.status.descriptor.code      — enum: DRAFT | ACTIVE | CANCELLED | COMPLETE
+#     Lifecycle of the whole contract envelope. Set by BPP at on_confirm (ACTIVE),
+#     on_cancel (CANCELLED), on final on_status (COMPLETE).
+#
+#   Commitment.status.descriptor.code    — enum: DRAFT | ACTIVE | CLOSED
+#     Lifecycle of a single commitment line. ACTIVE after on_confirm;
+#     CLOSED once the linked performance reaches DELIVERED. Stays DRAFT
+#     during select/init negotiation.
+#
+#   Consideration.status.descriptor.code — enum: DRAFT | ACTIVE | CLOSED
+#     Lifecycle of the value-exchange obligation.
+#
+#   Performance.status.descriptor.code   — OPEN in Beckn; ION canonicalises
+#     here via one of the state machines below (standard, mto, self_pickup,
+#     return, replacement, rto, digital, exchange_variant).
+#
+#   Settlement.status                    — enum: DRAFT | COMMITTED | COMPLETE
+#     Lifecycle of the payment/settlement obligation.
+#
+# Implementation note: when a spine document says "on_status (DELIVERED)",
+# this means Performance.status.descriptor.code = DELIVERED. It does NOT
+# change Contract.status or Commitment.status — those transitions have
+# their own triggers (see above).
+#
+# These are the canonical performance state codes for all Trade sector
+# transactions. BPPs MUST use these codes in Performance.status.descriptor.code.
+# BAPs MUST recognise and handle all states for the patterns they support.
+#
+# Beckn leaves Performance.status open (no enum) to allow domain-specific
+# states. ION defines a canonical set here to ensure interoperability.
+
+stateMachines:
+
+  standard:
+    description: Standard physical goods delivery — packaged goods, FMCG, fashion, electronics, beauty
+    states:
+      - code: PLANNED
+        description: Order confirmed, seller preparing for fulfilment
+      - code: PACKED
+        description: Items packed and ready for logistics pickup
+      - code: DISPATCHED
+        description: Package handed to logistics provider, in transit
+      - code: OUT_FOR_DELIVERY
+        description: Package on last-mile delivery vehicle, will arrive today
+      - code: DELIVERED
+        description: Package delivered to buyer. Contract moves to COMPLETE.
+      - code: CANCELLED
+        description: Order cancelled before delivery
+    transitions:
+      - from: PLANNED
+        to: [PACKED, CANCELLED]
+      - from: PACKED
+        to: [DISPATCHED, CANCELLED]
+      - from: DISPATCHED
+        to: [OUT_FOR_DELIVERY, CANCELLED]
+      - from: OUT_FOR_DELIVERY
+        to: [DELIVERED]
+
+  mto:
+    description: Make-to-order — food QSR, custom bakery, tailoring, custom furniture
+    states:
+      - code: PREPARING
+        description: Seller actively preparing/cooking/assembling the order
+      - code: READY
+        description: Order ready for pickup by logistics or consumer
+      - code: DISPATCHED
+        description: Order picked up by logistics, in transit
+      - code: OUT_FOR_DELIVERY
+        description: On last-mile delivery vehicle
+      - code: DELIVERED
+        description: Delivered to buyer
+      - code: CANCELLED
+        description: Order cancelled
+
+  self_pickup:
+    description: Consumer self-pickup from seller location
+    states:
+      - code: PACKED
+        description: Order packed, pickup code generated
+      - code: READY_FOR_PICKUP
+        description: Order ready at counter, consumer can collect
+      - code: PICKED_UP
+        description: Consumer collected the order. Contract COMPLETE.
+      - code: CANCELLED
+        description: Order cancelled
+
+  return:
+    description: Return flow — initiated post-delivery
+    states:
+      - code: RETURN_INITIATED
+        description: Buyer has raised a return request
+      - code: RETURN_APPROVED
+        description: Seller has approved the return
+      - code: RETURN_AGENT_ASSIGNED
+        description: Pickup agent assigned for return collection
+      - code: RETURN_PICKED
+        description: Return item picked up from buyer
+      - code: RETURN_DELIVERED
+        description: Return item delivered back to seller
+      - code: RETURN_REJECTED
+        description: Seller rejected the return request
+
+  replacement:
+    description: Replacement flow — seller sends replacement instead of refund
+    states:
+      - code: REPLACEMENT_DISPATCHED
+        description: Replacement item dispatched to buyer
+      - code: REPLACEMENT_DELIVERED
+        description: Replacement delivered to buyer. Original return complete.
+
+  rto:
+    description: Return to origin — delivery failed
+    states:
+      - code: RTO_INITIATED
+        description: Delivery attempted and failed, return to seller initiated
+      - code: RTO_IN_TRANSIT
+        description: Package in transit back to seller
+      - code: RTO_DELIVERED
+        description: Package returned to seller. Refund triggered if prepaid.
+      - code: RTO_DISPOSED
+        description: Package disposed at seller decision, not returned
+
+
+  digital:
+    description: Digital goods delivery — pulsa, vouchers, top-ups, gift cards
+    states:
+      - code: PENDING_OPERATOR
+        description: Operator/issuer delivery request sent, awaiting confirmation
+      - code: DELIVERED
+        description: Operator/issuer confirmed delivery (code delivered or credited)
+      - code: DELIVERY_FAILED
+        description: Operator/issuer failed. Refund triggered
+      - code: CANCELLED
+        description: Order cancelled before operator call was made
+    transitions:
+      - from: PENDING_OPERATOR
+        to: [DELIVERED, DELIVERY_FAILED, CANCELLED]
+
+  exchange_variant:
+    description: |
+      Single-leg exchange — agent swaps old variant for new at door.
+      Used by Op-22 exchange-variant-doorstep sub-branch.
+    states:
+      - code: EXCHANGE_VARIANT_REQUESTED
+        description: Buyer raised variant-swap request
+      - code: EXCHANGE_VARIANT_APPROVED
+        description: Seller approved; replacement available
+      - code: EXCHANGE_VARIANT_REJECTED
+        description: Seller rejected (out of stock or policy); fallback to standard return
+      - code: EXCHANGE_VARIANT_AGENT_ASSIGNED
+        description: Agent dispatched with replacement
+      - code: EXCHANGE_VARIANT_COMPLETED
+        description: Swap completed at door. Contract stays in DELIVERED state with new item
+      - code: EXCHANGE_VARIANT_FAILED
+        description: Swap failed at door (e.g. buyer not home). Falls back to standard return
+    transitions:
+      - from: EXCHANGE_VARIANT_REQUESTED
+        to: [EXCHANGE_VARIANT_APPROVED, EXCHANGE_VARIANT_REJECTED]
+      - from: EXCHANGE_VARIANT_APPROVED
+        to: [EXCHANGE_VARIANT_AGENT_ASSIGNED]
+      - from: EXCHANGE_VARIANT_AGENT_ASSIGNED
+        to: [EXCHANGE_VARIANT_COMPLETED, EXCHANGE_VARIANT_FAILED]

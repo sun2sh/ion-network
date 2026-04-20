@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/tax/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONTaxDetail",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONTaxDetail",
+      "rdfs:comment": "IONTaxDetail"
+    },
+    {
+      "@id": "ion:taxRegime",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxRegime",
+      "rdfs:comment": "PPN: Pajak Pertambahan Nilai (VAT), standard 11%. PPNBM: Pajak Penjualan atas Barang Mewah (luxury goods tax). PPH22: Income tax on import/certain transactions. PPH23: Withholding tax on services. PPN_FINAL: Final PPN for specific categories (e.g. certain construction). EXEMPT: No tax applicable (ba"
+    },
+    {
+      "@id": "ion:taxCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxCategory",
+      "rdfs:comment": "BKP: Barang Kena Pajak — taxable goods. JKP: Jasa Kena Pajak — taxable services. NON_BKP: Non-taxable goods or services.\n"
+    },
+    {
+      "@id": "ion:taxRate",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxRate",
+      "rdfs:comment": "Tax rate as decimal fraction. PPN standard: 0.11. PPnBM rates: 0.10, 0.20, 0.30, 0.40, 0.50, 0.75, 1.25.\n"
+    },
+    {
+      "@id": "ion:taxAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxAmount",
+      "rdfs:comment": "Calculated tax amount in IDR"
+    },
+    {
+      "@id": "ion:taxIncluded",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxIncluded",
+      "rdfs:comment": "Whether the tax amount is already included in the item price (tax-inclusive pricing) or added on top (tax-exclusive).\n"
+    },
+    {
+      "@id": "ion:eFakturRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "eFakturRef",
+      "rdfs:comment": "e-Invoice reference (Faktur Pajak) number from DJP e-Faktur system. Format: XXX.XXX-YY.XXXXXXXX where XXX is kode faktur. Only applicable for PKP sellers.\n"
+    },
+    {
+      "@id": "ion:taxBaseAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "taxBaseAmount",
+      "rdfs:comment": "The amount on which tax is calculated (before tax)"
+    }
+  ]
+}

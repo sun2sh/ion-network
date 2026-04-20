@@ -1,0 +1,19 @@
+{
+  "id": "ion-core-tax-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Tax Extension (v1)",
+  "description": "Indonesian tax regimes \u2014 PPN, PPnBM, PPh, EXEMPT. BKP/JKP/NON_BKP classification.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "considerationAttributes": [
+      "IONTaxDetail"
+    ]
+  },
+  "regulatory": [
+    "UU 7/2021 HPP",
+    "UU 42/2009 PPN PPnBM",
+    "PMK 62/2022"
+  ]
+}

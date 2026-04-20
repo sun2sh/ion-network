@@ -1,0 +1,40 @@
+iri: ion://policy/payment.installment.3mo
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Cicilan 3 bulan - BNPL"
+  en: "3-month installment via BNPL"
+
+paymentTiming: SPLIT
+paymentCollection: BNPL
+depositRequired: false
+depositPercentage: 0
+creditTermsDays: 0
+installmentEnabled: true
+installmentTenure: 3
+
+allowedPaymentMethods:
+  - BNPL
+
+latePaymentPenalty: ion://policy/penalty.buyer.late_installment
+latePaymentFeePercent: 0.03
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - sports-outdoors
+  - toys-games
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

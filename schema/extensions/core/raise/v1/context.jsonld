@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/core/raise/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "id": "ion:id",
+    "externalRef": "ion:externalRef",
+    "title": "ion:title",
+    "description": "ion:description",
+    "type": "ion:type",
+    "priority": "ion:priority",
+    "raisedBy": "ion:raisedBy",
+    "assignedTo": "ion:assignedTo",
+    "contractId": "ion:contractId",
+    "reconId": "ion:reconId",
+    "status": "ion:status",
+    "thread": "ion:thread",
+    "resolution": "ion:resolution",
+    "sla": "ion:sla",
+    "createdAt": "ion:createdAt",
+    "updatedAt": "ion:updatedAt",
+    "resolvedAt": "ion:resolvedAt",
+    "IONTicket": "ion:IONTicket"
+  }
+}

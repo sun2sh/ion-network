@@ -1,0 +1,32 @@
+{
+  "id": "ion-trade-B2C-SUB-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2C Subscription",
+  "patternCode": "B2C-SUB",
+  "status": "ready",
+  "description": "Recurring purchase subscriptions. Mandate setup, pause, skip, resume, cancel. Billing cycle management.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "grocery",
+    "fmcg",
+    "pharmacy",
+    "agritech",
+    "pet-supplies"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

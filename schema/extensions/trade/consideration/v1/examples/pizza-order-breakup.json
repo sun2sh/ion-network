@@ -1,0 +1,16 @@
+{
+  "@context": "https://schema.ion.id/trade/consideration/v1/context.jsonld",
+  "@type": "ion:TradeConsiderationAttributes",
+  "_comment": "Example: Full price breakup for a pizza order",
+  "totalAmount": 165120,
+  "currency": "IDR",
+  "taxIncluded": false,
+  "ppnRate": 0.11,
+  "breakup": [
+    {"lineId": "L01", "breakupLineType": "ITEM", "title": "Pizza Pepperoni + Extra Cheese", "amount": 97000},
+    {"lineId": "L02", "breakupLineType": "ITEM", "title": "Garlic Bread x2", "amount": 58000},
+    {"lineId": "DEL", "breakupLineType": "DELIVERY", "title": "Biaya Pengiriman", "amount": 15000},
+    {"lineId": "DISC", "breakupLineType": "PROVIDER_BENEFIT", "title": "Diskon Member 10%", "amount": -17000},
+    {"lineId": "TAX", "breakupLineType": "TAX", "title": "PPN 11%", "ppnRate": 0.11, "amount": 12120}
+  ]
+}

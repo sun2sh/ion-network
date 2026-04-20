@@ -1,0 +1,22 @@
+{
+  "id": "ion-core-identity-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Identity Extension (v1)",
+  "description": "Indonesian business KYC \u2014 NPWP, NIB, NIK, PKP status, legal entity type.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "providerAttributes": [
+      "IONBusinessIdentity"
+    ],
+    "contractAttributes": [
+      "IONBusinessIdentity"
+    ]
+  },
+  "regulatory": [
+    "PMK 136/2023",
+    "PP 5/2021",
+    "UU 24/2013"
+  ]
+}

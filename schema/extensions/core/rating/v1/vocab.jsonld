@@ -1,0 +1,93 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/rating/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONRatingAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONRatingAttributes",
+      "rdfs:comment": "IONRatingAttributes"
+    },
+    {
+      "@id": "ion:ratingCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingCategory",
+      "rdfs:comment": "PROVIDER: overall seller/provider rating. ITEM: specific product quality rating. FULFILLMENT: delivery experience rating. AGENT: delivery agent rating.\n"
+    },
+    {
+      "@id": "ion:ratingValue",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingValue",
+      "rdfs:comment": "Rating on a 1-5 scale. Can be decimal to one place e.g. 4.5. BPP stores and aggregates ratings.\n"
+    },
+    {
+      "@id": "ion:feedbackText",
+      "@type": "rdf:Property",
+      "rdfs:label": "feedbackText",
+      "rdfs:comment": "Optional free-text feedback accompanying the rating."
+    },
+    {
+      "@id": "ion:feedbackUrl",
+      "@type": "rdf:Property",
+      "rdfs:label": "feedbackUrl",
+      "rdfs:comment": "URL returned by BPP in on_rate for consumer to provide extended feedback via seller's own feedback form.\n"
+    },
+    {
+      "@id": "ion:ratingWindowDays",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingWindowDays",
+      "rdfs:comment": "Number of days after DELIVERED state during which rating can be submitted. Declared by BPP in on_confirm.\n"
+    },
+    {
+      "@id": "ion:contractId",
+      "@type": "rdf:Property",
+      "rdfs:label": "contractId",
+      "rdfs:comment": "Contract this rating applies to."
+    },
+    {
+      "@id": "ion:ratedEntityId",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratedEntityId",
+      "rdfs:comment": "ID of the entity being rated. For PROVIDER: provider ID. For ITEM: resource ID. For AGENT: agent identifier.\n"
+    },
+    {
+      "@id": "ion:ratingSubCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingSubCategory",
+      "rdfs:comment": "Category-specific rating dimension. Enables granular seller insights and more informative reviews. Examples by category:\n  Food: freshness, taste, packaging, temperature_on_arrival\n  Fashion: fit, fabric_quality, size_accuracy, color_accuracy\n  Electronics: battery_life, performance, build_quality, "
+    },
+    {
+      "@id": "ion:ratingImages",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingImages",
+      "rdfs:comment": "Photo URLs attached to the review. Subject to BAP/BPP moderation. Photo reviews drive significant conversion on all major marketplaces.\n"
+    },
+    {
+      "@id": "ion:ratingVideos",
+      "@type": "rdf:Property",
+      "rdfs:label": "ratingVideos",
+      "rdfs:comment": "Video reviews for product feedback. Moderated."
+    },
+    {
+      "@id": "ion:verifiedPurchase",
+      "@type": "rdf:Property",
+      "rdfs:label": "verifiedPurchase",
+      "rdfs:comment": "Whether this rating is from a verified purchase on ION. True by default — all ION ratings are verified purchases by design.\n"
+    },
+    {
+      "@id": "ion:helpfulCount",
+      "@type": "rdf:Property",
+      "rdfs:label": "helpfulCount",
+      "rdfs:comment": "Number of users who marked this review as helpful"
+    },
+    {
+      "@id": "ion:sellerResponse",
+      "@type": "rdf:Property",
+      "rdfs:label": "sellerResponse",
+      "rdfs:comment": "Seller's public response to the review"
+    }
+  ]
+}

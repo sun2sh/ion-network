@@ -1,0 +1,161 @@
+openapi: 3.1.1
+info:
+  title: ION Rating Extension (v1)
+  description: >
+    Post-transaction rating attributes. Applies to all ION sectors.
+    Buyer rates provider, item, fulfilment performance, and delivery agent.
+    APIs: rate / on_rate
+    Attaches to: beckn:Rate
+  version: 1.0.0
+
+components:
+  schemas:
+    IONRatingAttributes:
+      type: object
+      title: ION Rating Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:RatingAttributes
+      x-beckn-attaches-to: RatingInput (as ionRatingAttributes)
+      required: [ratingCategory, ratingValue]
+
+      properties:
+
+        ratingCategory:
+          x-ion-mandatory: optional
+          type: string
+          enum: [PROVIDER, ITEM, FULFILLMENT, AGENT]
+          description: >
+            PROVIDER: overall seller/provider rating.
+            ITEM: specific product quality rating.
+            FULFILLMENT: delivery experience rating.
+            AGENT: delivery agent rating.
+          example: PROVIDER
+
+        ratingValue:
+          x-ion-mandatory: optional
+          type: number
+          minimum: 1
+          maximum: 5
+          description: >
+            Rating on a 1-5 scale. Can be decimal to one place e.g. 4.5.
+            BPP stores and aggregates ratings.
+          example: 4
+
+        feedbackText:
+          x-ion-mandatory: optional
+          type: string
+          description: Optional free-text feedback accompanying the rating.
+          maxLength: 1000
+          example: Makanan enak, pengiriman cepat, sangat memuaskan!
+
+        feedbackUrl:
+          x-ion-mandatory: optional
+          type: string
+          format: uri
+          description: >
+            URL returned by BPP in on_rate for consumer to provide
+            extended feedback via seller's own feedback form.
+          example: https://sellerapp.ion.id/feedback/ORD-2026-001
+
+        ratingWindowDays:
+          type: integer
+          minimum: 1
+          description: >
+            Number of days after DELIVERED state during which rating can
+            be submitted. Declared by BPP in on_confirm.
+          example: 7
+          x-ion-mandatory: optional
+
+        contractId:
+          x-ion-mandatory: optional
+          type: string
+          description: Contract this rating applies to.
+          example: ORD-2026-00012345
+
+        ratedEntityId:
+          x-ion-mandatory: optional
+          type: string
+          description: >
+            ID of the entity being rated.
+            For PROVIDER: provider ID.
+            For ITEM: resource ID.
+            For AGENT: agent identifier.
+          example: PROV-001
+
+        # M8 — RATING EXTENSIONS (v0.3)
+        ratingSubCategory:
+          x-ion-mandatory: optional
+          type: string
+          description: >
+            Category-specific rating dimension. Enables granular seller
+            insights and more informative reviews.
+            Examples by category:
+              Food: freshness, taste, packaging, temperature_on_arrival
+              Fashion: fit, fabric_quality, size_accuracy, color_accuracy
+              Electronics: battery_life, performance, build_quality, authenticity
+              Grocery: freshness, expiry_date, cold_chain, substitution
+              Beauty: effectiveness, skin_reaction, scent, texture
+          example: fit
+
+        ratingImages:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: string
+            format: uri
+          description: >
+            Photo URLs attached to the review. Subject to BAP/BPP moderation.
+            Photo reviews drive significant conversion on all major marketplaces.
+          maxItems: 10
+
+        ratingVideos:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [url]
+            properties:
+              url:
+                type: string
+                format: uri
+              durationSeconds:
+                type: integer
+              thumbnailUrl:
+                type: string
+                format: uri
+          description: Video reviews for product feedback. Moderated.
+          maxItems: 3
+
+        verifiedPurchase:
+          x-ion-mandatory: optional
+          type: boolean
+          description: >
+            Whether this rating is from a verified purchase on ION.
+            True by default — all ION ratings are verified purchases by design.
+          default: true
+
+        helpfulCount:
+          x-ion-mandatory: optional
+          type: integer
+          minimum: 0
+          description: Number of users who marked this review as helpful
+          default: 0
+
+        sellerResponse:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          description: Seller's public response to the review
+          properties:
+            responseText:
+              type: string
+              maxLength: 1000
+            respondedAt:
+              type: string
+              format: date-time
+            respondedBy:
+              type: string
+              description: Name of seller representative

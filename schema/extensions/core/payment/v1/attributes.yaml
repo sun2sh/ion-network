@@ -1,0 +1,375 @@
+openapi: 3.1.1
+info:
+  title: ION Payment Extension (v1)
+  description: >
+    Indonesian payment method objects. Covers all Bank Indonesia regulated
+    payment rails (QRIS, Virtual Account, EWallet, BI-FAST, COD, BNPL,
+    BankTransfer, Credit/Debit Card, BISettlement).
+
+    In Beckn v2.0 there is no Payment schema; payment state is expressed via
+    `Contract.settlements[]`. Each Settlement has a `settlementAttributes`
+    bag. ION attaches this extension's `PaymentDeclaration` schema as the
+    contents of `settlementAttributes` on every Settlement that represents
+    a buyer-facing payment event.
+
+    Wire placement:
+      message.contract.settlements[].settlementAttributes: {
+        "@context": "https://ion.id/vocab/payment/v1/context.jsonld",
+        "@type": "ion:PaymentDeclaration",
+        ...PaymentDeclaration fields...
+      }
+
+    For settlement reconciliation (BAP↔BPP financial true-up), see the
+    separate reconcile/v1 pack — that attaches alongside PaymentDeclaration
+    on the same settlementAttributes bag, using @type: ion:ReconcileAttributes.
+  version: 1.0.0
+
+components:
+  schemas:
+
+    PaymentDeclaration:
+      type: object
+      title: Payment Declaration
+      description: >
+        Contents of a Beckn Settlement's settlementAttributes bag for a
+        buyer-facing payment event. Binds a payment method to a transaction
+        and carries method-specific instrument details in methodDetail.
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:PaymentDeclaration
+      x-beckn-attaches-to: Settlement.settlementAttributes
+      required: [method, collectedBy, timing, status, currency]
+      properties:
+        method:
+          x-ion-mandatory: always
+          type: string
+          enum:
+            - QRIS
+            - VIRTUAL_ACCOUNT
+            - EWALLET
+            - COD
+            - BANK_TRANSFER
+            - BI_FAST
+            - RTGS
+            - SKN
+            - BNPL
+            - CREDIT_CARD
+            - DEBIT_CARD
+            - DIRECT_DEBIT
+            - CREDIT_FACILITY
+            - ESCROW
+        collectedBy:
+          x-ion-mandatory: always
+          type: string
+          enum: [BAP, BPP, LSP]
+          description: Which network participant collects payment from consumer.
+        timing:
+          x-ion-mandatory: always
+          type: string
+          enum: [ON_ORDER, PRE_FULFILLMENT, ON_FULFILLMENT, POST_FULFILLMENT]
+          description: When payment is collected relative to fulfilment.
+        status:
+          x-ion-mandatory: always
+          type: string
+          enum: [PENDING, PAID, FAILED, REFUNDED, PARTIALLY_REFUNDED]
+        amount:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when payment is confirmed
+          type: number
+          description: Payment amount in IDR
+        currency:
+          x-ion-mandatory: always
+          type: string
+          const: IDR
+          default: IDR
+        paidAt:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required after payment is confirmed
+          type: string
+          format: date-time
+          description: Timestamp of successful payment confirmation
+        gatewayRef:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when payment gateway is used
+          type: string
+          description: Payment gateway transaction reference ID
+        methodDetail:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when method requires instrument-specific fields
+          oneOf:
+            - $ref: "#/components/schemas/QRIS"
+            - $ref: "#/components/schemas/VirtualAccount"
+            - $ref: "#/components/schemas/EWallet"
+            - $ref: "#/components/schemas/CashOnDelivery"
+            - $ref: "#/components/schemas/BankTransfer"
+            - $ref: "#/components/schemas/BISettlement"
+            - $ref: "#/components/schemas/BNPL"
+            - $ref: "#/components/schemas/CardPayment"
+
+    QRIS:
+      type: object
+      title: QRIS Payment
+      description: Quick Response Code Indonesian Standard payment
+      additionalProperties: false
+      required: [qrisType, merchantId]
+      properties:
+        qrisType:
+          x-ion-mandatory: always
+          type: string
+          enum: [STATIC, DYNAMIC]
+          description: >
+            STATIC: single fixed QR, same for all transactions.
+            DYNAMIC: per-transaction QR with embedded amount.
+        merchantId:
+          x-ion-mandatory: always
+          type: string
+          description: QRIS merchant identifier from acquiring bank
+          example: ID1023456789012345678
+        nmid:
+          x-ion-mandatory: optional
+          type: string
+          description: National Merchant ID assigned by Bank Indonesia
+        terminalId:
+          x-ion-mandatory: optional
+          type: string
+          description: Terminal/POS identifier for multi-terminal merchants
+        qrisString:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for DYNAMIC QRIS returned at on_init
+          type: string
+          description: Full QRIS string for QR code rendering
+        expiresAt:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+          description: Expiry for DYNAMIC QRIS. UTC (ISO 8601).
+      x-ion-regulatory: PBI 21/18/PBI/2019 tentang Implementasi Standar Nasional Quick Response Code
+
+    VirtualAccount:
+      type: object
+      title: Bank Virtual Account
+      additionalProperties: false
+      required: [bankCode, vaNumber]
+      properties:
+        bankCode:
+          x-ion-mandatory: always
+          type: string
+          enum: [BCA, BRI, MANDIRI, BNI, CIMB, PERMATA, BTN, DANAMON, MAYBANK, BSI]
+          description: Bank issuing the virtual account
+        vaNumber:
+          x-ion-mandatory: always
+          type: string
+          description: Virtual account number to be paid to
+        amount:
+          x-ion-mandatory: optional
+          type: number
+          description: Amount encoded in VA (for fixed-amount VA)
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          const: IDR
+        expiresAt:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+          description: VA expiry timestamp in UTC
+
+    EWallet:
+      type: object
+      title: Indonesia E-Wallet
+      additionalProperties: false
+      required: [provider]
+      properties:
+        provider:
+          x-ion-mandatory: always
+          type: string
+          enum:
+            - OVO
+            - DANA
+            - GOPAY
+            - LINKAJA
+            - SHOPEEPAY
+            - ASTRAPAY
+            - SAKUKU
+            - JENIUS
+            - ISAKU
+            - FLIP
+            - ALLOBANK
+            - SEABANK_WALLET
+            - BLU
+            - LIVIN
+            - FLIP
+            - ISAKU
+          description: E-wallet provider identifier
+        accountRef:
+          x-ion-mandatory: optional
+          type: string
+          description: Consumer's wallet account reference (phone or wallet ID)
+        amount:
+          x-ion-mandatory: optional
+          type: number
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          const: IDR
+        expiresAt:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        deepLink:
+          x-ion-mandatory: optional
+          type: string
+          format: uri
+          description: Deep link to open wallet app for payment
+      x-ion-regulatory: PBI 23/6/PBI/2021 tentang Penyedia Jasa Pembayaran
+
+    CashOnDelivery:
+      type: object
+      title: Cash On Delivery
+      additionalProperties: false
+      properties:
+        collectionAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Exact cash amount to collect from consumer
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          const: IDR
+        changeIssuedBy:
+          x-ion-mandatory: optional
+          type: string
+          enum: [PROVIDER, COURIER]
+          description: Who provides change to consumer
+        maxCodAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Maximum COD value allowed per ION network policy
+
+    BankTransfer:
+      type: object
+      title: Bank Transfer
+      additionalProperties: false
+      required: [bankCode, accountNumber]
+      properties:
+        bankCode:
+          x-ion-mandatory: optional
+          type: string
+          description: Recipient bank code
+        accountNumber:
+          x-ion-mandatory: optional
+          type: string
+          description: Recipient bank account number
+        accountName:
+          x-ion-mandatory: optional
+          type: string
+          description: Recipient account holder name
+        transferType:
+          x-ion-mandatory: optional
+          type: string
+          enum: [ATM, INTERNET_BANKING, MOBILE_BANKING, TELLER]
+
+    BISettlement:
+      type: object
+      title: Bank Indonesia Settlement Rail
+      description: BI-FAST, RTGS, or SKN bank settlement
+      additionalProperties: false
+      required: [settlementType]
+      properties:
+        settlementType:
+          x-ion-mandatory: always
+          type: string
+          enum: [BI_FAST, RTGS, SKN]
+          description: >
+            BI_FAST: real-time settlement, max IDR 250 million per transaction.
+            RTGS: high-value same-day settlement, unlimited amount.
+            SKN: batch clearing, lower value transactions.
+        biRef:
+          x-ion-mandatory: optional
+          type: string
+          description: BI clearing reference number
+        settlementAt:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+          description: Settlement timestamp in UTC
+        beneficiaryName:
+          x-ion-mandatory: optional
+          type: string
+        beneficiaryBank:
+          x-ion-mandatory: optional
+          type: string
+        beneficiaryAccount:
+          x-ion-mandatory: optional
+          type: string
+        ifscEquivalent:
+          x-ion-mandatory: optional
+          type: string
+          description: Indonesian equivalent — bank routing code
+      x-ion-regulatory: PBI 22/23/PBI/2020 tentang Sistem Pembayaran; SNAP BI specification
+
+    BNPL:
+      type: object
+      title: Buy Now Pay Later
+      additionalProperties: false
+      required: [provider]
+      properties:
+        provider:
+          x-ion-mandatory: always
+          type: string
+          enum: [KREDIVO, AKULAKU, INDODANA, SPAYLATER, TOKOPEDIA_PAYLATER, GOPAYLATER, ATOME, CICIL, TRAVELOKA_PAYLATER, HOME_CREDIT, UANGME, AKULAKU_PAYLATER]
+          description: BNPL provider name
+        tenure:
+          x-ion-mandatory: optional
+          type: integer
+          description: Repayment tenure in months
+          example: 3
+        installmentAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Per-installment amount in IDR
+        interestRate:
+          x-ion-mandatory: optional
+          type: number
+          description: Monthly interest rate as decimal e.g. 0.02 = 2%
+        totalRepayment:
+          x-ion-mandatory: optional
+          type: number
+          description: Total repayment amount including interest
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          const: IDR
+        firstPaymentDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+
+    CardPayment:
+      type: object
+      title: Credit or Debit Card Payment
+      additionalProperties: false
+      required: [cardType, scheme]
+      properties:
+        cardType:
+          x-ion-mandatory: always
+          type: string
+          enum: [CREDIT, DEBIT]
+        scheme:
+          x-ion-mandatory: always
+          type: string
+          enum: [VISA, MASTERCARD, JCB, AMEX, UNIONPAY]
+        maskedPan:
+          x-ion-mandatory: optional
+          type: string
+          description: Last 4 digits of card for display
+          example: "****4242"
+        bankIssuer:
+          x-ion-mandatory: optional
+          type: string
+          description: Card-issuing bank name
+        gatewayRef:
+          x-ion-mandatory: optional
+          type: string
+          description: Payment gateway transaction reference

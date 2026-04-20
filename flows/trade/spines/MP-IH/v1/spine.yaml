@@ -1,0 +1,124 @@
+# ION Trade Flow - Marketplace Inventory Held (MP-IH) Spine v1
+# NOT OAS. ION flow specification document.
+# Marketplace model where the platform holds physical inventory (1P or consignment).
+
+id: ion-trade-MP-IH-v1
+version: "1.0.0"
+pattern: Marketplace Inventory Held
+sectorCode: A
+status: ready
+description: >
+  Marketplace model where the BAP (marketplace platform) holds physical stock
+  in its own fulfilment centres or on consignment from brands. The BPP represents
+  the marketplace's own WMS/OMS. Single BPP serves multiple brands.
+  Used by: Tokopedia Mall warehoused, Shopee Mall fulfiled by Shopee,
+  Lazada Express, similar 1P or consignment marketplace models.
+  Key features: single BPP handles multi-brand catalog, marketplace FC as
+  fulfilment origin, marketplace SLA guarantees, marketplace handles returns.
+
+applicableCategories: [all]
+
+architectureNote: >
+  In MP-IH: The marketplace IS the BPP. Brands list their products on the
+  marketplace catalog. The marketplace physically holds stock. When a consumer
+  orders, the marketplace picks/packs/ships from its own FC.
+  The brand's trade relationship with the marketplace is an off-network B2B
+  consignment arrangement — not represented in this ION flow.
+
+keyDifferences:
+  - BPP is the marketplace platform, not the individual brand
+  - provider.id represents the marketplace brand store, not an independent seller
+  - fulfillingLocationId is a marketplace FC
+  - Marketplace provides seller guarantee (return, refund, authenticity)
+  - Marketplace manages post-order — brand is not involved in consumer fulfillment
+  - SLA guarantees are marketplace SLAs, not brand-dependent
+
+phases:
+  phase1:
+    name: Catalog
+    description: >
+      Brands submit catalog to marketplace. Marketplace BPP publishes
+      consolidated multi-brand catalog to ION Catalogue Service.
+      Each provider in the catalog = one brand store on the marketplace.
+    steps:
+      - step: publish_catalog
+        from: Marketplace_BPP
+        to: ION_CATALOG
+        note: >
+          Same structure as B2C-SF catalog. provider.id = brand store ID.
+          provider.providerAttributes.invoicingModel = CENTRAL (marketplace invoices).
+          providerCategory determined by brand's product category.
+          FC geo polygon = marketplace's own fulfilment centre serviceability.
+
+  phase2:
+    name: Transaction
+    description: Same API sequence as B2C-SF. Consumer is unaware of MP-IH model.
+    steps:
+      - step: select
+        from: BAP
+        to: Marketplace_BPP
+        note: Identical to B2C-SF select. providerAttributes.invoicingModel=CENTRAL.
+
+      - step: on_select
+        from: Marketplace_BPP
+        to: BAP
+        description: >
+          Marketplace returns quote with marketplace SLA.
+          Faster SLA than independent seller — marketplace FC is pre-stocked.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.performance[].performanceAttributes.sla
+          - message.contract.contractAttributes.fulfillingLocationId
+
+      - step: init
+        note: Same as B2C-SF init. Marketplace BAP or consumer-facing BAP sends.
+
+      - step: on_init
+        note: Same as B2C-SF. Marketplace payment rails.
+
+      - step: confirm
+        note: Same as B2C-SF.
+
+      - step: on_confirm
+        from: Marketplace_BPP
+        to: BAP
+        description: >
+          Marketplace confirms and assigns fulfilment to its own FC.
+          fulfillmentLocationId = marketplace FC ID.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.fulfillingLocationId
+          - message.contract.performance[].performanceAttributes.sla
+
+  phase3:
+    name: Fulfilment
+    description: >
+      Marketplace picks/packs from its own FC. Marketplace ships with its
+      own logistics arm or partner LSP. SLA guaranteed by marketplace.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    steps:
+      - step: on_status
+        stepContext: "PACKED"
+        description: Picked and packed in marketplace FC.
+      - step: on_status
+        stepContext: "DISPATCHED"
+        description: Dispatched by marketplace logistics. Marketplace AWB.
+      - step: on_status
+        stepContext: "DELIVERED"
+        description: Delivered with marketplace's proof of delivery.
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[DISPATCHED]"
+  returns:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+    note: Returns handled by marketplace FC — easier return process than B2C-SF
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+settlementNote: >
+  Settlement in MP-IH is between the marketplace BAP and its own BPP system.
+  Brand payout is handled by marketplace's internal financial system, not ION reconcile.

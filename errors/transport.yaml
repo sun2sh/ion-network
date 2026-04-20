@@ -1,0 +1,77 @@
+# ION Error Registry — Transport (ION-1xxx)
+# Auth, signature, ACK/NACK, network connectivity errors
+
+- code: ION-1001
+  http_status: 401
+  category: transport
+  title:
+    id: Signature tidak valid
+    en: Invalid message signature
+  description:
+    en: The Ed25519 signature in the Authorization header is invalid or cannot be verified against the sender's public key in the ION registry.
+  affected_field: Authorization
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Verify that you are signing with the private key matching the public key registered for your subscriber_id. Check that the signing string construction follows the ION spec.
+
+- code: ION-1002
+  http_status: 401
+  category: transport
+  title:
+    id: Pengirim tidak terdaftar
+    en: Sender not registered on ION
+  description:
+    en: The bap_id or bpp_id in the message context is not found in the ION participant registry.
+  affected_field: context.bapId or context.bppId
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Ensure your subscriber_id is registered and active on the ION registry. Contact ION network operations if you believe registration is complete.
+
+- code: ION-1003
+  http_status: 400
+  category: transport
+  title:
+    id: TTL pesan telah berakhir
+    en: Message TTL expired
+  description:
+    en: The message timestamp plus TTL has elapsed before the message was processed. Maximum TTL is PT30S for most actions.
+  affected_field: context.ttl
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Ensure your clock is synchronized (NTP). Reduce processing time before sending. Do not reuse messageIds from expired messages.
+
+- code: ION-1004
+  http_status: 400
+  category: transport
+  title:
+    id: messageId duplikat
+    en: Duplicate messageId
+  description:
+    en: A message with this messageId has already been processed within the idempotency window (30 minutes).
+  affected_field: context.messageId
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Generate a new UUID for each unique message. Never reuse messageIds.
+
+- code: ION-1005
+  http_status: 400
+  category: transport
+  title:
+    id: Domain tidak valid
+    en: Invalid domain code
+  description:
+    en: The domain in context does not match an ION-registered sector domain code.
+  affected_field: context.domain
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Use ion:trade for Trade sector. Other valid domains will be listed in the ION registry.
