@@ -1,0 +1,32 @@
+# ION Error Registry — Network (ION-7xxx)
+# ION policy violations, participant conduct
+
+- code: ION-7001
+  http_status: 422
+  category: network
+  title:
+    id: NIB tidak terdaftar atau tidak aktif
+    en: NIB not registered or inactive
+  description:
+    en: The NIB declared by the BPP is not found in the OSS registry or has been deactivated.
+  affected_field: providerAttributes.nibRegistered
+  affected_apis: [discover, on_discover]
+  schema_ref: schema/extensions/core/identity/v1
+  flow_ref: null
+  resolution:
+    en: Verify NIB status at oss.go.id. Update nibRegistered to false if NIB is inactive. ION Central validates NIB at catalog publish time.
+
+- code: ION-7002
+  http_status: 422
+  category: network
+  title:
+    id: Mata uang harus IDR untuk transaksi domestik
+    en: Currency must be IDR for domestic transactions
+  description:
+    en: The currency field is not IDR. All domestic ION Trade transactions must use IDR.
+  affected_field: price.currency
+  affected_apis: [all]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Set all price.currency and consideration.currency fields to IDR. Cross-border (XB pattern) has a separate currency handling specification.

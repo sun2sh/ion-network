@@ -1,0 +1,7 @@
+{
+  "@context": "https://schema.ion.id/extensions/core/identity/v1/context.jsonld",
+  "@type": "ion:IndividualIdentity",
+  "nikNumber": "3271012345678901",
+  "npwp": "9876543210987654",
+  "fullName": "Budi Santoso"
+}

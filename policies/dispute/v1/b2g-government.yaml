@@ -1,0 +1,32 @@
+iri: ion://policy/dispute.b2g.lkpp
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: DISPUTE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Sengketa B2G - LKPP"
+  en: "B2G dispute - LKPP"
+
+disputeBody: LKPP
+jurisdiction: INDONESIA
+resolutionType: MEDIATION_OR_ARBITRATION
+
+escalationPath:
+  - SELLER
+  - LKPP_MEDIATION
+  - BANI_ARBITRATION
+
+typicalResolutionTimeDays: 30
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - b2g
+
+regulatoryBasis:
+  - "Perpres 16/2018 tentang Pengadaan Barang/Jasa Pemerintah"
+  - "Peraturan LKPP"
+
+supersededBy: null
+deprecatedAt: null

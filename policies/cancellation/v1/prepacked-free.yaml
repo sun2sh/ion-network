@@ -1,0 +1,51 @@
+iri: ion://policy/cancel.prepacked.free
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: CANCELLATION
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Batalkan gratis sebelum dikemas"
+  en: "Free cancellation before packed"
+
+cancellationWindowCloses: PACKED
+
+cancellationFee:
+  type: NONE
+  value: 0
+
+cancellationReasonsAllowed:
+  - CHANGE_OF_MIND
+  - WRONG_ITEM_ORDERED
+  - ORDERED_WRONG_VARIANT
+  - FOUND_BETTER_PRICE
+  - INCORRECT_ADDRESS
+  - DUPLICATE_ORDER
+  - PAYMENT_METHOD_CHANGE
+  - ITEM_NO_LONGER_NEEDED
+
+refundPercentageOnCancel: 1.0
+refundTimelineFromCancel: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+sellerPenaltyOnCancelWithoutCause: ion://policy/penalty.seller-cancel-without-cause.standard.standard
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - beauty
+  - fmcg
+  - sports-outdoors
+  - toys-games
+  - books-stationery
+  - agritech
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 4"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+supersededBy: null
+deprecatedAt: null

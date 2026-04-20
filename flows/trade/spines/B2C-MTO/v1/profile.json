@@ -1,0 +1,32 @@
+{
+  "id": "ion-trade-B2C-MTO-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2C Make-to-Order",
+  "patternCode": "B2C-MTO",
+  "status": "ready",
+  "description": "Made-to-order: food QSR, bakery, tailoring. Preparation starts after confirm. MTO state machine.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "food-qsr",
+    "cloud-kitchen",
+    "bakery",
+    "tailoring",
+    "custom-furniture"
+  ],
+  "applicableBranches": [
+    "during-transaction/v1",
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#mto",
+  "requiredPolicyCategories": [
+    "CANCELLATION",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

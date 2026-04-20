@@ -1,0 +1,46 @@
+iri: ion://policy/warranty.extended.paid-addon
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: WARRANTY
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Garansi perpanjangan - add-on berbayar"
+  en: "Extended warranty - paid add-on"
+
+warrantyType: EXTENDED
+warrantyDuration: P2Y
+coverageType: PARTS_AND_LABOR
+serviceMode: THIRD_PARTY_PROVIDER
+
+coverageIncludes:
+  - MANUFACTURING_DEFECT
+  - COMPONENT_FAILURE
+  - ACCIDENTAL_DAMAGE
+
+coverageExcludes:
+  - PHYSICAL_DAMAGE
+  - WATER_DAMAGE
+  - UNAUTHORIZED_MODIFICATION
+  - NORMAL_WEAR_AND_TEAR
+  - CONSUMABLES
+
+claimProcedure:
+  firstContact: WARRANTY_PROVIDER
+  documentationRequired:
+    - PROOF_OF_PURCHASE
+    - SERIAL_NUMBER
+  resolutionOptions: [REPAIR, REPLACE]
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - electronics
+  - home-kitchen
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 25"
+  - "PP 36/2023 tentang Perlindungan Konsumen"
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,111 @@
+# ION Trade Flow - Marketplace Inventory Less (MP-IL) Spine v1
+# NOT OAS. ION flow specification document.
+# Marketplace model where the platform does NOT hold inventory — seller ships directly.
+
+id: ion-trade-MP-IL-v1
+version: "1.0.0"
+pattern: Marketplace Inventory Less
+sectorCode: A
+status: ready
+description: >
+  Marketplace model where the platform connects buyers and independent sellers,
+  but sellers hold their own inventory and handle their own shipping.
+  The marketplace platform acts as BAP (buyer-facing) and the independent
+  seller is the BPP. This is the standard 3P marketplace model.
+  Examples: Tokopedia regular sellers, Shopee regular sellers, Bukalapak.
+  Key distinction from MP-IH: each seller is a separate BPP. Marketplace routes
+  to the correct BPP based on consumer selection.
+
+applicableCategories: [all]
+
+architectureNote: >
+  In MP-IL: Each independent seller = one BPP on ION.
+  The marketplace platform = the BAP.
+  The marketplace UI shows products from many BPPs in one catalog.
+  When consumer selects, marketplace routes to the specific seller BPP.
+  Fulfillment, returns, complaints are managed seller-by-seller.
+  This is functionally equivalent to B2C-SF from the BPP perspective.
+
+keyDifferences:
+  - Marketplace as BAP, seller as BPP — many BPPs per marketplace
+  - Marketplace discovery shows items from multiple BPPs simultaneously
+  - At select, marketplace has selected which BPP to route to
+  - Marketplace may act as payment aggregator (collectedBy=BAP)
+  - Post-order: consumer communicates with marketplace; marketplace relays to BPP
+  - Marketplace commission declared in consideration.PLATFORM_FEE breakup line
+  - Dispute resolution: marketplace intervenes if seller non-responsive
+
+phases:
+  phase1:
+    name: Catalog
+    description: >
+      Each seller BPP publishes its own catalog independently to ION.
+      Marketplace BAP subscribes to all seller catalogs and aggregates
+      them in its own search/discovery layer.
+
+  phase2:
+    name: Transaction
+    description: >
+      Identical to B2C-SF from the BPP perspective. Marketplace BAP sends
+      select/init/confirm to the specific seller BPP.
+    steps:
+      - step: select
+        note: Same as B2C-SF. BAP=marketplace, BPP=selected seller.
+
+      - step: on_select
+        note: Same as B2C-SF. Seller BPP returns quote.
+
+      - step: init
+        description: >
+          Marketplace provides consumer delivery address. Payment collectedBy=BAP
+          (marketplace collects from consumer, settles to seller).
+        requiredFields:
+          - message.contract.performance[].stops[].location
+          - message.contract.settlements[].settlementAttributes.collectedBy  # BAP (marketplace)
+
+      - step: on_init
+        note: Seller returns payment instructions to marketplace.
+
+      - step: confirm
+        description: >
+          Marketplace confirms on behalf of consumer. Payment already collected
+          from consumer by marketplace.
+
+      - step: on_confirm
+        from: Seller_BPP
+        to: Marketplace_BAP
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.fulfillingLocationId
+
+  phase3:
+    name: Fulfilment
+    description: Seller ships from own location. Same state machine as B2C-SF.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    steps:
+      - step: on_status
+        stepContext: "PACKED through DELIVERED"
+        note: Seller BPP pushes to marketplace BAP. Marketplace relays to consumer.
+
+  settlement:
+    model: Marketplace BAP collects from consumer, settles to seller BPP.
+    considerationBreakup:
+      - ITEM: seller's item price
+      - PLATFORM_FEE: marketplace commission (negative on seller's receivable)
+      - DELIVERY: seller's shipping charge or marketplace-subsidised delivery
+      - TAX: PPN on item price
+    settlementBasis: AFTER_DELIVERY
+    finderFee: marketplace commission declared in reconcile.amounts.buyerFinderFeeAmount
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[DISPATCHED]"
+    note: Marketplace may have own cancellation policy on top of seller's
+  returns:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+    note: Returns may be handled by marketplace or routed to seller
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE

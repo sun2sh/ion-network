@@ -1,0 +1,242 @@
+# ION — Indonesia Open Network
+# Network Profile v0.5.1-draft
+#
+# This file is a network profile overlay on top of Beckn Protocol v2.0.1.
+# It does NOT replace or fork beckn.yaml.
+# beckn.yaml lives at: https://github.com/beckn/protocol-specifications-v2
+#
+# Conformance: Implementations MUST satisfy all requirements in beckn.yaml
+# AND all requirements declared in this profile.
+
+openapi: 3.1.1
+info:
+  title: ION Indonesia Open Network — Network Profile
+  description: >
+    ION network policy and localization overlay for Beckn Protocol v2.0.1.
+    Defines Indonesian regulatory defaults, mandatory action sets, payment
+    rails, settlement model, and conformance requirements for all ION
+    network participants.
+  version: 0.5.1-draft
+
+x-ion-profile:
+  networkId: ion.id
+  networkName: Indonesia Open Network
+  environment: sandbox  # sandbox | preprod | prod
+  registryUrl: https://registry.ion.id
+  catalogPublishingService: https://catalog.ion.id
+  discoverService: https://discover.ion.id
+
+# Op-48 (v0.5) — VERSION COMPATIBILITY MATRIX
+# BAPs and BPPs read this matrix to determine what schema/policy/error
+# versions are in effect. When upgrading, checking this matrix allows
+# implementations to validate that all referenced packs and registries
+# are compatible with their local implementation.
+x-ion-compatibility:
+  profileVersion: 0.5.1-draft
+  becknCore: 2.0.1
+  schemaPacks:
+    core/address: v1
+    core/identity: v1
+    core/localization: v1
+    core/payment: v1
+    core/product: v1
+    core/raise: v1
+    core/rating: v1
+    core/reconcile: v1
+    core/support: v1
+    core/tax: v1
+    trade/commitment: v1
+    trade/consideration: v1
+    trade/contract: v1
+    trade/offer: v1
+    trade/performance: v1
+    trade/performance-states: v1
+    trade/provider: v1
+    trade/resource: v1
+  policies:
+    return: v1
+    cancellation: v1
+    warranty: v1
+    dispute: v1
+    grievance-sla: v1
+    payment-terms: v1
+    penalty: v1
+  errors:
+    registry: v1
+    minCode: ION-1001
+    # Stable registry — codes are never reused even after deprecation
+  spineVersions:
+    B2C-SF: "1.0.0"
+    B2C-MTO: "1.0.0"
+    B2C-SUB: "1.0.0"
+    B2C-LIVE: "1.0.0"
+    B2C-DIG: "1.0.0"
+    B2B-PP: "1.0.0"
+    B2B-CR: "1.0.0"
+    MP-IH: "1.0.0"
+    MP-IL: "1.0.0"
+    AUC-F: "1.0.0"
+    AUC-R: "1.0.0"
+    XB: "1.0.0"
+    B2G: "1.0.0"
+  # Single-version running policy (ratified v0.4):
+  # ION Council ratifies new policy/schema versions with 90-day notice.
+  # Catalog entries auto-upgrade to the new version on cutover.
+  # No per-seller version pinning.
+  upgradeNoticePeriodDays: 90
+
+
+x-ion-localization:
+  country: ID
+  defaultCurrency: IDR
+  defaultLanguage: id
+  timezone: Asia/Jakarta
+  supportedLanguages:
+    - id   # Bahasa Indonesia — always mandatory
+    - en   # English — mandatory for export commerce patterns
+
+x-ion-compliance:
+  tax:
+    type: PPN
+    standardRate: 0.11       # 11% standard PPN rate
+    luxuryTax: PPNBM         # applied in addition to PPN for luxury goods
+  providerIdentity:
+    npwpRequired: true        # 16-digit tax ID mandatory for all sellers
+    nibRequired: true         # 13-digit business registration mandatory
+    pkpStatusRequired: true   # VAT registration status declared at onboarding
+  dataResidency: ID           # Data must reside in Indonesia
+
+x-ion-security:
+  signature:
+    required: true
+    algorithm: ed25519
+  digest:
+    algorithm: BLAKE2b-512
+  clockSkewToleranceSeconds: 30
+
+x-ion-actions:
+  mandatory:
+    bpp:
+      - publish_catalog
+      - on_select
+      - on_init
+      - on_confirm
+      - on_status
+      - on_cancel
+      - on_support
+    bap:
+      - subscribe
+      - select
+      - init
+      - confirm
+      - status
+      - support
+  optional:
+    - track
+    - on_track
+    - update
+    - on_update
+    - rate
+    - on_rate
+    - reconcile
+    - on_reconcile
+    - raise
+    - on_raise
+    - raise_status
+    - on_raise_status
+    - raise_details
+    - on_raise_details
+
+x-ion-catalog:
+  publish:
+    requiredForBpp: true
+  pull:
+    allowedForBap: true
+  maxPayloadMb: 10
+  syncWindowMinutes: 60
+  idempotencyWindowMinutes: 30
+
+x-ion-settlement:
+  defaultModel: AFTER_DELIVERY
+  maxSettlementWindowHours: 48
+  allowedPaymentRails:
+    - BI_FAST
+    - QRIS
+    - VIRTUAL_ACCOUNT
+    - COD
+    - EWALLET
+    - BANK_TRANSFER
+    - BNPL
+  collectedByOptions:
+    - BAP
+    - BPP
+    - LSP
+
+x-ion-conformance:
+  protocolVersion: "2.0.1"
+  ionProfileVersion: "0.5.1-draft"
+  schemaPackMatrix:
+    core:
+      - address/v1
+      - identity/v1
+      - payment/v1
+      - tax/v1
+      - localization/v1
+      - product/v1
+      - support/v1
+      - raise/v1
+      - rating/v1
+      - reconcile/v1
+    trade:
+      - provider/v1
+      - resource/v1
+      - offer/v1
+      - consideration/v1
+      - performance/v1
+      - contract/v1
+      - commitment/v1
+
+x-ion-policy-registry:
+  description: >
+    ION Policy Terms Registry. Policy IRIs are the authoritative source of
+    policy semantics across the network. Each offer declares IRIs; ION Central
+    resolves to the terms document and enforces at every API boundary.
+  registryLocation: /policies
+  registryIndex: /policies/registry.json
+  categories:
+    - RETURN
+    - CANCELLATION
+    - WARRANTY
+    - DISPUTE
+    - GRIEVANCE_SLA
+    - PAYMENT_TERMS
+    - PENALTY
+  currentRegistryVersion: "1.0.0"
+  versionUpgradeModel: SINGLE_VERSION_WITH_90D_NOTICE
+  customAddendumAllowed: true
+  customAddendumMaxChars: 1000
+  resolverApi:
+    getPolicy:
+      method: GET
+      path: /policies/{iri}
+      description: Resolve a policy IRI to its full structured terms document
+      iriEncoding: URL_ENCODED
+    listPolicies:
+      method: GET
+      path: /policies
+      description: List/filter the registry
+      filters:
+        - category
+        - applicableCategory
+        - subCategory
+
+  enforcementPoints:
+    atCatalogPublish:
+      description: Every policy IRI validated against ratified registry
+      errors: [ION-2010, ION-2011]
+    atRuntime:
+      description: Actions checked against declared policy terms
+      errors: [ION-5001, ION-5002, ION-5003, ION-5004, ION-5008, ION-5009]
+    atReconcile:
+      description: Penalty policies fire as deductions per linked IRI
+      info: ION-6003

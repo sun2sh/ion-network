@@ -1,0 +1,38 @@
+iri: ion://policy/penalty.buyer-failed-delivery.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: BUYER_FAILED_DELIVERY
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda kegagalan penerimaan"
+  en: "Failed delivery penalty"
+
+triggerConditions:
+  - condition: CONSUMER_UNAVAILABLE_3_ATTEMPTS
+    severity: MINOR
+    penalty:
+      type: FIXED
+      amount: 15000
+    additionalAction: SHIPPING_COST_DEDUCTED_FROM_REFUND
+  - condition: REFUSED_WITHOUT_VALID_REASON
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.1
+
+appliedVia: payment.refundAmount
+settledTo: SELLER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy"
+
+supersededBy: null
+deprecatedAt: null

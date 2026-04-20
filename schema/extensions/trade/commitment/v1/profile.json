@@ -1,0 +1,15 @@
+{
+  "id": "ion-trade-commitment-v1",
+  "version": "1.0.0",
+  "domain": "trade",
+  "name": "ION Trade Commitment Extension (v1)",
+  "description": "Per-line item details \u2014 resource, offer, quantity, price, customisations, instructions.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "commitmentAttributes": [
+      "TradeCommitmentAttributes"
+    ]
+  },
+  "extends": "beckn:Commitment"
+}

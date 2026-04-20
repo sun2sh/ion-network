@@ -1,0 +1,15 @@
+{
+  "id": "ion-trade-provider-v1",
+  "version": "1.0.0",
+  "domain": "trade",
+  "name": "ION Trade Provider Extension (v1)",
+  "description": "Trade sector seller operational attributes \u2014 status, hours, category, invoicing model.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "providerAttributes": [
+      "TradeProviderAttributes"
+    ]
+  },
+  "extends": "beckn:Provider"
+}

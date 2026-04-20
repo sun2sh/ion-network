@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "description": "B2C-SF select — BAP sends item selection with customisations. Beckn v2.0 SelectAction shape.",
+    "pattern": "B2C-SF",
+    "step": "select",
+    "sent_by": "BAP",
+    "received_by": "BPP",
+    "becknAction": "SelectAction",
+    "schemaPacks": ["core/localization/v1", "trade/commitment/v1", "trade/resource/v1"]
+  },
+  "context": {
+    "domain": "ion:trade",
+    "action": "select",
+    "version": "2.0.0",
+    "bapId": "buyerapp.ion.id",
+    "bapUri": "https://buyerapp.ion.id/beckn",
+    "bppId": "sellerapp.ion.id",
+    "bppUri": "https://sellerapp.ion.id/beckn",
+    "networkId": "ion.id",
+    "transactionId": "9fdb667c-76c6-456a-9742-ba9caa5eb765",
+    "messageId": "1a2b3c4d-5e6f-7890-abcd-ef1234567890",
+    "timestamp": "2026-04-19T10:30:00.000+07:00",
+    "ttl": "PT30S",
+    "location": {
+      "city": { "code": "std:3171" },
+      "country": { "code": "IDN" }
+    }
+  },
+  "message": {
+    "contract": {
+      "commitments": [
+        {
+          "id": "L01",
+          "status": { "descriptor": { "code": "DRAFT" } },
+          "offer": {
+            "id": "OFFER-PIZZA-001",
+            "provider": {
+              "id": "PROV-DOMINOS-SUDIRMAN-001",
+              "availableAt": [{ "id": "LOC-SUDIRMAN-001" }]
+            }
+          },
+          "resources": [
+            {
+              "id": "PIZZA-PEPPERONI-LARGE",
+              "quantity": { "count": 1 }
+            }
+          ],
+          "commitmentAttributes": {
+            "@context": "https://devlabs.ion.id/vocab/trade/commitment/v1",
+            "@type": "ion:TradeCommitmentAttributes",
+            "customisationSelections": [
+              { "groupId": "CG-CRUST", "optionId": "OPT-THIN" },
+              { "groupId": "CG-SAUCE", "optionId": "OPT-TOMATO" }
+            ],
+            "specialInstructions": "Tolong dipotong 8 bagian."
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "PERF-001",
+          "status": { "descriptor": { "code": "PLANNED" } },
+          "performanceAttributes": {
+            "@context": "https://devlabs.ion.id/vocab/trade/performance/v1",
+            "@type": "ion:TradePerformanceAttributes",
+            "performanceMode": "DELIVERY"
+          }
+        }
+      ]
+    }
+  }
+}

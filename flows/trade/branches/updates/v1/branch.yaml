@@ -1,0 +1,216 @@
+# ION Trade Branch — Updates v1
+# NOT OAS. ION flow specification document.
+# Post-confirm order updates — seven sub-branches.
+
+id: ion-trade-branch-updates-v1
+version: "1.0.0"
+branchType: updates
+sectorCode: A
+status: ready
+description: >
+  Seven post-confirm update sub-branches. Some are BAP-initiated (consumer
+  requests), some are BPP-initiated (seller pushes). All use /update and /on_update.
+
+subBranches:
+
+  fulfillment-delay:
+    id: fulfillment-delay
+    window:
+      earliest: on_confirm
+      latest: on_status[DELIVERED]
+    initiator: BPP
+    trigger: BPP detects delay versus committed SLA
+    description: >
+      BPP proactively notifies BAP of a delivery delay. Unsolicited on_update.
+      BAP must surface the new estimated delivery time to consumer.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.tags.delay_reason
+          - message.contract.performance[].performanceAttributes.estimatedDeliveryTime
+        businessRules:
+          - BAP must push notification to consumer with new ETA
+          - Multiple delay updates may be sent — each replaces the previous ETA
+          - If delay exceeds consumer tolerance, consumer may initiate cancellation
+
+  update-delivery-address:
+    id: update-delivery-address
+    window:
+      earliest: on_confirm
+      latest: on_status[DISPATCHED]
+    initiator: BAP
+    description: >
+      Consumer wants to change the delivery address after confirm but before
+      dispatch. BPP may accept or reject (e.g. if new address is outside
+      service zone, or order is already packed for different zone).
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].id
+          - message.contract.performance[].stops[].location.address
+          - message.contract.performance[].stops[].location.gps
+          - message.contract.performance[].stops[].location.area_code
+          - message.contract.performance[].stops[].location.ionAddressAttributes.provinsiCode
+        businessRules:
+          - BPP validates new address is within service polygon
+          - BPP may reject if state is PACKED or if address changes delivery zone
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        conditionalFields:
+          - field: message.contract.performance[].stops[].location
+          - field: message.contract.consideration.considerationAttributes.breakup[breakupLineType=DELIVERY]
+          - field: message.contract.tags.address_change_rejected
+          - field: message.contract.tags.address_change_rejected_reason
+    schemaPacks:
+      core: [address/v1, consideration/v1]
+
+  update-delivery-authorization:
+    id: update-delivery-authorization
+    window:
+      earliest: on_confirm
+      latest: on_status[DELIVERED]
+    initiator: BAP
+    description: >
+      Buyer authorises another person to collect the delivery on their behalf.
+      Useful when consumer cannot be present at delivery time.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].performanceAttributes.tags.authorized_person.name
+          - message.contract.performance[].performanceAttributes.tags.authorized_person.phone
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.authorized_person.id_type
+          - field: message.contract.performance[].performanceAttributes.tags.authorized_person.id_number
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.tags.authorization_confirmed
+
+  buyer-instructions:
+    id: buyer-instructions
+    window:
+      earliest: on_confirm
+      latest: on_status[DISPATCHED]
+    initiator: BAP
+    description: >
+      Buyer adds or updates delivery instructions after confirm.
+      Examples: gate code, preferred drop point, "call before arriving".
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.buyerInstructions
+        businessRules:
+          - Instructions are passed to the delivery agent
+          - Update must arrive before DISPATCHED state
+    schemaPacks:
+      trade: [contract/v1]
+
+  update-sale-invoice:
+    id: update-sale-invoice
+    window:
+      earliest: on_confirm
+      latest: on_status[DELIVERED]
+    initiator: BAP
+    description: >
+      Buyer requests an amendment to the invoice — typically to correct
+      the NPWP, change entity name, or switch invoice type (RECEIPT to
+      TAX_INVOICE). BPP may accept or reject based on PKP status.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.invoicePreferences.invoiceType
+        conditionalFields:
+          - field: message.contract.contractAttributes.invoicePreferences.taxId
+          - field: message.contract.contractAttributes.invoicePreferences.taxId.value
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        conditionalFields:
+          - field: message.contract.contractAttributes.fakturPajakReference
+          - field: message.contract.tags.invoice_amendment_rejected
+    schemaPacks:
+      core: [identity/v1]
+      trade: [contract/v1]
+
+  price-adjustment:
+    id: price-adjustment
+    window:
+      earliest: on_confirm
+      latest: contract COMPLETE
+    initiator: BPP
+    trigger: Price or quantity change after confirm (returns, cancellations, corrections)
+    description: >
+      BPP sends an unsolicited on_update to adjust the confirmed quote.
+      Triggers include: partial return settled, cancelled items, delivery
+      charge correction, loyalty redemption applied late.
+      Quote trail records every adjustment for reconciliation.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.contractAttributes.quoteTrail[]
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.additionalCharge
+        businessRules:
+          - BAP must re-confirm with consumer if adjustment is a new charge > 0
+          - Refund adjustments do not require consumer re-confirmation
+          - All adjustments accumulate in quoteTrail[] for reconciliation
+    schemaPacks:
+      trade: [contract/v1, consideration/v1]
+
+  ready-to-ship:
+    id: ready-to-ship
+    window:
+      earliest: on_confirm
+      latest: on_status[DISPATCHED]
+    initiator: BPP
+    trigger: Seller has physically prepared and packed the order
+    description: >
+      BPP signals that the package is physically ready for logistics pickup.
+      This triggers the on-network LSP (if used) to dispatch a pickup agent.
+      For off-network logistics, it signals the seller's own fulfillment team.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.readyToShip
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.awbNumber
+        businessRules:
+          - BAP may surface "Your order is ready for pickup" to consumer for SELF_PICKUP
+          - For DELIVERY, BAP does not need to display this to consumer
+    schemaPacks:
+      trade: [performance/v1]

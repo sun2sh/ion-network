@@ -1,0 +1,43 @@
+iri: ion://policy/penalty.seller-cancel-without-cause.standard.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: SELLER_CANCEL_WITHOUT_CAUSE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda pembatalan tanpa alasan sah"
+  en: "Seller cancellation without valid cause"
+
+triggerConditions:
+  - condition: CANCEL_AFTER_CONFIRM
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.1
+  - condition: CANCEL_AFTER_PACKED
+    severity: CRITICAL
+    penalty:
+      type: PERCENTAGE
+      value: 0.2
+  - condition: REPEAT_5X_30D
+    severity: CRITICAL
+    penalty:
+      type: FIXED
+      amount: 0
+    additionalAction: SELLER_ACCOUNT_SUSPENDED
+
+appliedVia: reconcile.slaPenaltyDeduction
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 8"
+
+supersededBy: null
+deprecatedAt: null

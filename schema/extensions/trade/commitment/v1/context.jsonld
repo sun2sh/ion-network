@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/trade/commitment/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "lineId": "ion:lineId",
+    "resourceId": "ion:resourceId",
+    "offerId": "ion:offerId",
+    "quantity": "ion:quantity",
+    "price": "ion:price",
+    "customisationSelections": "ion:customisationSelections",
+    "specialInstructions": "ion:specialInstructions",
+    "TradeCommitmentAttributes": "ion:TradeCommitmentAttributes"
+  }
+}

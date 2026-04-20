@@ -1,0 +1,62 @@
+iri: ion://policy/grievance-sla.consumer.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: GRIEVANCE_SLA
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "SLA keluhan standar - respon 2 jam, resolusi 24 jam"
+  en: "Standard grievance SLA - 2h response, 24h resolution"
+
+firstResponseSla: PT2H
+resolutionSla: P1D
+
+escalationLevels:
+  - level: SELLER
+    slaHours: 24
+    autoEscalateOnMiss: true
+  - level: MARKETPLACE_MEDIATION
+    slaHours: 72
+    autoEscalateOnMiss: true
+  - level: BPSK
+    slaHours: 336
+    autoEscalateOnMiss: true
+  - level: KOMINFO
+    slaHours: 720
+    autoEscalateOnMiss: true
+
+consequenceOnBreach:
+  firstResponseMissed:
+    action: AUTO_ESCALATE_TO_MARKETPLACE
+    penalty: ion://policy/penalty.seller-sla-breach.standard
+  resolutionMissed:
+    action: AUTO_ESCALATE_TO_BPSK
+    penalty: ion://policy/penalty.seller-sla-breach.standard
+  marketplaceBreached:
+    action: ION_RAISE_AUTO
+    penalty: ion://policy/penalty.marketplace-escalation-miss.standard
+
+# Marketplace minimum - seller cannot commit to weaker SLA than this
+isMarketplaceMinimum: true
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - beauty
+  - fmcg
+  - sports-outdoors
+  - toys-games
+  - books-stationery
+  - grocery
+  - agritech
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 45"
+  - "Permendag 50/2020 Pasal 6"
+  - "ION Network Policy - Grievance SLA Minimum Standards"
+
+supersededBy: null
+deprecatedAt: null

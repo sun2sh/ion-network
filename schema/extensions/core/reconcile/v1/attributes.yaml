@@ -1,0 +1,438 @@
+openapi: 3.1.1
+info:
+  title: ION Reconcile Extension (v1)
+  description: >
+    Inter-NP financial reconciliation. BAP and BPP reconcile the financial
+    status of a contract — agreed amounts, adjustments, withholding, net
+    settlement, SLA penalties, tax withholdings.
+
+    In Beckn v2.0 this extension attaches to `Contract.settlements[].settlementAttributes`
+    with @type: ion:ReconcileAttributes. Multiple extension types may coexist
+    on the same settlementAttributes bag (PaymentDeclaration, ReconcileAttributes)
+    distinguished by @type.
+
+    Wire placement:
+      message.contract.settlements[].settlementAttributes: {
+        "@context": "https://ion.id/vocab/reconcile/v1/context.jsonld",
+        "@type": "ion:ReconcileAttributes",
+        reconId: ...,
+        amounts: { baseContractAmount, ... },
+        ...
+      }
+  version: 1.0.0
+
+components:
+  schemas:
+    IONReconcileAttributes:
+      type: object
+      title: ION Reconcile Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:ReconcileAttributes
+      x-beckn-attaches-to: Settlement.settlementAttributes
+
+      required: [reconId, contractId, collectedBy, settlementBasis, settlementWindow]
+
+      properties:
+
+        reconId:
+          type: string
+          description: ION-assigned unique identifier for this reconciliation session.
+          example: RECON-2026-00001234
+          x-ion-mandatory: always
+
+        contractId:
+          type: string
+          description: The trade contract this reconciliation covers.
+          example: ORD-2026-00012345
+          x-ion-mandatory: always
+
+        settlementBasis:
+          type: string
+          enum: [AFTER_DELIVERY, AFTER_SHIPMENT, AFTER_RETURN_WINDOW_EXPIRY, AFTER_PAYMENT_DUE_DATE]
+          description: >
+            The event that triggers the settlement window countdown.
+            Agreed at order init and locked at confirm.
+          example: AFTER_DELIVERY
+          x-ion-mandatory: always
+          x-ion-regulatory: ION Network Model settlement design
+
+        settlementWindow:
+          type: string
+          description: >
+            Time window after settlementBasis event within which settlement
+            must be completed. ISO 8601 duration.
+          example: P1D
+          x-ion-mandatory: always
+
+        collectedBy:
+          type: string
+          enum: [BAP, BPP, LSP]
+          description: Which participant collected payment from consumer.
+          example: BAP
+          x-ion-mandatory: always
+
+        amounts:
+          type: object
+          additionalProperties: false
+          description: Declared amounts for reconciliation.
+          required: [baseContractAmount]
+          properties:
+            baseContractAmount:
+              type: number
+              description: Total confirmed order value in IDR (from on_confirm quote)
+            buyerFinderFeeType:
+              type: string
+              enum: [PERCENT, AMOUNT]
+              description: How BAP's finder fee is calculated
+            buyerFinderFeeAmount:
+              type: number
+              description: BAP's finder fee in IDR
+            withholdingAmount:
+              type: number
+              description: >
+                Amount withheld until return window closes. Held by collector
+                to fund potential refunds.
+            withholdingAmountPercent:
+              type: number
+              description: Withholding as percentage of base order amount e.g. 0.1 = 10%
+            netPayableToReceiver:
+              type: number
+              description: >
+                Amount payable to BPP/receiver = baseContractAmount - finderFee - withholdingAmount ± adjustments
+          x-ion-mandatory: always
+
+        returnWindowExpiry:
+          type: string
+          format: date-time
+          description: >
+            Date-time when return window closes and withholding amount releases.
+            After this date, withholdingAmount is settled to BPP if no return.
+          example: 2026-04-26T23:59:59+07:00
+          x-ion-mandatory: optional
+
+        adjustments:
+          type: array
+          description: >
+            Contract-level adjustments to the base order amount that must be
+            agreed before final settlement. These are post-confirm changes
+            due to returns, cancellations, penalties, or price corrections.
+          items:
+            type: object
+            additionalProperties: false
+            required: [type, amount, reason]
+            properties:
+              type:
+                type: string
+                enum:
+                  - PRICE_ADJUSTMENT
+                  - CANCELLATION_FEE
+                  - RETURN_DEDUCTION
+                  - DAMAGE_PENALTY
+                  - LATE_DELIVERY_PENALTY
+                  - COD_REMITTANCE
+                  - REFUND
+                  - LOYALTY_ADJUSTMENT
+                  - PLATFORM_FEE_CORRECTION
+              amount:
+                type: number
+                description: >
+                  IDR amount. Positive = deducted from receiver.
+                  Negative = credited to receiver.
+              reason:
+                type: string
+                description: Human-readable reason for adjustment
+              referenceId:
+                type: string
+                description: Contract ID, return ID, or cancellation ID that triggered this
+              approvedBy:
+                type: string
+                enum: [BAP, BPP, ION]
+                description: Which participant approved this adjustment
+          x-ion-mandatory: optional
+
+        netSettlementAmount:
+          type: number
+          description: >
+            Final net amount to settle to BPP/receiver after all adjustments.
+            Computed: baseContractAmount - finderFee - withholdingAmount + adjustments sum
+          x-ion-mandatory: optional
+
+        netWithholdingRelease:
+          type: number
+          description: >
+            Withholding amount to release to BPP after return window.
+            withholdingAmount - returnDeductions - refunds
+          x-ion-mandatory: optional
+
+        counterparty:
+          type: object
+          additionalProperties: false
+          description: Identification of the counterparty in this reconciliation.
+          properties:
+            collectorAppId:
+              type: string
+              description: Subscriber ID of BAP (collector)
+              example: buyerapp.ion.id
+            receiverAppId:
+              type: string
+              description: Subscriber ID of BPP (receiver)
+              example: sellerapp.ion.id
+          x-ion-mandatory: always
+
+        bankDetails:
+          type: object
+          additionalProperties: false
+          description: Settlement bank account details for the receiver.
+          properties:
+            settlementType:
+              type: string
+              enum: [BI_FAST, RTGS, SKN, QRIS, VIRTUAL_ACCOUNT, UPI]
+            accountNumber:
+              type: string
+            ifscCode:
+              type: string
+              description: Bank routing code equivalent
+            upiAddress:
+              type: string
+            beneficiaryName:
+              type: string
+            bankName:
+              type: string
+          x-ion-mandatory: optional
+
+        reconStatus:
+          type: string
+          enum: [PENDING, AGREED, DISPUTED]
+          description: >
+            PENDING: recon initiated, awaiting counterparty acknowledgment.
+            AGREED: both parties agree on amounts.
+            DISPUTED: amounts do not match — raise ticket via raise/on_raise.
+          example: PENDING
+          x-ion-mandatory: always
+
+        disputeReason:
+          type: string
+          description: >
+            Human-readable reason for DISPUTED status. Referenced when
+            raising a dispute ticket via raise/on_raise.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when reconStatus is DISPUTED
+
+        recon_status:
+          type: string
+          enum:
+            - "01"  # AGREED / Paid as expected
+            - "02"  # OVERPAID
+            - "03"  # UNDERPAID
+          description: >
+            Numeric recon status compatible with ONDC RSF receiver_recon model.
+            01=amounts match, 02=collector paid more than expected, 03=less than expected.
+          x-ion-mandatory: conditional
+          x-ion-condition: Set by on_reconcile from BPP/receiver
+
+        slaPenaltyDeduction:
+          type: number
+          minimum: 0
+          description: >
+            Amount deducted from BPP's net settlement due to confirmed SLA
+            breaches on this contract. BAP tracks breaches in
+            performanceAttributes.slaBreachCount during fulfilment and applies
+            penalty per ION network penalty schedule at reconcile time.
+          example: 5000
+          x-ion-mandatory: optional
+          x-ion-regulatory: ION Network Policy — SLA Enforcement Schedule
+
+        slaPenaltyBreakdown:
+          type: array
+          description: Per-breach penalty calculation for transparency.
+          items:
+            type: object
+            additionalProperties: false
+            required: [tatType, penaltyAmount]
+            properties:
+              tatType:
+                type: string
+              breachedAt:
+                type: string
+                format: date-time
+              penaltyAmount:
+                type: number
+          x-ion-mandatory: optional
+
+        streamerCommissionAmount:
+          type: number
+          minimum: 0
+          description: >
+            Amount to settle to streamer/creator for B2C-LIVE orders.
+            Deducted from BPP or BAP per commercial agreement.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when contract was placed via live/social commerce
+
+        affiliateCommissionAmount:
+          type: number
+          minimum: 0
+          description: Amount to settle to affiliate for affiliate-sourced orders.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when contract.liveCommerceContext.sourceChannel=AFFILIATE_LINK
+
+        # Op-27 — BATCH RECONCILE (v0.5)
+        isBatch:
+          type: boolean
+          description: >
+            Whether this reconcile covers multiple contracts as a batch.
+            Marketplace scale requires batched settlement (daily, weekly).
+            When true, contractId may be null and contractIds[] carries the
+            per-contract list; contractDetails[] carries per-contract breakdown.
+          default: false
+          x-ion-mandatory: optional
+
+        contractIds:
+          type: array
+          items:
+            type: string
+          description: >
+            List of contract IDs covered when isBatch=true. Single-contract
+            reconcile populates contractId instead.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when isBatch=true
+
+        batchPeriod:
+          type: object
+          additionalProperties: false
+          description: Time window this batch covers.
+          required: [from, to]
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+            periodLabel:
+              type: string
+              description: Human-readable label (e.g. "Week 17, 2026")
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when isBatch=true
+
+        contractDetails:
+          type: array
+          description: Per-contract financial breakdown for batch reconcile.
+          items:
+            type: object
+            additionalProperties: false
+            required: [contractId, baseAmount, netPayable]
+            properties:
+              contractId:
+                type: string
+              baseAmount:
+                type: number
+              finderFee:
+                type: number
+              withholding:
+                type: number
+              slaPenaltyDeduction:
+                type: number
+              adjustment:
+                type: number
+              taxWithheld:
+                type: number
+              netPayable:
+                type: number
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when isBatch=true
+
+        # Op-29 — ADJUSTMENTS / CLAWBACKS (v0.5)
+        parentReconId:
+          type: string
+          description: >
+            When this reconcile corrects an earlier one, references the
+            earlier reconId. Used for clawbacks, additional payments,
+            post-reconcile corrections discovered later.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when adjustmentType is present
+
+        adjustmentType:
+          type: string
+          enum: [CLAWBACK, ADDITIONAL_PAYMENT, CORRECTION, LATE_FEE_CHARGE, GOODWILL_CREDIT]
+          description: >
+            Type of adjustment being made against a prior reconcile.
+            CLAWBACK: recover funds previously settled incorrectly.
+            ADDITIONAL_PAYMENT: additional settlement owed.
+            CORRECTION: neutral correction with details in adjustmentReason.
+            LATE_FEE_CHARGE: overdue payment charge.
+            GOODWILL_CREDIT: platform-funded consumer compensation.
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when parentReconId is present
+
+        adjustmentReason:
+          type: string
+          description: Plain-language reason for the adjustment
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when adjustmentType is present
+
+        adjustmentEvidence:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Evidence URLs supporting the adjustment (audit logs, screenshots, communications)
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when adjustmentType is CLAWBACK
+
+        # Op-30 — TAX WITHHOLDINGS (v0.5)
+        taxWithholdings:
+          type: array
+          description: >
+            Indonesian tax withholdings applied to this settlement.
+            Marketplaces in Indonesia withhold PPh 22 on certain transactions
+            per PMK 41/2022 (marketplace tax collector appointment).
+            PPh 23 applies on service fees. PPN remittance for PMSE.
+            Required for Mall-tier and above sellers.
+          items:
+            type: object
+            additionalProperties: false
+            required: [taxType, rate, amount, remittedTo]
+            properties:
+              taxType:
+                type: string
+                enum:
+                  - PPH22
+                  - PPH23
+                  - PPH_FINAL_05
+                  - PPN_REMIT
+                  - PPN_PMSE
+                description: >
+                  PPH22: withheld by marketplace on seller payouts (0.5% of gross).
+                  PPH23: on services/commissions (2%).
+                  PPH_FINAL_05: final tax 0.5% for UMKM.
+                  PPN_REMIT: PPN collected from buyer remitted to DJP.
+                  PPN_PMSE: PPN for cross-border digital services (Netflix model).
+              rate:
+                type: number
+                description: Applied rate (decimal, e.g. 0.005 for 0.5%)
+              basis:
+                type: number
+                description: IDR base amount against which the tax was computed
+              amount:
+                type: number
+                description: IDR amount withheld
+              remittedTo:
+                type: string
+                enum: [DJP, OJK, BI, OTHER]
+                description: Which authority the withheld amount is remitted to
+              remittanceRef:
+                type: string
+                description: Reference number of the remittance (NTPN for PPh)
+              remittanceDate:
+                type: string
+                format: date
+              buktiPotongUrl:
+                type: string
+                format: uri
+                description: URL to the Bukti Potong (withholding slip) document
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when seller is Mall-tier or above, or when PPN PMSE applies
+          x-ion-regulatory: PMK 41/PMK.03/2022 tentang Penunjukan Pemungut PPh 22; PMK 48/PMK.03/2020 (PPN PMSE); PMK 168/2023
+

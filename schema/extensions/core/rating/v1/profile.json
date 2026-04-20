@@ -1,0 +1,18 @@
+{
+  "id": "ion-core-rating-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Rating Extension (v1)",
+  "description": "Post-transaction rating \u2014 provider, item, fulfilment, agent. Scale 1-5.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "ratingAttributes": [
+      "IONRatingAttributes"
+    ]
+  },
+  "apis": [
+    "rate",
+    "on_rate"
+  ]
+}

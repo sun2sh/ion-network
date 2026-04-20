@@ -1,0 +1,69 @@
+iri: ion://policy/return.beauty.hygiene-nonreturnable
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: RETURN
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Tidak dapat dikembalikan - alasan higienis (kosmetik dan perawatan pribadi)"
+  en: "Non-returnable for hygiene reasons (cosmetics and personal care)"
+
+returnWindowDays: 0
+windowStart: DELIVERED
+windowBusinessDaysOnly: false
+
+returnReasonsAllowed:
+  - DEFECTIVE
+  - DAMAGED_IN_TRANSIT
+  - WRONG_ITEM_SENT
+  - EXPIRED_PRODUCT
+
+returnReasonsConditional:
+  []
+
+evidenceRequired: PHOTO_REQUIRED
+evidenceMinPhotos: 2
+
+pickupArrangedBy: SELLER
+pickupCostBorneBy: SELLER
+
+refundAfterQC: true
+refundTimelineFromReturnDelivered:
+  # Op-19 v0.5: timeline varies by original payment method. BPP MUST honour the
+  # method-specific window. Default applies if method not listed.
+  default: P3D
+  QRIS: PT1H
+  EWALLET: PT1H
+  VIRTUAL_ACCOUNT: P3D
+  BANK_TRANSFER: P3D
+  BI_FAST: PT1H
+  CREDIT_CARD: P14D
+  DEBIT_CARD: P7D
+  BNPL: P5D
+  COD_TO_WALLET: PT0S
+  COD_TO_BANK: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+partialRefundOnQC:
+  QC_PASSED: 1.0
+  QC_PARTIAL: 0.7
+  QC_FAILED_USED_DAMAGED: 0.5
+  QC_FAILED_TAMPERED: 0.0
+  QC_FAILED_MISSING_PARTS: 0.5
+  QC_FAILED_DIFFERENT_ITEM: 0.0
+
+# Referenced penalty policies
+buyerPenaltyOnChangeOfMind: ion://policy/penalty.buyer-restocking.none
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - beauty
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 19"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+  - "PerBPOM 23/2019 tentang Persyaratan Teknis Kosmetika"
+
+supersededBy: null
+deprecatedAt: null

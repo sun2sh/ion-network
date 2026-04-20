@@ -1,0 +1,149 @@
+# ION Trade Branch - Cross-Cutting v1
+# NOT OAS. ION flow specification document.
+# Sub-flows running concurrently with the main spine after on_confirm.
+
+id: ion-trade-branch-cross-cutting-v1
+version: "1.0.0"
+branchType: cross-cutting
+sectorCode: A
+status: ready
+description: >
+  Sub-flows that can activate at any point within their declared window.
+  Not mutually exclusive - multiple sub-flows can run concurrently.
+
+subFlows:
+
+  track:
+    apis: [track, on_track]
+    window:
+      earliest: on_confirm
+      latest: "on_status[DELIVERED]"
+    description: Real-time GPS position of delivery agent.
+    steps:
+      - step: track
+        from: BAP
+        to: BPP
+        requiredFields: [message.contract.id, message.tracking.fulfillment_id]
+      - step: on_track
+        from: BPP
+        to: BAP
+        conditionalFields:
+          - field: performanceAttributes.realTimeGps
+            condition: agent has GPS active
+        schemaPacks:
+          trade: [performance/v1]
+
+  support:
+    apis: [support, on_support]
+    window:
+      earliest: on_confirm
+      latest: contract_COMPLETE
+    description: Consumer complaint ticket. Buyer raises issue about order.
+    steps:
+      - step: support
+        stepContext: "try=true"
+        description: Preview available support channels.
+        from: BAP
+        to: BPP
+        requiredFields: [context.try, message.support.ref_id]
+      - step: on_support
+        stepContext: "channels"
+        description: BPP returns contact channels.
+        from: BPP
+        to: BAP
+      - step: support
+        stepContext: "try=false"
+        description: Create formal complaint ticket.
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.support.issue.id
+          - message.support.issue.category
+          - message.support.issue.complainant_info
+          - message.support.issue.description
+          - message.support.issue.source
+        schemaPacks:
+          core: [support/v1]
+
+  rating:
+    apis: [rate, on_rate]
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: ratingWindowDays_expiry
+    description: Post-fulfilment rating. One rate call per ratingCategory.
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.ratings[].id
+          - message.ratings[].rating_category
+          - message.ratings[].value
+        schemaPacks:
+          core: [rating/v1]
+      - step: on_rate
+        from: BPP
+        to: BAP
+        conditionalFields:
+          - field: message.feedbacks[].form.url
+            condition: if seller provides extended feedback form
+
+  reconcile:
+    apis: [reconcile, on_reconcile]
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: settlementWindow_expiry
+    description: BAP initiates financial reconciliation. BPP confirms or disputes.
+    steps:
+      - step: reconcile
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconId
+          - message.contract.settlements[].settlementAttributes.contractId
+          - message.contract.settlements[].settlementAttributes.amounts.baseContractAmount
+          - message.contract.settlements[].settlementAttributes.amounts.buyerFinderFeeAmount
+          - message.contract.settlements[].settlementAttributes.collectedBy
+          - message.contract.settlements[].settlementAttributes.settlementBasis
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.adjustments[]
+            condition: if cancellation fees, returns, or adjustments apply
+        schemaPacks:
+          core: [reconcile/v1]
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconStatus
+          - message.contract.settlements[].settlementAttributes.reconStatus
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.disputeReason
+            condition: if reconStatus=DISPUTED
+
+  raise:
+    apis: [raise, on_raise, raise_status, on_raise_status, raise_details, on_raise_details]
+    window:
+      earliest: on_confirm
+      latest: unbounded
+    description: NP-to-NP or NP-to-ION issue tickets.
+    steps:
+      - step: raise
+        from: BAP_or_BPP
+        to: counterparty_or_ION
+        requiredFields:
+          - message.ticket.title
+          - message.ticket.description
+          - message.ticket.type
+          - message.ticket.priority
+        schemaPacks:
+          core: [raise/v1]
+      - step: on_raise
+        description: Acknowledgment with assigned ticketId.
+      - step: raise_status
+        description: Poll for ticket status.
+      - step: on_raise_status
+        description: Current status response.
+      - step: raise_details
+        description: Request full ticket thread.
+      - step: on_raise_details
+        description: Full ticket with all thread messages.

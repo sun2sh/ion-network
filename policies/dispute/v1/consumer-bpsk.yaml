@@ -1,0 +1,44 @@
+iri: ion://policy/dispute.consumer.bpsk
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: DISPUTE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Sengketa konsumen - BPSK"
+  en: "Consumer dispute - BPSK"
+
+disputeBody: BPSK
+jurisdiction: INDONESIA
+resolutionType: BINDING_ARBITRATION
+
+escalationPath:
+  - SELLER
+  - MARKETPLACE_MEDIATION
+  - BPSK
+  - KOMINFO
+
+typicalResolutionTimeDays: 14
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - beauty
+  - fmcg
+  - sports-outdoors
+  - toys-games
+  - books-stationery
+  - agritech
+  - grocery
+  - pharmacy
+  - digital-goods
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 45"
+  - "Permendag 72/2015 tentang BPSK"
+
+supersededBy: null
+deprecatedAt: null

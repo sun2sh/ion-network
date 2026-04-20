@@ -1,0 +1,309 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/offer/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:TradeOfferAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeOfferAttributes",
+      "rdfs:comment": "TradeOfferAttributes"
+    },
+    {
+      "@id": "ion:cancellationPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "cancellationPolicy",
+      "rdfs:comment": "ION standard cancellation policy IRI. cancel.prepacked.free: buyer may cancel before packed at no fee. cancel.mto.nofee.before_prepare: MTO, free cancellation before preparation starts. cancel.none: no cancellation permitted after confirm.\n"
+    },
+    {
+      "@id": "ion:cancellationAllowedReasons",
+      "@type": "rdf:Property",
+      "rdfs:label": "cancellationAllowedReasons",
+      "rdfs:comment": "Seller-declared reasons for which buyer cancellation is accepted. Only meaningful when cancellationPolicy is not cancel.none.\n"
+    },
+    {
+      "@id": "ion:returnable",
+      "@type": "rdf:Property",
+      "rdfs:label": "returnable",
+      "rdfs:comment": "Whether the product can be returned after delivery. False for perishables, personalised items, digital goods, and hygiene products unless defective.\n"
+    },
+    {
+      "@id": "ion:returnPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "returnPolicy",
+      "rdfs:comment": "ION standard return policy IRI. Encodes window duration and who pays return shipping.\n"
+    },
+    {
+      "@id": "ion:sellerPickupReturn",
+      "@type": "rdf:Property",
+      "rdfs:label": "sellerPickupReturn",
+      "rdfs:comment": "Whether the seller arranges pickup for returns (true) or consumer must arrange their own return shipping (false).\n"
+    },
+    {
+      "@id": "ion:warrantyPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "warrantyPolicy",
+      "rdfs:comment": "ION standard warranty policy IRI."
+    },
+    {
+      "@id": "ion:disputePolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "disputePolicy",
+      "rdfs:comment": "ION standard dispute resolution policy IRI. dispute.consumer.bpsk: B2C — BPSK (Badan Penyelesaian Sengketa Konsumen). dispute.commercial.bani: B2B — BANI arbitration. dispute.commercial.odr: Online Dispute Resolution via ION platform.\n"
+    },
+    {
+      "@id": "ion:timeToShip",
+      "@type": "rdf:Property",
+      "rdfs:label": "timeToShip",
+      "rdfs:comment": "Time from order confirm to when seller hands package to logistics. ISO 8601 duration.\n"
+    },
+    {
+      "@id": "ion:availableOnCod",
+      "@type": "rdf:Property",
+      "rdfs:label": "availableOnCod",
+      "rdfs:comment": "Whether Cash on Delivery is available for this product. Some categories cannot be sold on COD (prescription medicine, alcohol, tobacco, items above IDR 5,000,000).\n"
+    },
+    {
+      "@id": "ion:selfPickupOtp",
+      "@type": "rdf:Property",
+      "rdfs:label": "selfPickupOtp",
+      "rdfs:comment": "Whether OTP verification is required when consumer picks up order. If true, BPP generates deliveryOtp in performanceAttributes.\n"
+    },
+    {
+      "@id": "ion:selfPickupInstructions",
+      "@type": "rdf:Property",
+      "rdfs:label": "selfPickupInstructions",
+      "rdfs:comment": "Instructions for self-pickup — counter number, floor, collection point."
+    },
+    {
+      "@id": "ion:proofOfDeliveryType",
+      "@type": "rdf:Property",
+      "rdfs:label": "proofOfDeliveryType",
+      "rdfs:comment": "Type of delivery confirmation proof required."
+    },
+    {
+      "@id": "ion:contactDetailsConsumerCare",
+      "@type": "rdf:Property",
+      "rdfs:label": "contactDetailsConsumerCare",
+      "rdfs:comment": "Consumer care contact in comma-separated format: name, email, phone. Displayed to consumer for post-purchase support queries.\n"
+    },
+    {
+      "@id": "ion:displayLanguage",
+      "@type": "rdf:Property",
+      "rdfs:label": "displayLanguage",
+      "rdfs:comment": "Languages in which this offer's catalog content is available. \"id\" always present. \"en\" required for XB commerce pattern.\n"
+    },
+    {
+      "@id": "ion:minimumOrderQuantity",
+      "@type": "rdf:Property",
+      "rdfs:label": "minimumOrderQuantity",
+      "rdfs:comment": "Minimum quantity for B2B wholesale. count for unit-based, measure for weight/volume-based products.\n"
+    },
+    {
+      "@id": "ion:weightSlabs",
+      "@type": "rdf:Property",
+      "rdfs:label": "weightSlabs",
+      "rdfs:comment": "Weight-based pricing tiers for catalogued logistics offers."
+    },
+    {
+      "@id": "ion:offerType",
+      "@type": "rdf:Property",
+      "rdfs:label": "offerType",
+      "rdfs:comment": "Type of commercial offer."
+    },
+    {
+      "@id": "ion:priceModel",
+      "@type": "rdf:Property",
+      "rdfs:label": "priceModel",
+      "rdfs:comment": "How pricing is determined for this offer."
+    },
+    {
+      "@id": "ion:minBasketAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "minBasketAmount",
+      "rdfs:comment": "Minimum basket value in IDR for offer to be valid."
+    },
+    {
+      "@id": "ion:maxDiscountAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "maxDiscountAmount",
+      "rdfs:comment": "Maximum discount cap in IDR for percentage offers."
+    },
+    {
+      "@id": "ion:voucherCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "voucherCode",
+      "rdfs:comment": "Voucher or promo code to activate offer."
+    },
+    {
+      "@id": "ion:stackable",
+      "@type": "rdf:Property",
+      "rdfs:label": "stackable",
+      "rdfs:comment": "Whether this offer can be combined with other active offers."
+    },
+    {
+      "@id": "ion:usageLimitPerUser",
+      "@type": "rdf:Property",
+      "rdfs:label": "usageLimitPerUser",
+      "rdfs:comment": "Maximum times this offer can be used by a single user."
+    },
+    {
+      "@id": "ion:customerSegment",
+      "@type": "rdf:Property",
+      "rdfs:label": "customerSegment",
+      "rdfs:comment": "Segment of customers eligible for this offer."
+    },
+    {
+      "@id": "ion:paymentMethodEligibility",
+      "@type": "rdf:Property",
+      "rdfs:label": "paymentMethodEligibility",
+      "rdfs:comment": "Structured payment method eligibility. Each entry declares minAmount/maxAmount constraints, required buyer tier, excluded categories. BAP checks buyer context + order amount against every entry; applies only those that pass all constraints. Empty array means all methods eligible.\n"
+    },
+    {
+      "@id": "ion:subsidyBreakup",
+      "@type": "rdf:Property",
+      "rdfs:label": "subsidyBreakup",
+      "rdfs:comment": "Who funds the discount/promotion."
+    },
+    {
+      "@id": "ion:startAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "startAt",
+      "rdfs:comment": "When this promotional offer becomes active."
+    },
+    {
+      "@id": "ion:endAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "endAt",
+      "rdfs:comment": "When this promotional offer expires."
+    },
+    {
+      "@id": "ion:priceValidFrom",
+      "@type": "rdf:Property",
+      "rdfs:label": "priceValidFrom",
+      "rdfs:comment": "Start of price validity window. Distinct from startAt (offer availability window) — price may change mid-campaign while offer remains active. Catalog TTL for offers with active priceChangeSchedule SHOULD be <=30 seconds to avoid stale-price surfacing on browsing surfaces.\n"
+    },
+    {
+      "@id": "ion:priceValidUntil",
+      "@type": "rdf:Property",
+      "rdfs:label": "priceValidUntil",
+      "rdfs:comment": "End of price validity window."
+    },
+    {
+      "@id": "ion:priceChangeSchedule",
+      "@type": "rdf:Property",
+      "rdfs:label": "priceChangeSchedule",
+      "rdfs:comment": "Full price change timeline for a campaign. BAPs MUST render countdown UI and compute correct price at transaction time. Each entry defines a price valid for a window; entries MUST NOT overlap. Sorted ascending by validFrom.\n"
+    },
+    {
+      "@id": "ion:reservationWindowSeconds",
+      "@type": "rdf:Property",
+      "rdfs:label": "reservationWindowSeconds",
+      "rdfs:comment": "Seconds for which the BPP will hold availability and the on_select price quote. Default 300. BPP soft-reserves at on_select, hard-reserves at on_init. After window expires, availability is released and any subsequent /confirm for this messageId returns ION-3006.\n"
+    },
+    {
+      "@id": "ion:totalStockCap",
+      "@type": "rdf:Property",
+      "rdfs:label": "totalStockCap",
+      "rdfs:comment": "Absolute total quantity available under this offer. When reached, all subsequent /select calls return ION-3008. Distinct from resource.availability.maxOrderQty (per-order cap).\n"
+    },
+    {
+      "@id": "ion:perUserQuantityCap",
+      "@type": "rdf:Property",
+      "rdfs:label": "perUserQuantityCap",
+      "rdfs:comment": "Maximum units a single buyer can purchase under this offer across all transactions (enforced by BPP). Distinct from usageLimitPerUser which is number of separate redemptions.\n"
+    },
+    {
+      "@id": "ion:isFlashSale",
+      "@type": "rdf:Property",
+      "rdfs:label": "isFlashSale",
+      "rdfs:comment": "Signals this offer is a flash sale. BAP surfaces urgency UI; reservationWindowSeconds SHOULD be short (60-180s).\n"
+    },
+    {
+      "@id": "ion:queueEnabled",
+      "@type": "rdf:Property",
+      "rdfs:label": "queueEnabled",
+      "rdfs:comment": "Whether BPP uses a queue/throttle mechanism when demand exceeds supply. When true, on_select may return queuePosition.\n"
+    },
+    {
+      "@id": "ion:queuePosition",
+      "@type": "rdf:Property",
+      "rdfs:label": "queuePosition",
+      "rdfs:comment": "Consumer's current position in the purchase queue. 0 = at front. Returned in on_select when queueEnabled=true.\n"
+    },
+    {
+      "@id": "ion:estimatedWaitSeconds",
+      "@type": "rdf:Property",
+      "rdfs:label": "estimatedWaitSeconds",
+      "rdfs:comment": "Estimated wait time before this consumer reaches front of queue."
+    },
+    {
+      "@id": "ion:stackingGroup",
+      "@type": "rdf:Property",
+      "rdfs:label": "stackingGroup",
+      "rdfs:comment": "Voucher stacking group. Vouchers from different groups stack by default. Within a single group only one voucher can apply per order unless stackingRules override. Replaces the ambiguous stackable flag.\n"
+    },
+    {
+      "@id": "ion:stackingRules",
+      "@type": "rdf:Property",
+      "rdfs:label": "stackingRules",
+      "rdfs:comment": "Explicit voucher stacking rules. Used when offer has complex combination logic beyond the default group rules.\n"
+    },
+    {
+      "@id": "ion:codEligibilityForBuyer",
+      "@type": "rdf:Property",
+      "rdfs:label": "codEligibilityForBuyer",
+      "rdfs:comment": "BPP-evaluated COD eligibility for the specific buyer in this transaction. Returned in on_select. Distinct from availableOnCod which is offer-level availability. Allows BPP to decline COD for new buyers, previous COD failures, high-value items exceeding buyer's verified tier, etc.\n"
+    },
+    {
+      "@id": "ion:codEligibilityReason",
+      "@type": "rdf:Property",
+      "rdfs:label": "codEligibilityReason",
+      "rdfs:comment": "Reason for the codEligibilityForBuyer decision."
+    },
+    {
+      "@id": "ion:returnEvidenceRequirement",
+      "@type": "rdf:Property",
+      "rdfs:label": "returnEvidenceRequirement",
+      "rdfs:comment": "Evidence required from buyer when initiating a return. VIDEO_UNBOXING_REQUIRED is standard for high-value electronics. PHYSICAL_INSPECTION is used for high-value items (>IDR 10M) where seller sends inspector before accepting return.\n"
+    },
+    {
+      "@id": "ion:returnEvidenceMinPhotos",
+      "@type": "rdf:Property",
+      "rdfs:label": "returnEvidenceMinPhotos",
+      "rdfs:comment": "Minimum number of evidence photos required."
+    },
+    {
+      "@id": "ion:handlingTimeHours",
+      "@type": "rdf:Property",
+      "rdfs:label": "handlingTimeHours",
+      "rdfs:comment": "Hours from order confirm to package ready for logistics. Replaces QSR-only averagePreparationTime for non-food sellers. Used for custom-print, made-to-measure, pre-order merchandise.\n"
+    },
+    {
+      "@id": "ion:grievanceSlaPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "grievanceSlaPolicy",
+      "rdfs:comment": "ION Grievance SLA policy IRI. Declares response time, resolution time, escalation path, and penalty consequences when SLA is breached. Subject to marketplace minimum (grievance.sla.standard) for B2C; marketplace-operated BAPs may enforce stricter policies on their sellers. ION timer auto-escalates w"
+    },
+    {
+      "@id": "ion:paymentTermsPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "paymentTermsPolicy",
+      "rdfs:comment": "Payment terms policy IRI. Declares when payment is collected, which methods are accepted, whether deposit or credit terms apply, and what the late-payment penalty is if applicable. Must be compatible with the order's paymentRail and collectedBy.\n"
+    },
+    {
+      "@id": "ion:penaltyPolicy",
+      "@type": "rdf:Property",
+      "rdfs:label": "penaltyPolicy",
+      "rdfs:comment": "Penalty policy IRI. Normally inferred from seller's onboarding tier (Standard/Mall/Premium) and other declared policies (return, cancellation, grievance-sla). May be declared explicitly for per-offer overrides. Sellers cannot select a penalty policy weaker than their tier minimum.\n"
+    },
+    {
+      "@id": "ion:customTermsAddendum",
+      "@type": "rdf:Property",
+      "rdfs:label": "customTermsAddendum",
+      "rdfs:comment": "Free-text addendum for edge cases (e.g. watchmaker offering lifetime service). Supplements the declared policy IRIs but cannot contradict them. If addendum contradicts base policy, base policy wins and addendum is informational only. BAP displays addendum below the structured policy terms.\n"
+    }
+  ]
+}

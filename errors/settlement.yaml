@@ -1,0 +1,118 @@
+# ION Error Registry — Settlement (ION-6xxx)
+# reconcile, payment errors
+
+- code: ION-6001
+  http_status: 400
+  category: settlement
+  title:
+    id: Jumlah rekon tidak cocok
+    en: Reconciliation amount mismatch
+  description:
+    en: The amount declared by BAP in /reconcile does not match the amount expected by BPP based on the confirmed contract quote.
+  affected_field: reconAttributes.amounts.baseContractAmount
+  affected_apis: [reconcile, on_reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  flow_ref: flows/trade/branches/cross-cutting/v1
+  resolution:
+    en: Compare amounts against the confirmed contract quote (locked at on_confirm). If mismatch is due to adjustments, ensure all adjustments are declared in reconAttributes.adjustments[] with references.
+
+- code: ION-6002
+  http_status: 400
+  category: settlement
+  title:
+    id: Metode pembayaran tidak didukung
+    en: Payment rail not supported
+  description:
+    en: The paymentRail declared in the settlement is not in the ION-supported payment rails list.
+  affected_field: settlementAttributes.paymentRail
+  affected_apis: [init, on_init, confirm]
+  schema_ref: schema/extensions/core/payment/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Use only payment rails declared in ion.yaml x-ion-settlement.allowedPaymentRails.
+
+- code: ION-6003
+  http_status: 200
+  category: settlement
+  title:
+    id: Penalti diterapkan saat rekonsiliasi
+    en: Penalty settlement applied
+  description:
+    en: >
+      A penalty policy was triggered during the contract lifecycle and has been
+      applied to reconcile. Not an error per se - informational code so BAP
+      and BPP systems can surface the deduction and its reason to operators.
+      Deduction amount and breakdown are in reconcile.amounts.slaPenaltyDeduction
+      and reconcile.amounts.slaPenaltyBreakdown.
+  affected_field: reconcile.amounts.slaPenaltyDeduction
+  affected_apis: [reconcile, on_reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  flow_ref: policies/penalty/v1/
+  resolution:
+    en: Penalized party may dispute via raise channel within 7 days. Dispute goes to marketplace mediation first then BPSK/BANI per disputePolicy.
+
+- code: ION-6004
+  http_status: 409
+  category: settlement
+  title:
+    id: Batch reconcile tidak konsisten
+    en: Batch reconcile contract detail mismatch
+  description:
+    en: >
+      In a batch reconcile, the sum of contractDetails amounts does not match
+      the top-level baseContractAmount, or contractIds does not align with
+      contractDetails entries.
+  affected_field: message.contract.settlements[].settlementAttributes.contractDetails
+  affected_apis: [reconcile, on_reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  resolution:
+    en: Recompute contractDetails; ensure every contractId has a detail entry and sums reconcile.
+
+- code: ION-6005
+  http_status: 404
+  category: settlement
+  title:
+    id: parentReconId tidak ditemukan
+    en: Parent reconId not found for adjustment
+  description:
+    en: >
+      An adjustment reconcile references a parentReconId that does not exist
+      in the registry or is outside the valid adjustment window.
+  affected_field: message.contract.settlements[].settlementAttributes.parentReconId
+  affected_apis: [reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  resolution:
+    en: Verify parentReconId. If adjustment window has expired, raise a dispute via raise channel instead.
+
+- code: ION-6006
+  http_status: 422
+  category: settlement
+  title:
+    id: Bukti pemotongan pajak hilang
+    en: Tax withholding evidence missing
+  description:
+    en: >
+      Reconcile declares taxWithholdings but the corresponding remittance
+      reference (NTPN) or buktiPotongUrl is missing. Required for audit
+      compliance under Indonesian tax law.
+  affected_field: message.contract.settlements[].settlementAttributes.taxWithholdings[].remittanceRef
+  affected_apis: [reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  resolution:
+    en: Include remittanceRef and buktiPotongUrl for each taxWithholding entry.
+
+- code: ION-6007
+  http_status: 403
+  category: settlement
+  title:
+    id: Penarikan settlement melewati jendela
+    en: Clawback attempted past adjustment window
+  description:
+    en: >
+      Adjustment of type CLAWBACK attempted more than 90 days after the
+      parent reconcile. Adjustment window closed.
+  affected_field: message.contract.settlements[].settlementAttributes.adjustmentType
+  affected_apis: [reconcile]
+  schema_ref: schema/extensions/core/reconcile/v1
+  resolution:
+    en: Raise formal dispute via raise channel with type=SETTLEMENT_DISPUTE instead.

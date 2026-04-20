@@ -1,0 +1,41 @@
+iri: ion://policy/payment-terms.cod.full
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PAYMENT_TERMS
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "COD - bayar saat pengiriman"
+  en: "COD - pay on delivery"
+
+paymentTiming: ON_DELIVERY
+paymentCollection: COD
+depositRequired: false
+depositPercentage: 0
+creditTermsDays: 0
+installmentEnabled: false
+installmentTenure: 0
+
+allowedPaymentMethods:
+  - COD
+
+latePaymentPenalty: null
+latePaymentFeePercent: 0
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP]
+applicableCategories:
+  - fashion
+  - electronics
+  - home-kitchen
+  - beauty
+  - fmcg
+  - grocery
+
+regulatoryBasis:
+  - "UU 7/2021 HPP"
+  - "OJK POJK terkait metode pembayaran"
+  - "PBI 22/20/2020 tentang QRIS"
+
+supersededBy: null
+deprecatedAt: null

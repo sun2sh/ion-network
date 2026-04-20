@@ -1,0 +1,135 @@
+openapi: 3.1.1
+info:
+  title: ION Trade Commitment Extension (v1)
+  description: >
+    Trade sector commitment attributes. Per-line item details within a contract
+    — resource reference, offer reference, quantity, locked price, customisation
+    selections, and special instructions.
+    Entirely from Beckn v2.1 generalised model — not in dictionary v1.0.
+    Attaches to: beckn:Commitment.commitmentAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    TradeCommitmentAttributes:
+      type: object
+      title: Trade Commitment Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:TradeCommitmentAttributes
+      x-beckn-attaches-to: Commitment.commitmentAttributes
+
+      required: [lineId, resourceId, offerId, quantity]
+
+      properties:
+
+        lineId:
+          type: string
+          description: >
+            Unique identifier for this commitment line within the contract.
+            Assigned by BAP at select. Persists through the contract lifecycle.
+            Used to reference specific lines in updates, cancellations, returns.
+          example: L01
+          x-ion-mandatory: always
+
+        resourceId:
+          type: string
+          description: >
+            ID of the resource being committed. References beckn:Resource.id
+            from the catalog. For VARIANT resources, this is the specific
+            variant ID, not the parent.
+          example: ITEM-001
+          x-ion-mandatory: always
+
+        offerId:
+          type: string
+          description: >
+            ID of the offer under which this resource is being committed.
+            References beckn:Offer.id from the catalog.
+          example: OFFER-001
+          x-ion-mandatory: always
+
+        quantity:
+          type: object
+          additionalProperties: false
+          description: Quantity of this resource being committed.
+          properties:
+            count:
+              type: integer
+              minimum: 1
+              description: Unit count for discrete items
+              example: 2
+            measure:
+              type: object
+              additionalProperties: false
+              description: Weight or volume measure for continuous items
+              properties:
+                unit:
+                  type: string
+                  enum: [GRAM, KILOGRAM, LITRE, MILLILITRE, PIECE, DOZEN, METER]
+                value:
+                  type: number
+                  minimum: 0
+              required: [unit, value]
+          x-ion-mandatory: always
+
+        price:
+          type: object
+          additionalProperties: false
+          description: >
+            Locked price for this commitment line as agreed at select.
+            Price is fixed at on_select and does not change unless a price
+            adjustment branch is triggered.
+          properties:
+            value:
+              type: string
+              description: IDR amount as string decimal
+              example: "89000"
+            currency:
+              type: string
+              const: IDR
+              default: IDR
+          required: [value, currency]
+          x-ion-mandatory: conditional
+          x-ion-condition: Set by BPP at on_select
+
+        customisationSelections:
+          type: array
+          description: >
+            Buyer's selections from customisationGroups for COMPOSED and
+            WITH_EXTRAS resources. One entry per group selected.
+          items:
+            type: object
+            additionalProperties: false
+            required: [groupId, optionId]
+            properties:
+              groupId:
+                type: string
+                description: ID of the customisationGroup selected from
+                example: CG-SIZE
+              optionId:
+                type: string
+                description: ID of the option selected within the group
+                example: OPT-LARGE
+              priceDelta:
+                type: object
+                additionalProperties: false
+                description: Price delta applied by this selection
+                properties:
+                  type:
+                    type: string
+                    enum: [FIXED, PERCENT]
+                  value:
+                    type: number
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for COMPOSED and WITH_EXTRAS resources
+
+        specialInstructions:
+          type: string
+          description: >
+            Per-line buyer note. e.g. "Extra crispy base", "No onion",
+            "Gift wrap this item separately". Visible to seller at fulfilment.
+          maxLength: 500
+          example: Tanpa bawang, tolong pedas ekstra.
+          x-ion-mandatory: optional

@@ -1,0 +1,163 @@
+# ION Trade Flow - B2G Government Procurement (B2G) Spine v1
+# NOT OAS. ION flow specification document.
+# Business sells to government entities via ION. Bridges to LKPP e-Katalog.
+
+id: ion-trade-B2G-v1
+version: "1.0.0"
+pattern: B2G Government Procurement
+sectorCode: A
+status: ready
+description: >
+  Business seller (BPP) sells to government buyer (BAP represents K/L/D/I —
+  Kementerian/Lembaga/Daerah/Institusi). Procurement governed by Perpres 16/2018
+  tentang Pengadaan Barang/Jasa Pemerintah.
+  ION B2G integrates with LKPP e-Katalog: products listed on ION are
+  potentially also listed on e-Katalog. This pattern covers the ION-side
+  transaction once a government buyer has selected a product.
+  Key additions to B2B-PP: SP/SPK reference, DIPA budget reference,
+  TKDN (local content) declaration, government payment via SP2D/KPPN,
+  PPh22 withholding, third-party auditor rights.
+
+applicableCategories: [all]
+
+regulatoryFramework:
+  - Perpres 16/2018 tentang Pengadaan Barang/Jasa Pemerintah
+  - Perpres 12/2021 (amendment to Perpres 16/2018)
+  - PerLKPP 12/2021 tentang Pedoman Pelaksanaan Pengadaan
+  - PMK 190/PMK.05/2012 tentang Tata Cara Pembayaran APBN
+
+keyDifferences:
+  - Government buyer identity — K/L/D/I code required
+  - SP/SPK reference — Surat Pesanan or Surat Perintah Kerja
+  - DIPA budget code — Daftar Isian Pelaksanaan Anggaran reference
+  - TKDN declaration — Tingkat Komponen Dalam Negeri (local content %)
+  - PPh22 withholding — government withholds 1.5% income tax on purchase
+  - Payment via SP2D — Surat Perintah Pencairan Dana via KPPN
+  - Auditor rights — BPK/BPKP may audit transaction records
+
+phases:
+  phase1:
+    name: Catalog
+    description: >
+      Seller publishes to ION. Government buyer (BAP) discovers via ION
+      or via LKPP e-Katalog integration layer.
+    steps:
+      - step: publish_catalog
+        additionalRequiredFields:
+          - message.catalog.providers[].items[].resourceAttributes.packaged.hsnCode
+          - field: message.catalog.providers[].offers[].tags.b2g.tkdn_percentage
+            note: "Local content percentage. Products >25% TKDN preferred in government procurement"
+          - field: message.catalog.providers[].offers[].tags.b2g.lkpp_catalog_id
+            condition: if product is also on LKPP e-Katalog
+
+  phase2:
+    name: Procurement Transaction
+    steps:
+      - step: select
+        from: Government_BAP
+        to: BPP
+        description: Government selects product after internal approval process.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[]
+          - message.contract.tags.b2g.kldi_code  # note=Government entity code (K/L/D/I)
+          - message.contract.tags.b2g.procurement_method  # values="[DIRECT_PROCUREMENT, EPURCHASING, TENDER]"
+          - message.contract.tags.b2g.dipa_reference  # note=Budget line reference
+
+      - step: on_select
+        description: Seller confirms availability and B2G pricing.
+        additionalFields:
+          - message.contract.tags.b2g.tkdn_percentage
+          - field: message.contract.tags.b2g.catalog_price
+            note: e-Katalog price if applicable; government cannot pay above catalog price
+
+      - step: init
+        from: Government_BAP
+        to: BPP
+        requiredFields:
+          - message.contract.contractAttributes.purchaseOrderReference  # note=SP (Surat Pesanan) or SPK (Surat Perintah Kerja) number
+          - message.contract.tags.b2g.sp_reference
+          - message.contract.tags.b2g.spk_reference  # condition=for goods above IDR 50 million
+          - message.contract.tags.b2g.dipa_reference
+          - message.contract.contractAttributes.invoicePreferences.invoiceType  # value=TAX_INVOICE
+          - message.contract.settlements[].settlementAttributes.paymentRail  # value=RTGS or SKN (government pays via KPPN SP2D)
+
+      - step: on_init
+        description: Seller returns payment details. Government pays via SP2D/KPPN.
+        additionalFields:
+          - field: message.contract.tags.b2g.kppn_code
+            note: KPPN (Kantor Pelayanan Perbendaharaan Negara) code for payment routing
+          - message.contract.tags.b2g.supplier_bank_account
+
+      - step: confirm
+        requiredFields:
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+          - message.contract.tags.b2g.sp_reference
+          - message.contract.tags.b2g.dipa_reference
+        paymentNote: Government payment is POST_FULFILLMENT via SP2D after BAST signing
+
+      - step: on_confirm
+        additionalFields:
+          - field: message.contract.contractAttributes.fakturPajakReference
+            note: PKP seller must issue Faktur Pajak for government purchases
+          - field: message.contract.tags.b2g.tkdn_declaration_url
+            note: TKDN self-declaration URL or certificate
+
+  phase3:
+    name: Delivery and BAST
+    description: >
+      Delivery follows standard flow. At delivery, Berita Acara Serah Terima
+      (BAST) must be signed by government official before payment is released.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    additionalSteps:
+      - step: on_update
+        stepContext: "BAST_SIGNED"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Seller notifies government that BAST has been signed.
+        requiredFields:
+          - message.contract.tags.b2g.bast_reference
+          - message.contract.tags.b2g.bast_signed_by
+          - message.contract.tags.b2g.bast_signed_at
+
+  phase4:
+    name: Government Payment (SP2D)
+    description: >
+      Government initiates payment after BAST. Payment via KPPN SP2D.
+      PPh22 withheld by government before remittance to seller.
+    steps:
+      - step: update
+        stepContext: "PAYMENT_REFERENCE"
+        from: Government_BAP
+        to: BPP
+        description: Government provides SP2D reference number after payment is processed.
+        requiredFields:
+          - message.contract.tags.b2g.sp2d_reference
+          - message.contract.tags.b2g.sp2d_date
+          - message.contract.tags.b2g.net_payment_amount  # note=After PPh22 withholding deduction
+          - message.contract.tags.b2g.pph22_withheld
+
+      - step: on_update
+        from: BPP
+        to: Government_BAP
+        description: Seller acknowledges payment receipt. Provides bukti potong PPh22.
+        additionalFields:
+          - field: message.contract.tags.b2g.bukti_potong_reference
+            note: PPh22 withholding certificate number
+
+taxNote: >
+  PPh22 1.5% withheld by government buyer from seller payment.
+  Seller receives 98.5% of invoice value.
+  Seller must declare withheld PPh22 in annual SPT.
+  Regulatory basis: PMK 34/PMK.010/2017 tentang Pemungutan PPh Pasal 22
+
+branchWindows:
+  cancellation:
+    note: Government contract cancellation requires PAK (Perubahan Anggaran Kegiatan) approval
+  returns:
+    note: Government returns require BAST amendment and internal approval
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE

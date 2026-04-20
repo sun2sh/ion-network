@@ -1,0 +1,164 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/trade/contract/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:TradeContractAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "TradeContractAttributes",
+      "rdfs:comment": "TradeContractAttributes"
+    },
+    {
+      "@id": "ion:fulfillingLocationId",
+      "@type": "rdf:Property",
+      "rdfs:label": "fulfillingLocationId",
+      "rdfs:comment": "ID of the specific fulfilment centre that will fulfil this order. Populated by BPP at on_confirm after internal FC selection. Present when provider has multiple FC locations.\n"
+    },
+    {
+      "@id": "ion:buyerInstructions",
+      "@type": "rdf:Property",
+      "rdfs:label": "buyerInstructions",
+      "rdfs:comment": "Free-text delivery instructions from buyer. e.g. \"Leave at door\", \"Call before arriving\", \"Do not ring bell after 9pm\".\n"
+    },
+    {
+      "@id": "ion:deliveryPreferences",
+      "@type": "rdf:Property",
+      "rdfs:label": "deliveryPreferences"
+    },
+    {
+      "@id": "ion:invoicePreferences",
+      "@type": "rdf:Property",
+      "rdfs:label": "invoicePreferences",
+      "rdfs:comment": "Buyer's invoice type and tax identity declaration."
+    },
+    {
+      "@id": "ion:fakturPajakReference",
+      "@type": "rdf:Property",
+      "rdfs:label": "fakturPajakReference",
+      "rdfs:comment": "Faktur Pajak (e-Invoice) reference number assigned by BPP after contract confirm for PKP sellers. 16-digit DJP format.\n"
+    },
+    {
+      "@id": "ion:purchaseOrderReference",
+      "@type": "rdf:Property",
+      "rdfs:label": "purchaseOrderReference",
+      "rdfs:comment": "Buyer's Purchase Order number for B2B wholesale transactions. Allows buyer to link ION contract to their internal PO system.\n"
+    },
+    {
+      "@id": "ion:cancellationReasonCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "cancellationReasonCode",
+      "rdfs:comment": "Standardised cancellation reason code when contract is cancelled. Set by BPP on contract at time of cancellation.\n"
+    },
+    {
+      "@id": "ion:quoteTrail",
+      "@type": "rdf:Property",
+      "rdfs:label": "quoteTrail",
+      "rdfs:comment": "Trail of quote changes for price adjustment branch. Each entry records a delta to the original confirmed quote.\n"
+    },
+    {
+      "@id": "ion:partialCancellationAllowed",
+      "@type": "rdf:Property",
+      "rdfs:label": "partialCancellationAllowed",
+      "rdfs:comment": "Whether individual items in a multi-item order can be cancelled."
+    },
+    {
+      "@id": "ion:replacementPreferred",
+      "@type": "rdf:Property",
+      "rdfs:label": "replacementPreferred",
+      "rdfs:comment": "Whether buyer prefers replacement over refund in case of defective or wrong item. Declared at confirm.\n"
+    },
+    {
+      "@id": "ion:disputeWindowDays",
+      "@type": "rdf:Property",
+      "rdfs:label": "disputeWindowDays",
+      "rdfs:comment": "Number of days after delivery within which buyer may raise a dispute. Defaults to ION network policy if not declared.\n"
+    },
+    {
+      "@id": "ion:creditTermsDays",
+      "@type": "rdf:Property",
+      "rdfs:label": "creditTermsDays",
+      "rdfs:comment": "Number of days credit extended to the buyer from delivery date. 0 = prepaid. Common values: 7, 14, 30, 45, 60, 90.\n"
+    },
+    {
+      "@id": "ion:paymentDueDate",
+      "@type": "rdf:Property",
+      "rdfs:label": "paymentDueDate",
+      "rdfs:comment": "Absolute datetime by which payment must be made for credit orders. Computed from delivery date + creditTermsDays.\n"
+    },
+    {
+      "@id": "ion:subscriptionBillingCycle",
+      "@type": "rdf:Property",
+      "rdfs:label": "subscriptionBillingCycle",
+      "rdfs:comment": "Billing cycle for subscription commerce pattern."
+    },
+    {
+      "@id": "ion:subscriptionNextBillingDate",
+      "@type": "rdf:Property",
+      "rdfs:label": "subscriptionNextBillingDate",
+      "rdfs:comment": "Date-time of next billing event. Updated by BPP after each successful billing.\n"
+    },
+    {
+      "@id": "ion:linkedContractId",
+      "@type": "rdf:Property",
+      "rdfs:label": "linkedContractId",
+      "rdfs:comment": "Reference to the Trade Contract this Logistics Contract serves. Enables ION Central to trace causal relationship between trade and logistics transactions.\n"
+    },
+    {
+      "@id": "ion:codAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "codAmount",
+      "rdfs:comment": "Total cash amount to be collected from consumer at delivery for COD orders. String decimal in IDR.\n"
+    },
+    {
+      "@id": "ion:beaCukaiReference",
+      "@type": "rdf:Property",
+      "rdfs:label": "beaCukaiReference",
+      "rdfs:comment": "Indonesian Customs (Bea Cukai) clearance reference number. Required for all international inbound shipments.\n"
+    },
+    {
+      "@id": "ion:liveCommerceContext",
+      "@type": "rdf:Property",
+      "rdfs:label": "liveCommerceContext",
+      "rdfs:comment": "Context for orders placed via live commerce or social commerce (TikTok Shop, Shopee Live, Tokopedia Play, OTT-embedded commerce). Required for B2C-LIVE spine. Enables revenue attribution to streamer/affiliate and platform-specific settlement.\n"
+    },
+    {
+      "@id": "ion:refundDestination",
+      "@type": "rdf:Property",
+      "rdfs:label": "refundDestination",
+      "rdfs:comment": "Where refund will be credited. When buyer does not specify, default is ORIGINAL_PAYMENT_METHOD. Platform wallets often faster; store credit used for partial refunds and goodwill.\n"
+    },
+    {
+      "@id": "ion:subscriptionTrialDays",
+      "@type": "rdf:Property",
+      "rdfs:label": "subscriptionTrialDays",
+      "rdfs:comment": "First N days free. Billing starts on day N+1."
+    },
+    {
+      "@id": "ion:subscriptionPauseType",
+      "@type": "rdf:Property",
+      "rdfs:label": "subscriptionPauseType",
+      "rdfs:comment": "Current pause state for B2C-SUB orders"
+    },
+    {
+      "@id": "ion:subscriptionPauseUntil",
+      "@type": "rdf:Property",
+      "rdfs:label": "subscriptionPauseUntil",
+      "rdfs:comment": "Date to automatically resume. Required when pauseType=PAUSED_UNTIL_DATE"
+    },
+    {
+      "@id": "ion:giftingDetails",
+      "@type": "rdf:Property",
+      "rdfs:label": "giftingDetails",
+      "rdfs:comment": "Structured gifting details replacing the simple gift flag."
+    },
+    {
+      "@id": "ion:paymentSchedule",
+      "@type": "rdf:Property",
+      "rdfs:label": "paymentSchedule",
+      "rdfs:comment": "Multi-milestone payment schedule for partial-payment offers (down-payment + balance, milestone-based for services, etc.). Used when paymentTermsPolicy references a schedule-based IRI. Single-payment orders do not require this field. Contract moves to COMPLETE only when all milestones are PAID.\n"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+iri: ion://policy/penalty.seller-wrong-item.standard_sent
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: SELLER_WRONG_ITEM
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda pengiriman barang salah"
+  en: "Wrong item shipped penalty"
+
+triggerConditions:
+  - condition: WRONG_ITEM_CONFIRMED
+    severity: MAJOR
+    penalty:
+      type: FIXED
+      amount: 20000
+    additionalAction: REPLACEMENT_AT_SELLER_COST
+  - condition: REPEAT_3X_30D
+    severity: CRITICAL
+    penalty:
+      type: PERCENTAGE
+      value: 0.2
+    additionalAction: SELLER_LISTING_DEMOTED
+
+appliedVia: reconcile.slaPenaltyDeduction
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 4"
+
+supersededBy: null
+deprecatedAt: null

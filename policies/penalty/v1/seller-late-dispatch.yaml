@@ -1,0 +1,44 @@
+iri: ion://policy/penalty.seller-late-dispatch.standard
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: SELLER_LATE_DISPATCH
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Denda keterlambatan pengiriman"
+  en: "Late dispatch penalty"
+
+triggerConditions:
+  - condition: DISPATCH_LATE_BY_24H
+    severity: MINOR
+    penalty:
+      type: FIXED
+      amount: 10000
+  - condition: DISPATCH_LATE_BY_48H
+    severity: MAJOR
+    penalty:
+      type: PERCENTAGE
+      value: 0.05
+  - condition: DISPATCH_LATE_BY_72H
+    severity: CRITICAL
+    penalty:
+      type: PERCENTAGE
+      value: 0.15
+    additionalAction: ORDER_AUTO_CANCELLED_AND_REFUNDED
+
+appliedVia: reconcile.slaPenaltyDeduction
+settledTo: CONSUMER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy"
+  - "Permendag 50/2020"
+
+supersededBy: null
+deprecatedAt: null

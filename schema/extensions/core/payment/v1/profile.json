@@ -1,0 +1,19 @@
+{
+  "id": "ion-core-payment-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Payment Extension (v1)",
+  "description": "Indonesian payment method objects \u2014 QRIS, VA, EWallet, COD, BIFast, BNPL, Card.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "settlementAttributes": [
+      "PaymentDeclaration"
+    ]
+  },
+  "regulatory": [
+    "PBI 21/18/PBI/2019",
+    "SNAP BI specification",
+    "PBI 23/2021"
+  ]
+}

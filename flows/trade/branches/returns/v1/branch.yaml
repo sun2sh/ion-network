@@ -1,0 +1,358 @@
+# ION Trade Branch — Returns v1
+# NOT OAS. ION flow specification document.
+# Six sub-branches covering all post-delivery return scenarios.
+
+id: ion-trade-branch-returns-v1
+version: "1.0.0"
+branchType: returns
+sectorCode: A
+status: ready
+description: >
+  Six sub-branches for post-delivery return flows. All require
+  offer.returnable=true and must be initiated within offer.returnWindow.
+  Resolution paths: refund, replacement, or exchange.
+  Refund is always a sub-step — never a standalone flow.
+
+prerequisite:
+  - offer.returnable must be true
+  - Current datetime within offer.returnWindow from DELIVERED timestamp
+  - Reason must be in offer.returnAllowedReasons
+  - DEFECTIVE and DAMAGED_IN_TRANSIT are always valid per UU 8/1999
+
+performanceStateMachine: schema/extensions/trade/performance-states/v1/states.yaml#return
+
+subBranches:
+
+  return-initiated:
+    id: return-initiated
+    window:
+      earliest: on_status[DELIVERED]
+      latest: returnWindow expiry
+    description: >
+      Buyer raises a return request. Seller may approve or reject.
+      Evidence photos required for DEFECTIVE and DAMAGED_IN_TRANSIT.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].id
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.return_reason.code
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.return_evidence[]
+        errors:
+          - ION-5003  # Return not permitted (returnable=false)
+          - ION-5004  # Return window expired
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: >
+          BPP approves or rejects the return request. If approved and
+          sellerPickupReturn=true, return agent is assigned.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.return_rejection_reason
+          - field: message.contract.performance[].performanceAttributes.returnAgentName
+          - field: message.contract.performance[].performanceAttributes.returnAgentPhone
+          - field: message.contract.performance[].performanceAttributes.returnTrackingUrl
+
+  return-picked-up:
+    id: return-picked-up
+    window:
+      earliest: after return-initiated (RETURN_APPROVED)
+      latest: before return-delivered
+    description: >
+      Logistics agent arrives and collects the return item from the buyer.
+      Return tracking begins.
+    steps:
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.returnTrackingUrl
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.returnAgentName
+          - field: message.contract.performance[].performanceAttributes.returnAgentPhone
+
+  return-delivered:
+    id: return-delivered
+    window:
+      earliest: after return-picked-up
+    description: >
+      Return item received by seller. Quality inspection done.
+      Triggers refund sub-step for prepaid orders or replacement dispatch.
+    steps:
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundMethod
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+    businessRules:
+      - Refund amount may be partial if item returned in damaged condition
+      - BPP must process refund within refundTimeline declared
+      - If replacement: replacement sub-branch initiates simultaneously
+
+  replacement:
+    id: replacement
+    window:
+      earliest: after return-initiated (when buyer prefers replacement)
+      latest: unbounded
+    description: >
+      Seller dispatches a replacement item instead of refund. Initiated
+      when contractAttributes.replacementPreferred=true or buyer explicitly
+      requests replacement at return-initiated step.
+    performanceStateMachine: schema/extensions/trade/performance-states/v1/states.yaml#replacement
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: BPP notifies BAP that replacement is being dispatched.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.awbNumber
+          - message.contract.performance[].performanceAttributes.trackingUrl
+
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+        businessRules:
+          - No refund on replacement — return flow ends at REPLACEMENT_DELIVERED
+          - New return window applies to the replacement item from REPLACEMENT_DELIVERED
+
+  exchange:
+    id: exchange
+    window:
+      earliest: after return-initiated
+    description: >
+      Buyer wants to exchange for a different variant (size, colour) rather
+      than return for refund. Return pickup + new forward delivery.
+      Two Performance records: one for the return, one for the new delivery.
+    steps:
+      - step: on_update
+        stepContext: "return approved + exchange item confirmed"
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP approves return and confirms the exchange item is available.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.exchange_item.resourceId
+          - message.contract.performance[].performanceAttributes.tags.exchange_item.priceDelta
+
+      - step: on_status
+        stepContext: "return pickup through return delivery"
+
+      - step: on_status
+        stepContext: "REPLACEMENT_DISPATCHED → REPLACEMENT_DELIVERED"
+
+    businessRules:
+      - Exchange only available if exchangeItem is currently IN_STOCK
+      - Price delta collected or refunded at on_update (exchange confirmed)
+      - New return window from REPLACEMENT_DELIVERED applies to exchange item
+
+
+  # Op-22 — EXCHANGE-VARIANT-DOORSTEP (v0.5)
+  # Single-leg swap when buyer wants same-SKU-different-variant (e.g. size M → L).
+  # Agent brings replacement, collects original, performs swap at door.
+  # Halves logistics trips vs the 3-transaction return→refund→reorder pattern.
+  exchange-variant-doorstep:
+    id: exchange-variant-doorstep
+    window:
+      earliest: on_status[DELIVERED]
+      latest: returnWindow expiry
+    description: >
+      Buyer requests same-SKU-different-variant swap. The replacement
+      variant MUST share the same parent resource (same base product).
+      Single logistics leg — agent brings new variant, collects old one.
+      Faster than multi-leg exchange for fit/size issues.
+    prerequisite:
+      - Replacement must be same parentResourceId (or same canonicalId)
+      - Replacement variant must be IN_STOCK at the serving FC
+      - Offer.returnPolicy must permit SIZE_MISMATCH / COLOR_MISMATCH
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: Buyer raises variant-swap request.
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].id
+          - message.contract.performance[].status.descriptor.code  # EXCHANGE_VARIANT_REQUESTED
+          - message.contract.performance[].performanceAttributes.tags.exchange_item.resourceId
+          - message.contract.performance[].performanceAttributes.tags.exchange_item.parentResourceId
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.exchange_item.priceDelta
+            condition: signed IDR — 0 when same price
+          - field: message.contract.performance[].performanceAttributes.tags.return_evidence
+            condition: per offer.returnEvidenceRequirement
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP approves (replacement available) or rejects (out of stock).
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # enum: "[EXCHANGE_VARIANT_APPROVED, EXCHANGE_VARIANT_REJECTED]"
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.exchange_item.priceDelta
+            condition: confirmed delta
+          - field: message.contract.consideration.considerationAttributes.breakup[breakupLineType=ITEM]
+            condition: "updated if priceDelta != 0"
+          - field: message.contract.performance[].performanceAttributes.tags.rejection_reason
+            condition: if EXCHANGE_VARIANT_REJECTED
+
+      - step: on_status
+        stepContext: "agent assigned"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Same agent handles pickup of original and delivery of replacement.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # value: EXCHANGE_VARIANT_AGENT_ASSIGNED
+          - message.contract.performance[].performanceAttributes.agentId
+          - message.contract.performance[].performanceAttributes.agentName
+          - message.contract.performance[].performanceAttributes.agentPhone
+
+      - step: on_status
+        stepContext: "swap complete"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Agent completed swap at door. Original taken, replacement delivered.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # value: EXCHANGE_VARIANT_COMPLETED
+          - message.contract.performance[].performanceAttributes.deliveryProofUrl  # photo of swap evidence
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.additionalChargeAmount
+            condition: "when priceDelta > 0"
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+            condition: when priceDelta < 0
+
+    businessRules:
+      - Only supported when replacement is variant of same parent resource
+      - Agent carries the replacement on the pickup trip — no second leg
+      - Price delta collected or refunded at swap completion
+      - If replacement not in stock at FC: BPP must reject and fall through to standard exchange sub-branch
+      - QC is simplified: visual inspection only; damaged-on-return handled via support/raise
+      - New returnWindow from EXCHANGE_VARIANT_COMPLETED applies to replacement item
+
+  cancel-return-request:
+    id: cancel-return-request
+    window:
+      earliest: after return-initiated
+      latest: before return-picked-up (RETURN_AGENT_ASSIGNED state)
+    description: >
+      Buyer cancels their own return request — e.g. they changed their mind,
+      or the issue resolved itself. Can only be cancelled before the pickup
+      agent has been dispatched.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: Buyer cancels the return request.
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].id
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.cancel_reason
+        businessRules:
+          - Cannot cancel if state is RETURN_AGENT_ASSIGNED or later
+          - No penalty to buyer for cancelling return request
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+        businessRules:
+          - Order reverts to DELIVERED state
+          - Return window remains — buyer may initiate a new return within remaining window
+
+
+  partial-return:
+    id: partial-return
+    window:
+      earliest: on_status[DELIVERED]
+      latest: returnWindow expiry
+    description: >
+      Buyer returns only specific line items from a multi-item order rather
+      than the full order. Targets specific commitment.lineIds.
+      Remaining items stay in DELIVERED state; returned items go through
+      the full return state machine.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.commitments[][].lineId  # note: array of commitment lineIds to return (subset of order)
+          - message.contract.performance[].performanceAttributes.tags.return_reason.code
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.return_evidence[]
+            condition: per offer.returnEvidenceRequirement
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # enum: "[RETURN_APPROVED, RETURN_REJECTED]"
+        conditionalFields:
+          - field: message.contract.contractAttributes.quoteTrail[]
+            note: entries for the returned line price deductions
+    businessRules:
+      - Remaining items continue in DELIVERED state — order status stays ACTIVE until QC
+      - Refund/replacement applies to returned lines only
+      - returnWindow applies to original DELIVERED date, not per-line
+
+  return-qc-resolution:
+    id: return-qc-resolution
+    window:
+      earliest: after return-delivered
+    description: >
+      When returned item arrives at seller, QC inspection determines refund
+      amount. QC_PASSED releases full refund; QC_FAILED variants trigger
+      reduced refund and potentially dispute escalation.
+    steps:
+      - step: on_status[RETURN_DELIVERED]
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # value: RETURN_DELIVERED
+          - message.contract.performance[].performanceAttributes.qcResult  # enum: "[QC_PASSED, QC_FAILED_TAMPERED, QC_FAILED_MISSING_PARTS, QC_FAILED_DIFFERENT_ITEM, QC_FAILED_USED_DAMAGED, QC_PARTIAL]"
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.qcNotes
+            condition: required when qcResult is not QC_PASSED
+          - field: message.contract.performance[].performanceAttributes.qcEvidence[]
+            condition: "required for QC_FAILED_* and QC_PARTIAL"
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+            condition: "per QC result — full for QC_PASSED, partial for QC_PARTIAL, none for QC_FAILED"
+    businessRules:
+      - QC_PASSED → full refund per original payment amount
+      - QC_PARTIAL → partial refund with reason
+      - QC_FAILED_* → no refund, item may be returned to buyer or disposed
+      - Consumer may dispute QC finding via support (escalationLevel=MARKETPLACE_MEDIATION)
+      - Escalation to BPSK if unresolved at mediation level
+    errors:
+      - ION-5006  # Return QC failed

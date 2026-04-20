@@ -1,0 +1,177 @@
+# ION Trade Flow - B2B Wholesale Prepaid (B2B-PP) Spine v1
+# NOT OAS. ION flow specification document.
+# B2B prepaid purchase: retailer/reseller buys from distributor/brand, pays upfront.
+
+id: ion-trade-B2B-PP-v1
+version: "1.0.0"
+pattern: B2B Wholesale Prepaid
+sectorCode: A
+status: ready
+description: >
+  Business buyer (retailer, reseller, trader) purchases wholesale from distributor
+  or brand. Payment is prepaid (before or at delivery). Differs from B2C-SF in:
+  MOQ enforcement, bulk pricing tiers, purchase order reference, tax invoice
+  (Faktur Pajak), B2B payment rails (RTGS, SNAP BI), and multi-item bulk orders.
+  Applicable to: FMCG distribution, electronics wholesale, agritech bulk,
+  fashion wholesale, B2B pharmaceutical.
+
+applicableCategories:
+  - fmcg
+  - electronics
+  - agritech
+  - fashion
+  - pharmacy
+  - automotive-parts
+
+keyDifferences:
+  - MOQ enforced at select — offer.minimumOrderQuantity required
+  - Bulk pricing tiers — multiple offers with quantity thresholds
+  - Purchase order reference — contractAttributes.purchaseOrderReference required
+  - Faktur Pajak mandatory for PKP sellers/buyers
+  - Payment rails — RTGS/BI_FAST preferred over QRIS/EWallet
+  - Multi-line orders common — contractAttributes.partialCancellationAllowed
+  - Identity verification — both buyer and seller NPWP validated at confirm
+  - Credit terms not applicable (see B2B-CR for credit)
+
+phases:
+  phase1:
+    name: Catalog
+    note: Same as B2C-SF publish_catalog. Offer carries minimumOrderQuantity.
+
+  phase2:
+    name: Quotation and Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        description: >
+          Buyer selects products with bulk quantities.
+          BPP will validate against MOQ and return bulk pricing.
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - context.bapId
+          - context.bppId
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.performance[].performanceAttributes.performanceMode
+        businessRules:
+          - quantity.count must be >= offer.minimumOrderQuantity.count for each line
+          - BPP returns tiered pricing in on_select breakup
+        errors:
+          - ION-3005  # Quantity below MOQ
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        description: BPP returns bulk quote with tiered pricing and B2B-specific breakup.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+          - message.contract.performance[].performanceAttributes.sla
+        schemaPacks:
+          trade: [consideration/v1, performance/v1]
+          core: [tax/v1]
+
+      - step: init
+        from: BAP
+        to: BPP
+        description: Buyer provides delivery address, NPWP, invoice type preference.
+        requiredFields:
+          - message.contract.performance[].stops[].location
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.paymentRail
+          - message.contract.contractAttributes.purchaseOrderReference
+          - message.contract.contractAttributes.invoicePreferences.invoiceType
+          - message.contract.contractAttributes.invoicePreferences.taxId.scheme
+          - message.contract.contractAttributes.invoicePreferences.taxId.value
+        conditionalFields:
+          - field: message.contract.contractAttributes.invoicePreferences.invoiceType  # note: TAX_INVOICE is standard for B2B; requires PKP seller and NPWP buyer
+        schemaPacks:
+          core: [identity/v1, address/v1, payment/v1]
+          trade: [contract/v1]
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        description: Payment instructions for B2B rails. RTGS/BI_FAST account details.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+        schemaPacks:
+          core: [payment/v1]
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        description: Buyer confirms. Payment status=PAID for prepaid.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+          - message.contract.contractAttributes.purchaseOrderReference
+          - message.contract.contractAttributes.legalEntityName
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        description: Order confirmed. Faktur Pajak reference assigned for PKP sellers.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.contractAttributes.fulfillingLocationId
+        conditionalFields:
+          - field: message.contract.contractAttributes.fakturPajakReference  # condition: if seller pkpStatus=PKP and invoiceType=TAX_INVOICE
+        schemaPacks:
+          trade: [performance/v1, contract/v1]
+          core: [identity/v1]
+
+  phase3:
+    name: Fulfilment
+    description: Bulk goods dispatched. Performance states follow standard machine.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+    steps:
+      - step: on_status
+        stepContext: "PACKED"
+        description: Multiple items packed, possibly across several cartons.
+        additionalFields:
+          - message.contract.performance[].performanceAttributes.totalCartons
+          - message.contract.performance[].performanceAttributes.totalWeightKg
+      - step: on_status
+        stepContext: "DISPATCHED"
+        description: Bulk shipment dispatched with AWB and B2B logistics provider.
+      - step: on_status
+        stepContext: "DELIVERED"
+        description: Buyer signs delivery receipt (Surat Jalan). Contract COMPLETE.
+        additionalFields:
+          - field: message.contract.performance[].performanceAttributes.deliveryReceiptRef
+            note: Surat Jalan / Delivery Order reference number
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[DISPATCHED]"
+    note: Partial cancellation allowed if contractAttributes.partialCancellationAllowed=true
+  returns:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+    note: B2B returns typically require quality inspection — DEFECTIVE/DAMAGED only
+  updates:
+    earliest: on_confirm
+    latest: "on_status[DELIVERED]"
+    note: Quantity updates, address change, Surat Jalan reference
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+additionalContractFields:
+  purchaseOrderReference: REQUIRED
+  partialCancellationAllowed: recommended true for multi-line B2B orders
+  fakturPajakReference: populated by BPP at on_confirm for PKP sellers
+
+additionalOfferFields:
+  minimumOrderQuantity: REQUIRED
+  weightSlabs: optional for logistics pricing
+  contactDetailsConsumerCare: required per UU 8/1999 (applies to B2B buyers too)

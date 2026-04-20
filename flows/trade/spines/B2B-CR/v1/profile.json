@@ -1,0 +1,34 @@
+{
+  "id": "ion-trade-B2B-CR-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "B2B Wholesale Credit / BNPL",
+  "patternCode": "B2B-CR",
+  "status": "ready",
+  "description": "B2B wholesale with deferred payment. Credit terms NET 7-90. Dunning flow. PPh23 withholding.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "fmcg",
+    "electronics",
+    "agritech",
+    "fashion",
+    "pharmacy"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "settlementBasis": "AFTER_PAYMENT_DUE_DATE",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

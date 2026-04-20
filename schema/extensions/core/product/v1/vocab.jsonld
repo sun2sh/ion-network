@@ -1,0 +1,57 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/product/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONProductCertifications",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONProductCertifications",
+      "rdfs:comment": "IONProductCertifications"
+    },
+    {
+      "@id": "ion:halalStatus",
+      "@type": "rdf:Property",
+      "rdfs:label": "halalStatus",
+      "rdfs:comment": "Halal certification status. MANDATORY for all food and beverage products. Strongly recommended for cosmetics and pharmaceuticals. HALAL: MUI-certified halal. halalCertNumber required. HALAL_PENDING: certification in process. halalCertNumber optional. NON_HALAL: explicitly non-halal (e.g. pork produc"
+    },
+    {
+      "@id": "ion:halalCertNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "halalCertNumber",
+      "rdfs:comment": "MUI (Majelis Ulama Indonesia) halal certificate number. Format varies by certification period.\n"
+    },
+    {
+      "@id": "ion:bpomRegNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "bpomRegNumber",
+      "rdfs:comment": "BPOM registration number for food, cosmetics, and pharmaceuticals. BPOM_MD: domestic product (e.g. MD-123456789012). BPOM_ML: imported product (e.g. ML-123456789012).\n"
+    },
+    {
+      "@id": "ion:sniCertNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "sniCertNumber",
+      "rdfs:comment": "SNI (Standar Nasional Indonesia) compliance certificate number. Required for products with mandatory SNI (electronics, PPE, toys).\n"
+    },
+    {
+      "@id": "ion:spPIRTNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "spPIRTNumber",
+      "rdfs:comment": "SP-P-IRT small-scale home food production license. For UMKM food sellers without full BPOM registration.\n"
+    },
+    {
+      "@id": "ion:ageRestricted",
+      "@type": "rdf:Property",
+      "rdfs:label": "ageRestricted",
+      "rdfs:comment": "Whether this product requires age verification at point of purchase. True for tobacco, alcohol, adult content, and certain pharmaceuticals.\n"
+    },
+    {
+      "@id": "ion:minAge",
+      "@type": "rdf:Property",
+      "rdfs:label": "minAge",
+      "rdfs:comment": "Minimum purchaser age in years when ageRestricted is true. Indonesia: 18 for tobacco and alcohol, 21 for certain substances.\n"
+    }
+  ]
+}

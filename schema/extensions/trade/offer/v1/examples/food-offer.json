@@ -1,0 +1,22 @@
+{
+  "@context": "https://schema.ion.id/trade/offer/v1/context.jsonld",
+  "@type": "ion:TradeOfferAttributes",
+  "_comment": "Example: F&B offer — non-returnable, cancellable before preparation",
+  "cancellable": true,
+  "returnable": false,
+  "timeToShip": "PT30M",
+  "availableOnCod": true,
+  "contactDetailsConsumerCare": "Customer Service Domino's,cs@dominos.co.id,021-500300",
+  "returnPolicy": "ion://policy/return/standard/none",
+  "returnAllowedReasons": [],
+  "cancellationPolicy": "ion://policy/cancel/prepacked/free",
+  "cancellationAllowedReasons": ["CHANGE_OF_MIND", "WRONG_ITEM_ORDERED"],
+  "cancellationWindowMinutes": 5,
+  "warrantyPolicy": "ion://policy/warranty/standard/none",
+  "disputePolicy": "ion://policy/dispute/consumer/bpsk",
+  "displayLanguage": ["id", "en"],
+  "invoiceType": "RECEIPT",
+  "selfPickupOtp": true,
+  "selfPickupInstructions": "Tunjukkan kode pickup di kasir",
+  "supportedPerformanceModes": ["DELIVERY", "SELF_PICKUP", "DINE_IN"]
+}

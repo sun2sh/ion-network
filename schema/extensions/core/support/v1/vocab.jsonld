@@ -1,0 +1,133 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/support/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONSupportTicket",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONSupportTicket",
+      "rdfs:comment": "IONSupportTicket"
+    },
+    {
+      "@id": "ion:id",
+      "@type": "rdf:Property",
+      "rdfs:label": "id",
+      "rdfs:comment": "Network-wide unique issue identifier. Assigned at creation."
+    },
+    {
+      "@id": "ion:orderId",
+      "@type": "rdf:Property",
+      "rdfs:label": "orderId",
+      "rdfs:comment": "Contract/order ID this issue relates to."
+    },
+    {
+      "@id": "ion:category",
+      "@type": "rdf:Property",
+      "rdfs:label": "category",
+      "rdfs:comment": "ITEM: wrong item, damaged, not as described. FULFILLMENT: delivery delay, non-delivery, wrong address. PAYMENT: overcharge, payment not processed, duplicate charge. SELLER_CONDUCT: rude behaviour, misleading listing. RETURN: return not accepted, pickup not arranged. REFUND: refund not processed, par"
+    },
+    {
+      "@id": "ion:subCategory",
+      "@type": "rdf:Property",
+      "rdfs:label": "subCategory",
+      "rdfs:comment": "Sub-category code for more precise classification. e.g. ITM01=wrong item, ITM02=damaged, FLM01=delay, FLM02=non-delivery\n"
+    },
+    {
+      "@id": "ion:complainantInfo",
+      "@type": "rdf:Property",
+      "rdfs:label": "complainantInfo"
+    },
+    {
+      "@id": "ion:description",
+      "@type": "rdf:Property",
+      "rdfs:label": "description"
+    },
+    {
+      "@id": "ion:source",
+      "@type": "rdf:Property",
+      "rdfs:label": "source"
+    },
+    {
+      "@id": "ion:expectedResponseTime",
+      "@type": "rdf:Property",
+      "rdfs:label": "expectedResponseTime",
+      "rdfs:comment": "ISO 8601 duration. Time within which respondent must acknowledge."
+    },
+    {
+      "@id": "ion:expectedResolutionTime",
+      "@type": "rdf:Property",
+      "rdfs:label": "expectedResolutionTime",
+      "rdfs:comment": "ISO 8601 duration. Time within which resolution must be provided."
+    },
+    {
+      "@id": "ion:status",
+      "@type": "rdf:Property",
+      "rdfs:label": "status"
+    },
+    {
+      "@id": "ion:severity",
+      "@type": "rdf:Property",
+      "rdfs:label": "severity"
+    },
+    {
+      "@id": "ion:issueActions",
+      "@type": "rdf:Property",
+      "rdfs:label": "issueActions",
+      "rdfs:comment": "Action trail — both sides of the conversation."
+    },
+    {
+      "@id": "ion:resolution",
+      "@type": "rdf:Property",
+      "rdfs:label": "resolution"
+    },
+    {
+      "@id": "ion:rating",
+      "@type": "rdf:Property",
+      "rdfs:label": "rating",
+      "rdfs:comment": "Consumer rating of resolution quality after issue is CLOSED"
+    },
+    {
+      "@id": "ion:createdAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "createdAt"
+    },
+    {
+      "@id": "ion:updatedAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "updatedAt"
+    },
+    {
+      "@id": "ion:escalationLevel",
+      "@type": "rdf:Property",
+      "rdfs:label": "escalationLevel",
+      "rdfs:comment": "Current escalation level of the dispute. Progression: 1. SELLER — buyer contacts seller (default support flow, 1-2 days). 2. MARKETPLACE_MEDIATION — marketplace intervenes (3-5 days). 3. BPSK — Badan Penyelesaian Sengketa Konsumen (government, 6-14 days). 4. KOMINFO — Kominfo consumer protection por"
+    },
+    {
+      "@id": "ion:escalationTimestamp",
+      "@type": "rdf:Property",
+      "rdfs:label": "escalationTimestamp",
+      "rdfs:comment": "When the ticket was escalated to this level"
+    },
+    {
+      "@id": "ion:escalationSlaHours",
+      "@type": "rdf:Property",
+      "rdfs:label": "escalationSlaHours",
+      "rdfs:comment": "SLA in hours for the current escalation level"
+    },
+    {
+      "@id": "ion:bpskReference",
+      "@type": "rdf:Property",
+      "rdfs:label": "bpskReference",
+      "rdfs:comment": "BPSK case reference number"
+    },
+    {
+      "@id": "ion:kominfoReference",
+      "@type": "rdf:Property",
+      "rdfs:label": "kominfoReference",
+      "rdfs:comment": "Kominfo consumer complaint portal reference"
+    }
+  ]
+}

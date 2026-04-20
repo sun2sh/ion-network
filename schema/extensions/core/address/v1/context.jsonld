@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://devlabs.ion.id/vocab/core/address/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.1#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "provinsiCode": "ion:provinsiCode",
+    "kabupatenCode": "ion:kabupatenCode",
+    "kelurahan": "ion:kelurahan",
+    "kecamatan": "ion:kecamatan",
+    "rt": "ion:rt",
+    "rw": "ion:rw",
+    "postalCode": "ion:postalCode",
+    "addressType": "ion:addressType",
+    "receiverInstructions": "ion:receiverInstructions",
+    "gpsAccuracyMeters": "ion:gpsAccuracyMeters",
+    "landmark": "ion:landmark",
+    "blockUnit": "ion:blockUnit",
+    "IONAddressSubdivisions": "ion:IONAddressSubdivisions"
+  }
+}

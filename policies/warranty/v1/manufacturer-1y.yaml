@@ -1,0 +1,45 @@
+iri: ion://policy/warranty.manufacturer.1y-distance-service
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: WARRANTY
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Garansi resmi produsen 1 tahun"
+  en: "1-year manufacturer warranty - distance service"
+
+warrantyType: MANUFACTURER
+warrantyDuration: P1Y
+coverageType: PARTS_AND_LABOR
+serviceMode: DISTANCE_SERVICE
+
+coverageIncludes:
+  - MANUFACTURING_DEFECT
+  - COMPONENT_FAILURE
+
+coverageExcludes:
+  - PHYSICAL_DAMAGE
+  - WATER_DAMAGE
+  - UNAUTHORIZED_MODIFICATION
+  - NORMAL_WEAR_AND_TEAR
+  - CONSUMABLES
+
+claimProcedure:
+  firstContact: BRAND_SERVICE_CENTER
+  documentationRequired:
+    - PROOF_OF_PURCHASE
+    - SERIAL_NUMBER
+  resolutionOptions: [REPAIR, REPLACE]
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
+applicableCategories:
+  - electronics
+  - home-kitchen
+
+regulatoryBasis:
+  - "UU 8/1999 Pasal 25"
+  - "PP 36/2023 tentang Perlindungan Konsumen"
+
+supersededBy: null
+deprecatedAt: null

@@ -1,0 +1,87 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/address/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:IONAddressSubdivisions",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONAddressSubdivisions",
+      "rdfs:comment": "IONAddressSubdivisions"
+    },
+    {
+      "@id": "ion:provinsiCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "provinsiCode",
+      "rdfs:comment": "Indonesian province code using BPS 2-digit numeric codes prefixed with BPS-. 34 provinces. Used for serviceability, tax zone determination, and logistics pricing.\n"
+    },
+    {
+      "@id": "ion:kabupatenCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "kabupatenCode",
+      "rdfs:comment": "BPS 4-digit kabupaten/kota code. 514 kabupaten and kota in Indonesia. Used for granular serviceability and tax zone resolution.\n"
+    },
+    {
+      "@id": "ion:kelurahan",
+      "@type": "rdf:Property",
+      "rdfs:label": "kelurahan",
+      "rdfs:comment": "Village or urban administrative zone (kelurahan/desa). Required for precise last-mile delivery address.\n"
+    },
+    {
+      "@id": "ion:kecamatan",
+      "@type": "rdf:Property",
+      "rdfs:label": "kecamatan",
+      "rdfs:comment": "District or sub-city (kecamatan). Administrative level between kabupaten and kelurahan.\n"
+    },
+    {
+      "@id": "ion:rt",
+      "@type": "rdf:Property",
+      "rdfs:label": "rt",
+      "rdfs:comment": "Rukun Tetangga — neighborhood group, typically ~40 households. Critical for last-mile delivery in Indonesia — riders use RT/RW to locate specific houses in dense residential areas.\n"
+    },
+    {
+      "@id": "ion:rw",
+      "@type": "rdf:Property",
+      "rdfs:label": "rw",
+      "rdfs:comment": "Rukun Warga — association of RTs, typically ~400 people. Used together with RT for precise address resolution.\n"
+    },
+    {
+      "@id": "ion:postalCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "postalCode",
+      "rdfs:comment": "Indonesian kodepos (postal code). 5 digits. Distinct from Beckn core area_code which conflates many country-specific codes.\n"
+    },
+    {
+      "@id": "ion:addressType",
+      "@type": "rdf:Property",
+      "rdfs:label": "addressType",
+      "rdfs:comment": "Address classification. Affects delivery SLA and surcharges — offices have restricted delivery hours, apartments require lobby/concierge handling, warehouses accept larger shipments. BOARDING_HOUSE (kost) is common in Indonesian urban delivery.\n"
+    },
+    {
+      "@id": "ion:receiverInstructions",
+      "@type": "rdf:Property",
+      "rdfs:label": "receiverInstructions",
+      "rdfs:comment": "Instructions for delivery receiver. Distinct from buyerInstructions — used for gift orders where receiver != buyer, and for handover preferences (leave at door, signature required, call first).\n"
+    },
+    {
+      "@id": "ion:gpsAccuracyMeters",
+      "@type": "rdf:Property",
+      "rdfs:label": "gpsAccuracyMeters",
+      "rdfs:comment": "Accuracy of GPS coordinate in metres. Required for pin-point delivery addresses in unaddressed areas (kampung, peri-urban). Affects agent last-mile routing.\n"
+    },
+    {
+      "@id": "ion:landmark",
+      "@type": "rdf:Property",
+      "rdfs:label": "landmark",
+      "rdfs:comment": "Notable nearby landmark for finding the address. Common in Indonesian urban delivery where street numbering is inconsistent.\n"
+    },
+    {
+      "@id": "ion:blockUnit",
+      "@type": "rdf:Property",
+      "rdfs:label": "blockUnit",
+      "rdfs:comment": "Block/unit identifier for apartments and complexes. Beckn core 'door' captures house number; this captures block/floor/unit where applicable.\n"
+    }
+  ]
+}

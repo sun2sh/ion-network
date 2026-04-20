@@ -1,0 +1,10 @@
+{
+  "@context": "https://schema.ion.id/extensions/core/address/v1/context.jsonld",
+  "@type": "ion:AddressSubdivisions",
+  "provinsiCode": "BPS-31",
+  "kabupatenCode": "3171",
+  "kecamatan": "Setiabudi",
+  "kelurahan": "Kuningan Timur",
+  "rt": "02",
+  "rw": "05"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "ion-trade-XB-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "Cross-Border Export",
+  "patternCode": "XB",
+  "status": "ready",
+  "description": "Indonesian exporter to international buyer. English required, HS codes, Bea Cukai, PEB, incoterms.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "agritech",
+    "fashion",
+    "handicraft",
+    "fmcg",
+    "electronics"
+  ],
+  "applicableBranches": [
+    "cancellation/v1",
+    "returns/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredCatalogLanguages": [
+    "id",
+    "en"
+  ],
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

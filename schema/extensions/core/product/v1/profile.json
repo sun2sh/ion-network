@@ -1,0 +1,19 @@
+{
+  "id": "ion-core-product-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Product Certification Extension (v1)",
+  "description": "Indonesian product certifications \u2014 halal status, BPOM, SNI, age restriction.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "resourceAttributes": [
+      "IONProductCertifications"
+    ]
+  },
+  "regulatory": [
+    "UU 33/2014 Jaminan Produk Halal",
+    "PerBPOM 27/2017",
+    "PP 109/2012"
+  ]
+}

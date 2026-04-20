@@ -1,0 +1,144 @@
+# ION Trade Branch — Return to Origin (RTO) v1
+# NOT OAS. ION flow specification document.
+# Three sub-branches covering all delivery-failure scenarios.
+
+id: ion-trade-branch-RTO-v1
+version: "1.0.0"
+branchType: RTO
+sectorCode: A
+status: ready
+description: >
+  Return to Origin covers all scenarios where delivery fails and the
+  package returns toward the seller. Three sub-branches based on outcome:
+  delivered back to seller, disposed at seller decision, or re-attempted.
+  Refund is always a sub-step inside RTO-delivered — never standalone.
+
+attachmentWindow:
+  earliest: on_status[DISPATCHED]
+  latest: on_status[DELIVERED]
+
+performanceStateMachine: schema/extensions/trade/performance-states/v1/states.yaml#rto
+
+subBranches:
+
+  RTO-initiated:
+    id: RTO-initiated
+    window:
+      earliest: on_status[DISPATCHED]
+      latest: on_status[DELIVERED]
+    description: >
+      Delivery attempt failed. Logistics declares delivery impossible and
+      initiates return to origin. Common reasons: consumer unavailable after
+      N attempts, consumer refused delivery, OTP mismatch, address inaccessible,
+      item damaged before delivery.
+    steps:
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.rto_reason
+          - message.contract.performance[].performanceAttributes.tags.delivery_attempt_count
+          - message.contract.performance[].performanceAttributes.tags.last_attempt_at
+        businessRules:
+          - BAP must notify consumer immediately with reason and re-attempt option
+          - Consumer may update delivery address or authorize alternate recipient
+          - BPP may offer re-delivery before confirming RTO (see re-attempt below)
+
+  RTO-delivered:
+    id: RTO-delivered
+    window:
+      earliest: after RTO-initiated
+    description: >
+      Package has been returned to the seller's fulfilment centre.
+      Triggers refund for prepaid orders. COD orders require no refund.
+    steps:
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.rto_received_at
+
+      - step: on_update
+        stepContext: "refund sub-step"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: >
+          Refund declared for prepaid orders. Sent immediately after
+          RTO_DELIVERED confirmation. COD orders skip this step.
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundMethod
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+        businessRules:
+          - Prepaid: full refund mandatory, no deduction unless consumer refused delivery
+          - COD: no money was collected, no refund needed
+          - Delivery charge non-refundable only if consumer refused without valid reason
+
+  RTO-disposed:
+    id: RTO-disposed
+    window:
+      earliest: after RTO-initiated
+    description: >
+      Seller decides not to return the package — typically for perishables
+      that would not survive the return journey, low-value items where return
+      logistics costs exceed item value, or items damaged beyond recovery.
+      Consumer still receives full refund (prepaid orders).
+    steps:
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.tags.disposal_reason
+
+      - step: on_update
+        stepContext: "refund sub-step"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Refund declared for prepaid orders. Same as RTO-delivered.
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+          - field: message.contract.settlements[].settlementAttributes.refundMethod
+          - field: message.contract.settlements[].settlementAttributes.refundTimeline
+        businessRules:
+          - Disposal is seller's decision — does not affect consumer's right to refund
+          - Seller bears disposal cost and inventory loss
+
+  RTO-reattempt:
+    id: RTO-reattempt
+    window:
+      earliest: after RTO-initiated
+      latest: before RTO-delivered or RTO-disposed
+    description: >
+      After delivery fails, buyer contacts support and requests re-delivery.
+      Common when consumer was temporarily unavailable. BPP re-schedules
+      the delivery before the package reaches the seller FC.
+    steps:
+      - step: support
+        from: BAP
+        to: BPP
+        description: Buyer raises support ticket requesting re-delivery.
+        note: Uses cross-cutting support/on_support branch
+
+      - step: on_update
+        stepContext: "re-attempt scheduled"
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.estimatedDeliveryTime
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.tags.reattempt_scheduled_at
+          - field: message.contract.performance[].performanceAttributes.agentName
+        businessRules:
+          - Re-attempt only available before package reaches seller FC
+          - Additional delivery charge may apply — declared in quoteTrail[]
+          - Buyer may update delivery address before re-attempt (use update-delivery-address branch)

@@ -1,0 +1,32 @@
+iri: ion://policy/dispute.commercial.bani
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: DISPUTE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Sengketa komersial - BANI arbitrase"
+  en: "Commercial dispute - BANI arbitration"
+
+disputeBody: BANI
+jurisdiction: INDONESIA
+resolutionType: BINDING_ARBITRATION
+
+escalationPath:
+  - DIRECT_NEGOTIATION
+  - BANI_ARBITRATION
+
+typicalResolutionTimeDays: 60
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - b2b
+  - wholesale
+
+regulatoryBasis:
+  - "UU 30/1999 tentang Arbitrase"
+  - "BANI Arbitration Rules"
+
+supersededBy: null
+deprecatedAt: null

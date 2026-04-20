@@ -1,444 +1,453 @@
 # ION Sector A — Trade
-**Version:** 1.0  
-**Date:** April 2026  
-**Status:** Working Document — for ION Council review  
-**Sector code:** A  
-**Resource type:** TradeResource
+
+Trade covers all physical goods commerce on ION — Food & Beverage, Grocery, Fashion, Electronics, Beauty, FMCG, Agritech, Pharmacy, Home & Kitchen, and B2B/Wholesale distribution. If it is a physical product being bought and sold in Indonesia, it belongs in Trade.
 
 ---
 
-## 1. What is Trade?
+## 1. Choosing the right commerce pattern
 
-The Trade sector covers all transactions involving physical products — things that are manufactured, grown, packaged, or crafted, and transferred from a seller to a buyer. If something has a SKU, weighs something, and needs to be delivered or collected, it belongs in Trade.
+Read the description for each pattern and pick the one that matches how your business actually operates. The differences matter — they determine which fields are required, which branches apply, and how settlement works.
 
-Trade is the broadest sector on ION and the one with the most commerce pattern variations — from a consumer buying groceries to a government procuring electronics in bulk.
-
----
-
-## 2. Resource Type — TradeResource
-
-One resource type covers all physical product categories. The category of product (Food & QSR, Grocery, Fashion, Electronics, Beauty, FMCG, Agritech, B2B Wholesale, Cross-border) is a value inside the resource — not a separate schema.
-
-### 2.1 What makes a TradeResource
-
-Every TradeResource has:
-
-**Core identity**
-- SKU — seller's internal product code
-- Name in English and Bahasa Indonesia (localizedName)
-- Description in English and Bahasa Indonesia (localizedDesc)
-- Images — primary thumbnail and media gallery
-- Category — which product type this belongs to
-
-**ION Core fields (Indonesian regulatory, apply to all sectors)**
-- Halal certification number (halalCertNumber) — MUI issued, required for food, cosmetics, pharmaceuticals
-- BPOM registration number (bpomRegNumber) — required for packaged food and personal care
-- NIB — business identity of the seller
-- NPWP — tax identity, used in settlement and PPN computation
-- Provinsi code, Kabupaten code — for serviceability and tax zone
-
-**Attribute groups populated by product type**
-
-| Attribute group | Attributes | When to populate |
+| Pattern | Use when | Key indicator |
 |---|---|---|
-| Food & perishable | dietaryClassification (VEG/NON_VEG/HALAL), allergens[], shelfLife, cuisineType | All F&B products |
-| Packaged goods | netQuantity, manufacturerName, packingDate, countryOfManufacture | All packaged products |
-| Electronics & durables | warrantyDuration, warrantyType, installationRequired, installationBySeller | Electronics, appliances |
-| Agritech | harvestDate, produceGrade, mandiReferencePrice, pesticideDeclaration | All agri produce |
-| Fashion | fabricComposition, careInstructions, fitType | Apparel and textiles |
-| Beauty & personal care | ingredients[], skinType, expiryDate | Cosmetics and personal care |
-
-### 2.2 Four resource types within TradeResource
-
-Every TradeResource is one of four structural types. The type is derived from the customisation group structure — it is never declared as a field.
-
-**Plain** — one thing, one price, no choices. The buyer adds it to their order as-is. No customisation groups. Example: a bag of Indomie, a specific phone model, a bottle of hand sanitiser.
-
-**Variant** — one product expressed as multiple pre-defined orderable options. Each variant has its own stock count and potentially its own price. Options point to existing Resource IDs (that is what makes it a variant). Example: blue shirt in S/M/L/XL, refrigerator in 400L or 600L.
-
-**With-extras** — a fixed orderable base item with optional additions. The base is self-sufficient — it can be ordered without selecting any extras. Extras have their own Resource IDs. Example: laptop with optional extended warranty, garlic bread with optional extra cheese.
-
-**Composed** — a base item assembled at order time from mandatory choices. The final product does not pre-exist as a SKU. Options have price deltas, not independent inventory. Example: pizza with mandatory size and crust selection, custom cake with flavour and inscription.
-
-### 2.3 Customisation groups
-
-Customisation groups define what choices the buyer makes before ordering. Each group has a selection rule (SINGLE_REQUIRED, SINGLE_OPTIONAL, MULTIPLE_OPTIONAL, FIXED), a sequence number for display, and min/max selection counts.
-
-Each option has either a `resourceId` (variant or extras — points to existing inventory) or a label and price delta (composed — an ingredient added at order time). This structural difference makes wrong classification impossible — there is no type field to misuse.
-
-Input types for composed options: select (dropdown), text (free input for cake inscriptions, garment measurements), number (numeric measurements), date (appointment date), boolean (yes/no flags).
-
-### 2.4 Bundles
-
-Bundles are an Offer type, not a Resource type.
-
-**Pre-packaged bundle** — multiple items physically packaged together by the manufacturer. This is a plain Resource with `netQuantity` declaring contents. Example: Maggi 12-pack, skincare gift set.
-
-**Seller-created bundle offer** — independent items linked by an Offer that gives a combined price. Each item retains its own Resource ID and stock. Example: "Pizza + Drink = Rp 50.000 off."
+| **B2C-SF** | Consumer buys a product, delivery or pickup | The default. Start here. |
+| **B2C-MTO** | Product is prepared after the order (food QSR, tailoring) | `preparationTime` per item; cancellation closes when preparation starts |
+| **B2C-SUB** | Consumer subscribes to recurring delivery | Billing cycle; mandate setup; pause/skip/resume lifecycle |
+| **B2C-LIVE** | Order placed during live stream, short video, OTT shoppable moment, affiliate link, group buy | `liveCommerceContext` with source channel + streamer/OTT attribution; flash-style reservation; commission breakup |
+| **B2C-DIG** | Digital goods — pulsa, PLN tokens, bill pay, vouchers, gift cards, game currency, streaming access | No shipping; fast fulfilment (<10s typical); target identifier required; `digital` sub-object |
+| **B2B-PP** | Business buys wholesale, pays upfront | MOQ; bulk pricing tiers; PO reference; Faktur Pajak mandatory |
+| **B2B-CR** | Business buys wholesale, pays in N days | `creditTermsDays`; `paymentDueDate`; dunning flow; settlement after due date |
+| **MP-IH** | Marketplace holds physical stock (1P or consignment) | Single BPP represents multiple brands; marketplace FC as origin |
+| **MP-IL** | 3P marketplace — sellers hold own inventory | Each seller = independent BPP; marketplace = BAP; PLATFORM_FEE in breakup |
+| **AUC-F** | Forward auction — buyers bid up | `/select` = bid submission; highest bid wins |
+| **AUC-R** | Procurement/reverse auction — sellers bid down | `/discover` = RFQ publication; lowest bid wins |
+| **XB** | Export to international buyer | English catalog required; HS codes; Bea Cukai; PEB |
+| **B2G** | Sale to government entity | SP/SPK; DIPA; TKDN; BAST; SP2D; PPh22 withholding |
 
 ---
 
-## 3. Commerce Patterns
+## 2. Indonesian regulatory requirements for Trade
 
-### 3.1 B2C single fulfilment
+These are network-mandated — not optional. A catalog that violates any of these will fail ION Central validation.
 
-**What it is:** Consumer discovers, selects, and purchases a product. Delivery or pickup follows.
+### Product-level requirements
 
-**Indonesian examples:** GoFood, GrabFood, Tokopedia, Shopee, Blibli, Alfagift, Indomaret Digital
-
-**Categories:** Food & QSR, Grocery, Fashion, Electronics, Beauty, FMCG
-
-**Flow:** discover → select → init → confirm → fulfil → post-fulfil
-
-**ION model status:** No gaps. Spec immediately.
-
-**Key attributes:**
-- Serviceability radius on Offer
-- Cancellable / returnable flags on Offer
-- TAX line type: PPN 11% computed at select time
-- DELIVERY, HANDLING line types in Consideration
-- Performance: PLANNED → PACKED → DISPATCHED → DELIVERED
-
----
-
-### 3.2 B2C make-to-order
-
-**What it is:** Consumer composes an order from mandatory choices. The product does not pre-exist as a SKU — it is assembled at order time.
-
-**Indonesian examples:** Dominos Indonesia, HokBen custom meals, kue artisan platforms, bespoke batik ateliers
-
-**Categories:** Food & QSR, Custom bakery, Tailoring, Custom furniture
-
-**Flow:** discover → select (with customisation group completion) → init → confirm → fulfil
-
-**ION model status:** No gaps. Spec immediately.
-
-**Key attributes:**
-- Mandatory customisation groups with SINGLE_REQUIRED selection
-- Price deltas accumulate on base price
-- prepTime / estimatedReadyTime on Performance
-- shelfLife on Resource for F&B (limits valid delivery slots)
-
----
-
-### 3.3 B2C subscription
-
-**What it is:** Consumer signs up for recurring deliveries on a billing cycle. Auto-renewal until cancelled.
-
-**Indonesian examples:** Kopi subscription boxes, Say Veggie weekly produce, meal plan platforms, supplement auto-delivery
-
-**Categories:** Grocery, FMCG, F&B, Health supplements
-
-**Flow:** discover → select → init → confirm (subscription started) → recurring fulfilment → cancel or pause
-
-**ION model status:** Extended — attribute additions required.
-
-**Additions needed:**
-- `billingCycle` on Contract (WEEKLY, FORTNIGHTLY, MONTHLY, ANNUAL)
-- `renewalTerms` — auto-renew yes/no, renewal notice period
-- `cancellationNoticePeriod` — how far in advance to cancel
-- `nextBillingDate` on Settlement
-- SUBSCRIPTION_FEE line type in Consideration
-- PAUSED status on Contract
-
----
-
-### 3.4 B2B wholesale — prepaid
-
-**What it is:** Retailer or business purchases from a distributor or manufacturer, paying upfront. Order volumes are higher than B2C, pricing may be tiered by buyer type.
-
-**Indonesian examples:** Tokopedia Mitra, GudangAda, Ula — distributor-to-kirana prepaid orders
-
-**Categories:** Agritech, FMCG, Electronics, B2B Wholesale
-
-**Flow:** discover → select → init (buyer identity verification) → confirm → fulfil
-
-**ION model status:** Extended — attribute additions required.
-
-**Additions needed:**
-- `minimumOrderQuantity` (MOQ) on Offer — order rejected if below MOQ
-- `buyerEligibility` condition on Offer — distributor-specific pricing (Distributor A gets different price from Distributor B)
-- NPWP as mandatory buyer identity field at init (already ION Core)
-- `purchaseOrderReference` on Contract for B2B compliance
-- Tax invoice (Faktur Pajak) reference in post-confirm
-
----
-
-### 3.5 B2B wholesale — credit / BNPL
-
-**What it is:** Retailer or business purchases from a distributor on credit terms. Payment due after a defined period, not at confirm.
-
-**Indonesian examples:** GudangAda Bayar Nanti, Ula BNPL for warung, Waizly distributor credit terms
-
-**Categories:** FMCG, Agritech, B2B Wholesale, Electronics
-
-**Flow:** discover → select → init (credit limit check) → confirm → fulfil → payment due
-
-**ION model status:** Extended — attribute additions required.
-
-**Additions needed:**
-- `creditTermsDays` as flow attribute (e.g., Net 30, Net 60)
-- `paymentDueDate` on Settlement
-- CREDIT payment type on Consideration (payment_type: POST_FULFILMENT with credit terms)
-- Credit limit verification at init — BPP NACKs if buyer exceeds limit
-- Late payment charge declaration on Contract
-
----
-
-### 3.6 Marketplace — inventory held
-
-**What it is:** Platform intermediates between multiple sellers and buyers. Each seller holds their own inventory. The BAP is the marketplace operator.
-
-**Indonesian examples:** Tokopedia, Shopee, Lazada — seller holds own stock, platform intermediates transaction
-
-**Categories:** Fashion, Electronics, Beauty, Home & Kitchen
-
-**Flow:** discover (across multiple BPPs) → select → init → confirm → fulfil
-
-**ION model status:** Extended — attribute additions required.
-
-**Additions needed:**
-- Platform fee (finder fee) declaration in Contract — what % the marketplace retains
-- Multi-seller cart handling — one consumer order spanning multiple BPP contracts
-- `linkedCartId` to group multiple contracts from one consumer session
-
----
-
-### 3.7 Marketplace — inventory less
-
-**What it is:** Platform lists products it can source but does not hold in stock. Seller is assigned at or after order confirmation.
-
-**Indonesian examples:** JD.ID fulfilled-by-marketplace, Blibli sourced items, brand aggregator platforms
-
-**Categories:** Electronics, Fashion, FMCG
-
-**Flow:** discover (by product code) → init → confirm → seller assignment → fulfil
-
-**ION model status:** New pattern — structural work required before spec.
-
-**Structural gaps:**
-- `productCode` (GTIN or barcode) needed on TradeResource as a network-wide product identifier that is not seller-specific. Enables BAP to broadcast to all suppliers of a specific product.
-- `SELLER_PENDING` contract state — seller not yet assigned at confirm. Seller assignment happens via `/on_update` post-confirm.
-- `sellerAssignmentDeadline` on Contract — if no seller assigned by deadline, contract auto-cancels.
-- Order type field on Context — ILBN (Inventory Less Buy Now), ILFP (Inventory Less Fulfiller Pre-assigned) to differentiate flows.
-
----
-
-### 3.8 Forward auction
-
-**What it is:** Seller lists produce or goods at a reserve price. Buyers bid up. Highest bid above reserve wins.
-
-**Indonesian examples:** TaniHub live produce auction, agri marketplace bidding, online art auctions
-
-**Categories:** Agritech, Collectibles, Art, Rare commodities
-
-**Flow:** discover (auction listing) → bid (multiple /select calls) → auction close → confirm (winning bidder)
-
-**ION model status:** New pattern — structural work required before spec.
-
-**Structural gaps:**
-- `reservePrice` on Offer — minimum acceptable price
-- `auctionCloseTime` on Offer — when bidding ends
-- Consideration is PENDING status until auction closes — no confirmed price until close
-- `/select` carries a bid amount (not a fixed quantity selection). Commitment is a bid record with `bidAmount` and `bidTimestamp`.
-- Multiple BAPs can be in-flight on the same BPP offer — currently Beckn assumes one BAP per transaction.
-
----
-
-### 3.9 Procurement auction (reverse)
-
-**What it is:** Buyer announces a procurement requirement. Sellers compete by bidding down. Lowest qualifying bid wins.
-
-**Indonesian examples:** LKPP e-procurement (government), Mbiz B2B sourcing, corporate procurement platforms
-
-**Categories:** FMCG, Electronics, B2B Wholesale, Government procurement
-
-**Flow:** buyer publishes RFQ → sellers discover and bid (via /init) → buyer selects winner → confirm
-
-**ION model status:** New pattern — structural work required before spec.
-
-**Structural gaps:**
-- Buyer-initiated flow — /init starts the transaction, not /discover. Buyer is the BAP, sends requirements.
-- `lowestBid` tag on /init for multi-round bidding — BAP shares current lowest with all sellers.
-- `bidRound` field on Commitment — tracks auction round number.
-- Auction winner selection is BAP-side logic — not a protocol action.
-
----
-
-### 3.10 Export / cross-border
-
-**What it is:** Indonesian seller exports goods to an international buyer. Customs, Incoterms, and international payment apply.
-
-**Indonesian examples:** Batik export platforms, Kopi Luwak international sales, Indonesian craft exporters, Rajawalisinh agri export
-
-**Categories:** Agritech, Fashion (Batik), Beauty, Coffee & Spices, FMCG
-
-**Flow:** discover → select → init (export documentation) → confirm → customs clearance → international shipping → delivery
-
-**ION model status:** New pattern — structural work required before spec.
-
-**Structural gaps:**
-- Export regulatory fields needed at ION Core (cross-sector): `hsCode` (HS tariff code), `incoterms` (EXW/FOB/CIF/DDP), `countryOfOrigin`, `APE` (Angka Pengenal Ekspor — exporter registration number).
-- Export document references on Contract: `ska` (Surat Keterangan Asal / Certificate of Origin), `phytosanitaryCertRef`, `healthCertRef` for food/agri exports.
-- Performance states: EXPORT_CUSTOMS_SUBMITTED → EXPORT_CUSTOMS_CLEARED → SHIPPED → IN_TRANSIT → IMPORT_CUSTOMS_CLEARED → DELIVERED.
-- International payment rails — SWIFT, Letter of Credit, or escrow. SNAP does not apply cross-border. Settlement model needs to accommodate international wire or documentary collection.
-- PPN zero-rated on exports — tax treatment differs from domestic.
-
----
-
-### 3.11 B2G procurement
-
-**What it is:** Business sells to a government entity. Government procurement has specific identity, compliance, and payment requirements.
-
-**Indonesian examples:** e-Katalog LKPP, Bela Pengadaan (UKM to government), LPSE tender platforms
-
-**Categories:** FMCG, Electronics, Agritech, Office supplies, PPE
-
-**Flow:** discover (government catalogue) → select → init (procurement compliance) → confirm → fulfil
-
-**ION model status:** New pattern — structural work required before spec.
-
-**Structural gaps:**
-- B2G participant shape — government buyer identity fields: SIRUP code (procurement reference), DIPA reference (budget code), Satker ID (spending unit).
-- PPN treatment varies — government entities may be exempt in certain categories.
-- e-Katalog product identity — LKPP product codes as an additional identifier alongside ION product code.
-- Payment terms: government typically pays post-delivery within 30 days through KPPN (treasury) — different from commercial payment.
-
----
-
-## 4. Provider Benefits
-
-Provider benefits are declared in the catalog by the seller. The seller absorbs the cost.
-
-| Benefit type | Description | Example |
+| Requirement | What to declare | Regulatory basis |
 |---|---|---|
-| Price benefit | Item below reference price | Baju batik Rp 89k (was 99k) |
-| Bundle benefit | Items at combined price | Pizza + drink = Rp 120k |
-| Threshold benefit | Reward when cart hits a value | Spend Rp 200k → free delivery |
-| Gift-with-purchase | Free item with qualifying purchase | Buy fridge → free water filter |
-| Trade-in benefit | Old item value applied against new purchase | Trade old HP → Rp 500k off |
-| Instalment benefit | Payment restructured, 0% offered | Cicilan 12 bulan 0% |
-| Exchange benefit | Swap for different variant post-delivery | Wrong size? Tukar dalam 7 hari |
-| Loyalty earn | Points earned on this purchase | Earn 89 poin |
+| Halal status | `halalStatus` on every food/beverage resource | UU 33/2014 tentang Jaminan Produk Halal |
+| BPOM registration | `regulatory.registrations[scheme=BPOM_MD/ML]` | PerBPOM 27/2017 |
+| Country of origin | `countryOfOrigin` (ISO alpha-3) on every resource | PerBPOM 31/2018 Pasal 36 |
+| Packaged goods label | `packaged.netQuantity`, `manufacturerOrPacker`, `expiryDate` | PerBPOM 31/2018 |
+| Electronics warranty | `warranty.duration` minimum P1Y | UU 8/1999 Pasal 25; PP 36/2023 |
+| Age restriction | `ageRestricted` and `minAge` on restricted products | PP 109/2012 |
+| Bahasa Indonesia | `name.id` and `shortDesc.id` on every resource | ION Network Policy |
 
-## 5. Buyer App Benefits
+### Offer-level requirements
 
-Buyer app benefits are created by the BAP from its own budget. The seller always receives the full quoted price.
+| Requirement | What to declare | Regulatory basis |
+|---|---|---|
+| Return rights | `returnable`, `returnAllowedReasons[]`, `returnPolicy` | UU 8/1999 Pasal 19 |
+| Cancellation terms | `cancellable`, `cancellationPolicy` | UU 8/1999 Pasal 19 |
+| Consumer care contact | `contactDetailsConsumerCare` (name, email, phone) | UU 8/1999 Pasal 7 |
+| Dispute resolution | `disputePolicy` IRI | UU 8/1999 Pasal 45; UU 30/1999 |
+| Warranty policy | `warrantyPolicy` IRI | UU 8/1999 Pasal 25 |
 
-| Benefit type | Description |
+### Transaction-level requirements
+
+| Requirement | What to declare | When | Regulatory basis |
+|---|---|---|---|
+| Seller NPWP | `contractAttributes.npwp` (16 digits) | confirm / on_confirm | PMK 136/2023 |
+| Seller NIB | `contractAttributes.nib` (13 digits) | confirm / on_confirm | PP 5/2021 |
+| PKP status | `identity.pkpStatus` | onboarding | UU 8/1983 |
+| PPN 11% | `considerationAttributes.ppnRate: 0.11` | on_select breakup | UU 7/2021 HPP |
+| Faktur Pajak | `contractAttributes.fakturPajakReference` | on_confirm (PKP sellers) | PMK 168/2023 |
+
+---
+
+## 3. Schema pack composition for Trade
+
+### Publishing a catalog (publish_catalog)
+
+```
+providers[].providerAttributes:
+  ← core/identity/v1        NPWP, NIB, PKP status, legal entity name
+  ← trade/provider/v1       storeStatus, operatingHours, providerCategory, invoicingModel
+
+providers[].items[].resourceAttributes:
+  ← core/localization/v1    name.id, shortDesc.id (language objects)
+  ← core/product/v1         halalStatus, bpomRegNumber, ageRestricted
+  ← trade/resource/v1       resourceType, availability, images, countryOfOrigin
+                             + category sub-object (food / electronics / fashion / etc.)
+
+providers[].offers[].offerAttributes:
+  ← trade/offer/v1          cancellable, returnable, returnPolicy, cancellationPolicy,
+                             warrantyPolicy, disputePolicy, timeToShip, availableOnCod,
+                             returnAllowedReasons, contactDetailsConsumerCare
+```
+
+### select → on_select
+
+```
+on_select adds:
+  quote.breakup[].considerationAttributes:
+    ← core/tax/v1            ppnRate (0.11 on TAX lines), taxIncluded
+    ← trade/consideration/v1 breakupLineType (ITEM/DELIVERY/TAX/PROVIDER_BENEFIT/etc.)
+
+  performance[].performanceAttributes:
+    ← trade/performance/v1   supportedPerformanceModes[], sla, handling[]
+```
+
+### init → on_init
+
+```
+init adds:
+  performance[].performanceAttributes.stops[].location:
+    ← core/address/v1        provinsiCode, kelurahan, kecamatan, RT, RW
+
+  payment:
+    ← core/payment/v1        PaymentDeclaration (method, collectedBy, timing)
+
+  contractAttributes:
+    ← trade/contract/v1      invoicePreferences, deliveryPreferences, gift
+
+on_init adds:
+  payment.settlement_details[]:
+    ← core/payment/v1        QRIS string / VA number / EWallet deep link
+```
+
+### confirm → on_confirm
+
+```
+confirm adds:
+  contractAttributes:
+    ← core/identity/v1       npwp, nib (buyer and seller)
+    ← trade/contract/v1      purchaseOrderReference (B2B), subscriptionBillingCycle (SUB)
+
+on_confirm adds:
+  contractAttributes:
+    ← trade/contract/v1      fulfillingLocationId
+    ← core/identity/v1       fakturPajakReference (PKP sellers)
+```
+
+### on_status (during fulfilment)
+
+```
+on_status[DISPATCHED] adds:
+  performance[].performanceAttributes:
+    ← trade/performance/v1   awbNumber, trackingUrl, estimatedDeliveryTime,
+                             agentName, agentPhone, agentPhoto
+
+on_status[DELIVERED] adds:
+  ← trade/performance/v1    deliveryProofUrl (if PHOTO type)
+  Contract status → COMPLETE
+```
+
+### Post-delivery
+
+```
+rate:
+  ← core/rating/v1          ratingCategory (PROVIDER/ITEM/FULFILLMENT/AGENT), ratingValue
+
+reconcile:
+  ← core/reconcile/v1       reconId, amounts, adjustments[], reconStatus
+
+support:
+  ← core/support/v1         SupportTicket (category, description, issueActions)
+
+raise:
+  ← core/raise/v1           IONTicket (type, priority, thread) — participant → ION
+```
+
+---
+
+## 4. Availability model
+
+Stock count is never transmitted over ION. The BPP manages actual inventory internally. What the network carries is a signal:
+
+```json
+"availability": {
+  "status": "IN_STOCK",          // or LOW_STOCK / OUT_OF_STOCK / PREORDER / DISCONTINUED
+  "maxOrderQty": 10,             // per-order cap — NOT stock count
+  "nextAvailableAt": "...",      // for PREORDER or OUT_OF_STOCK with restock date
+  "backorderAllowed": false,
+  "preorderAllowed": true,
+  "substitutionAllowed": false
+}
+```
+
+`LOW_STOCK` is a BAP signal only — BAP may show urgency messaging ("only a few left"). The BPP decides when to flip from IN_STOCK to LOW_STOCK based on its own thresholds.
+
+---
+
+## 5. Resource type model
+
+Every resource must declare its structural type. This determines which other fields are required.
+
+**PLAIN** — A single SKU. No choices. Buyer just buys it.
+```
+Required: images[], availability.status, countryOfOrigin, logisticsServiceType, ageRestricted
+```
+
+**VARIANT** — One option in a family. Size M is a VARIANT of a base pizza.
+```
+Additional required: parentResourceId, variantGroup{id, name, variantOn}, isDefaultVariant
+```
+
+**WITH_EXTRAS** — Base item plus optional add-ons.
+```
+Additional required: customisationGroups[] with SINGLE_OPTIONAL or MULTIPLE_OPTIONAL groups
+```
+
+**COMPOSED** — Base item with mandatory and optional choice groups. Build-your-pizza.
+```
+Additional required: customisationGroups[] including at least one SINGLE_REQUIRED group
+```
+
+---
+
+## 6. Performance state machines
+
+ION Trade defines six canonical state machines. Choose based on your fulfilment mode:
+
+| Machine | When to use |
 |---|---|
-| Voucher | Promo code applied by consumer |
-| Membership | Free delivery or member price for premium users |
-| Occasion | First order, birthday, re-engagement |
-| Payment method | Bank card / e-wallet promotion |
-| Loyalty redeem | Points from previous orders applied |
+| **standard** | All packaged goods delivery — FMCG, electronics, fashion, agritech |
+| **mto** | Made-to-order — food QSR, bakery, tailoring |
+| **self_pickup** | Consumer collects from seller location |
+| **return** | Post-delivery return flow |
+| **replacement** | Seller sends replacement instead of refund |
+| **rto** | Delivery failed — package returning to seller |
 
-Buyer app benefits are hidden from the seller-facing Consideration unless `collectedBy: SELLER` (COD case).
-
----
-
-## 6. Price Breakup — Consideration Line Types
-
-| Line type | Description | Who absorbs |
-|---|---|---|
-| ITEM | Base price of product ordered | Seller receives |
-| DELIVERY | Delivery charge | Logistics partner |
-| HANDLING | Packaging fee | Seller receives |
-| TAX | PPN (11%) or PPNBM — computed at select time | Government |
-| PROVIDER_BENEFIT | Seller's own benefit applied | Reduces seller receivable |
-| BUYER_BENEFIT | Buyer app's benefit — hidden from seller unless COD | Buyer app absorbs |
-| TRADE_IN | Old item value applied | Seller absorbs |
-| LOYALTY_REDEEM | Points redeemed | Buyer app absorbs from points ledger |
-| FINANCE_CHARGE | Instalment fee or interest | Finance partner or buyer |
-| GIFT | Free item included — declared for settlement record | Seller absorbs |
+Full state definitions and allowed transitions: `schema/extensions/trade/performance-states/v1/states.yaml`
 
 ---
 
-## 7. Performance Lifecycle
+## 7. Policy IRI reference
 
-Standard domestic delivery:
-```
-PLANNED → PACKED → DISPATCHED → DELIVERED
-```
+ION uses IRI strings for standardised policies. This makes policies machine-readable and removes ambiguity from free-text policy descriptions.
 
-Post-delivery events (each creates a new Performance record on the same Contract):
-```
-Return:       RETURN_INITIATED → RETURN_APPROVED → RETURN_PICKED → RETURN_DELIVERED
-Replacement:  REPLACEMENT_DISPATCHED → REPLACEMENT_DELIVERED
-RTO:          RTO_INITIATED → RTO_DELIVERED (back to seller)
-```
+**Return policies** (`offerAttributes.returnPolicy`)
+- `ion://policy/return.7d.sellerpays` — 7-day window, seller arranges and pays for return pickup
+- `ion://policy/return.15d.sellerpays` — 15-day window, seller pays
+- `ion://policy/return.30d.sellerpays` — 30-day window, seller pays
+- `ion://policy/return.7d.buyerpays` — 7-day window, buyer ships back at own cost
+- `ion://policy/return/standard/none` — no returns accepted
 
-Export:
-```
-PLANNED → PACKED → EXPORT_CUSTOMS_SUBMITTED → EXPORT_CUSTOMS_CLEARED
-→ SHIPPED → IN_TRANSIT → IMPORT_CUSTOMS_CLEARED → DELIVERED
-```
+**Cancellation policies** (`offerAttributes.cancellationPolicy`)
+- `ion://policy/cancel/prepacked/free` — Free cancellation before packed state
+- `ion://policy/cancel/mto/nofee-before-prepare` — MTO: free before preparation starts
+- `ion://policy/cancel/standard/none` — No cancellation permitted after confirm
 
----
+**Warranty policies** (`offerAttributes.warrantyPolicy`)
+- `ion://policy/warranty.1y.manufacturer`
+- `ion://policy/warranty.2y.manufacturer`
+- `ion://policy/warranty.3y.manufacturer`
+- `ion://policy/warranty.1y.seller`
+- `ion://policy/warranty/standard/none`
 
-## 8. Settlement
-
-> **Version note:** The settlement model below describes the full ION design. The settlement declaration fields (`settlementBasis`, `settlementWindow`, payment rails) are part of the current v0.1 spec and go into your `/confirm` payload. The `/reconcile` and `/on_reconcile` APIs that trigger the actual money movement are in active development and will be available in v0.2. You declare the terms now — the reconciliation flow will wire up to them when it lands.
-
-
-
-Settlement in Trade follows the standard ION settlement model:
-
-- `settlementBasis` declared at confirm: AFTER_DELIVERY, AFTER_SHIPMENT, or AFTER_RETURN_WINDOW_EXPIRY
-- `settlementWindow` in ISO 8601 duration (e.g., P1D = within 1 day of basis event)
-- Payment rail: BI-FAST, QRIS, or VA — declared at confirm using SNAP-standard account identifiers
-- Reconciliation via `/reconcile` and `/on_reconcile` before money moves *(v0.2 — in development)*
-
-For B2B credit: `paymentDueDate` replaces `settlementWindow`. Payment due Net 30/60 from delivery.
-
-For COD: logistics partner collects cash from consumer and remits to seller. Seller then remits platform fee to buyer app. Reverse money flow — logistics partner owes seller, seller owes buyer app.
-
-For export: SNAP does not apply. International wire or Letter of Credit. Settlement terms governed by Incoterms agreed at confirm.
+**Dispute policies** (`offerAttributes.disputePolicy`)
+- `ion://policy/dispute/consumer/bpsk` — B2C disputes via BPSK (Badan Penyelesaian Sengketa Konsumen)
+- `ion://policy/dispute/commercial/bani` — B2B disputes via BANI arbitration
+- `ion://policy/dispute/commercial/odr` — Online Dispute Resolution via ION platform
 
 ---
 
-## 9. Indonesian Regulatory Fields Summary
-
-| Field | Layer | Applies to |
-|---|---|---|
-| halalCertNumber (MUI) | ION Core | Food, cosmetics, pharmaceuticals |
-| bpomRegNumber | ION Core | Packaged food, personal care |
-| NIB | ION Core | All sellers |
-| NPWP | ION Core | All sellers and B2B buyers |
-| provinsiCode, kabupatenCode | ION Core | Serviceability and tax zone |
-| APE (Angka Pengenal Ekspor) | Trade — Export flow | Export sellers |
-| hsCode | Trade — Export flow | All export products |
-| SKA (Certificate of Origin) | Trade — Export flow | Export products |
-| SIRUP, DIPA, Satker | Trade — B2G flow | Government procurement |
-| PPN 11% | Trade sector | All taxable products |
-| PPNBM | Trade sector | Luxury goods |
 
 ---
 
-## 10. Open Questions
+## Using Atlas to look up fields
 
-**OQ-A-01: MOQ enforcement**
-When a buyer's cart falls below the declared `minimumOrderQuantity`, should the BPP NACK the `/select` or return a modified quote with a warning? The ION preference is to return a warning on `/on_select` with the minimum quantity, allowing the BAP to prompt the buyer to add more. Decision needed from ION Council.
+When you need to find a field by describing what it does in plain English — rather than already knowing the field name — use ION Atlas.
 
-**OQ-A-02: Multi-seller cart**
-In B2C marketplace, a consumer often adds items from multiple sellers to a single cart. On confirmation, these split into multiple Contracts (one per BPP). How does the ION model handle the consumer-facing unified cart view vs the protocol-level split? The BAP manages this at the application layer — but ION needs to define a `cartSessionId` or similar linking field so ION Central can trace multi-contract sessions for support purposes.
+```bash
+ion search "halal certification number"
+ion search "government purchase order reference"
+ion search "delivery agent phone number"
+ion search "BPOM food registration"
+ion search "credit terms days"
+```
 
-**OQ-A-03: productCode for inventory-less**
-Should `productCode` (GTIN/barcode) be an ION Core field (available across all sectors) or a Trade sector field? If a logistics provider or a finance provider ever needs to reference a specific product by barcode, ION Core placement is cleaner. Trade-only placement keeps ION Core lean. Decision needed.
+Atlas searches all ION and Beckn core schemas semantically. It tells you which pack contains the field, what the field is called, and its regulatory basis — all in one result.
 
-**OQ-A-04: Auction — multiple BAPs per offer**
-Beckn v2.0's current model assumes one BAP per transaction against a BPP offer. In a forward auction, multiple BAPs are simultaneously bidding on the same offer. Does this require a gateway-level change, or can it be handled by the BPP maintaining a bid ledger and responding to each BAP independently? Needs Beckn Foundation input.
+Before adding a new field to a schema pack, always run:
+```bash
+ion validate yourProposedFieldName
+```
 
-**OQ-A-05: Export — international BAP participation**
-Can a buyer app registered on a foreign Beckn network (e.g., a future cross-border open network) transact with an Indonesian BPP on ION? This is a cross-network question that requires bilateral agreement between network operators. ION should define the interface requirements — what does ION need from a foreign BAP to allow it to transact? This is out of scope for v1.0 but should be flagged for the ION cross-border working group.
+This checks for clashes with reserved Beckn terms and near-matches in existing packs.
 
-**OQ-A-06: B2G — is this in scope for ION launch?**
-Government procurement in Indonesia operates under specific legal frameworks (Perpres 12/2021 and its amendments). Integrating with LKPP e-Katalog requires formal agreement with LKPP. This may be better handled as a Phase 2 item with dedicated government working group participation, rather than a launch-day spec.
+Web Explorer: `devlabs.ion.id/atlas` (coming soon)
 
-**OQ-A-07: Incoterms and PPN zero-rating for export**
-Indonesian tax law allows PPN zero-rating on exported goods. However, the point at which goods are considered "exported" for tax purposes varies by Incoterms. For FOB, PPN zero-rating applies from port of origin. For DDP, the seller may need to remit import duties at the destination. ION needs a tax expert review of how to declare this correctly in the Consideration breakup.
 
----
 
-*ION Sector A — Trade v1.0 — Working Document*  
-*For ION Council review and ratification*
+## 7b. Policies and penalties
+
+Every offer declares policy IRIs. These are not free text — they reference ratified terms documents in the ION Policy Terms Registry. Sellers pick from a menu; ION Central enforces the terms.
+
+### Policy categories (7)
+
+| Category | Purpose | Who selects | Ratified set size |
+|---|---|---|---|
+| RETURN | Return window, reasons, evidence, QC, refund timeline | Seller | 15 |
+| CANCELLATION | Cancellation window, fee, reasons, refund % | Seller | 10 |
+| WARRANTY | Warranty type, duration, coverage, service mode | Seller (or brand) | 8 |
+| DISPUTE | Where disputes resolve (BPSK / BANI / ODR / UNCITRAL / LKPP) | Seller | 5 |
+| GRIEVANCE_SLA | Response + resolution SLA, escalation path, breach consequences | Seller subject to marketplace minimum | 4 |
+| PAYMENT_TERMS | Payment timing, methods, deposit/credit, late fees | Seller (BAP may constrain) | 8 |
+| PENALTY | Fee schedules for violations — referenced by other policies | Auto-derived from seller tier | 17 |
+
+Registry total: **67 ratified policy documents** as of v0.4.
+
+### Declaring policies on an offer
+
+```
+offerAttributes:
+  returnPolicy:       ion://policy/return/standard/7d-sellerpays
+  cancellationPolicy: ion://policy/cancel/prepacked/free
+  warrantyPolicy:     ion://policy/warranty/manufacturer/1y-distance-service
+  disputePolicy:      ion://policy/dispute/consumer/bpsk
+  grievanceSlaPolicy: ion://policy/grievance-sla/consumer/standard
+  paymentTermsPolicy: ion://policy/payment-terms/upfront/full
+  customTermsAddendum: "Optional seller-specific addendum text (max 1000 chars)."
+```
+
+Each spine declares which policy categories are required. For example:
+
+- B2C-SF: all six categories required
+- B2C-MTO: cancellation + dispute + grievance-sla + payment-terms (no returns for prepared food; no manufacturer warranty)
+- B2C-DIG: cancellation + dispute + grievance-sla + payment-terms (digital goods, no returns or warranty)
+
+See each spine's `profile.json` for the `requiredPolicyCategories` list.
+
+### Versioning
+
+ION Council ratifies one version of the registry at a time. New versions announced with 90 days notice, all sellers auto-upgrade on cutover. No per-seller version pinning.
+
+### Penalty policies
+
+Sellers are onboarded into a tier (Standard, Mall, Premium). Each tier has a minimum penalty commitment for grievance SLA breaches:
+
+- Standard: `penalty.seller.sla_breach.standard`
+- Mall: `penalty.seller.sla_breach.mall` (stricter)
+- Premium: `penalty.seller.sla_breach.premium` (strictest)
+
+Buyer-side penalties (restocking fees, failed delivery, COD refusal, chargeback abuse) are referenced by return and cancellation policies — they fire automatically at reconcile or account-flag time.
+
+The `penaltyPolicy` field on the offer is normally not declared — ION derives the applicable penalty chain from the seller's tier and the other policies they declared. Explicit declaration is allowed only for approved per-offer overrides.
+
+### SLA breach — auto enforcement
+
+This is where the policy model earns its keep. When a grievance ticket is filed:
+
+```
+T+0      Ticket opened
+         policy = ion://policy/grievance-sla/consumer/standard (firstResponseSla=PT2H)
+
+T+2h     No response from seller
+         ION auto-escalates to MARKETPLACE_MEDIATION
+         Penalty policy queued: penalty.seller.sla_breach.standard, MINOR tier, 5%
+
+T+24h    No resolution
+         Already at MARKETPLACE_MEDIATION
+         
+T+72h    Marketplace mediation SLA missed
+         ION auto-escalates to BPSK
+         Penalty upgraded: MAJOR tier, 10%
+
+At reconcile:
+         reconcile.slaPenaltyDeduction = 10% of order value
+         Deducted from BPP settlement, paid to consumer as goodwill
+```
+
+No human has to push these escalations. The policy terms document tells ION exactly when to escalate and what penalty to apply.
+
+### Resolver API
+
+```
+GET /policies/{iri}             Resolve IRI to terms document
+GET /policies?category=RETURN   List all return policies
+```
+
+### Atlas search
+
+```bash
+ion search "return policy for fashion"
+ion search "grievance SLA for flash sale"
+ion search "penalty for seller late dispatch"
+ion search "COD payment terms"
+```
+
+
+## 8. Further reading
+
+| Document | What it covers |
+|---|---|
+| `flows/trade/README.md` | Complete branch map — all 30+ sub-branches with windows |
+| `flows/trade/spines/B2C-SF/v1/spine.yaml` | Reference spine — required fields at every step |
+| `flows/trade/spines/{pattern}/v1/README.md` | Pattern-specific differences and key fields |
+| `schema/extensions/trade/resource/v1/attributes.yaml` | Complete product field definitions |
+| `schema/extensions/trade/offer/v1/attributes.yaml` | Complete offer and policy field definitions |
+| `schema/extensions/core/` | Cross-sector fields — address, identity, payment, tax, etc. |
+| `errors/registry.json` | All error codes with resolution guidance |
+
+## Operations-readiness notes (v0.5)
+
+Production operation requires attention to these operational aspects beyond the schema and flow spec itself:
+
+### Policy IRI is authoritative — stop duplicating terms on offer
+
+In v0.5 the offer stops carrying duplicative policy fields. **The policy IRI is the single source of truth.**
+
+- Seller declares `offer.cancellationPolicy` and `offer.returnPolicy` (IRIs). That is it.
+- Fee structures, window durations, allowed reasons, partial-refund ratios, refund timelines per payment method — all live in the policy terms document at `/policies/{category}/v1/{variant}.yaml`.
+- BAP resolves the IRI to the terms document via Atlas to render consumer-facing text and enforce business rules.
+- If a seller has unique terms that no ratified IRI matches, request ION Council ratification of a new policy variant. Never inline prose.
+
+### KYC is a lifecycle, not a boolean
+
+Providers carry `kycStatus`, `kycLevel`, `kycValidUntil`. The implications:
+
+- **Catalog publish blocks** when `kycStatus` ∈ {EXPIRED, SUSPENDED, REJECTED} — error ION-2003.
+- **New transactions refuse** against EXPIRED/SUSPENDED providers.
+- **Tier determines caps**: BASIC max IDR 5M per order; STANDARD max IDR 50M; ENHANCED max IDR 500M; ENTERPRISE no cap.
+- **Category licenses** (BPOM, SIA alcohol, PBF pharmacy) required as separate `categoryLicenses[]` entries for regulated goods.
+
+### Refund timelines are payment-method-specific
+
+v0.5 return policies declare refund timelines keyed by original payment method. BPPs MUST match the method-specific timeline:
+
+- QRIS / EWALLET / BI_FAST: PT1H (near-instant)
+- Virtual Account / Bank Transfer: P3D
+- Credit Card: P14D (bank-dependent, up to 14 calendar days)
+- Debit Card: P7D
+- BNPL: P5D
+- COD refund to wallet: PT0S (instant), to bank: P3D
+
+Communicating P3D uniformly will break credit-card refunds and create dispute load.
+
+### Age-restricted delivery
+
+Items with `resource.ageRestricted=true` require verification at door. Delivery agent confirms age via KTP sighting (or scanned for enhanced verification). Failed verification → `DELIVERY_FAILED` → RTO, and buyer may be flagged for category restriction per platform policy.
+
+Methods: KTP_SIGHTED, KTP_SCANNED, SIM_SIGHTED, PASSPORT_SIGHTED, SELFIE_COMPARISON, BIOMETRIC_API. Evidence stored per data residency rules.
+
+### Data residency for pharmacy and health data
+
+Resources with `dataResidency: DOMESTIC_ONLY` may only be transacted by BAPs processing data within Indonesia per UU 27/2022. BAPs with foreign processing must filter these from discovery or refuse transactions — error ION-5011.
+
+### Batch settlement at scale
+
+Per-order reconcile does not scale to marketplace volume. Use `isBatch: true` with `contractIds[]` and `batchPeriod`. Include `taxWithholdings[]` with NTPN references for PPh22, PPh23, PPN remittance. Buktit potong documents attached per tax line.
+
+### Variant explosion is solved by matrix
+
+For products with more than ~30 potential variants (multi-axis electronics, apparel), use `resource.variantMatrix` on a parent PLAIN resource rather than publishing every VARIANT as a separate resource. BPP computes the specific variant at on_select from the matrix.
+
+### Payment milestone schedules
+
+For down-payment + balance orders (furniture, pre-order, services), use `contract.paymentSchedule[]`. Contract does not move to COMPLETE until all milestones are PAID. Missed milestones trigger ION-3021; seller decides retry or cancel.
+
+### Logistics events stay on Logistics protocol
+
+The Trade protocol does NOT surface: rider reassignments, pickup failures at seller premises, hub handoffs, LSP-internal SLA clocks, cold-chain sensor excursions, multi-package tracking. BPP aggregates only the events that affect the consumer view (final DELIVERED, final RTO, consumer-facing ETA delay) into Trade performance. For full logistics visibility, BAPs subscribe to the Logistics sector transactions linked via `contractAttributes.linkedContractId`.
+

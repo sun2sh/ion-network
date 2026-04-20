@@ -1,0 +1,30 @@
+{
+  "id": "ion-trade-MP-IL-v1",
+  "version": "1.0.0",
+  "sector": "trade",
+  "pattern": "Marketplace Inventory Less",
+  "patternCode": "MP-IL",
+  "status": "ready",
+  "description": "3P marketplace. Sellers are independent BPPs. Marketplace is BAP. Platform fee in breakup.",
+  "spineFile": "./spine.yaml",
+  "applicableCategories": [
+    "all"
+  ],
+  "applicableBranches": [
+    "during-transaction/v1",
+    "cancellation/v1",
+    "returns/v1",
+    "updates/v1",
+    "cross-cutting/v1"
+  ],
+  "performanceStateMachine": "schema/extensions/trade/performance-states/v1/states.yaml#standard",
+  "requiredPolicyCategories": [
+    "RETURN",
+    "CANCELLATION",
+    "WARRANTY",
+    "DISPUTE",
+    "GRIEVANCE_SLA",
+    "PAYMENT_TERMS"
+  ],
+  "policyRegistryVersion": "1.0.0"
+}

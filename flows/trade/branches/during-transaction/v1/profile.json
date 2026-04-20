@@ -1,0 +1,91 @@
+{
+  "id": "ion-trade-branch-during-transaction-v1",
+  "version": "1.0.0",
+  "branchName": "during-transaction",
+  "status": "ready",
+  "description": "Branches active between select and on_confirm. Shape the transaction before it is committed.",
+  "branchFile": "./branch.yaml",
+  "applicableSpines": [
+    "B2C-SF",
+    "B2C-MTO",
+    "B2B-PP",
+    "MP-IH",
+    "MP-IL"
+  ],
+  "subBranches": [
+    {
+      "id": "fulfillment-type",
+      "window": {
+        "earliest": "select",
+        "latest": "on_confirm"
+      },
+      "description": "delivery vs self-pickup selection"
+    },
+    {
+      "id": "payment-prepaid-BAP-collected",
+      "window": {
+        "earliest": "init",
+        "latest": "on_confirm"
+      }
+    },
+    {
+      "id": "payment-prepaid-BPP-collected",
+      "window": {
+        "earliest": "init",
+        "latest": "confirm"
+      },
+      "note": "includes unsolicited on_init for payment status"
+    },
+    {
+      "id": "payment-COD-BAP-collected",
+      "window": {
+        "earliest": "init",
+        "latest": "on_status[DELIVERED]"
+      }
+    },
+    {
+      "id": "payment-COD-BPP-collected",
+      "window": {
+        "earliest": "init",
+        "latest": "on_status[DELIVERED]"
+      }
+    },
+    {
+      "id": "multi-fulfillment",
+      "window": {
+        "earliest": "select",
+        "latest": "init"
+      }
+    },
+    {
+      "id": "cancellation-terms",
+      "window": {
+        "earliest": "on_init",
+        "latest": "on_confirm"
+      }
+    },
+    {
+      "id": "on-network-LSP",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_confirm"
+      }
+    },
+    {
+      "id": "technical-cancellation-confirm-failure-BAP",
+      "window": {
+        "earliest": "confirm",
+        "latest": "confirm"
+      },
+      "code": 999
+    },
+    {
+      "id": "technical-cancellation-confirm-failure-BPP",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_confirm"
+      },
+      "code": 998
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+iri: ion://policy/penalty.buyer-restocking.none
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: PENALTY
+subCategory: BUYER_RESTOCKING
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Tanpa biaya restocking"
+  en: "No restocking fee"
+
+triggerConditions:
+  - condition: CHANGE_OF_MIND_RETURN
+    severity: WARNING
+    penalty:
+      type: FIXED
+      amount: 0
+
+appliedVia: payment.refundAmount
+settledTo: SELLER
+collectedBy: ION_CENTRAL
+
+disputeRights:
+  - "Penalized party may dispute via raise channel within 7 days"
+  - "Dispute goes to marketplace mediation first, then BPSK/BANI per disputePolicy"
+
+regulatoryBasis:
+  - "ION Network Policy - Default Return Terms"
+
+supersededBy: null
+deprecatedAt: null

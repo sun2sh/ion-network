@@ -1,0 +1,83 @@
+{
+  "id": "ion-trade-branch-cross-cutting-v1",
+  "version": "1.0.0",
+  "branchName": "cross-cutting",
+  "status": "ready",
+  "description": "Branches available on all spines concurrently. Track, support, rating, reconcile. Plus raise (participant\u2192ION channel).",
+  "branchFile": "./branch.yaml",
+  "applicableSpines": [
+    "B2C-SF",
+    "B2C-MTO",
+    "B2C-SUB",
+    "B2B-PP",
+    "B2B-CR",
+    "MP-IH",
+    "MP-IL",
+    "AUC-F",
+    "AUC-R",
+    "XB",
+    "B2G"
+  ],
+  "subFlows": [
+    {
+      "id": "track",
+      "apis": [
+        "track",
+        "on_track"
+      ],
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      },
+      "description": "Real-time GPS position of delivery agent. Position updates, not state changes."
+    },
+    {
+      "id": "support",
+      "apis": [
+        "support",
+        "on_support"
+      ],
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "contract_COMPLETE"
+      },
+      "description": "Buyer raises issue to seller. try=true previews channels; try=false creates ticket. SLA tracked by ION Central."
+    },
+    {
+      "id": "rating",
+      "apis": [
+        "rate",
+        "on_rate"
+      ],
+      "window": {
+        "earliest": "on_status[DELIVERED]",
+        "latest": "rating_window_expiry"
+      },
+      "description": "PROVIDER, ITEM, FULFILLMENT, AGENT categories."
+    },
+    {
+      "id": "reconcile",
+      "apis": [
+        "reconcile",
+        "on_reconcile"
+      ],
+      "window": {
+        "earliest": "on_status[DELIVERED]",
+        "latest": "settlement_window"
+      },
+      "description": "BAP and BPP agree financial settlement. ION Central orchestrated."
+    },
+    {
+      "id": "raise",
+      "direction": "participant\u2192ION",
+      "apis": [
+        "raise",
+        "on_raise"
+      ],
+      "window": {
+        "earliest": "any"
+      },
+      "description": "Participant raises formal issue TO ION. Not a BAP\u2194BPP branch. Policy breach, misconduct, reconcile dispute, force-cancel dispute."
+    }
+  ]
+}

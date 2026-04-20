@@ -1,0 +1,139 @@
+# ION Trade Flow - Forward Auction (AUC-F) Spine v1
+# NOT OAS. ION flow specification document.
+# Forward auction: seller sets starting price, buyers bid up.
+
+id: ion-trade-AUC-F-v1
+version: "1.0.0"
+pattern: Forward Auction
+sectorCode: A
+status: ready
+description: >
+  Seller (BPP) publishes a lot with a starting price and auction window.
+  Multiple buyers (BAPs) submit bids. Highest valid bid wins. Seller confirms
+  or may set a reserve price below which no sale occurs.
+  Use cases: agritech produce auction (mangoes, coffee, cocoa lots),
+  collectibles, excess inventory clearance, used electronics, art.
+  The Beckn /select action becomes the bid submission mechanism.
+
+applicableCategories:
+  - agritech
+  - collectibles
+  - excess-inventory
+  - used-goods
+  - art
+
+auctionMechanism:
+  type: English auction (ascending price)
+  bidIncrement: declared in offer — minimum increment above current highest bid
+  reservePrice: optional — seller's minimum acceptable price
+  auctionWindow: startAt and endAt declared in offer
+  winnerDetermination: highest bid at auctionWindow.endAt
+
+phases:
+  phase1:
+    name: Lot Publication
+    steps:
+      - step: publish_catalog
+        stepContext: "auction lot"
+        from: BPP
+        to: ION_CATALOG
+        description: >
+          Seller publishes auction lot. Offer structure differs from standard:
+          price = starting bid (not fixed price).
+          offerType=AUCTION declared in offerAttributes.
+          startAt and endAt define the bidding window.
+        requiredFields:
+          - message.catalog.providers[].items[].id
+          - message.catalog.providers[].items[].resourceAttributes.images[]
+          - message.catalog.providers[].offers[].price  # note=Starting bid price in IDR
+          - message.catalog.providers[].offers[].offerAttributes.startAt
+          - message.catalog.providers[].offers[].offerAttributes.endAt
+          - message.catalog.providers[].offers[].offerAttributes.offerType  # value=AUCTION
+          - message.catalog.providers[].offers[].tags.auction.min_bid_increment
+          - message.catalog.providers[].offers[].tags.auction.reserve_price_set  # note=boolean — whether reserve price exists (amount not disclosed)
+
+  phase2:
+    name: Bidding
+    description: >
+      Each bid is submitted as a /select. on_select acknowledges bid or
+      rejects if below current high bid or below minimum increment.
+    steps:
+      - step: select
+        stepContext: "bid submission"
+        from: BAP
+        to: BPP
+        description: Buyer submits a bid amount.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].offer.price.value  # note=Buyer's bid amount in IDR
+          - message.contract.commitments[].offer.tags.auction.bid_amount
+        businessRules:
+          - bid_amount must be >= current_highest_bid + min_bid_increment
+          - bid_amount must be >= offer.price (starting bid)
+          - Bid only valid within offer.startAt to offer.endAt window
+
+      - step: on_select
+        stepContext: "bid acknowledgment"
+        from: BPP
+        to: BAP
+        description: BPP confirms bid is valid and currently highest.
+        requiredFields:
+          - message.contract.commitments[].offer.tags.auction.bid_status  # values="[LEADING, OUTBID, REJECTED]"
+          - message.contract.commitments[].offer.tags.auction.current_highest_bid
+          - message.contract.commitments[].offer.tags.auction.time_remaining
+
+      - step: on_select
+        stepContext: "bid outbid — unsolicited"
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: BPP notifies previous highest bidder they have been outbid.
+        requiredFields:
+          - message.contract.commitments[].offer.tags.auction.bid_status  # value=OUTBID
+          - message.contract.commitments[].offer.tags.auction.current_highest_bid
+
+  phase3:
+    name: Auction Close and Award
+    steps:
+      - step: on_update
+        stepContext: "AUCTION_CLOSED"
+        from: BPP
+        to: winning_BAP
+        direction: unsolicited
+        description: BPP notifies winning bidder that auction has closed and they won.
+        requiredFields:
+          - message.contract.commitments[].offer.tags.auction.auction_result  # value=WON
+          - message.contract.commitments[].offer.tags.auction.winning_bid
+          - message.contract.commitments[].offer.tags.auction.reserve_met  # note="false if reserve not met, no sale"
+
+      - step: init
+        from: winning_BAP
+        to: BPP
+        description: Winner provides delivery address and payment method.
+        note: Same as B2C-SF init. Only winning BAP proceeds.
+
+      - step: on_init  # note: Same as B2C-SF.
+
+      - step: confirm
+        from: winning_BAP
+        to: BPP
+        description: Winner confirms purchase at winning bid price.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.commitments[].offer.tags.auction.winning_bid_confirmed
+
+      - step: on_confirm  # note: Same as B2C-SF. Contract created at winning bid price.
+
+  phase4:
+    name: Fulfilment
+    description: Same as B2C-SF from confirm onwards.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+
+branchWindows:
+  cancellation:
+    note: Auction winner cancellation typically not permitted once confirmed.
+  returns:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+    note: Returns for DEFECTIVE/NOT_AS_DESCRIBED only. CHANGE_OF_MIND typically excluded.

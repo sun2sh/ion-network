@@ -1,0 +1,364 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/payment/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:PaymentDeclaration",
+      "@type": "rdfs:Class",
+      "rdfs:label": "PaymentDeclaration",
+      "rdfs:comment": "Contents of a Beckn Settlement's settlementAttributes bag for a buyer-facing payment event. Binds a payment method to a transaction and carries method-specific instrument details in methodDetail.\n"
+    },
+    {
+      "@id": "ion:method",
+      "@type": "rdf:Property",
+      "rdfs:label": "method"
+    },
+    {
+      "@id": "ion:collectedBy",
+      "@type": "rdf:Property",
+      "rdfs:label": "collectedBy",
+      "rdfs:comment": "Which network participant collects payment from consumer."
+    },
+    {
+      "@id": "ion:timing",
+      "@type": "rdf:Property",
+      "rdfs:label": "timing",
+      "rdfs:comment": "When payment is collected relative to fulfilment."
+    },
+    {
+      "@id": "ion:status",
+      "@type": "rdf:Property",
+      "rdfs:label": "status"
+    },
+    {
+      "@id": "ion:amount",
+      "@type": "rdf:Property",
+      "rdfs:label": "amount",
+      "rdfs:comment": "Payment amount in IDR"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency"
+    },
+    {
+      "@id": "ion:paidAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "paidAt",
+      "rdfs:comment": "Timestamp of successful payment confirmation"
+    },
+    {
+      "@id": "ion:gatewayRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "gatewayRef",
+      "rdfs:comment": "Payment gateway transaction reference ID"
+    },
+    {
+      "@id": "ion:methodDetail",
+      "@type": "rdf:Property",
+      "rdfs:label": "methodDetail"
+    },
+    {
+      "@id": "ion:QRIS",
+      "@type": "rdfs:Class",
+      "rdfs:label": "QRIS",
+      "rdfs:comment": "Quick Response Code Indonesian Standard payment"
+    },
+    {
+      "@id": "ion:qrisType",
+      "@type": "rdf:Property",
+      "rdfs:label": "qrisType",
+      "rdfs:comment": "STATIC: single fixed QR, same for all transactions. DYNAMIC: per-transaction QR with embedded amount.\n"
+    },
+    {
+      "@id": "ion:merchantId",
+      "@type": "rdf:Property",
+      "rdfs:label": "merchantId",
+      "rdfs:comment": "QRIS merchant identifier from acquiring bank"
+    },
+    {
+      "@id": "ion:nmid",
+      "@type": "rdf:Property",
+      "rdfs:label": "nmid",
+      "rdfs:comment": "National Merchant ID assigned by Bank Indonesia"
+    },
+    {
+      "@id": "ion:terminalId",
+      "@type": "rdf:Property",
+      "rdfs:label": "terminalId",
+      "rdfs:comment": "Terminal/POS identifier for multi-terminal merchants"
+    },
+    {
+      "@id": "ion:qrisString",
+      "@type": "rdf:Property",
+      "rdfs:label": "qrisString",
+      "rdfs:comment": "Full QRIS string for QR code rendering"
+    },
+    {
+      "@id": "ion:expiresAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "expiresAt",
+      "rdfs:comment": "Expiry for DYNAMIC QRIS. UTC (ISO 8601)."
+    },
+    {
+      "@id": "ion:VirtualAccount",
+      "@type": "rdfs:Class",
+      "rdfs:label": "VirtualAccount",
+      "rdfs:comment": "VirtualAccount"
+    },
+    {
+      "@id": "ion:bankCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "bankCode",
+      "rdfs:comment": "Bank issuing the virtual account"
+    },
+    {
+      "@id": "ion:vaNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "vaNumber",
+      "rdfs:comment": "Virtual account number to be paid to"
+    },
+    {
+      "@id": "ion:amount",
+      "@type": "rdf:Property",
+      "rdfs:label": "amount",
+      "rdfs:comment": "Amount encoded in VA (for fixed-amount VA)"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency"
+    },
+    {
+      "@id": "ion:expiresAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "expiresAt",
+      "rdfs:comment": "VA expiry timestamp in UTC"
+    },
+    {
+      "@id": "ion:EWallet",
+      "@type": "rdfs:Class",
+      "rdfs:label": "EWallet",
+      "rdfs:comment": "EWallet"
+    },
+    {
+      "@id": "ion:provider",
+      "@type": "rdf:Property",
+      "rdfs:label": "provider",
+      "rdfs:comment": "E-wallet provider identifier"
+    },
+    {
+      "@id": "ion:accountRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "accountRef",
+      "rdfs:comment": "Consumer's wallet account reference (phone or wallet ID)"
+    },
+    {
+      "@id": "ion:amount",
+      "@type": "rdf:Property",
+      "rdfs:label": "amount"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency"
+    },
+    {
+      "@id": "ion:expiresAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "expiresAt"
+    },
+    {
+      "@id": "ion:deepLink",
+      "@type": "rdf:Property",
+      "rdfs:label": "deepLink",
+      "rdfs:comment": "Deep link to open wallet app for payment"
+    },
+    {
+      "@id": "ion:CashOnDelivery",
+      "@type": "rdfs:Class",
+      "rdfs:label": "CashOnDelivery",
+      "rdfs:comment": "CashOnDelivery"
+    },
+    {
+      "@id": "ion:collectionAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "collectionAmount",
+      "rdfs:comment": "Exact cash amount to collect from consumer"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency"
+    },
+    {
+      "@id": "ion:changeIssuedBy",
+      "@type": "rdf:Property",
+      "rdfs:label": "changeIssuedBy",
+      "rdfs:comment": "Who provides change to consumer"
+    },
+    {
+      "@id": "ion:maxCodAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "maxCodAmount",
+      "rdfs:comment": "Maximum COD value allowed per ION network policy"
+    },
+    {
+      "@id": "ion:BankTransfer",
+      "@type": "rdfs:Class",
+      "rdfs:label": "BankTransfer",
+      "rdfs:comment": "BankTransfer"
+    },
+    {
+      "@id": "ion:bankCode",
+      "@type": "rdf:Property",
+      "rdfs:label": "bankCode",
+      "rdfs:comment": "Recipient bank code"
+    },
+    {
+      "@id": "ion:accountNumber",
+      "@type": "rdf:Property",
+      "rdfs:label": "accountNumber",
+      "rdfs:comment": "Recipient bank account number"
+    },
+    {
+      "@id": "ion:accountName",
+      "@type": "rdf:Property",
+      "rdfs:label": "accountName",
+      "rdfs:comment": "Recipient account holder name"
+    },
+    {
+      "@id": "ion:transferType",
+      "@type": "rdf:Property",
+      "rdfs:label": "transferType"
+    },
+    {
+      "@id": "ion:BISettlement",
+      "@type": "rdfs:Class",
+      "rdfs:label": "BISettlement",
+      "rdfs:comment": "BI-FAST, RTGS, or SKN bank settlement"
+    },
+    {
+      "@id": "ion:settlementType",
+      "@type": "rdf:Property",
+      "rdfs:label": "settlementType",
+      "rdfs:comment": "BI_FAST: real-time settlement, max IDR 250 million per transaction. RTGS: high-value same-day settlement, unlimited amount. SKN: batch clearing, lower value transactions.\n"
+    },
+    {
+      "@id": "ion:biRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "biRef",
+      "rdfs:comment": "BI clearing reference number"
+    },
+    {
+      "@id": "ion:settlementAt",
+      "@type": "rdf:Property",
+      "rdfs:label": "settlementAt",
+      "rdfs:comment": "Settlement timestamp in UTC"
+    },
+    {
+      "@id": "ion:beneficiaryName",
+      "@type": "rdf:Property",
+      "rdfs:label": "beneficiaryName"
+    },
+    {
+      "@id": "ion:beneficiaryBank",
+      "@type": "rdf:Property",
+      "rdfs:label": "beneficiaryBank"
+    },
+    {
+      "@id": "ion:beneficiaryAccount",
+      "@type": "rdf:Property",
+      "rdfs:label": "beneficiaryAccount"
+    },
+    {
+      "@id": "ion:ifscEquivalent",
+      "@type": "rdf:Property",
+      "rdfs:label": "ifscEquivalent",
+      "rdfs:comment": "Indonesian equivalent — bank routing code"
+    },
+    {
+      "@id": "ion:BNPL",
+      "@type": "rdfs:Class",
+      "rdfs:label": "BNPL",
+      "rdfs:comment": "BNPL"
+    },
+    {
+      "@id": "ion:provider",
+      "@type": "rdf:Property",
+      "rdfs:label": "provider",
+      "rdfs:comment": "BNPL provider name"
+    },
+    {
+      "@id": "ion:tenure",
+      "@type": "rdf:Property",
+      "rdfs:label": "tenure",
+      "rdfs:comment": "Repayment tenure in months"
+    },
+    {
+      "@id": "ion:installmentAmount",
+      "@type": "rdf:Property",
+      "rdfs:label": "installmentAmount",
+      "rdfs:comment": "Per-installment amount in IDR"
+    },
+    {
+      "@id": "ion:interestRate",
+      "@type": "rdf:Property",
+      "rdfs:label": "interestRate",
+      "rdfs:comment": "Monthly interest rate as decimal e.g. 0.02 = 2%"
+    },
+    {
+      "@id": "ion:totalRepayment",
+      "@type": "rdf:Property",
+      "rdfs:label": "totalRepayment",
+      "rdfs:comment": "Total repayment amount including interest"
+    },
+    {
+      "@id": "ion:currency",
+      "@type": "rdf:Property",
+      "rdfs:label": "currency"
+    },
+    {
+      "@id": "ion:firstPaymentDate",
+      "@type": "rdf:Property",
+      "rdfs:label": "firstPaymentDate"
+    },
+    {
+      "@id": "ion:CardPayment",
+      "@type": "rdfs:Class",
+      "rdfs:label": "CardPayment",
+      "rdfs:comment": "CardPayment"
+    },
+    {
+      "@id": "ion:cardType",
+      "@type": "rdf:Property",
+      "rdfs:label": "cardType"
+    },
+    {
+      "@id": "ion:scheme",
+      "@type": "rdf:Property",
+      "rdfs:label": "scheme"
+    },
+    {
+      "@id": "ion:maskedPan",
+      "@type": "rdf:Property",
+      "rdfs:label": "maskedPan",
+      "rdfs:comment": "Last 4 digits of card for display"
+    },
+    {
+      "@id": "ion:bankIssuer",
+      "@type": "rdf:Property",
+      "rdfs:label": "bankIssuer",
+      "rdfs:comment": "Card-issuing bank name"
+    },
+    {
+      "@id": "ion:gatewayRef",
+      "@type": "rdf:Property",
+      "rdfs:label": "gatewayRef",
+      "rdfs:comment": "Payment gateway transaction reference"
+    }
+  ]
+}

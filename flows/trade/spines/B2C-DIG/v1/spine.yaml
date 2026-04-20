@@ -1,0 +1,185 @@
+# ION Trade Flow - B2C Digital Goods (B2C-DIG) Spine v1
+# NOT OAS. ION flow specification document.
+# Digital goods: pulsa, data packages, electricity tokens, bill pay, vouchers,
+# game currencies, streaming subscriptions, gift cards.
+
+id: ion-trade-B2C-DIG-v1
+version: "1.0.0"
+pattern: B2C Digital Goods
+sectorCode: A
+status: ready
+description: >
+  Digital goods commerce. No physical fulfilment - delivery is electronic
+  (push to mobile number, code to buyer, account credit, QR voucher).
+  Covers: mobile pulsa, mobile data packages, PLN electricity tokens,
+  utility bill payments (water/internet/PDAM), BPJS payments, gift cards,
+  game vouchers (Mobile Legends, Free Fire, Valorant diamonds), streaming
+  service vouchers (Netflix, Disney+ Hotstar), transport vouchers.
+
+  Despite being digital, these transactions are governed by the same
+  Indonesian consumer protection and tax regulations as physical goods
+  — hence inclusion in Trade sector rather than a separate services sector.
+
+applicableCategories: [digital-goods]
+
+keyDifferences_vs_B2C_SF:
+  - No physical fulfilment — no DISPATCHED, OUT_FOR_DELIVERY, DELIVERED with location
+  - Unique delivery states: PENDING_OPERATOR → DELIVERED or DELIVERY_FAILED
+  - Target identifier required (mobile number, meter number, game user ID)
+  - Most digital goods are non-refundable once delivered to target
+  - No shipping address, no logistics provider, no LSP
+  - Fast fulfilment — usually seconds, not days
+  - PPN treatment varies — pulsa and bill payments may have different tax treatment
+
+performanceStateMachine: schema/extensions/trade/performance-states/v1/states.yaml#digital
+
+phases:
+
+  phase1:
+    name: Catalog
+    description: >
+      Digital goods catalog. Each denomination is typically a separate SKU
+      (Pulsa 10k, 25k, 50k, 100k, etc.) modeled as VARIANTs of a parent.
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        requiredFields:
+          - message.catalog.providers[].items[].resourceAttributes.resourceStructure  # value: DIGITAL_VOUCHER or DIGITAL_TOP_UP or DIGITAL_SUBSCRIPTION
+          - message.catalog.providers[].items[].resourceAttributes.digital.digitalCategory
+          - message.catalog.providers[].items[].resourceAttributes.digital.operatorOrIssuer
+          - message.catalog.providers[].items[].resourceAttributes.digital.denomination
+          - message.catalog.providers[].items[].resourceAttributes.digital.deliveryMethod
+          - message.catalog.providers[].offers[].offerAttributes.returnable  # note: typically false for digital goods
+
+  phase2:
+    name: Transaction
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        description: >
+          Buyer selects digital good and provides target identifier.
+          For PUSH_TO_TARGET: target is mobile number, meter number, or game user ID.
+          BPP may validate target immediately (operator inquiry for pulsa).
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.commitments[].resources[].resourceAttributes.digital.target.type
+          - message.contract.commitments[].resources[].resourceAttributes.digital.target.value
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        description: >
+          BPP validates target (when required). Returns quote.
+          For operator-validated products (pulsa), BPP may verify target
+          is active and customer name matches before accepting.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+        conditionalFields:
+          - field: message.contract.commitments[].resources[].resourceAttributes.digital.targetValidation.status  # condition: when operatorValidationRequired=true
+          - field: message.contract.commitments[].resources[].resourceAttributes.digital.targetValidation.customerName  # condition: for pulsa/bill pay where operator returns account holder name
+        errors:
+          - ION-3018  # Digital target invalid or inactive
+
+      - step: init
+        from: BAP
+        to: BPP
+        description: Payment method selection. No shipping address needed.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[]
+          - message.contract.participants[role=BUYER].person.name
+          - message.contract.participants[role=BUYER].contact.phone
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.paymentRail
+          - message.contract.settlements[].settlementAttributes.collectedBy
+
+      - step: on_init  # note: Payment instructions. Standard Indonesian payment rails.
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        description: Binding commit. Payment confirmed.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        description: >
+          Order confirmed. Fulfilment begins immediately - operator/issuer
+          delivery request is initiated.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.performance[].status.descriptor.code  # value: PENDING_OPERATOR
+
+  phase3:
+    name: Digital Fulfilment
+    description: >
+      Very fast — usually seconds. BPP calls operator/issuer API, receives
+      confirmation, relays to BAP.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#digital
+    steps:
+      - step: on_status
+        trigger: PENDING_OPERATOR
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Operator/issuer delivery request sent, awaiting confirmation.
+
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Operator/issuer confirmed delivery. Contract COMPLETE.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # value: DELIVERED
+          - message.contract.status  # value: COMPLETE
+        conditionalFields:
+          - field: message.contract.commitments[].resources[].resourceAttributes.digital.redemptionCode  # condition: when deliveryMethod=CODE_TO_BUYER
+          - field: message.contract.commitments[].resources[].resourceAttributes.digital.redemptionUrl  # condition: for streaming/game/subscription vouchers
+          - field: message.contract.commitments[].resources[].resourceAttributes.digital.operatorRef  # condition: operator's delivery reference for audit
+
+      - step: on_status
+        trigger: DELIVERY_FAILED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Operator/issuer delivery failed. Refund triggered.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code  # value: DELIVERY_FAILED
+          - message.contract.performance[].performanceAttributes.tags.failure_reason
+          - message.contract.settlements[].settlementAttributes.refundAmount  # note: full refund triggered
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: on_status[PENDING_OPERATOR]
+    note: "Cancellation after operator-call is typically not possible"
+  returns:
+    applicability: limited
+    note: "Digital goods typically non-refundable once delivered, unless unused voucher"
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+commonCategories:
+  - MOBILE_PULSA — Telkomsel, XL, Indosat, Tri, Smartfren pulsa top-up
+  - MOBILE_DATA_PACKAGE — data package purchases
+  - ELECTRICITY_TOKEN — PLN prepaid token
+  - WATER_BILL — PDAM bill payment
+  - BPJS_PAYMENT — health/employment insurance contribution
+  - GAME_VOUCHER — Mobile Legends diamonds, Free Fire, Valorant points
+  - STREAMING_VOUCHER — Netflix, Disney+ Hotstar, Spotify premium codes
+  - EWALLET_TOP_UP — top-up to OVO, GoPay, DANA wallet
+  - TRANSPORT_VOUCHER — TransJakarta, KRL, MRT credits

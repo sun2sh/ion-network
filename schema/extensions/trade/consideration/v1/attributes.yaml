@@ -1,0 +1,135 @@
+openapi: 3.1.1
+info:
+  title: ION Trade Consideration Extension (v1)
+  description: >
+    Trade sector consideration attributes. Price breakdown line item types,
+    PPN/PPnBM tax rates, discount declarations, and promotion mechanics.
+    Attaches to: beckn:Consideration.considerationAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    TradeConsiderationAttributes:
+      type: object
+      title: Trade Consideration Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:TradeConsiderationAttributes
+      x-beckn-attaches-to: Consideration.considerationAttributes
+
+      properties:
+
+        ppnRate:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: >
+            PPN (Pajak Pertambahan Nilai) rate applied to this consideration
+            line. Standard rate is 0.11 (11%). Some categories (basic foods,
+            books, health services) may have reduced or zero rates.
+          example: 0.11
+          x-ion-mandatory: conditional
+          x-ion-condition: Required on TAX consideration lines
+          x-ion-regulatory: UU 7/2021 tentang Harmonisasi Peraturan Perpajakan (HPP); PMK 62/2022
+
+        ppnbmRate:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: >
+            PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods.
+            Applied in addition to PPN. Rates vary by luxury category.
+            Common rates: 0.10, 0.20, 0.30, 0.40, 0.50, 0.75, 1.25.
+          example: 0.20
+          x-ion-mandatory: conditional
+          x-ion-condition: Required on PPNBM consideration lines for luxury goods
+          x-ion-regulatory: UU 42/2009 tentang PPN dan PPnBM; PMK 141/2021
+
+        discountType:
+          type: string
+          enum: [PERCENT, FIXED]
+          description: >
+            Whether the discount is a percentage of item price or a fixed IDR
+            amount. Used on PROVIDER_BENEFIT and BUYER_BENEFIT consideration lines.
+          example: PERCENT
+          x-ion-mandatory: conditional
+          x-ion-condition: Required on discount consideration lines
+
+        discountValue:
+          type: string
+          description: >
+            Value of the discount. If discountType=PERCENT, this is a decimal
+            e.g. 0.10 for 10%. If discountType=FIXED, this is an IDR amount.
+          example: "0.10"
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when discountType is declared
+
+        breakupLineType:
+          type: string
+          enum:
+            - ITEM
+            - DELIVERY
+            - TAX
+            - TAX_PPNBM
+            - HANDLING
+            - PACKAGING
+            - INSURANCE
+            - SHIPPING_INSURANCE
+            - PROVIDER_BENEFIT
+            - BUYER_BENEFIT
+            - PLATFORM_VOUCHER
+            - SELLER_VOUCHER
+            - PAYMENT_VOUCHER
+            - SHIPPING_VOUCHER
+            - CASHBACK_VOUCHER
+            - BRAND_VOUCHER
+            - COD_FEE
+            - TRADE_IN
+            - LOYALTY_REDEEM
+            - FINANCE_CHARGE
+            - GIFT_WRAP
+            - PLATFORM_FEE
+            - STREAMER_COMMISSION
+            - AFFILIATE_COMMISSION
+            - SLA_PENALTY
+            - CANCELLATION_FEE
+            - RESTOCKING_FEE
+            - PPH_WITHHOLDING
+            - PPN_REMIT_PMSE
+            - PAYMENT_MILESTONE
+          description: >
+            Canonical type for this consideration breakup line.
+            ITEM: per-item price line.
+            DELIVERY: shipping/delivery charge.
+            TAX: PPN tax line.
+            TAX_PPNBM: luxury goods tax line.
+            HANDLING: special handling surcharge (cold chain, oversized).
+            PACKAGING: gift or special packaging charge.
+            INSURANCE: shipping insurance.
+            PROVIDER_BENEFIT: seller-funded discount.
+            BUYER_BENEFIT: BAP-funded discount or cashback.
+            COD_FEE: cash on delivery handling fee.
+            TRADE_IN: trade-in deduction value.
+            LOYALTY_REDEEM: loyalty points redemption.
+            FINANCE_CHARGE: BNPL or credit interest charge.
+            GIFT_WRAP: gift wrapping fee.
+            PLATFORM_FEE: ION network participant fee.
+          example: ITEM
+          x-ion-mandatory: always
+
+        totalAmount:
+          type: number
+          description: >
+            Total amount for this consideration in IDR. For the final
+            consideration record, this is the net payable amount after
+            all discounts and taxes.
+          example: 89000
+          x-ion-mandatory: always
+
+        currency:
+          type: string
+          const: IDR
+          description: Always IDR for domestic ION transactions.
+          default: IDR
+          x-ion-mandatory: always

@@ -1,0 +1,2092 @@
+{
+  "generatedAt": "2026-04-21T00:00:00Z",
+  "networkVersion": "0.4.0-draft",
+  "totalPolicies": 67,
+  "byCategory": {
+    "return": 15,
+    "cancellation": 10,
+    "warranty": 8,
+    "dispute": 5,
+    "grievance-sla": 4,
+    "payment-terms": 8,
+    "penalty": 17
+  },
+  "policies": [
+    {
+      "iri": "ion://policy/return.agritech.perishable-defect-only",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian hanya untuk cacat - produk segar",
+        "en": "Defect-only return - fresh produce"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "agritech"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/agritech-perishable.yaml"
+    },
+    {
+      "iri": "ion://policy/return.beauty.hygiene-nonreturnable",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Tidak dapat dikembalikan - alasan higienis (kosmetik dan perawatan pribadi)",
+        "en": "Non-returnable for hygiene reasons (cosmetics and personal care)"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "beauty"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik",
+        "PerBPOM 23/2019 tentang Persyaratan Teknis Kosmetika"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/beauty-hygiene-nonreturnable.yaml"
+    },
+    {
+      "iri": "ion://policy/return.books.14d-sealed-only",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 14 hari - hanya buku bersegel",
+        "en": "14-day return - sealed books only"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/books-14d-sealed.yaml"
+    },
+    {
+      "iri": "ion://policy/return.custom.nonreturnable-defect-only",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Produk custom tidak dapat dikembalikan - kecuali cacat",
+        "en": "Custom products non-returnable - defects only"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "home-kitchen"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/custom-nonreturnable.yaml"
+    },
+    {
+      "iri": "ion://policy/return.electronics.14d-unopened-or-defective-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 14 hari - hanya untuk barang tidak dibuka atau cacat",
+        "en": "14-day return - unopened only or defective only"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/electronics-14d-condition.yaml"
+    },
+    {
+      "iri": "ion://policy/return.fashion.7d-fit-only-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 7 hari untuk masalah ukuran/fit - penjual menanggung ongkos",
+        "en": "7-day return for size/fit issues only - seller pays"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/fashion-7d-fit-only.yaml"
+    },
+    {
+      "iri": "ion://policy/return.grocery.sameday-defect-only",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian hari yang sama - hanya untuk cacat atau kerusakan",
+        "en": "Same-day return - defect or damage only"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "grocery",
+        "fmcg"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/grocery-sameday.yaml"
+    },
+    {
+      "iri": "ion://policy/return.highvalue.14d-inspection-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 14 hari - dengan inspeksi fisik oleh penjual",
+        "en": "14-day return - physical inspection by seller required"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "jewelry",
+        "luxury"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/highvalue-14d-inspection.yaml"
+    },
+    {
+      "iri": "ion://policy/return.jewelry.3d-tamper-seal-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 3 hari dengan verifikasi tamper-seal - penjual menanggung ongkos",
+        "en": "3-day return with tamper-seal verification - seller pays"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "jewelry"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/jewelry-3d-tamper.yaml"
+    },
+    {
+      "iri": "ion://policy/return.standard.none",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Tidak ada pengembalian",
+        "en": "No returns"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "digital-goods"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/none.yaml"
+    },
+    {
+      "iri": "ion://policy/return.pharmacy.nonreturnable",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Obat tidak dapat dikembalikan sesuai UU Kesehatan",
+        "en": "Medicines non-returnable per health law"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "pharmacy"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik",
+        "UU 36/2009 tentang Kesehatan Pasal 108",
+        "PerBPOM 4/2018"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/pharmacy-nonreturnable.yaml"
+    },
+    {
+      "iri": "ion://policy/return.standard.14d-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 14 hari - penjual menanggung ongkos kirim balik",
+        "en": "14-day return - seller pays return shipping"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen",
+        "sports-outdoors",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/standard-14d-sellerpays.yaml"
+    },
+    {
+      "iri": "ion://policy/return.standard.30d-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 30 hari - penjual menanggung ongkos kirim balik",
+        "en": "30-day return - seller pays return shipping"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen",
+        "sports-outdoors"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/standard-30d-sellerpays.yaml"
+    },
+    {
+      "iri": "ion://policy/return.standard.7d-buyerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 7 hari - pembeli menanggung ongkos kirim balik",
+        "en": "7-day return - buyer pays return shipping"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "home-kitchen",
+        "sports-outdoors",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/standard-7d-buyerpays.yaml"
+    },
+    {
+      "iri": "ion://policy/return.standard.7d-sellerpays",
+      "category": "RETURN",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pengembalian 7 hari - penjual menanggung ongkos kirim balik",
+        "en": "7-day return - seller pays return shipping"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 19",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/return/v1/standard-7d-sellerpays.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.b2b.until-dispatched-15pct",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "B2B - batalkan hingga dikirim dengan biaya restocking 15%",
+        "en": "B2B - cancel until dispatched with 15% restocking fee"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/b2b-restocking.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.digital.before-pending-operator",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Barang digital - batalkan sebelum permintaan ke operator",
+        "en": "Digital goods - cancel before operator/issuer call"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "digital-goods"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/digital-before-pending.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.flash-sale.none-after-confirm",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Flash sale - tidak dapat dibatalkan setelah konfirmasi",
+        "en": "Flash sale - no cancellation after confirm"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "flash-sale",
+        "live-commerce"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/flash-sale-noncancel.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.mto.nofee-before-prepare",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Batalkan gratis sebelum persiapan dimulai (MTO)",
+        "en": "Free cancellation before preparation starts (MTO)"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "food-qsr",
+        "cloud-kitchen",
+        "bakery",
+        "tailoring",
+        "custom-furniture",
+        "meal-kits"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/mto-nofee-before-prepare.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.standard.none",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Tidak dapat dibatalkan setelah konfirmasi",
+        "en": "No cancellation after confirm"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "flash-sale",
+        "pre-order",
+        "custom"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/none.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.partial.refund-packed-threshold",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pembatalan setelah packed - pengembalian dana parsial",
+        "en": "Cancellation after packed - partial refund"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "home-kitchen",
+        "electronics"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/partial-refund-threshold.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.preorder.5d-before-release",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pre-order - batalkan hingga 5 hari sebelum rilis",
+        "en": "Pre-order - cancel until 5 days before release date"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "fashion",
+        "toys-games",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/preorder.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.prepacked.free",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Batalkan gratis sebelum dikemas",
+        "en": "Free cancellation before packed"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery",
+        "agritech"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/prepacked-free.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.standard.until-dispatched",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Batalkan gratis sebelum dikirim",
+        "en": "Free cancellation before dispatch"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/standard.yaml"
+    },
+    {
+      "iri": "ion://policy/cancel.subscription.prorated-midcycle",
+      "category": "CANCELLATION",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Langganan - pembatalan dengan pembagian pro-rata tengah siklus",
+        "en": "Subscription - cancellation with mid-cycle pro-rated refund"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "subscription"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 tentang Perlindungan Konsumen Pasal 4",
+        "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/cancellation/v1/subscription-prorated.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.extended.paid-addon",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi perpanjangan - add-on berbayar",
+        "en": "Extended warranty - paid add-on"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/extended-paid.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.manufacturer.1y-distance-service",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi resmi produsen 1 tahun",
+        "en": "1-year manufacturer warranty - distance service"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/manufacturer-1y.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.manufacturer.2y-distance-service",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi resmi produsen 2 tahun",
+        "en": "2-year manufacturer warranty - distance service"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen",
+        "automotive-parts"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/manufacturer-2y.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.manufacturer.3y-distance-service",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi resmi produsen 3 tahun",
+        "en": "3-year manufacturer warranty - distance service"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/manufacturer-3y.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.standard.none",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Tanpa garansi",
+        "en": "No warranty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "beauty",
+        "fmcg",
+        "grocery",
+        "agritech",
+        "digital-goods",
+        "books-stationery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/none.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.refurbished.30d-limited",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi terbatas 30 hari - produk refurbished",
+        "en": "30-day limited warranty - refurbished products"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/refurbished-30d.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.seller.1y",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi penjual 1 tahun",
+        "en": "1-year seller warranty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "home-kitchen",
+        "sports-outdoors"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/seller-1y.yaml"
+    },
+    {
+      "iri": "ion://policy/warranty.seller.1y.replacement_only",
+      "category": "WARRANTY",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Garansi ganti 1 tahun - tanpa perbaikan",
+        "en": "1-year seller replacement-only warranty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "electronics",
+        "toys-games",
+        "sports-outdoors"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 25",
+        "PP 36/2023 tentang Perlindungan Konsumen"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/warranty/v1/seller-replacement-only.yaml"
+    },
+    {
+      "iri": "ion://policy/dispute.b2g.lkpp",
+      "category": "DISPUTE",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Sengketa B2G - LKPP",
+        "en": "B2G dispute - LKPP"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2g"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "Perpres 16/2018 tentang Pengadaan Barang/Jasa Pemerintah",
+        "Peraturan LKPP"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/dispute/v1/b2g-government.yaml"
+    },
+    {
+      "iri": "ion://policy/dispute.commercial.bani",
+      "category": "DISPUTE",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Sengketa komersial - BANI arbitrase",
+        "en": "Commercial dispute - BANI arbitration"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 30/1999 tentang Arbitrase",
+        "BANI Arbitration Rules"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/dispute/v1/commercial-bani.yaml"
+    },
+    {
+      "iri": "ion://policy/dispute.commercial.odr",
+      "category": "DISPUTE",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Sengketa komersial - ODR online",
+        "en": "Commercial dispute - Online Dispute Resolution"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale",
+        "b2g"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 30/1999 Pasal 6",
+        "ION Network Policy"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/dispute/v1/commercial-odr.yaml"
+    },
+    {
+      "iri": "ion://policy/dispute.consumer.bpsk",
+      "category": "DISPUTE",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Sengketa konsumen - BPSK",
+        "en": "Consumer dispute - BPSK"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery",
+        "agritech",
+        "grocery",
+        "pharmacy",
+        "digital-goods"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "Permendag 72/2015 tentang BPSK"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/dispute/v1/consumer-bpsk.yaml"
+    },
+    {
+      "iri": "ion://policy/dispute.international.standard.uncitral",
+      "category": "DISPUTE",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Sengketa internasional - UNCITRAL",
+        "en": "International dispute - UNCITRAL arbitration"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "xb",
+        "export",
+        "import"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UNCITRAL Model Law 1985 (with 2006 amendments)",
+        "UU 30/1999"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/dispute/v1/international.yaml"
+    },
+    {
+      "iri": "ion://policy/grievance.sla.b2b_businesshours",
+      "category": "GRIEVANCE_SLA",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "SLA keluhan B2B - jam kerja",
+        "en": "B2B grievance SLA - business hours"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale",
+        "b2g"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "Permendag 50/2020 Pasal 6",
+        "ION Network Policy - Grievance SLA Minimum Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/grievance-sla/v1/b2b-businesshours.yaml"
+    },
+    {
+      "iri": "ion://policy/grievance-sla.consumer.flash-critical",
+      "category": "GRIEVANCE_SLA",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "SLA keluhan flash - respon 30 menit, resolusi 4 jam",
+        "en": "Flash critical SLA - 30min response, 4h resolution"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "food-qsr",
+        "grocery",
+        "pharmacy",
+        "flash-sale",
+        "live-commerce",
+        "digital-goods"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "Permendag 50/2020 Pasal 6",
+        "ION Network Policy - Grievance SLA Minimum Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/grievance-sla/v1/flash-critical.yaml"
+    },
+    {
+      "iri": "ion://policy/grievance.sla.premium_mall",
+      "category": "GRIEVANCE_SLA",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "SLA keluhan premium - respon 1 jam, resolusi 12 jam",
+        "en": "Premium grievance SLA (Mall) - 1h response, 12h resolution"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "Permendag 50/2020 Pasal 6",
+        "ION Network Policy - Grievance SLA Minimum Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/grievance-sla/v1/premium-mall.yaml"
+    },
+    {
+      "iri": "ion://policy/grievance-sla.consumer.standard",
+      "category": "GRIEVANCE_SLA",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "SLA keluhan standar - respon 2 jam, resolusi 24 jam",
+        "en": "Standard grievance SLA - 2h response, 24h resolution"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery",
+        "grocery",
+        "agritech"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP",
+        "DIGITAL_SUBSCRIPTION"
+      ],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "Permendag 50/2020 Pasal 6",
+        "ION Network Policy - Grievance SLA Minimum Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/grievance-sla/v1/standard.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.cod.full",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "COD - bayar saat pengiriman",
+        "en": "COD - pay on delivery"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "grocery"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/cod-full.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.credit.net-30",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Kredit B2B - NET 30 hari",
+        "en": "B2B credit - NET 30 days"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/credit-net30.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.credit.net-60",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Kredit B2B - NET 60 hari",
+        "en": "B2B credit - NET 60 days"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/credit-net60.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.credit.net-7",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Kredit B2B - NET 7 hari",
+        "en": "B2B credit - NET 7 days"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/credit-net7.yaml"
+    },
+    {
+      "iri": "ion://policy/payment.installment.3mo",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Cicilan 3 bulan - BNPL",
+        "en": "3-month installment via BNPL"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "sports-outdoors",
+        "toys-games"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/installment-3mo.yaml"
+    },
+    {
+      "iri": "ion://policy/payment.deposit.30pct.balance_on_delivery",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Deposit 30% - sisa saat pengiriman",
+        "en": "30% deposit, balance on delivery"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "b2b",
+        "wholesale",
+        "custom"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/partial-deposit-30.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.subscription.monthly_autopay",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pembayaran langganan otomatis bulanan",
+        "en": "Monthly subscription autopay"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "subscription"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/subscription-monthly.yaml"
+    },
+    {
+      "iri": "ion://policy/payment-terms.upfront.full",
+      "category": "PAYMENT_TERMS",
+      "subCategory": null,
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Pembayaran penuh di muka",
+        "en": "Full upfront payment"
+      },
+      "shortDesc": null,
+      "applicableCategories": [
+        "fashion",
+        "electronics",
+        "home-kitchen",
+        "beauty",
+        "fmcg",
+        "sports-outdoors",
+        "toys-games",
+        "books-stationery",
+        "grocery",
+        "agritech",
+        "digital-goods"
+      ],
+      "applicableResourceTypes": [
+        "PLAIN",
+        "VARIANT",
+        "WITH_EXTRAS",
+        "COMPOSED",
+        "BUNDLE",
+        "DIGITAL_VOUCHER",
+        "DIGITAL_TOP_UP"
+      ],
+      "regulatoryBasis": [
+        "UU 7/2021 HPP",
+        "OJK POJK terkait metode pembayaran",
+        "PBI 22/20/2020 tentang QRIS"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/payment-terms/v1/upfront-full.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-chargeback-abuse.standard",
+      "category": "PENALTY",
+      "subCategory": "BUYER_CHARGEBACK_ABUSE",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda penyalahgunaan chargeback",
+        "en": "Chargeback abuse penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "OJK regulations on chargeback",
+        "ION Network Anti-Fraud Policy"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-chargeback-abuse.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-cod-refusal.standard",
+      "category": "PENALTY",
+      "subCategory": "BUYER_COD_REFUSAL",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda penolakan COD",
+        "en": "COD refusal penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-cod-refusal.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-failed-delivery.standard",
+      "category": "PENALTY",
+      "subCategory": "BUYER_FAILED_DELIVERY",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda kegagalan penerimaan",
+        "en": "Failed delivery penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-failed-delivery.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-restocking.15pct",
+      "category": "PENALTY",
+      "subCategory": "BUYER_RESTOCKING",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Biaya restocking 15%",
+        "en": "15% restocking fee"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy",
+        "UU 8/1999 Pasal 19"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-restocking-15pct.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-restocking.20pct",
+      "category": "PENALTY",
+      "subCategory": "BUYER_RESTOCKING",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Biaya restocking 20% - elektronik",
+        "en": "20% restocking fee - electronics"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy",
+        "UU 8/1999 Pasal 19"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-restocking-20pct.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.buyer-restocking.none",
+      "category": "PENALTY",
+      "subCategory": "BUYER_RESTOCKING",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Tanpa biaya restocking",
+        "en": "No restocking fee"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy - Default Return Terms"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/buyer-restocking-none.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.creator-counterfeit.standard_products",
+      "category": "PENALTY",
+      "subCategory": "CREATOR_COUNTERFEIT",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda produk palsu dari kreator",
+        "en": "Counterfeit products promoted by creator"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 20/2016 tentang Merek",
+        "UU 28/2014 tentang Hak Cipta"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/creator-counterfeit.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.creator-misleading.standard_claims",
+      "category": "PENALTY",
+      "subCategory": "CREATOR_MISLEADING",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda klaim menyesatkan kreator",
+        "en": "Misleading claims by creator/streamer"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 9",
+        "Kemendag Permen 31/2023"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/creator-misleading.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.marketplace-escalation-miss.standard",
+      "category": "PENALTY",
+      "subCategory": "MARKETPLACE_ESCALATION_MISS",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda marketplace - gagal eskalasi",
+        "en": "Marketplace escalation miss penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy",
+        "UU 8/1999 Pasal 45"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/marketplace-escalation-miss.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-cancel-without-cause.standard.premium",
+      "category": "PENALTY",
+      "subCategory": "SELLER_CANCEL_WITHOUT_CAUSE",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda pembatalan premium/flash",
+        "en": "Seller cancellation penalty - Premium/Flash tier"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Premium Tier Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-cancel-without-cause-premium.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-cancel-without-cause.standard.standard",
+      "category": "PENALTY",
+      "subCategory": "SELLER_CANCEL_WITHOUT_CAUSE",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda pembatalan tanpa alasan sah",
+        "en": "Seller cancellation without valid cause"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 8"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-cancel-without-cause.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-late-dispatch.standard",
+      "category": "PENALTY",
+      "subCategory": "SELLER_LATE_DISPATCH",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda keterlambatan pengiriman",
+        "en": "Late dispatch penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy",
+        "Permendag 50/2020"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-late-dispatch.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller.rto_seller_fault",
+      "category": "PENALTY",
+      "subCategory": "SELLER_RTO_FAULT",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda RTO kesalahan penjual",
+        "en": "RTO due to seller fault penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 8"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-rto-fault.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-sla-breach.mall",
+      "category": "PENALTY",
+      "subCategory": "SELLER_SLA_BREACH",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda SLA penjual - tier Mall",
+        "en": "Seller SLA breach penalty - Mall tier (stricter)"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy - Mall Tier Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-sla-breach-mall.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-sla-breach.premium",
+      "category": "PENALTY",
+      "subCategory": "SELLER_SLA_BREACH",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda SLA penjual - tier Premium",
+        "en": "Seller SLA breach penalty - Premium tier (strictest)"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "ION Network Policy - Premium Tier Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-sla-breach-premium.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-sla-breach.standard",
+      "category": "PENALTY",
+      "subCategory": "SELLER_SLA_BREACH",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda SLA penjual - standar",
+        "en": "Seller SLA breach penalty - standard tier"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 45",
+        "ION Network Policy - Seller Performance Standards"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-sla-breach-standard.yaml"
+    },
+    {
+      "iri": "ion://policy/penalty.seller-wrong-item.standard_sent",
+      "category": "PENALTY",
+      "subCategory": "SELLER_WRONG_ITEM",
+      "version": "1.0.0",
+      "status": "ratified",
+      "versionEffectiveFrom": "2026-05-01",
+      "displayText": {
+        "id": "Denda pengiriman barang salah",
+        "en": "Wrong item shipped penalty"
+      },
+      "shortDesc": null,
+      "applicableCategories": [],
+      "applicableResourceTypes": [],
+      "regulatoryBasis": [
+        "UU 8/1999 Pasal 4"
+      ],
+      "supersededBy": null,
+      "deprecatedAt": null,
+      "docPath": "policies/penalty/v1/seller-wrong-item.yaml"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+iri: ion://policy/dispute.international.standard.uncitral
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: DISPUTE
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Sengketa internasional - UNCITRAL"
+  en: "International dispute - UNCITRAL arbitration"
+
+disputeBody: UNCITRAL
+jurisdiction: INTERNATIONAL
+resolutionType: BINDING_ARBITRATION
+
+escalationPath:
+  - DIRECT_NEGOTIATION
+  - UNCITRAL_ARBITRATION
+
+typicalResolutionTimeDays: 180
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - xb
+  - export
+  - import
+
+regulatoryBasis:
+  - "UNCITRAL Model Law 1985 (with 2006 amendments)"
+  - "UU 30/1999"
+
+supersededBy: null
+deprecatedAt: null

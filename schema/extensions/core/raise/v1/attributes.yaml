@@ -1,0 +1,219 @@
+openapi: 3.1.1
+info:
+  title: ION Raise Extension (v1)
+  description: >
+    Generic ticketing system for NP-to-NP and NP-to-ION issues.
+    Distinct from support/v1 (consumer complaints) — raise/v1 covers
+    participant-level disputes, policy violations, settlement disagreements,
+    technical failures, and fraud.
+    APIs: raise / on_raise / raise_status / on_raise_status / raise_details / on_raise_details
+  version: 1.0.0
+
+components:
+  schemas:
+    IONTicket:
+      type: object
+      title: ION Issue Ticket
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:Ticket
+      x-beckn-attaches-to: ION Raise channel (off-Beckn)
+      required: [id, title, description, type, priority, raisedBy, status, createdAt, updatedAt]
+
+      properties:
+
+        id:
+          x-ion-mandatory: always
+          type: string
+          description: Ticket ID assigned by ION ticketing system.
+          example: TKT-2026-00001234
+
+        externalRef:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference ID in external ticketing system (Freshdesk/Jira/Zendesk ticket number)
+          example: FD-98765
+
+        title:
+          x-ion-mandatory: always
+          type: string
+          description: Short subject line for this ticket.
+          maxLength: 200
+          example: BPP not responding to on_confirm for 48 hours
+
+        description:
+          x-ion-mandatory: always
+          type: string
+          description: Full description of the issue.
+          example: >
+            sellerapp.ion.id has not responded to our on_confirm callback for
+            transaction 9fdb667c. We have retried 3 times within the TTL window.
+
+        type:
+          x-ion-mandatory: always
+          type: string
+          enum:
+            - NP_DISPUTE
+            - POLICY_VIOLATION
+            - SETTLEMENT_DISPUTE
+            - TECHNICAL_FAILURE
+            - FRAUD
+            - NETWORK_ISSUE
+            - RECON_DISPUTE
+            - SLA_BREACH
+            - CATALOG_VIOLATION
+            - COUNTERFEIT_FLAG
+            - OTHER
+          description: >
+            NP_DISPUTE: BAP/BPP disagreement on transaction terms.
+            POLICY_VIOLATION: participant violating ION network policy.
+            SETTLEMENT_DISPUTE: financial settlement disagreement (escalated from recon).
+            TECHNICAL_FAILURE: system or API failures affecting transactions.
+            FRAUD: suspected fraudulent activity.
+            NETWORK_ISSUE: ION infrastructure or registry issue.
+            RECON_DISPUTE: reconciliation status mismatch.
+            SLA_BREACH: participant failing to meet mandated SLAs.
+            COUNTERFEIT_FLAG: authenticity challenge against a product listing.
+              Raised by brand owner, consumer, or marketplace. Triggers
+              auto-delist pending investigation; ION Central arbitrates.
+          example: TECHNICAL_FAILURE
+
+        priority:
+          x-ion-mandatory: always
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          description: >
+            CRITICAL: network-wide impact or financial fraud. Escalated immediately.
+            HIGH: significant impact on transactions. Response within 2 hours.
+            MEDIUM: operational issue. Response within 24 hours.
+            LOW: general query or minor issue. Response within 72 hours.
+          example: HIGH
+
+        raisedBy:
+          x-ion-mandatory: always
+          type: string
+          description: Subscriber ID of the network participant raising the ticket.
+          example: buyerapp.ion.id
+
+        assignedTo:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when ticket is assigned to counterparty or ION
+          type: string
+          description: >
+            Subscriber ID of counterparty NP, or "ION" if raised to network operator.
+          example: ION
+
+        contractId:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for transaction-specific tickets
+          type: string
+          description: Related trade contract ID, if issue is transaction-specific.
+          example: ORD-2026-00012345
+
+        reconId:
+          x-ion-mandatory: optional
+          type: string
+          description: Related reconciliation session ID, if issue is settlement-related.
+          example: RECON-2026-00001234
+
+        status:
+          x-ion-mandatory: always
+          type: string
+          enum: [OPEN, ACKNOWLEDGED, IN_PROGRESS, PENDING_INFO, RESOLVED, CLOSED, ESCALATED]
+          description: >
+            OPEN: ticket created, not yet acknowledged.
+            ACKNOWLEDGED: assigned party has received and acknowledged.
+            IN_PROGRESS: actively being worked on.
+            PENDING_INFO: waiting for additional information from raiser.
+            RESOLVED: issue resolved, awaiting raiser confirmation.
+            CLOSED: fully resolved and closed.
+            ESCALATED: escalated to ION governance or external authority.
+          example: OPEN
+
+        thread:
+          x-ion-mandatory: optional
+          type: array
+          description: Complete conversation trail for this ticket.
+          items:
+            type: object
+            additionalProperties: false
+            required: [messageId, from, message, timestamp]
+            properties:
+              messageId:
+                type: string
+              from:
+                type: string
+                description: Subscriber ID or "ION"
+              message:
+                type: string
+              attachments:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                description: Evidence URLs
+              timestamp:
+                type: string
+                format: date-time
+
+        resolution:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          properties:
+            description:
+              type: string
+              description: How the issue was resolved
+            actionTaken:
+              type: string
+              enum:
+                - WARNING_ISSUED
+                - PENALTY_APPLIED
+                - SUSPENSION
+                - REFUND_MANDATED
+                - POLICY_CLARIFICATION
+                - TECHNICAL_FIX_CONFIRMED
+                - NO_ACTION
+                - ESCALATED_TO_ODR
+            penaltyAmount:
+              type: number
+              description: Penalty amount in IDR if actionTaken=PENALTY_APPLIED
+            resolvedAt:
+              type: string
+              format: date-time
+
+        sla:
+          x-ion-mandatory: optional
+          type: object
+          additionalProperties: false
+          properties:
+            expectedResponseTime:
+              type: string
+              description: ISO 8601 duration for first response
+              example: PT2H
+            expectedResolutionTime:
+              type: string
+              description: ISO 8601 duration for full resolution
+              example: P3D
+            responseDeadline:
+              type: string
+              format: date-time
+            resolutionDeadline:
+              type: string
+              format: date-time
+
+        createdAt:
+          x-ion-mandatory: always
+          type: string
+          format: date-time
+
+        updatedAt:
+          x-ion-mandatory: always
+          type: string
+          format: date-time
+
+        resolvedAt:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time

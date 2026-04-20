@@ -1,0 +1,37 @@
+iri: ion://policy/cancel.flash-sale.none-after-confirm
+version: "1.0.0"
+versionEffectiveFrom: "2026-05-01"
+category: CANCELLATION
+status: ratified
+ratifiedAt: "2026-04-15"
+
+displayText:
+  id: "Flash sale - tidak dapat dibatalkan setelah konfirmasi"
+  en: "Flash sale - no cancellation after confirm"
+
+cancellationWindowCloses: CONFIRM
+
+cancellationFee:
+  type: PERCENT
+  value: 1.0
+
+cancellationReasonsAllowed:
+  []
+
+refundPercentageOnCancel: 0.0
+refundTimelineFromCancel: P3D
+refundDestinationDefault: ORIGINAL_PAYMENT_METHOD
+
+sellerPenaltyOnCancelWithoutCause: ion://policy/penalty.seller-cancel-without-cause.standard.premium
+
+applicableResourceTypes: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
+applicableCategories:
+  - flash-sale
+  - live-commerce
+
+regulatoryBasis:
+  - "UU 8/1999 tentang Perlindungan Konsumen Pasal 4"
+  - "Permendag 50/2020 tentang Ketentuan Perizinan Usaha Perdagangan Melalui Sistem Elektronik"
+
+supersededBy: null
+deprecatedAt: null

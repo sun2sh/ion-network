@@ -1,0 +1,259 @@
+# ION Error Registry — Transaction (ION-3xxx)
+# select through confirm errors
+
+- code: ION-3001
+  http_status: 400
+  category: transaction
+  title:
+    id: Resource tidak ditemukan dalam katalog
+    en: Resource not found in catalog
+  description:
+    en: The resourceId in the select payload does not exist in the current published catalog for this provider.
+  affected_field: message.contract.commitments[].id
+  affected_apis: [select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Refresh catalog from /on_discover before sending /select. Do not cache resource IDs beyond catalog TTL.
+
+- code: ION-3002
+  http_status: 400
+  category: transaction
+  title:
+    id: Pilihan customisasi wajib tidak lengkap
+    en: Mandatory customisation group selection missing
+  description:
+    en: A COMPOSED resource has one or more groups with selectionType=SINGLE_REQUIRED. The select payload is missing a selection for at least one mandatory group.
+  affected_field: message.contract.commitments[].commitmentAttributes.customisationSelections
+  affected_apis: [select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Ensure your UI enforces SINGLE_REQUIRED groups before allowing /select. Check all customisationGroups where selectionType=SINGLE_REQUIRED and add the missing groupId and optionId.
+
+- code: ION-3003
+  http_status: 400
+  category: transaction
+  title:
+    id: ID opsi customisasi tidak valid
+    en: Invalid customisation option ID
+  description:
+    en: A customisation optionId sent in /select does not exist in the catalog for the referenced groupId.
+  affected_field: message.contract.commitments[].commitmentAttributes.customisationSelections[].option_id
+  affected_apis: [select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Only send optionIds returned in the customisationGroups of the on_discover catalog. Do not fabricate or guess option IDs.
+
+- code: ION-3004
+  http_status: 409
+  category: transaction
+  title:
+    id: Resource tidak tersedia
+    en: Resource not available
+  description:
+    en: The resource has availability.status of OUT_OF_STOCK or DISCONTINUED at the time of select.
+  affected_field: resourceAttributes.availability.status
+  affected_apis: [select, on_select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Refresh catalog and display current availability status to consumer. Do not allow select on OUT_OF_STOCK or DISCONTINUED items.
+
+- code: ION-3005
+  http_status: 400
+  category: transaction
+  title:
+    id: Kuantitas melebihi batas maksimum per pesanan
+    en: Quantity exceeds maxOrderQty
+  description:
+    en: The quantity requested in select exceeds the maxOrderQty declared in the resource availability.
+  affected_field: message.contract.commitments[].resources[].quantity.count
+  affected_apis: [select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Respect maxOrderQty from the availability signal. Display this limit to the consumer before checkout.
+
+- code: ION-3006
+  http_status: 400
+  category: transaction
+  title:
+    id: Metode pembayaran tidak tersedia untuk produk ini
+    en: Payment method not available for this product
+  description:
+    en: The selected payment method is not eligible for this offer. e.g. COD not available (availableOnCod=false) or BNPL not in paymentMethodEligibility.
+  affected_field: offerAttributes.availableOnCod
+  affected_apis: [init, on_init]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Check availableOnCod and paymentMethodEligibility from the offer before presenting payment options to consumer.
+
+- code: ION-3013
+  http_status: 410
+  category: transaction
+  title:
+    id: Jendela reservasi stok kedaluwarsa
+    en: Item reservation window expired
+  description:
+    en: >
+      The on_select quote and stock reservation has expired. BAP sent /confirm
+      after the BPP's declared reservationWindowSeconds elapsed.
+  affected_field: message.contract.commitments[].offer.reservationWindowSeconds
+  affected_apis:
+    - confirm
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Restart transaction from /select. Stock and pricing must be re-quoted.
+
+- code: ION-3014
+  http_status: 409
+  category: transaction
+  title:
+    id: Barang terjual saat transaksi
+    en: Item sold out during transaction
+  description:
+    en: >
+      Between on_select and confirm, another transaction exhausted the
+      available stock. Race-condition loser case.
+  affected_field: message.contract.commitments[].resources[].quantity.count
+  affected_apis:
+    - confirm
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Display out-of-stock message to consumer. Offer alternative products.
+
+- code: ION-3015
+  http_status: 409
+  category: transaction
+  title:
+    id: Batas stok penawaran tercapai
+    en: Offer total stock cap reached
+  description:
+    en: >
+      Flash sale or capped offer has been fully claimed. offer.totalStockCap
+      is reached; offer is no longer available.
+  affected_field: message.catalog.providers[].offers[].offerAttributes.totalStockCap
+  affected_apis:
+    - select
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-LIVE/v1
+  resolution:
+    en: Inform consumer offer is sold out. Surface standard (non-flash) offer if available.
+
+- code: ION-3016
+  http_status: 403
+  category: transaction
+  title:
+    id: COD tidak tersedia untuk pembeli
+    en: COD not eligible for this buyer
+  description:
+    en: >
+      Offer supports COD (availableOnCod=true) but the specific buyer has
+      been declined COD — new buyer, previous COD failure, address not
+      verified, amount exceeds limit, or high-risk category.
+  affected_field: message.contract.commitments[].offer.codEligibilityForBuyer
+  affected_apis:
+    - on_select
+    - init
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Prompt consumer to select prepaid payment method. Display codEligibilityReason.
+
+- code: ION-3017
+  http_status: 410
+  category: transaction
+  title:
+    id: Sesi live berakhir
+    en: Live session ended
+  description:
+    en: >
+      Offer is bound to a live session that has ended. Current time is
+      past offer.endAt. Applies to B2C-LIVE spine.
+  affected_field: message.catalog.providers[].offers[].offerAttributes.endAt
+  affected_apis:
+    - select
+    - init
+    - confirm
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-LIVE/v1
+  resolution:
+    en: Inform consumer the live offer has ended. Redirect to standard catalog.
+
+- code: ION-3018
+  http_status: 400
+  category: transaction
+  title:
+    id: Target digital tidak valid
+    en: Digital target invalid or inactive
+  description:
+    en: >
+      Operator/issuer validation failed for digital goods target. Mobile
+      number inactive, meter number not found, game user ID does not exist.
+  affected_field: message.contract.commitments[].resources[].resourceAttributes.digital.target
+  affected_apis:
+    - select
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-DIG/v1
+  resolution:
+    en: Prompt consumer to verify target identifier. Return actionable error message.
+
+- code: ION-3019
+  http_status: 409
+  category: transaction
+  title:
+    id: Voucher tidak dapat digabung
+    en: Voucher stacking not permitted
+  description:
+    en: >
+      Consumer attempted to apply multiple vouchers that violate stacking
+      rules — same stackingGroup or explicit cannotCombineWith.
+  affected_field: message.contract.offers[].offerAttributes.stackingRules
+  affected_apis:
+    - select
+    - init
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Display stacking rule violation to consumer. Offer choice of which voucher to keep.
+
+- code: ION-3020
+  http_status: 400
+  category: transaction
+  title:
+    id: Kombinasi variant tidak valid
+    en: Invalid variant matrix combination
+  description:
+    en: >
+      Consumer selected a combination of axis values that is either not
+      permitted by explicitCombinations or has available=false on an axis value.
+      Applies when resource declares variantMatrix.
+  affected_field: message.contract.commitments[].commitmentAttributes.customisationSelections
+  affected_apis: [select]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Present only valid axis value combinations. Surface available=false values as disabled options.
+
+- code: ION-3021
+  http_status: 402
+  category: transaction
+  title:
+    id: Milestone pembayaran gagal atau jatuh tempo
+    en: Payment schedule milestone failed or overdue
+  description:
+    en: >
+      A scheduled payment milestone (down-payment, balance, etc.) failed to
+      collect or is past dueAt + graceDays. Contract cannot progress until
+      milestone is resolved.
+  affected_field: message.contract.contractAttributes.paymentSchedule[].status
+  affected_apis: [confirm, on_status]
+  schema_ref: schema/extensions/trade/contract/v1
+  flow_ref: flows/trade/spines/B2C-SF/v1
+  resolution:
+    en: Retry collection via /init with fresh payment method, or cancel with appropriate reason.

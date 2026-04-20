@@ -1,0 +1,52 @@
+{
+  "id": "ion-trade-branch-cancellation-v1",
+  "version": "1.0.0",
+  "branchName": "cancellation",
+  "status": "ready",
+  "description": "Full and partial order cancellation. Buyer-initiated, seller-initiated, and force-cancel on TAT breach.",
+  "branchFile": "./branch.yaml",
+  "applicableSpines": [
+    "B2C-SF",
+    "B2C-MTO",
+    "B2C-SUB",
+    "B2B-PP",
+    "B2B-CR",
+    "MP-IH",
+    "MP-IL",
+    "AUC-F",
+    "AUC-R",
+    "XB",
+    "B2G"
+  ],
+  "subBranches": [
+    {
+      "id": "cancel-full-buyer",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      }
+    },
+    {
+      "id": "cancel-full-seller",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DISPATCHED]"
+      }
+    },
+    {
+      "id": "cancel-partial-fulfillment",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DISPATCHED]"
+      }
+    },
+    {
+      "id": "technical-cancellation-force",
+      "window": {
+        "earliest": "on_confirm",
+        "latest": "on_status[DELIVERED]"
+      },
+      "trigger": "BAP sends cancel with force=yes after BPP TAT breach"
+    }
+  ]
+}

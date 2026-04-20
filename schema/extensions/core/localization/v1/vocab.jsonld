@@ -1,0 +1,87 @@
+{
+  "@context": {
+    "ion": "https://devlabs.ion.id/vocab/core/localization/v1#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:LocalisedText",
+      "@type": "rdfs:Class",
+      "rdfs:label": "LocalisedText",
+      "rdfs:comment": "Language-keyed text object. Keys are ISO 639-1 language codes. \"id\" is always mandatory per ION network policy. \"en\" is mandatory for export commerce (XB pattern). Additional languages optional: ms (Malay), zh (Chinese), ar (Arabic), ta (Tamil), ko (Korean), ja (Japanese).\n"
+    },
+    {
+      "@id": "ion:id",
+      "@type": "rdf:Property",
+      "rdfs:label": "id",
+      "rdfs:comment": "Bahasa Indonesia — always required"
+    },
+    {
+      "@id": "ion:en",
+      "@type": "rdf:Property",
+      "rdfs:label": "en",
+      "rdfs:comment": "English — required for XB pattern"
+    },
+    {
+      "@id": "ion:ms",
+      "@type": "rdf:Property",
+      "rdfs:label": "ms",
+      "rdfs:comment": "Bahasa Melayu"
+    },
+    {
+      "@id": "ion:zh",
+      "@type": "rdf:Property",
+      "rdfs:label": "zh",
+      "rdfs:comment": "Mandarin Chinese (Simplified)"
+    },
+    {
+      "@id": "ion:ar",
+      "@type": "rdf:Property",
+      "rdfs:label": "ar",
+      "rdfs:comment": "Arabic"
+    },
+    {
+      "@id": "ion:ta",
+      "@type": "rdf:Property",
+      "rdfs:label": "ta",
+      "rdfs:comment": "Tamil"
+    },
+    {
+      "@id": "ion:ko",
+      "@type": "rdf:Property",
+      "rdfs:label": "ko",
+      "rdfs:comment": "Korean"
+    },
+    {
+      "@id": "ion:ja",
+      "@type": "rdf:Property",
+      "rdfs:label": "ja",
+      "rdfs:comment": "Japanese"
+    },
+    {
+      "@id": "ion:IONCatalogLocalization",
+      "@type": "rdfs:Class",
+      "rdfs:label": "IONCatalogLocalization",
+      "rdfs:comment": "Localised text fields for catalog content — name, short description, long description. All three use the LocalisedText pattern. These extend beckn:descriptor fields with proper multilingual support.\n"
+    },
+    {
+      "@id": "ion:name",
+      "@type": "rdf:Property",
+      "rdfs:label": "name",
+      "rdfs:comment": "Product or service name as a language object. \"id\" always mandatory. Replaces/extends beckn descriptor.name.\n"
+    },
+    {
+      "@id": "ion:shortDesc",
+      "@type": "rdf:Property",
+      "rdfs:label": "shortDesc",
+      "rdfs:comment": "Short description for catalog listings and search results. Max 150 characters per language. \"id\" mandatory.\n"
+    },
+    {
+      "@id": "ion:longDesc",
+      "@type": "rdf:Property",
+      "rdfs:label": "longDesc",
+      "rdfs:comment": "Full product description for product detail page. \"id\" mandatory. \"en\" mandatory for XB pattern.\n"
+    }
+  ]
+}

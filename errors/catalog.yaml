@@ -1,0 +1,120 @@
+# ION Error Registry — Catalog (ION-2xxx)
+# publish, discover, subscription errors
+
+- code: ION-2001
+  http_status: 400
+  category: catalog
+  title:
+    id: Ukuran katalog melebihi batas
+    en: Catalog payload exceeds size limit
+  description:
+    en: The catalog payload exceeds the 10MB limit for a single publish_catalog call.
+  affected_field: message.catalog
+  affected_apis: [publish_catalog]
+  schema_ref: schema/core/v2/api/v2.0.0/ion.yaml
+  flow_ref: null
+  resolution:
+    en: Split catalog into multiple publish_catalog calls by category or provider location. Maximum 10MB per call.
+
+- code: ION-2002
+  http_status: 400
+  category: catalog
+  title:
+    id: Resource tanpa gambar
+    en: Resource missing required images
+  description:
+    en: A resource has an empty or missing images array. At least one image URL is required for all catalog resources.
+  affected_field: resourceAttributes.images
+  affected_apis: [publish_catalog, on_discover]
+  schema_ref: schema/extensions/trade/resource/v1
+  flow_ref: null
+  resolution:
+    en: Provide at least one valid HTTPS image URL in images[]. First image is the primary thumbnail.
+
+- code: ION-2010
+  http_status: 400
+  category: catalog
+  title:
+    id: Policy IRI tidak valid saat publish katalog
+    en: Invalid policy IRI at catalog publish
+  description:
+    en: >
+      Offer declared a policy IRI that is not present in the ION Policy Terms
+      Registry. Every offer.returnPolicy / cancellationPolicy / warrantyPolicy
+      / disputePolicy / grievanceSlaPolicy / paymentTermsPolicy must be a
+      ratified IRI from policies/registry.json.
+  affected_field: offerAttributes.returnPolicy|cancellationPolicy|warrantyPolicy|disputePolicy|grievanceSlaPolicy|paymentTermsPolicy
+  affected_apis: [publish_catalog]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: policies/registry.json
+  resolution:
+    en: Check policies/registry.json for the ratified set. Declare only IRIs present in the current registry.
+
+- code: ION-2011
+  http_status: 410
+  category: catalog
+  title:
+    id: Policy IRI sudah deprecated
+    en: Policy IRI deprecated
+  description:
+    en: >
+      Offer declared a policy IRI that has been deprecated. The terms document's
+      deprecatedAt field is populated; use the supersededBy IRI instead.
+      Deprecated IRIs remain readable for existing contracts but cannot be used
+      on new catalog publishes.
+  affected_field: offerAttributes.returnPolicy|cancellationPolicy|warrantyPolicy|disputePolicy|grievanceSlaPolicy|paymentTermsPolicy
+  affected_apis: [publish_catalog]
+  schema_ref: schema/extensions/trade/offer/v1
+  flow_ref: policies/registry.json
+  resolution:
+    en: Replace with the supersededBy IRI from the terms document, or select an alternative from the current registry.
+
+- code: ION-2003
+  http_status: 403
+  category: catalog
+  title:
+    id: KYC penjual kedaluwarsa atau ditangguhkan
+    en: Seller KYC expired or suspended
+  description:
+    en: >
+      Provider attempting catalog publish or transaction has kycStatus of
+      EXPIRED, SUSPENDED, or REJECTED. Catalog publish and new transactions
+      blocked until KYC is renewed/restored.
+  affected_field: message.catalog.providers[].providerAttributes.kycStatus
+  affected_apis: [publish_catalog, select, init, confirm]
+  schema_ref: schema/extensions/trade/provider/v1
+  resolution:
+    en: Provider must complete KYC renewal. New transactions blocked until kycStatus is APPROVED.
+
+- code: ION-2004
+  http_status: 451
+  category: catalog
+  title:
+    id: Listing ditangguhkan — flag counterfeit
+    en: Listing suspended — counterfeit flag under investigation
+  description:
+    en: >
+      Resource has an active COUNTERFEIT_FLAG raise ticket. Auto-delist
+      applied pending ION Central arbitration. New transactions blocked.
+  affected_field: message.contract.commitments[].id
+  affected_apis: [select, init, confirm]
+  schema_ref: schema/extensions/core/raise/v1
+  resolution:
+    en: Wait for arbitration resolution. Provider may respond to raise ticket with evidence.
+
+- code: ION-2005
+  http_status: 403
+  category: catalog
+  title:
+    id: Lisensi kategori hilang atau kedaluwarsa
+    en: Category license missing or expired
+  description:
+    en: >
+      Provider operating in regulated category (pharmacy, alcohol, tobacco,
+      meat) does not have valid categoryLicenses entry for the required
+      license type.
+  affected_field: message.catalog.providers[].providerAttributes.categoryLicenses
+  affected_apis: [publish_catalog]
+  schema_ref: schema/extensions/trade/provider/v1
+  resolution:
+    en: Upload current license certificate with validUntil in future. Renew via relevant authority (BPOM, Kemendag).

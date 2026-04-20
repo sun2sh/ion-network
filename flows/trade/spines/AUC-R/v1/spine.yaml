@@ -1,0 +1,120 @@
+# ION Trade Flow - Reverse / Procurement Auction (AUC-R) Spine v1
+# NOT OAS. ION flow specification document.
+# Buyer publishes requirement; sellers bid DOWN to win the contract.
+
+id: ion-trade-AUC-R-v1
+version: "1.0.0"
+pattern: Procurement / Reverse Auction
+sectorCode: A
+status: ready
+description: >
+  Buyer (BAP) publishes a procurement requirement with a ceiling price.
+  Multiple sellers (BPPs) submit quotes — lowest valid quote wins.
+  The buyer selects the winning BPP and proceeds to transact.
+  Use cases: government procurement (e-katalog), corporate procurement,
+  hospital medical supply tender, agritech bulk buying, construction materials.
+  In ION this inverts the typical discover flow — BAP publishes intent,
+  BPPs respond with quotes.
+
+applicableCategories:
+  - agritech
+  - fmcg
+  - electronics
+  - pharmacy
+  - automotive-parts
+  - construction-materials
+
+mechanismNote: >
+  Standard Beckn discover is BAP-initiates-query, BPP-returns-catalog.
+  Reverse auction inverts this: BAP publishes requirement, BPPs submit quotes
+  against the requirement. ION uses the /discover action with a procurement
+  intent payload to publish the RFQ. BPPs use /on_discover to submit quotes.
+
+phases:
+  phase1:
+    name: Requirement Publication (RFQ)
+    steps:
+      - step: discover
+        stepContext: "RFQ"
+        from: BAP
+        to: ION_CATALOG
+        description: >
+          Buyer publishes Request For Quotation. The discover intent payload
+          carries a detailed procurement requirement instead of a search query.
+        requiredFields:
+          - message.intent.category.id
+          - message.intent.item.descriptor.name
+          - message.intent.item.quantity.selected.count
+          - message.intent.tags.procurement.rfq_id
+          - message.intent.tags.procurement.ceiling_price
+          - message.intent.tags.procurement.submission_deadline
+          - message.intent.tags.procurement.delivery_location
+          - message.intent.tags.procurement.delivery_by
+
+      - step: on_discover
+        stepContext: "quote submission"
+        from: BPP
+        to: BAP
+        description: >
+          Seller BPPs submit their quotes in response to the RFQ.
+          Each on_discover = one seller quote.
+          Multiple BPPs may respond.
+        requiredFields:
+          - message.catalog.providers[].id
+          - message.catalog.providers[].offers[].price  # note: Seller's offered price per unit
+          - message.catalog.providers[].offers[].tags.procurement.unit_price
+          - message.catalog.providers[].offers[].tags.procurement.total_price
+          - message.catalog.providers[].offers[].tags.procurement.delivery_lead_time
+          - message.catalog.providers[].offers[].tags.procurement.validity_period
+          - message.catalog.providers[].offers[].tags.procurement.technical_compliance  # note: boolean — whether offer meets technical specifications
+
+  phase2:
+    name: Evaluation and Award
+    steps:
+      - step: select
+        stepContext: "award"
+        from: BAP
+        to: winning_BPP
+        description: >
+          Buyer evaluates quotes (price, delivery time, compliance, track record)
+          and sends /select to the winning seller.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[].id
+          - message.contract.commitments[].resources[].quantity.count
+          - message.contract.commitments[].offer.tags.procurement.rfq_id  # note: Links this transaction to the original RFQ
+
+      - step: on_select  # note: Same as B2B-PP on_select. Winning seller confirms quote.
+
+      - step: init  # note: Same as B2B-PP init. Buyer provides delivery address, NPWP, PO reference.
+
+      - step: on_init  # note: Winning seller returns payment instructions.
+
+      - step: confirm
+        description: >
+          Buyer issues Purchase Order. Contract created. For government:
+          SP (Surat Perintah) or SPK (Surat Perintah Kerja) reference required.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.contractAttributes.purchaseOrderReference
+          - message.contract.contractAttributes.npwp
+          - message.contract.contractAttributes.nib
+        conditionalFields:
+          - field: message.contract.tags.procurement.sp_reference  # condition: for government procurement (B2G pattern)
+
+      - step: on_confirm  # note: Same as B2B-PP. Seller confirms order. Faktur Pajak if PKP.
+
+  phase3:
+    name: Fulfilment
+    description: Same as B2B-PP. Seller delivers bulk goods per procurement specs.
+    stateMachine: schema/extensions/trade/performance-states/v1/states.yaml#standard
+
+branchWindows:
+  cancellation:
+    note: Procurement contracts typically have strict cancellation penalties.
+    cancellationFee: declared in offer or procurement terms
+  returns:
+    note: Returns based on quality inspection — DEFECTIVE or NOT_AS_DESCRIBED only.
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
