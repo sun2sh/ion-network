@@ -1,0 +1,214 @@
+# ION Logistics Branch — Cancellation v1
+# NOT OAS. ION flow specification document.
+# Covers all cancellation scenarios with attribution model.
+
+id: ion-logistics-branch-cancellation-v1
+version: "1.0.0"
+branchType: cancellation
+sectorCode: B
+status: ready
+description: >
+  Cancellation of a confirmed logistics contract. Three sub-branches:
+  buyer-initiated (pre-pickup), seller/consignor-initiated, and in-transit
+  cancellation. Mirrors Trade cancellation branch structure.
+  
+  Attribution model: each cancellation has a declared cause that determines
+  who bears the cost. This drives: whether a cancellation fee applies,
+  whether RTO is triggered, and what refund (if any) the buyer receives.
+  
+  All cancellations use /cancel + /on_cancel Beckn endpoints.
+
+appliesTo:
+  - LOG-HYPERLOCAL
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-XB
+
+branchWindows:
+  earliest: on_confirm
+  latest: spine-specific (see below)
+
+subBranches:
+
+  cancel-buyer-prepickup:
+    id: cancel-buyer-prepickup
+    description: >
+      Buyer (or BAP on behalf of buyer) cancels before pickup.
+      Most permissive window. Fee depends on cancellationPolicy IRI.
+    window:
+      earliest: on_confirm
+      latest: "on_status[PICKED_UP]"
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+        cancellationReasonCodes:
+          LOG-CANCEL-001: Buyer changed mind
+          LOG-CANCEL-002: Consignor not ready for pickup
+          LOG-CANCEL-003: Address entered incorrectly by buyer
+          LOG-CANCEL-004: Payment issue
+          LOG-CANCEL-005: Duplicate order
+        businessRules:
+          - If state is READY_FOR_PICKUP and no rider assigned, cancellation is free per most policies
+          - If rider is OUT_FOR_PICKUP, LSP may charge a futile-trip fee per cancellationPolicy IRI
+          - Attribution: buyer fault for LOG-CANCEL-001, LOG-CANCEL-003; no fault for LOG-CANCEL-004
+
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.status
+          - message.contract.contractAttributes.cancellationReasonCode
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.cancellationFee
+            condition: if fee applies per cancellationPolicy
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+            condition: if prepaid and refund due
+
+  cancel-lsp-initiated:
+    id: cancel-lsp-initiated
+    description: >
+      LSP (BPP) cancels the shipment. Triggers when: LSP cannot service
+      the corridor, pickup not ready after wait, cargo refused at pickup,
+      or force majeure.
+    window:
+      earliest: on_confirm
+      latest: "on_status[PICKED_UP]"
+    steps:
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: BPP initiates cancellation and notifies BAP.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+        cancellationReasonCodes:
+          LOG-CANCEL-101: Pickup location unserviceable — coverage change
+          LOG-CANCEL-102: Pickup not ready after maximum wait time
+          LOG-CANCEL-103: Cargo refused at pickup — contents prohibited
+          LOG-CANCEL-104: Cargo refused at pickup — exceeds size/weight limits
+          LOG-CANCEL-105: Force majeure — natural disaster or road closure
+          LOG-CANCEL-106: eKYC rejected — B2B transaction cannot proceed
+        attribution:
+          LOG-CANCEL-101: LSP fault — full refund, no cancellation fee
+          LOG-CANCEL-102: Consignor fault — pickup-failed fee may apply per policy
+          LOG-CANCEL-103: Consignor fault — no refund if goods are prohibited
+          LOG-CANCEL-104: Consignor fault — sizing fee may apply
+          LOG-CANCEL-105: No fault — full refund
+          LOG-CANCEL-106: eKYC failure — refund depends on eKYC policy
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP acknowledges cancellation.
+        conditionalFields:
+          - field: message.contract.contractAttributes.cancellationAcknowledged
+            condition: if LSP requires explicit BAP acknowledgment
+
+  cancel-intransit:
+    id: cancel-intransit
+    description: >
+      Cancellation initiated while package is in transit. Rare — package
+      must be intercepted. Higher complexity and cost.
+    window:
+      earliest: "on_status[PICKED_UP]"
+      latest: "on_status[OUT_FOR_DELIVERY]"
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP requests in-transit cancellation. BPP may accept or reject
+          depending on the package's current location in the network.
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+        cancellationReasonCodes:
+          LOG-CANCEL-201: Buyer no longer wants product
+          LOG-CANCEL-202: Wrong item shipped — cancellation before delivery
+          LOG-CANCEL-203: Consignee address changed to outside coverage
+        businessRules:
+          - BPP may NACK if package is past the point of interception
+          - If accepted, package is intercepted at next hub and returned (RTO path)
+          - Full return freight charges apply — attributed to buyer unless LOG-CANCEL-202
+
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.status
+          - message.contract.contractAttributes.cancellationReasonCode
+        conditionalFields:
+          - field: message.contract.contractAttributes.cancellationAccepted
+            condition: BPP may reject in-transit cancellation
+          - field: message.contract.contractAttributes.cancellationRejectionReason
+            condition: if cancellation rejected
+          - field: message.contract.settlements[].settlementAttributes.returnFreightCharge
+            condition: if in-transit cancel accepted and return freight applies
+          - field: message.contract.settlements[].settlementAttributes.refundAmount
+            condition: refund net of applicable charges
+
+  cancel-tat-breach:
+    id: cancel-tat-breach
+    description: >
+      BAP force-cancels after BPP breaches the TAT SLA. BAP may cancel
+      without BPP consent after the breach threshold defined in slaPolicy.
+    window:
+      earliest: "on_confirm + TAT breach threshold"
+      latest: "on_status[DELIVERED]"
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.cancellationReason.descriptor.code
+          - message.contract.contractAttributes.tatBreachEvidence.estimatedDeliveryTime
+          - message.contract.contractAttributes.tatBreachEvidence.currentTimestamp
+        cancellationReasonCodes:
+          LOG-CANCEL-301: TAT breach — delivery not completed within SLA
+
+      - step: on_cancel
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.status
+        businessRules:
+          - Full refund mandatory — LSP bears cost of TAT breach
+          - SLA penalty applies per slaPolicy IRI
+          - Package enters RTO state machine
+
+    errors:
+      - ION-LOG-5101  # Cancellation window closed — TAT not yet breached
+
+# Attribution summary
+# ─────────────────────────────────────────────────────────────
+# Who triggers  | Reason codes     | Who bears cost | Triggers RTO
+# ─────────────────────────────────────────────────────────────
+# Buyer         | 001-005          | Buyer or none  | No (pre-pickup)
+# LSP           | 101 (coverage)   | LSP            | No
+# LSP           | 102 (not ready)  | Consignor      | No
+# LSP           | 103-104 (refused)| Consignor      | No
+# LSP           | 105 (FM)         | No fault       | No
+# Buyer         | 201-203 (transit)| Buyer          | Yes — RTO
+# Buyer         | 301 (TAT breach) | LSP            | Yes — RTO
+
+policyReferences:
+  - ion://policy/cancel.logistics.prepickup-free
+  - ion://policy/cancel.logistics.prepickup-futile-trip-fee
+  - ion://policy/cancel.logistics.intransit-buyer-cost
+  - ion://policy/cancel.logistics.tat-breach-lsp-cost
+  - ion://policy/penalty.lsp-tat-breach

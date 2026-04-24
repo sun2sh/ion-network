@@ -1,0 +1,21 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "beckn": "https://schema.beckn.io/v2/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "agentDetails": "ion:agentDetails",
+    "carrierTrackingUrlPattern": "ion:carrierTrackingUrlPattern",
+    "credentials": "ion:credentials",
+    "currentLocation": "ion:currentLocation",
+    "etaMinutes": "ion:etaMinutes",
+    "ion:LogisticsTrackingAttributes": {
+      "@id": "ion:LogisticsTrackingAttributes"
+    },
+    "refreshIntervalSeconds": "ion:refreshIntervalSeconds",
+    "routePolyline": "ion:routePolyline",
+    "trackingHandoffToCarrier": "ion:trackingHandoffToCarrier",
+    "trackingType": "ion:trackingType",
+    "webhookEvents": "ion:webhookEvents"
+  }
+}

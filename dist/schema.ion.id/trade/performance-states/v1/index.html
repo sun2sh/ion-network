@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>trade/performance-states/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for trade/performance-states (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/trade/">trade</a> &rsaquo; <a href="https://schema.ion.id/trade/performance-states/">performance-states</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>trade/performance-states/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/trade/performance-states/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Trade sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ 
+</div>
+
+<h2>Schemas in this pack</h2><p><em>This pack has no OpenAPI schema (state-machine or flow pack).</em></p>
+
+<section class="readme"><h2>Pack README</h2><h1>trade/performance-states/v1</h1>
+
+<p>Canonical performance state codes for all Trade sector fulfilment flows.</p>
+
+<p>This is not a schema pack — it has no `attributes.yaml` or `profile.json`. It is a vocabulary definition file that spine and branch files reference for state codes.</p>
+
+<h2>File</h2>
+
+<p>`states.yaml` — defines all state machines with valid transitions.</p>
+
+<h2>State machines</h2>
+
+<table>
+<thead><tr><th>Machine</th><th>Used in</th></tr></thead><tbody>
+<tr><td>`standard`</td><td>B2C-SF, B2B-PP, B2B-CR, MP-IH, AUC-F, XB — standard packaged goods delivery</td></tr>
+<tr><td>`mto`</td><td>B2C-MTO — make-to-order (food QSR, custom bakery, tailoring)</td></tr>
+<tr><td>`self_pickup`</td><td>When performanceMode=SELF_PICKUP on any spine</td></tr>
+<tr><td>`return`</td><td>Returns branch</td></tr>
+<tr><td>`replacement`</td><td>Returns branch — replacement sub-flow</td></tr>
+<tr><td>`rto`</td><td>RTO branch</td></tr>
+</tbody></table>
+
+<h2>How BPPs use these</h2>
+
+<p>BPPs set `beckn:Performance.status.code` using these codes. The BPP picks the appropriate state machine based on the performanceMode and resourceStructure.</p>
+
+<h2>How BAPs use these</h2>
+
+<p>BAPs map incoming state codes to consumer-facing labels:</p>
+
+<table>
+<thead><tr><th>Code</th><th>Suggested display (Bahasa Indonesia)</th></tr></thead><tbody>
+<tr><td>PLANNED</td><td>Pesanan dikonfirmasi, sedang diproses</td></tr>
+<tr><td>PACKED</td><td>Pesanan dikemas, menunggu kurir</td></tr>
+<tr><td>DISPATCHED</td><td>Pesanan dalam perjalanan</td></tr>
+<tr><td>OUT_FOR_DELIVERY</td><td>Kurir sedang menuju lokasi Anda</td></tr>
+<tr><td>DELIVERED</td><td>Pesanan telah diterima</td></tr>
+<tr><td>PREPARING</td><td>Sedang dipersiapkan</td></tr>
+<tr><td>READY</td><td>Siap diambil</td></tr>
+<tr><td>RETURN_INITIATED</td><td>Permintaan retur diterima</td></tr>
+<tr><td>RETURN_APPROVED</td><td>Retur disetujui</td></tr>
+<tr><td>RETURN_PICKED</td><td>Barang sudah dijemput kurir</td></tr>
+<tr><td>RETURN_DELIVERED</td><td>Barang sudah sampai ke penjual</td></tr>
+<tr><td>RTO_INITIATED</td><td>Pengiriman gagal, barang dikembalikan ke penjual</td></tr>
+<tr><td>RTO_DELIVERED</td><td>Barang sudah kembali ke penjual</td></tr>
+</tbody></table></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/trade/performance-states/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

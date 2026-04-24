@@ -1,0 +1,64 @@
+# Example Framework Agreement instance
+# policies/logistics-fwa/v1/tokopedia-jne-2026q2.yaml
+
+id: logistics-fwa.tokopedia.jne.2026q2
+type: LOGISTICS_FWA
+
+parties:
+  bap:
+    subscriberId: tokopedia.com
+    legalName: PT Tokopedia
+    npwp: "01.234.567.8-900.000"
+  bpp:
+    subscriberId: jne.co.id
+    legalName: PT Tiki Jalur Nugraha Ekakurir
+    npwp: "02.345.678.9-001.000"
+    nibNumber: "1234567890123"
+
+validity:
+  from: 2026-04-01
+  until: 2027-03-31
+  autoRenew: true
+  noticePeriodDays: 60
+
+scope:
+  spines: [LOG-PARCEL, LOG-FREIGHT]
+  transportModes: [road, air]
+  nationalCoverage: true
+
+rateCard:
+  type: PERCENT_OFF_PUBLIC
+  structure:
+    discountOffPublicRate: 0.42
+  volumeCommitment:
+    minMonthlyParcels: 5000000
+    discountTiers:
+      - threshold: 5000000
+        discount: 0.42
+      - threshold: 8000000
+        discount: 0.45
+      - threshold: 12000000
+        discount: 0.48
+
+overrides:
+  cancellationPolicy: ion://policy/cancel.enterprise.24hr-free
+  paymentTermsPolicy: ion://policy/payment-terms.credit-net-30
+  reAttemptPolicy: ion://policy/re-attempt.enterprise-3-free
+  weightDisputePolicy: ion://policy/weight-dispute.enterprise-5pct-tolerance
+
+adds:
+  slaPolicy: ion://policy/sla.enterprise-95pct-rebate
+  evidencePolicy: ion://policy/evidence.enterprise.photo-2hr-with-gps
+  insurancePolicy: ion://policy/insurance.enterprise-umbrella-100m
+  codRemittancePolicy: ion://policy/payment-terms.cod-weekly-monday
+  disputeResolutionPolicy: ion://policy/dispute-resolution.bani-arbitration-jakarta
+  liabilityPolicy: ion://policy/liability.enterprise-per-shipment-50m
+
+registration:
+  registeredAt: 2026-03-28T14:30:00Z
+  registryEntryId: fwa-reg-20260328-001
+  bapSignatoryId: tokopedia-legal-001
+  bapSignedAt: 2026-03-27T10:00:00Z
+  bppSignatoryId: jne-commercial-001
+  bppSignedAt: 2026-03-28T09:00:00Z
+  legalDocumentRef: s3://ion-fwa-docs/tokopedia-jne-msa-2026.pdf

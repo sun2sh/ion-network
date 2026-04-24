@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:LogisticsResourceAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "ION Logistics resource extension attributes. Attaches to beckn:Resource.ResourceAttributes.",
+      "rdfs:label": "Logistics Resource Attributes",
+      "rdfs:isDefinedBy": "https://schema.ion.id/logistics/v1/"
+    }
+  ]
+}

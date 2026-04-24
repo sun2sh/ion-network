@@ -1,0 +1,246 @@
+# ION Logistics Flow - Cross-Border (LOG-XB) Spine v1
+# NOT OAS. ION flow specification document.
+# Delta from LOG-FREIGHT: customs clearance as gating step, import/export parties, HS codes mandatory.
+
+id: ion-logistics-LOG-XB-v1
+version: "1.0.0"
+pattern: Cross-Border Freight
+sectorCode: B
+status: ready
+description: >
+  Cross-border freight with customs clearance. Covers international air
+  cargo, international ocean freight, and cross-border e-commerce (when
+  duty-paid by shipper). Adds customs clearance as a gating step that
+  can terminate the transaction. Bea Cukai (Indonesian customs) events
+  are first-class state transitions. Import/export parties and customs
+  broker are additional participants.
+
+participants:
+  BAP: Buyer App Platform
+  BPP: Buyer Price Provider (freight forwarder or carrier)
+  CUSTOMS_BROKER: Licensed customs broker (PPJK)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+deltaFromLogFreight:
+  - Customs clearance states in the state machine (SUBMITTED, CLEARED, HELD, REJECTED)
+  - HS codes, commercial invoice, certificate of origin, licences mandatory
+  - Customs broker as an additional participant (optional if self-clearance)
+  - Duty and tax computation via customs-clearance branch
+  - Origin and destination countries, not just addresses
+  - Incoterms declared on offer and contract
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Coverage includes origin and destination countries
+          - Incoterms supported declared on offer (DDP, DAP, FOB, CIF, etc.)
+          - Customs brokerage capability declared on provider
+          - HS code ranges served declared
+        requiredFields:
+          - message.catalog.providers[].providerAttributes.countriesServed[]
+          - message.catalog.providers[].providerAttributes.customsBrokerageCapability
+          - message.catalog.providers[].providerAttributes.beaCukaiLicenceNumber
+          - message.catalog.providers[].offers[].offerAttributes.incotermsSupported[]
+          - message.catalog.providers[].offers[].offerAttributes.hsCodesServed[]
+          - message.catalog.providers[].offers[].offerAttributes.dutyAndTaxModel
+          - message.catalog.providers[].offers[].offerAttributes.customsClearanceTypicalDuration
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Origin and destination countries mandatory
+          - HS codes required for quote (duty/tax calculation)
+          - Incoterms selected
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.hsCodes[]
+          - message.contract.performance[].stops[].location.country.code
+          - message.contract.performance[].performanceAttributes.incoterms
+
+      - step: on_select
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Breakup includes freight, insurance, duty estimate, tax estimate
+          - Clearance duration estimate returned
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[].considerationAttributes.dutyEstimate
+          - message.contract.consideration.considerationAttributes.breakup[].considerationAttributes.taxEstimate
+          - message.contract.performance[].performanceAttributes.estimatedClearanceDuration
+
+      - step: init
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Commercial invoice, certificate of origin, packing list mandatory
+          - Import/export licences referenced if regulated goods
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.commercialInvoice
+          - message.contract.commitments[].resources[].resourceAttributes.certificateOfOrigin
+          - message.contract.commitments[].resources[].resourceAttributes.packingList
+          - message.contract.participants[role=CUSTOMS_BROKER]
+        conditionalFields:
+          - field: message.contract.commitments[].resources[].resourceAttributes.importLicence
+            condition: required for regulated goods (pharma, electronics, food)
+          - field: message.contract.commitments[].resources[].resourceAttributes.exportLicence
+            condition: required for restricted export goods
+
+      - step: on_init
+        inheritedFrom: LOG-FREIGHT
+
+      - step: confirm
+        inheritedFrom: LOG-FREIGHT
+
+      - step: on_confirm
+        inheritedFrom: LOG-FREIGHT
+
+  phase3:
+    name: Fulfilment
+    communication: BPP pushes unsolicited
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#xb
+    description: Inherits freight state machine, adds customs clearance sub-states.
+    steps:
+      - step: on_status
+        trigger: BOOKING_CONFIRMED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: LOADED_AT_ORIGIN
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: EXPORT_CUSTOMS_SUBMITTED
+        from: BPP
+        to: BAP
+        description: Customs declaration filed at origin.
+
+      - step: on_status
+        trigger: EXPORT_CUSTOMS_CLEARED
+        from: BPP
+        to: BAP
+        description: Origin customs clearance complete.
+
+      - step: on_status
+        trigger: DEPARTED_ORIGIN
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: IN_TRANSIT_INTERNATIONAL
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: ARRIVED_DESTINATION_PORT
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_SUBMITTED
+        from: BPP
+        to: BAP
+        description: Bea Cukai declaration filed.
+
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_CLEARED
+        from: BPP
+        to: BAP
+        description: Bea Cukai clearance complete.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.actualDuty
+          - message.contract.consideration.considerationAttributes.actualTax
+
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_HELD
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: >
+          Customs has flagged the shipment. Resolution via /update.
+          Possible reasons: documentation incomplete, duty recalculation,
+          inspection required, restricted goods verification.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.customsHoldReason
+          - message.contract.performance[].performanceAttributes.customsResolutionPath
+
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_REJECTED
+        from: BPP
+        to: BAP
+        description: Customs rejected clearance. Transaction may terminate with RTO, destroy-in-place, or re-export options.
+
+      - step: on_status
+        trigger: RELEASED_FOR_DOMESTIC_DELIVERY
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.proofOfDelivery
+
+branchWindows:
+  customs-clearance:
+    earliest: "on_status[LOADED_AT_ORIGIN]"
+    latest: "on_status[IMPORT_CUSTOMS_CLEARED]"
+  customs-hold:
+    earliest: "on_status[IMPORT_CUSTOMS_SUBMITTED]"
+    latest: "on_status[IMPORT_CUSTOMS_CLEARED]"
+  duty-dispute:
+    earliest: "on_status[IMPORT_CUSTOMS_CLEARED]"
+    latest: contract_COMPLETE
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[EXPORT_CUSTOMS_SUBMITTED]"
+    description: Cancellation window closes at customs submission
+  reverse:
+    earliest: "on_status[DELIVERED]"
+    latest: xb_return_window_expiry
+    description: reverse-xb branch — dual customs on both legs
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+  phase4:
+    name: Post-Fulfilment
+    communication: direct BAP-BPP
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        description: Post-delivery rating. See LOG-PARCEL phase4 for full field specification.
+        requiredFields:
+          - message.rating.contractReference
+          - message.rating.overallRating
+
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+
+      - step: reconcile
+        from: BAP
+        to: BPP
+        direction: request
+        description: Financial reconciliation. Uses ION Core reconcile/v1. See LOG-PARCEL phase4.
+        schemaPacks:
+          core: [reconcile/v1]
+
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        direction: callback

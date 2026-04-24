@@ -1,0 +1,199 @@
+# ION Logistics Branch — Customs v1
+# NOT OAS. ION flow specification document.
+# Applies exclusively to LOG-XB spine.
+
+id: ion-logistics-branch-customs-v1
+version: "1.0.0"
+branchType: customs
+sectorCode: B
+status: ready
+description: >
+  Customs clearance sub-flows for LOG-XB. Covers export clearance at
+  origin, import clearance at destination (Bea Cukai), hold resolution,
+  rejection outcomes, and duty dispute. All resolution paths flow through
+  /update with policy IRI references. Bea Cukai clearance states are
+  first-class transitions on the XB state machine.
+
+appliesTo:
+  - LOG-XB
+
+window:
+  earliest: "on_status[LOADED_AT_ORIGIN]"
+  latest: "on_status[RELEASED_FOR_DOMESTIC_DELIVERY]"
+
+subBranches:
+
+  customs-export-clearance:
+    id: customs-export-clearance
+    description: >
+      Export customs declaration filed and cleared at origin.
+      Managed by the BPP (or customs broker participant). BAP
+      informed of state transitions.
+    steps:
+      - step: on_status
+        trigger: EXPORT_CUSTOMS_SUBMITTED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.customsDeclarationRef
+          - message.contract.performance[].performanceAttributes.submittedAt
+
+      - step: on_status
+        trigger: EXPORT_CUSTOMS_CLEARED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.clearanceTimestamp
+
+  customs-import-clearance:
+    id: customs-import-clearance
+    description: >
+      Import customs declaration filed with Bea Cukai. Actual duty and
+      tax amounts confirmed at clearance. Duty amounts update the
+      consideration breakup.
+    steps:
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_SUBMITTED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.beaCukaiDeclarationRef
+
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_CLEARED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.clearanceTimestamp
+          - message.contract.consideration.considerationAttributes.actualDuty
+          - message.contract.consideration.considerationAttributes.actualTax
+
+  customs-hold:
+    id: customs-hold
+    description: >
+      Shipment held by customs (export or import). BPP notifies BAP
+      with hold reason and resolution path options. BAP provides
+      required documentation or instructions via /update.
+    steps:
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_HELD
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.customsHoldReason
+          - message.contract.performance[].performanceAttributes.customsResolutionPath
+          - message.contract.performance[].performanceAttributes.buyerResolutionDeadline
+        holdReasons:
+          - HOLD-001  # Documentation incomplete — commercial invoice
+          - HOLD-002  # Documentation incomplete — certificate of origin
+          - HOLD-003  # Restricted goods — import licence required
+          - HOLD-004  # Physical inspection ordered
+          - HOLD-005  # Duty recalculation — HS code mismatch
+          - HOLD-006  # Prohibited goods suspected
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP provides resolution — documents or instructions.
+        requiredFields:
+          - message.contract.contractAttributes.customsHoldResolution
+          - message.contract.contractAttributes.customsHoldResolution.documentUrls[]
+          - message.contract.contractAttributes.customsHoldResolution.documentType
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP submits to customs; reports updated state.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+
+    errors:
+      - ION-LOG-6402  # Import customs held
+      - ION-LOG-6401  # Export customs held
+
+  customs-rejection:
+    id: customs-rejection
+    description: >
+      Customs rejects the shipment. BAP must decide between three
+      terminal outcomes: return to origin, destroy in place, or
+      re-export to a third country.
+    steps:
+      - step: on_status
+        trigger: IMPORT_CUSTOMS_REJECTED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.customsRejectionReason
+          - message.contract.performance[].performanceAttributes.storageDeadlineAtPort
+        rejectionReasons:
+          - REJECT-001  # Prohibited goods — import not permitted
+          - REJECT-002  # Health and safety violation
+          - REJECT-003  # CITES — protected species violation
+          - REJECT-004  # Sanctions violation
+          - REJECT-005  # Mislabelling — final rejection after hold
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.xbReturnDecision
+        xbReturnDecisionOptions:
+          - RETURN_TO_ORIGIN
+          - DESTROY_IN_PLACE
+          - RE_EXPORT_TO_THIRD_COUNTRY
+        businessRules:
+          - DESTROY_IN_PLACE requires written BAP authorisation
+          - RE_EXPORT requires destination country and carrier details
+          - Storage fees at destination port apply from rejection date
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.consideration.considerationAttributes.additionalStorageCharges
+
+    errors:
+      - ION-LOG-6403  # Import customs rejected
+
+  duty-dispute:
+    id: duty-dispute
+    description: >
+      BAP disputes the actual duty or tax amount applied by customs.
+      Resolution via customs broker; escalation to Bea Cukai appeals
+      process if unresolved.
+    window:
+      earliest: "on_status[IMPORT_CUSTOMS_CLEARED]"
+      latest: PT30D_after_clearance
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.claimType
+          - message.contract.contractAttributes.claimDetail.policyIri
+          - message.contract.contractAttributes.claimDetail.disputedDutyAmount
+          - message.contract.contractAttributes.claimDetail.claimedDutyAmount
+          - message.contract.contractAttributes.claimDetail.evidenceUrls[]
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.claimAssessment.outcome
+
+policyReferences:
+  - ion://policy/dispute-resolution.bea-cukai-appeals
+  - ion://policy/liability.customs-duty-dispute

@@ -1,0 +1,33 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "beckn": "https://schema.beckn.io/v2/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:LogisticsOfferAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "ION Logistics Offer extension attributes. Attaches to beckn:Offer.offerAttributes.",
+      "rdfs:label": "Logistics Offer Attributes",
+      "rdfs:isDefinedBy": "https://schema.ion.id/logistics/v1/"
+    },
+    { "@id": "ion:serviceLevel", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Service commitment level. INSTANT|SAME_DAY|NEXT_DAY|STANDARD_2_3D|ECONOMY|SCHEDULED." },
+    { "@id": "ion:transportMode", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Mode of transport. motorcycle|car|van|truck|rail|sea|air|river|ferry." },
+    { "@id": "ion:routingTopology", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Hub routing topology for LOG-PARCEL. P2P|P2H2P|P2H2H2P." },
+    { "@id": "ion:rateLogic", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Rate computation method. TIERED_BY_ZONE_AND_WEIGHT|DISTANCE_BASED|PER_CONTAINER|etc." },
+    { "@id": "ion:selectRequired", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "If true BAP must call /select before /init. Most critical catalog field for BAP integration." },
+    { "@id": "ion:quoteValidityWindow", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:duration"}, "rdfs:comment": "How long /on_select quote is binding. ISO 8601 duration." },
+    { "@id": "ion:agentAssignmentModel", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Rider assignment model for LOG-HYPERLOCAL. PRE_ASSIGNED|POOL_ASSIGNED|FIFO_AT_PICKUP|DEDICATED_FLEET." },
+    { "@id": "ion:availableOnCod", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "COD availability for this offer. Mandatory." },
+    { "@id": "ion:cancellationPolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified cancellation policy." },
+    { "@id": "ion:claimPolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified damage/loss claim policy." },
+    { "@id": "ion:slaPolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified SLA policy with breach consequences." },
+    { "@id": "ion:evidencePolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified evidence requirements for claims." },
+    { "@id": "ion:disputePolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified dispute resolution policy." },
+    { "@id": "ion:reAttemptPolicy", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:anyURI"}, "rdfs:comment": "IRI resolving to ratified re-attempt policy (max attempts, fees, auto-RTO)." },
+    { "@id": "ion:fwaApplicable", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsOfferAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "Whether this offer accepts FWA-governed transactions." }
+  ]
+}

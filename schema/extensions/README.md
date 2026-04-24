@@ -79,4 +79,4 @@ ion validate myNewField              # clash detection before proposing
 
 Atlas searches all ION and Beckn core schemas semantically — by meaning, not keyword. A new field that already exists under a different name will surface as a near-match.
 
-Web Explorer: `devlabs.ion.id/atlas (coming soon)`
+Web Explorer: `schema.ion.id/atlas (coming soon)`

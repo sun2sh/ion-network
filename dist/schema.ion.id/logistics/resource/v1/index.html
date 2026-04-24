@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/resource/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/resource (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/resource/">resource</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/resource/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/resource/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsResourceAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/resource/v1#LogisticsResourceAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>serviceType</code></td><td>always</td><td>Broad category of what is being moved or stored</td></tr>
+<tr><td><code>quantity</code></td><td>always</td><td></td></tr>
+<tr><td><code>weight</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>dimensions</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>volumetricWeight</code></td><td>optional</td><td>Computed by BPP; carried in on_select if applicable</td></tr>
+<tr><td><code>totalVolume</code></td><td>optional</td><td>For freight bookings</td></tr>
+<tr><td><code>declaredValue</code></td><td>optional</td><td>Declared value for insurance and liability purposes. Mandatory when insurance is requested or value exceeds the provider</td></tr>
+<tr><td><code>insuranceRequested</code></td><td>optional</td><td></td></tr>
+<tr><td><code>fragile</code></td><td>optional</td><td></td></tr>
+<tr><td><code>stackable</code></td><td>optional</td><td></td></tr>
+<tr><td><code>hazmatClass</code></td><td>conditional</td><td>IATA/IMO/ADR dangerous goods primary class. See IATA DGR for air, IMO IMDG Code for ocean, UN ADR for road/rail.</td></tr>
+<tr><td><code>hazmatSubsidiaryClasses</code></td><td>optional</td><td>Additional risk classes for multi-hazard DG</td></tr>
+<tr><td><code>hazmatUnNumber</code></td><td>conditional</td><td>UN number (e.g. &quot;UN1950&quot;) — required for all DG shipments</td></tr>
+<tr><td><code>hazmatPackingGroup</code></td><td>conditional</td><td>Packing Group per IATA DGR / IMO IMDG</td></tr>
+<tr><td><code>hazmatProperShippingName</code></td><td>conditional</td><td>Proper Shipping Name (PSN) as listed in the applicable DGR. Must appear on all documents and outer packaging.</td></tr>
+<tr><td><code>hazmatNetQuantityPerPackage</code></td><td>conditional</td><td>Net quantity of dangerous substance per package</td></tr>
+<tr><td><code>hazmatNetExplosiveMass</code></td><td>conditional</td><td>Net Explosive Mass (NEM/NEQ) in kg — Class 1 only</td></tr>
+<tr><td><code>hazmatErgCode</code></td><td>conditional</td><td>Emergency Response Guide (ERG) code for first responders</td></tr>
+<tr><td><code>hazmatSegregationGroup</code></td><td>conditional</td><td>IMDG segregation group code (for mixed-DG ocean)</td></tr>
+<tr><td><code>hazmatPackagingInstruction</code></td><td>conditional</td><td>IATA PI number or IMDG P code specifying packaging used</td></tr>
+<tr><td><code>hazmatPackagingCertification</code></td><td>conditional</td><td>UN-certified packaging marking details</td></tr>
+<tr><td><code>hazmatOverpack</code></td><td>optional</td><td>True if DG packages are combined in an overpack</td></tr>
+<tr><td><code>hazmatLimitedQuantityExemption</code></td><td>optional</td><td>Shipment qualifies for LQ exemption (smaller documentation burden)</td></tr>
+<tr><td><code>hazmatExceptedQuantityExemption</code></td><td>optional</td><td>Shipment qualifies for EQ exemption</td></tr>
+<tr><td><code>hazmatAirTransportCode</code></td><td>conditional</td><td>PAX = allowed on passenger aircraft, CAO = Cargo Aircraft Only, FORBIDDEN_AIR = not allowed by air. Applies to air trans</td></tr>
+<tr><td><code>hazmatOceanStowageCategory</code></td><td>conditional</td><td>IMDG stowage category — applies to ocean transport</td></tr>
+<tr><td><code>hazmatShippersDeclaration</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>lithiumBattery</code></td><td>conditional</td><td>Lithium battery-specific fields — mandatory when UN3480/UN3481/UN3090/UN3091 is declared. Additional to standard hazmat </td></tr>
+<tr><td><code>temperatureRequirement</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>productCategory</code></td><td>optional</td><td>Product category for classification (Grocery, Electronics, Pharma, etc.)</td></tr>
+<tr><td><code>hsCodes</code></td><td>conditional</td><td>Harmonised System codes for cross-border shipments</td></tr>
+<tr><td><code>commercialInvoice</code></td><td>optional</td><td>For LOG-XB</td></tr>
+<tr><td><code>certificateOfOrigin</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>packingList</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>importLicence</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>cargoDescription</code></td><td>optional</td><td>Detailed cargo description for freight manifests</td></tr>
+<tr><td><code>cargoManifest</code></td><td>optional</td><td>Line-level cargo manifest for freight</td></tr>
+<tr><td><code>packagingType</code></td><td>optional</td><td></td></tr>
+<tr><td><code>vehicleDetails</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>vehicleRegistration</code></td><td>conditional</td><td>Vehicle registration plate number</td></tr>
+<tr><td><code>skuCount</code></td><td>conditional</td><td>Number of distinct SKUs</td></tr>
+<tr><td><code>storageCategory</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>skuManifest</code></td><td>optional</td><td>Per-SKU details for warehouse inbound</td></tr>
+<tr><td><code>maxWeight</code></td><td>optional</td><td>Maximum shipment weight the BPP accepts. Published in catalog.</td></tr>
+<tr><td><code>maxDimensions</code></td><td>conditional</td><td>Maximum shipment dimensions the BPP accepts. Published in catalog.</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>resource/v1 — Logistics Resource Attributes</h1>
+
+<p>Attaches to `beckn:Resource.resourceAttributes`.</p>
+
+<h2>What it covers</h2>
+
+<p>The thing being moved or stored. In logistics, this is the shipment object — its physical characteristics, regulatory declarations, special handling requirements, and spine-specific extensions for vehicles (Ro-Ro) and inventory (Warehouse).</p>
+
+<h2>Service types</h2>
+
+<p>The `serviceType` field (always mandatory) determines which other fields apply:</p>
+
+<table>
+<thead><tr><th>Value</th><th>Spine</th><th>What it is</th></tr></thead><tbody>
+<tr><td>`PARCEL`</td><td>LOG-PARCEL, LOG-HYPERLOCAL</td><td>Standard packaged shipment</td></tr>
+<tr><td>`DOCUMENT`</td><td>LOG-PARCEL</td><td>Documents only — lighter regulatory requirements</td></tr>
+<tr><td>`FREIGHT`</td><td>LOG-FREIGHT, LOG-XB</td><td>Bulk cargo requiring capacity booking</td></tr>
+<tr><td>`VEHICLE`</td><td>LOG-RORO</td><td>Self-driven vehicle on ferry — vehicle IS the cargo</td></tr>
+<tr><td>`INVENTORY`</td><td>LOG-WAREHOUSE</td><td>SKU inventory for storage and fulfilment</td></tr>
+</tbody></table>
+
+<h2>Physical characteristics (PARCEL and FREIGHT)</h2>
+
+<p>```yaml</p>
+<p>weight:</p>
+<p>  value: 2.5</p>
+<p>  unit: kilogram         # gram | kilogram | tonne</p>
+
+<p>dimensions:</p>
+<p>  length: 30</p>
+<p>  width: 20</p>
+<p>  height: 15</p>
+<p>  unit: centimeter       # centimeter | meter</p>
+
+<p>declaredValue:</p>
+<p>  amount: 500000</p>
+<p>  currency: IDR          # For insurance and liability cap purposes</p>
+<p>```</p>
+
+<p>`weight` and `dimensions` are mandatory for LOG-PARCEL and LOG-FREIGHT. The BPP may reweigh at pickup or hub — if actual weight differs beyond the policy tolerance, the `weight-dispute` branch activates.</p>
+
+<h2>Handling requirements</h2>
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>`fragile`</td><td>boolean</td><td>Requires careful handling; stacking restricted</td></tr>
+<tr><td>`stackable`</td><td>boolean</td><td>Stacking allowed (default)</td></tr>
+<tr><td>`hazmatClass`</td><td>string</td><td>IATA/IMO dangerous goods class (e.g. &quot;Class 3&quot;)</td></tr>
+<tr><td>`hazmatUnNumber`</td><td>string</td><td>UN number for DG identification</td></tr>
+<tr><td>`temperatureRequirement.controlled`</td><td>boolean</td><td>Triggers cold-chain-proof branch when true</td></tr>
+<tr><td>`temperatureRequirement.minTempC`</td><td>number</td><td>Minimum temperature (e.g. 2)</td></tr>
+<tr><td>`temperatureRequirement.maxTempC`</td><td>number</td><td>Maximum temperature (e.g. 8)</td></tr>
+<tr><td>`temperatureRequirement.category`</td><td>enum</td><td>FROZEN \</td><td>CHILLED \</td><td>AMBIENT \</td><td>CONTROLLED_ROOM</td></tr>
+</tbody></table>
+
+<p>When `temperatureRequirement.controlled = true`, the `cold-chain-proof` branch fires automatically at PICKED_UP and DELIVERED state events.</p>
+
+<h2>Cross-border documents (LOG-XB — mandatory)</h2>
+
+<p>```yaml</p>
+<p>hsCodes: [&quot;8517.12.00&quot;, &quot;8517.69.90&quot;]   # HS codes per line item</p>
+<p>commercialInvoice:</p>
+<p>  invoiceNumber: &quot;INV-2026-001&quot;</p>
+<p>  invoiceDate: &quot;2026-04-22&quot;</p>
+<p>  invoiceValue: 15000000</p>
+<p>  currency: IDR</p>
+<p>certificateOfOrigin:</p>
+<p>  certificateNumber: &quot;COO-2026-001&quot;</p>
+<p>  issuingAuthority: &quot;KADIN&quot;</p>
+<p>packingList:</p>
+<p>  documentUrl: &quot;https://...&quot;</p>
+<p>```</p>
+
+<p>All four are mandatory for LOG-XB. Import/export licences are conditional based on product category (pharma, electronics with import restrictions, CITES-listed species).</p>
+
+<h2>Vehicle details (LOG-RORO only)</h2>
+
+<p>```yaml</p>
+<p>vehicleDetails:</p>
+<p>  category: HEAVY_TRUCK    # PASSENGER_CAR | LIGHT_TRUCK | HEAVY_TRUCK | MOTORCYCLE | TRAILER | BUS</p>
+<p>  make: Isuzu</p>
+<p>  model: Giga FVZ</p>
+<p>  lengthM: 12.5</p>
+<p>  widthM: 2.5</p>
+<p>  heightM: 4.0</p>
+<p>  weightKg: 24000</p>
+<p>vehicleRegistration: &quot;B 1234 ABC&quot;</p>
+<p>```</p>
+
+<p>The vehicle itself is the resource. Dimensions determine which vessel slot type is allocated. `vehicleRegistration` is mandatory for LOG-RORO.</p>
+
+<h2>Inventory details (LOG-WAREHOUSE)</h2>
+
+<p>```yaml</p>
+<p>skuCount: 3</p>
+<p>storageCategory: HIGH_VALUE    # AMBIENT | CHILLED | FROZEN | HIGH_VALUE | HAZMAT | OVERSIZED</p>
+<p>skuManifest:</p>
+<p>  - skuId: &quot;SKU-IPHONE-15-BLK-128&quot;</p>
+<p>    description: &quot;iPhone 15 128GB Black&quot;</p>
+<p>    quantity: 500</p>
+<p>    unitWeightKg: 0.17</p>
+<p>    unitVolumeCbm: 0.001</p>
+<p>    expiryDate: null</p>
+<p>  - skuId: &quot;SKU-SAMSUNG-S24-WHT-256&quot;</p>
+<p>    quantity: 250</p>
+<p>```</p>
+
+<p>`skuManifest` is mandatory at `/init` for LOG-WAREHOUSE. It governs what the warehouse operator receives, counts, and stores. Discrepancies between the manifest and actual received quantities trigger the `inbound-discrepancy` state.</p>
+
+<h2>Cargo manifest (LOG-FREIGHT)</h2>
+
+<p>```yaml</p>
+<p>cargoManifest:</p>
+<p>  - lineId: &quot;L1&quot;</p>
+<p>    description: &quot;Consumer electronics — smartphones&quot;</p>
+<p>    quantity: 500</p>
+<p>    unitWeight: 0.17</p>
+<p>    hsCode: &quot;8517.12.00&quot;</p>
+<p>cargoDescription: &quot;500 units consumer electronics, fragile&quot;</p>
+<p>packagingType: CARTON    # CARTON | PALLET | CRATE | DRUM | BULK | ROLL</p>
+<p>```</p>
+
+<p>Required for all LOG-FREIGHT transactions. HS codes per line are mandatory for LOG-XB.</p>
+
+<h2>Product category enum</h2>
+
+<p>Used for customs classification and compliance checks. Values: `GROCERY`, `FOOD_AND_BEVERAGE`, `FASHION`, `ELECTRONICS`, `BEAUTY`, `PHARMA`, `AGRITECH`, `INDUSTRIAL`, `AUTOMOTIVE`, `CHEMICALS`, `HAZMAT`, `HIGH_VALUE`, `DOCUMENTS`, `OTHER`.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/resource/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "beckn": "https://schema.beckn.io/v2/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "aggregatorModel": "ion:aggregatorModel",
+    "alfiMembership": "ion:alfiMembership",
+    "asperindoMembership": "ion:asperindoMembership",
+    "beaCukaiLicenceNumber": "ion:beaCukaiLicenceNumber",
+    "catalogChangelogUrl": "ion:catalogChangelogUrl",
+    "catalogDeltaReference": "ion:catalogDeltaReference",
+    "catalogPublishedAt": "ion:catalogPublishedAt",
+    "catalogValidFrom": "ion:catalogValidFrom",
+    "catalogValidUntil": "ion:catalogValidUntil",
+    "catalogVersion": "ion:catalogVersion",
+    "coldChainCertified": "ion:coldChainCertified",
+    "coldChainTemperatureZones": "ion:coldChainTemperatureZones",
+    "coverage": "ion:coverage",
+    "fleetType": "ion:fleetType",
+    "fwaApplicable": "ion:fwaApplicable",
+    "hazmatCertified": "ion:hazmatCertified",
+    "hazmatClasses": "ion:hazmatClasses",
+    "highValueCapable": "ion:highValueCapable",
+    "holidayCalendar": "ion:holidayCalendar",
+    "ion:LogisticsProviderAttributes": {
+      "@id": "ion:LogisticsProviderAttributes"
+    },
+    "maxDeliveryRadiusKm": "ion:maxDeliveryRadiusKm",
+    "modesSupported": "ion:modesSupported",
+    "nibNumber": "ion:nibNumber",
+    "nibRegistered": "ion:nibRegistered",
+    "operatingHours": "ion:operatingHours",
+    "pickupCutoffTimes": "ion:pickupCutoffTimes",
+    "providerCategory": "ion:providerCategory",
+    "rateCardEffectiveFrom": "ion:rateCardEffectiveFrom",
+    "rateCardEffectiveUntil": "ion:rateCardEffectiveUntil",
+    "siupNumber": "ion:siupNumber",
+    "spinesSupported": "ion:spinesSupported",
+    "warehouseLocations": "ion:warehouseLocations"
+  }
+}

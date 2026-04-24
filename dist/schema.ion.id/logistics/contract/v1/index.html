@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/contract/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/contract (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/contract/">contract</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/contract/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/contract/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsContractAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/contract/v1#LogisticsContractAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>fwaReference</code></td><td>optional</td><td>ION policy IRI of the Framework Agreement governing this transaction. When present, rates and policies are inherited fro</td></tr>
+<tr><td><code>parentContractReference</code></td><td>optional</td><td>Reference to a parent contract (e.g. warehouse contract that triggered this transport contract, or a capacity reservatio</td></tr>
+<tr><td><code>npwp</code></td><td>optional</td><td>NPWP tax ID of the consignor (B2B transactions)</td></tr>
+<tr><td><code>nib</code></td><td>optional</td><td>NIB business registration of the consignor (B2B transactions)</td></tr>
+<tr><td><code>invoicePreferences</code></td><td>optional</td><td></td></tr>
+<tr><td><code>withholdingTax</code></td><td>conditional</td><td>PPh 23 withholding applies to logistics services at 2% rate. The buyer (BAP or consignor) withholds this amount and remi</td></tr>
+<tr><td><code>ppnExemption</code></td><td>conditional</td><td>PPN Dibebaskan — VAT exemption for specific categories and zones. Common for bonded-zone and free-trade-zone transaction</td></tr>
+<tr><td><code>stampDuty</code></td><td>conditional</td><td>Bea Meterai Rp 10,000 applies to invoices over Rp 5,000,000. Required for contracts treated as formal legal documents.</td></tr>
+<tr><td><code>creditTermsDays</code></td><td>optional</td><td>Payment due within N days (for B2B credit-terms transactions)</td></tr>
+<tr><td><code>paymentDueDate</code></td><td>optional</td><td></td></tr>
+<tr><td><code>ekycFormReference</code></td><td>optional</td><td>Reference to the eKYC form submission for B2B first transactions</td></tr>
+<tr><td><code>ekycStatus</code></td><td>optional</td><td></td></tr>
+<tr><td><code>ekycVerificationTimestamp</code></td><td>optional</td><td></td></tr>
+<tr><td><code>ekycRejectionReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>cargoInsurance</code></td><td>conditional</td><td>Cargo insurance coverage details. Distinct from driver/vehicle insurance (covered under incident branch).</td></tr>
+<tr><td><code>disputeReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>disputeState</code></td><td>optional</td><td></td></tr>
+<tr><td><code>disputeResolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>claimType</code></td><td>optional</td><td></td></tr>
+<tr><td><code>claimDetail</code></td><td>optional</td><td></td></tr>
+<tr><td><code>claimAssessment</code></td><td>optional</td><td></td></tr>
+<tr><td><code>claimResolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>addressChangeReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>addressUnserviceableResolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>returnReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>returnItems</code></td><td>optional</td><td></td></tr>
+<tr><td><code>reverseContractReference</code></td><td>optional</td><td>Reference to the reverse/return contract created</td></tr>
+<tr><td><code>excursionDetail</code></td><td>optional</td><td></td></tr>
+<tr><td><code>excursionResolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>discrepancyDetail</code></td><td>optional</td><td></td></tr>
+<tr><td><code>disputeCounter</code></td><td>optional</td><td></td></tr>
+<tr><td><code>inventoryReleaseRequest</code></td><td>optional</td><td></td></tr>
+<tr><td><code>incoterms</code></td><td>optional</td><td></td></tr>
+<tr><td><code>incotermsVersion</code></td><td>optional</td><td></td></tr>
+<tr><td><code>incotermsNamedPlace</code></td><td>conditional</td><td>Named place per Incoterms (e.g. &quot;DDP Jakarta port&quot;)</td></tr>
+<tr><td><code>beaCukaiDeclaration</code></td><td>conditional</td><td>Indonesian customs declaration details — CEISA 4.0 integration</td></tr>
+<tr><td><code>inatradePermits</code></td><td>conditional</td><td>INATRADE (Indonesia National Single Window) permits. Required for regulated categories — food, pharma, electronics, chem</td></tr>
+<tr><td><code>lartasClassification</code></td><td>conditional</td><td>LARTAS (Larangan dan Pembatasan) classification. Indonesian customs maintains prohibited (LARANGAN) and restricted (PEMB</td></tr>
+<tr><td><code>aseanSingleWindowReference</code></td><td>conditional</td><td>ASW reference for intra-ASEAN shipments</td></tr>
+<tr><td><code>fumigationCertificate</code></td><td>conditional</td><td>Required when wood packaging is used (ISPM 15)</td></tr>
+<tr><td><code>phytosanitaryCertificate</code></td><td>conditional</td><td>Required for agricultural products per Karantina</td></tr>
+<tr><td><code>xbReturnDecision</code></td><td>optional</td><td></td></tr>
+<tr><td><code>cancellationReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>cancellationReasonCode</code></td><td>optional</td><td></td></tr>
+<tr><td><code>pickupFailedResolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>buyerResolutionDeadline</code></td><td>optional</td><td></td></tr>
+<tr><td><code>codPartialReason</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>contract/v1 — Logistics Contract Attributes</h1>
+
+<p>Attaches to `beckn:Contract.contractAttributes`.</p>
+
+<h2>What it covers</h2>
+
+<p>The confirmed terms of a logistics transaction. Everything that survives the lifecycle of the contract — from the FWA reference through billing identity, through the dispute lifecycle, through resolution — lives here.</p>
+
+<h2>FWA and parent contract references</h2>
+
+<p>```yaml</p>
+<p>fwaReference: &quot;ion://policy/logistics-fwa/tokopedia-jne-2026q2&quot;</p>
+<p>parentContractReference: &quot;tc-wh-20260422-001&quot;</p>
+<p>```</p>
+
+<p>`fwaReference` links this transaction to a pre-negotiated Framework Agreement. When present, ION Central applies FWA rates and policies instead of offer-level defaults.</p>
+
+<p>`parentContractReference` links this shipment to a parent contract — a warehouse contract that triggered this dispatch, or a capacity reservation that governs this freight booking.</p>
+
+<h2>Billing identity</h2>
+
+<p>```yaml</p>
+<p>npwp: &quot;01.234.567.8-900.000&quot;      # Tax ID — mandatory for B2B</p>
+<p>nib: &quot;1234567890123&quot;              # Business registration — mandatory for B2B</p>
+<p>invoicePreferences:</p>
+<p>  fakturaRequired: true</p>
+<p>  fakturaReference: &quot;FK-2026-001&quot;</p>
+<p>  invoicingModel: INDIVIDUAL_PER_SHIPMENT  # or CONSOLIDATED_MONTHLY or FWA_SETTLEMENT</p>
+<p>```</p>
+
+<p>Indonesian tax law requires NPWP on B2B invoices. `fakturaRequired: true` triggers Faktur Pajak generation.</p>
+
+<h2>Credit terms</h2>
+
+<p>```yaml</p>
+<p>creditTermsDays: 30               # Payment due within 30 days</p>
+<p>paymentDueDate: &quot;2026-05-22&quot;</p>
+<p>```</p>
+
+<p>Populated from the FWA `rateCard.paymentTerms` or from the offer&#x27;s payment-terms policy. The `reconcile` step references these when computing the settlement.</p>
+
+<h2>eKYC state</h2>
+
+<p>```yaml</p>
+<p>ekycFormReference: &quot;EKYC-JNE-2026-001&quot;</p>
+<p>ekycStatus: VERIFIED               # VERIFIED | PENDING_MANUAL_REVIEW | REJECTED</p>
+<p>ekycVerificationTimestamp: &quot;2026-04-22T09:30:00Z&quot;</p>
+<p>```</p>
+
+<p>For B2B transactions without an active FWA. Status returned in `/on_init`. If `REJECTED`, transaction terminates at `/on_init`. If `PENDING_MANUAL_REVIEW`, BPP sends an unsolicited `/on_init` when resolved.</p>
+
+<h2>Dispute state machine</h2>
+
+<p>Disputes are mutations on the contract. The `disputeState` field tracks where each dispute is:</p>
+
+<p>```</p>
+<p>DISPUTE_WEIGHT_RAISED</p>
+<p>  → DISPUTE_EVIDENCE_EXCHANGED</p>
+<p>  → DISPUTE_RESOLVED_ACCEPTED | DISPUTE_RESOLVED_NEGOTIATED | DISPUTE_ESCALATED</p>
+
+<p>CLAIM_RAISED</p>
+<p>  → CLAIM_UNDER_REVIEW</p>
+<p>  → CLAIM_RESOLVED_ACCEPTED | CLAIM_RESOLVED_PARTIAL | CLAIM_REJECTED | CLAIM_ESCALATED</p>
+<p>```</p>
+
+<p>The `disputeReason.policyIri` field carries the applicable policy IRI that governs the dispute resolution.</p>
+
+<h2>Claim lifecycle fields</h2>
+
+<p>```yaml</p>
+<p>claimType: DAMAGE                 # WEIGHT_DISCREPANCY | DAMAGE | LOSS | SLA_BREACH | etc.</p>
+<p>claimDetail:</p>
+<p>  policyIri: &quot;ion://policy/damage.standard.declared-value-cap&quot;</p>
+<p>  description: &quot;Package arrived with cracked screen&quot;</p>
+<p>  claimedAmount: 500000</p>
+<p>  evidenceUrls: [&quot;https://...&quot;]</p>
+<p>  evidenceType: PHOTO</p>
+<p>  reportedAt: &quot;2026-04-23T09:00:00Z&quot;</p>
+<p>claimAssessment:</p>
+<p>  outcome: PARTIAL                 # ACCEPTED | PARTIAL | REJECTED | PENDING_INSPECTION</p>
+<p>  offeredSettlement: 400000</p>
+<p>claimResolution:</p>
+<p>  decision: ACCEPT_SETTLEMENT</p>
+<p>```</p>
+
+<p>All claims flow through `/update` carrying these fields. The contract is the evidence chain.</p>
+
+<h2>Cold chain excursion</h2>
+
+<p>```yaml</p>
+<p>excursionDetail:</p>
+<p>  detectedAt: &quot;2026-04-22T15:30:00Z&quot;</p>
+<p>  location: &quot;In transit — Km 47 Pantura&quot;</p>
+<p>  measuredTemperature: 12.3</p>
+<p>  declaredMin: 2</p>
+<p>  declaredMax: 8</p>
+<p>  excursionDurationMinutes: 47</p>
+<p>excursionResolution:</p>
+<p>  decision: HOLD_FOR_INSPECTION   # CONTINUE_AT_BUYER_RISK | HOLD_FOR_INSPECTION | CANCEL_AND_RETURN</p>
+<p>```</p>
+
+<p>Populated by the cold-chain branch when an in-transit excursion is detected.</p>
+
+<h2>Reverse logistics fields</h2>
+
+<p>```yaml</p>
+<p>returnReason:</p>
+<p>  code: &quot;DEFECTIVE&quot;</p>
+<p>  policyIri: &quot;ion://policy/return.standard-7d-sellerpays&quot;</p>
+<p>returnItems:</p>
+<p>  - resourceId: &quot;SKU-001&quot;</p>
+<p>    quantity: 1</p>
+<p>reverseContractReference: &quot;jne-reverse-20260430-001&quot;</p>
+<p>```</p>
+
+<p>Populated by the reverse branches. `reverseContractReference` links to the new reverse shipment contract.</p>
+
+<h2>Cross-border fields</h2>
+
+<p>```yaml</p>
+<p>incoterms: DDP                    # EXW | FCA | FOB | CIF | DAP | DDP</p>
+<p>xbReturnDecision: RETURN_TO_ORIGIN  # RETURN_TO_ORIGIN | DESTROY_IN_PLACE | RE_EXPORT</p>
+<p>```</p>
+
+<p>Incoterms determine duty payment responsibility. XB return decision is made after customs rejection.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/contract/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

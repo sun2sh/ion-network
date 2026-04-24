@@ -1,0 +1,279 @@
+openapi: 3.1.1
+info:
+  title: ION Logistics Consideration Extension (v1)
+  description: >
+    Logistics sector consideration attributes. Defines the financial
+    structure of a logistics transaction — freight charge, surcharges,
+    COD charges, insurance, duties, taxes, and breakup line types.
+    Attaches to: beckn:Consideration.considerationAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    LogisticsConsiderationAttributes:
+      type: object
+      title: Logistics Consideration Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:LogisticsConsiderationAttributes
+      x-beckn-attaches-to: Consideration.considerationAttributes
+
+      properties:
+
+        # BREAKUP
+        breakup:
+          x-ion-mandatory: always
+          type: array
+          description: Line-item financial breakdown. Each entry is one charge type.
+          items:
+            type: object
+            properties:
+              titleType:
+                type: string
+                enum:
+                  # Base charges
+                  - FREIGHT_BASE
+                  - MINIMUM_CHARGE
+                  # COD — split into collection vs handling
+                  - COD_COLLECTION_FEE            # Fee for collection service
+                  - COD_HANDLING_FEE              # Cash handling/bank deposit fee
+                  - COD_CONVENIENCE_FEE           # Consumer-facing COD fee
+                  - COD_CHARGE                    # (legacy — deprecated; use COD_COLLECTION_FEE)
+                  # Surcharges
+                  - FUEL_SURCHARGE
+                  - PEAK_SEASON_SURCHARGE
+                  - EMERGENCY_BUNKER_SURCHARGE
+                  - CURRENCY_ADJUSTMENT_FACTOR
+                  - LOW_SULPHUR_SURCHARGE
+                  - SECURITY_SURCHARGE
+                  - CHASSIS_FEE
+                  - DEMURRAGE
+                  - DETENTION
+                  - TERMINAL_HANDLING_CHARGE
+                  - DOCUMENTATION_FEE
+                  - BILL_OF_LADING_FEE
+                  - CONTAINER_CLEANING_FEE
+                  - MULTI_STOP_PICKUP_FEE
+                  - MULTI_STOP_DELIVERY_FEE
+                  - SIGNATURE_ON_DELIVERY_FEE
+                  - INSIDE_DELIVERY_FEE
+                  - LIFTGATE_DELIVERY_FEE
+                  - RESIDENTIAL_DELIVERY_FEE
+                  - ARMED_ESCORT_FEE
+                  - WAITING_TIME_FEE
+                  - REDELIVERY_FEE
+                  # Handling
+                  - HANDLING_FEE
+                  - COLD_CHAIN_PREMIUM
+                  - HAZMAT_SURCHARGE
+                  - REEFER_POWER_FEE
+                  - REMOTE_AREA_SURCHARGE
+                  - OVERSIZE_SURCHARGE
+                  - OVERWEIGHT_SURCHARGE
+                  - HIGH_VALUE_DECLARATION_FEE
+                  # Insurance
+                  - INSURANCE_PREMIUM
+                  - WAR_RISK_PREMIUM
+                  - STRIKE_RISK_PREMIUM
+                  # Customs (LOG-XB)
+                  - CUSTOMS_DUTY                  # Actual Bea Cukai duty
+                  - CUSTOMS_HANDLING_FEE          # PPJK fee
+                  - INATRADE_PERMIT_FEE
+                  - FUMIGATION_FEE
+                  - PHYTOSANITARY_FEE
+                  # Warehouse
+                  - VALUE_ADDED_SERVICE_FEE
+                  - PICK_PACK_FEE
+                  - STORAGE_FEE
+                  - QC_INSPECTION_FEE
+                  - KITTING_FEE
+                  - LABELLING_FEE
+                  - PACKAGING_FEE
+                  - RETURNS_PROCESSING_FEE
+                  # Attempts and exceptions
+                  - RE_ATTEMPT_FEE
+                  - FAILED_PICKUP_FEE
+                  - RETURN_TO_SENDER_FEE
+                  # Adjustments
+                  - WEIGHT_DIFF_ADJUSTMENT
+                  - CREDIT_NOTE
+                  - DISCOUNT
+                  - VOLUME_REBATE
+                  - SLA_REBATE
+                  # Payment processing
+                  - PAYMENT_PROCESSING_FEE
+                  # Indonesian tax (source applicable rates from current DJP/PMK regulation)
+                  - PPN_TAX                       # VAT (current standard 11% under PMK 131/2024)
+                  - PPNBM_TAX                     # Luxury goods tax (rates vary by category)
+                  - PPN_DIBEBASKAN_CREDIT         # PPN exemption credit note
+                  - PPH_23_WITHHOLDING            # Withholding on services (rate per current PMK)
+                  - STAMP_DUTY                    # Bea meterai (current rate per PP 86/2021 — check DJP)
+              amount:
+                type: number
+              currency:
+                type: string
+                default: IDR
+              ppnRate:
+                type: number
+                description: >
+                  PPN rate actually charged on this line (decimal fraction).
+                  Source applicable rate from current DJP/PMK regulation — current
+                  standard is 0.11 per PMK 131/2024.
+                x-ion-mandatory: conditional
+
+        totalAmount:
+          type: number
+          x-ion-mandatory: always
+
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          default: IDR
+
+        # FREIGHT SPECIFIC
+        freightBase:
+          x-ion-mandatory: optional
+          type: number
+          description: Base freight charge before surcharges
+
+        fuelSurcharge:
+          x-ion-mandatory: optional
+          type: number
+          description: Fuel surcharge amount (computed from offer's fuelSurchargeFormula)
+
+        fuelSurchargeRate:
+          x-ion-mandatory: optional
+          type: number
+          description: Applied fuel surcharge rate
+
+        # COD
+        codCharge:
+          x-ion-mandatory: optional
+          type: number
+          description: COD collection fee charged by the LSP
+
+        codAmountCollected:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual COD amount collected at delivery
+
+        codRemittanceAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Net amount remitted to BAP after COD charges
+
+        codRemittanceBatchRef:
+          x-ion-mandatory: optional
+          type: string
+
+        codRemittanceTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+
+        codRemittanceMethod:
+          x-ion-mandatory: optional
+          type: string
+          enum: [BANK_TRANSFER, VIRTUAL_ACCOUNT, QRIS]
+
+        # INSURANCE
+        insurancePremium:
+          x-ion-mandatory: optional
+          type: number
+
+        insuranceCoverageAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Amount covered by insurance per shipment
+
+        # CUSTOMS AND DUTIES (LOG-XB)
+        dutyEstimate:
+          x-ion-mandatory: optional
+          type: number
+          description: Estimated customs duty (from /on_select)
+
+        taxEstimate:
+          x-ion-mandatory: optional
+          type: number
+          description: Estimated import tax (from /on_select)
+
+        actualDuty:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual customs duty (from import customs cleared event)
+
+        actualTax:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual import tax applied
+
+        # REVISED AMOUNTS (DISPUTE RESOLUTION)
+        revisedAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: BPP's proposed revised total after weight discrepancy
+
+        revisionBreakup:
+          x-ion-mandatory: optional
+          type: array
+          description: Breakup of the revised amount
+          items:
+            type: object
+            properties:
+              titleType:
+                type: string
+              originalAmount:
+                type: number
+              revisedAmount:
+                type: number
+              diff:
+                type: number
+
+        weightDiffAdjustment:
+          x-ion-mandatory: optional
+          type: number
+          description: Additional charge (or refund) from weight discrepancy resolution
+
+        addressChangeSurcharge:
+          x-ion-mandatory: optional
+          type: number
+          description: Surcharge when delivery zone changes due to address correction
+
+        rescheduleFee:
+          x-ion-mandatory: optional
+          type: number
+
+        failedPickupFee:
+          x-ion-mandatory: optional
+          type: number
+
+        # WAREHOUSE
+        storageFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Periodic storage fee per billing cycle
+
+        pickPackFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Per-unit pick and pack fee
+
+        valueAddedServiceFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Aggregated value-added services charge
+
+        # PPN
+        ppnRate:
+          x-ion-mandatory: optional
+          type: number
+          description: >
+            PPN (Pajak Pertambahan Nilai) rate applied to applicable charges.
+            Source applicable rate from current DJP/PMK regulation — current
+            standard is 0.11 (11%) per PMK 131/2024.
+
+        ppnAmount:
+          x-ion-mandatory: conditional
+          type: number
+          description: Computed PPN amount

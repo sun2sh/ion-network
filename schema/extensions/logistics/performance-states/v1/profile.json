@@ -1,0 +1,9 @@
+{
+  "id": "ion-logistics-performance-states-v1",
+  "version": "1.0.0",
+  "status": "ready",
+  "sectorCode": "B",
+  "attaches-to": "beckn:performance-states Attributes",
+  "maintainer": "ION Council — Sector B Lead",
+  "specVersion": "0.5.1-draft"
+}

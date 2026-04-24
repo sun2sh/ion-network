@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:LogisticsPerformanceAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:comment": "ION Logistics performance extension attributes. Attaches to beckn:Performance.PerformanceAttributes.",
+      "rdfs:label": "Logistics Performance Attributes",
+      "rdfs:isDefinedBy": "https://schema.ion.id/logistics/v1/"
+    }
+  ]
+}

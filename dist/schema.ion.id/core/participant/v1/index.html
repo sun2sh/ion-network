@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/participant/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/participant (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/participant/">participant</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/participant/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/participant/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONParticipantAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/core/participant/v1#IONParticipantAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>role</code></td><td>always</td><td>Role this participant plays in the transaction. The enum spans all ION sectors. Sector working groups may narrow this at</td></tr>
+<tr><td><code>subscriberId</code></td><td>conditional</td><td>ION-registered subscriber ID when the participant is itself a subscriber. Not applicable for individuals (end-consumer C</td></tr>
+<tr><td><code>npwp</code></td><td>conditional</td><td>NPWP (Nomor Pokok Wajib Pajak) tax ID. 16 digits post-2024 (Indonesia migrated from 15-digit to 16-digit format per PMK </td></tr>
+<tr><td><code>nib</code></td><td>conditional</td><td>NIB (Nomor Induk Berusaha) business registration — 13 digits</td></tr>
+<tr><td><code>nik</code></td><td>conditional</td><td>NIK — Indonesian customs registration number for international trade</td></tr>
+<tr><td><code>pkpStatus</code></td><td>conditional</td><td>VAT-registered status — declared at participant onboarding</td></tr>
+<tr><td><code>ktpNumber</code></td><td>conditional</td><td>KTP national ID number (16 digits)</td></tr>
+<tr><td><code>passportNumber</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>bankCode</code></td><td>conditional</td><td>BI bank code</td></tr>
+<tr><td><code>insurerLicenceNumber</code></td><td>conditional</td><td>OJK (Otoritas Jasa Keuangan) licence number</td></tr>
+<tr><td><code>authorisedSignatory</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>addressDetail</code></td><td>conditional</td><td>Full Indonesian administrative hierarchy plus landmark and accessibility metadata. Applies to participants with a physic</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/participant/v1</h1>
+
+<p>Cross-sector participant role taxonomy and identity fields.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Participant.participantAttributes`</p>
+
+<h2>What it covers</h2>
+<li>**Role taxonomy** — 20 roles spanning trade (BUYER, SELLER, MERCHANT), logistics (CONSIGNOR, CONSIGNEE, SHIPPER, FORWARDER, CARRIER, DRIVER), financial (BANK, UNDERWRITER, INSURANCE_BROKER), customs (CUSTOMS_BROKER, CUSTOMS_AUTHORITY), and government (GOVERNMENT_BUYER). Sector working groups may narrow this enum at publish time.</li>
+<li>**Indonesian business identity** — NPWP (16-digit 2024 format), NIB, NIK (customs), PKP status</li>
+<li>**Individual identity** — KTP, passport (for foreign participants)</li>
+<li>**Role-specific IDs** — bankCode, insurerLicenceNumber</li>
+<li>**Authorised signatory** — for B2B contracts</li>
+<li>**Address hierarchy** — provinsi → kabupaten → kecamatan → kelurahan → RT/RW, with patokan landmarks, areaType, 3T remote classification, and accessibility metadata (motorcycle/truck/boat reachability, road condition)</li>
+
+<h2>Why this lives in core, not a sector pack</h2>
+<p>Every ION sector has participants with roles, tax IDs, and physical addresses. Trade (B2C, B2B, XB, B2G), logistics, future mobility and finance all need the same taxonomy. Keeping it cross-sector prevents each sector from re-defining the same fields with slightly different shapes.</p>
+
+<h2>Sector-specific addenda</h2>
+<p>Logistics has its own thin addendum for licence fields that only apply to logistics roles (PPJK customs broker licence, driver SIM category): `schema/extensions/logistics/participant-logistics/v1/`.</p>
+
+<h2>History</h2>
+<p>New in v0.5.2. Consolidated from `schema/extensions/logistics/participant/v1/` in `ion-logistics` (logistics-specific licence fields split out into the addendum pack above).</p>
+
+<h2>Why address-detail lives here, not in `core/address/v1`</h2>
+<p>Beckn 2.0&#x27;s `Address` schema is closed (`additionalProperties: false`) and has no `addressAttributes` slot. ION-extended address fields therefore attach via participant attributes. `core/address/v1` exists and defines subdivision fields, but they mount on `Address` via `ionAddressAttributes`, which Beckn 2.0.0 supports as an out-of-band extension; `participant.addressDetail` is the full-fidelity alternative where you need per-participant address context (delivery preferences, accessibility, operating hours).</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/participant/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

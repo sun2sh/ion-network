@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/product/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/product (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/product/">product</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/product/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/product/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONProductCertifications</h3>
+<p class="iri">IRI: https://schema.ion.id/core/product/v1#IONProductCertifications</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>halalStatus</code></td><td>always</td><td>Halal certification status. MANDATORY for all food and beverage products. Strongly recommended for cosmetics and pharmac</td></tr>
+<tr><td><code>halalCertNumber</code></td><td>conditional</td><td>MUI (Majelis Ulama Indonesia) halal certificate number. Format varies by certification period.</td></tr>
+<tr><td><code>bpomRegNumber</code></td><td>optional</td><td>BPOM registration number for food, cosmetics, and pharmaceuticals. BPOM_MD: domestic product (e.g. MD-123456789012). BPO</td></tr>
+<tr><td><code>sniCertNumber</code></td><td>optional</td><td>SNI (Standar Nasional Indonesia) compliance certificate number. Required for products with mandatory SNI (electronics, P</td></tr>
+<tr><td><code>spPIRTNumber</code></td><td>optional</td><td>SP-P-IRT small-scale home food production license. For UMKM food sellers without full BPOM registration.</td></tr>
+<tr><td><code>ageRestricted</code></td><td>always</td><td>Whether this product requires age verification at point of purchase. True for tobacco, alcohol, adult content, and certa</td></tr>
+<tr><td><code>minAge</code></td><td>conditional</td><td>Minimum purchaser age in years when ageRestricted is true. Indonesia: 18 for tobacco and alcohol, 21 for certain substan</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/product/v1</h1>
+
+<p>Indonesian product certifications — halal status (MUI), BPOM, SNI, age restriction.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Resource.resourceAttributes`</p>
+
+<p>See `attributes.yaml` for complete field definitions.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/product/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

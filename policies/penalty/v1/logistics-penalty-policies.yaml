@@ -1,0 +1,92 @@
+# Penalty Policy: LSP TAT Breach
+# ion://policy/penalty.lsp-tat-breach
+
+id: penalty.lsp-tat-breach
+type: PENALTY_POLICY
+sector: logistics
+
+description: >
+  Applied when LSP fails to deliver within the committed TAT window.
+  Computation based on percentage of base freight by delay duration.
+
+triggerCondition:
+  event: DELIVERY_LATE
+  definition: "actual_delivery_timestamp > estimated_delivery_time"
+
+penaltyFormula:
+  delay0to24h:
+    rate: 0.05
+    basis: base_freight_charge
+    description: 5% of freight for up to 24 hours late
+  delay24to48h:
+    rate: 0.10
+    basis: base_freight_charge
+    description: 10% of freight for 24-48 hours late
+  delayOver48h:
+    rate: 0.20
+    basis: base_freight_charge
+    description: 20% of freight for over 48 hours late
+
+excludes:
+  - FORCE_MAJEURE
+  - CUSTOMS_HOLD_BUYER_FAULT
+  - BUYER_NOT_AVAILABLE_AT_DELIVERY
+  - INCORRECT_ADDRESS_BY_BUYER
+
+mechanism: DEDUCTED_FROM_SETTLEMENT
+appliedAt: reconcile_step
+
+---
+
+# Penalty Policy: COD Remittance Late
+# ion://policy/penalty.cod-remittance-late
+
+id: penalty.cod-remittance-late
+type: PENALTY_POLICY
+sector: logistics
+
+description: >
+  Applied when LSP fails to remit COD collections within the agreed
+  payment-terms window. Interest applies on the overdue amount.
+
+triggerCondition:
+  event: COD_REMITTANCE_OVERDUE
+  definition: "remittance_date > agreed_remittance_schedule_date"
+
+penaltyFormula:
+  dailyInterestRate: 0.001
+  basis: overdue_cod_amount
+  description: 0.1% per day on overdue COD balance
+
+escalation:
+  threshold: P7D_overdue
+  action: RAISE_TO_NETWORK
+
+mechanism: DEDUCTED_FROM_FUTURE_SETTLEMENT
+appliedAt: next_settlement_cycle
+
+---
+
+# Penalty Policy: Pickup Failed Consignor Fault
+# ion://policy/penalty.pickup-failed.consignor-fault
+
+id: penalty.pickup-failed.consignor-fault
+type: PENALTY_POLICY
+sector: logistics
+
+description: >
+  Applied when pickup fails because the consignor was not ready,
+  not present, or the package was not prepared. Covers futile trip cost.
+
+triggerCondition:
+  event: PICKUP_FAILED
+  attribution: CONSIGNOR_FAULT
+
+penaltyAmount:
+  type: FLAT
+  amount: 10000
+  currency: IDR
+  description: Futile trip fee — rider dispatched, nothing to pick up
+
+mechanism: ADDED_TO_NEXT_INVOICE
+appliedAt: pickup_failed_on_update

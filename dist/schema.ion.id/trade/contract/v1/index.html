@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>trade/contract/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for trade/contract (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/trade/">trade</a> &rsaquo; <a href="https://schema.ion.id/trade/contract/">contract</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>trade/contract/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/trade/contract/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Trade sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>TradeContractAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/trade/contract/v1#TradeContractAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>fulfillingLocationId</code></td><td>conditional</td><td>ID of the specific fulfilment centre that will fulfil this order. Populated by BPP at on_confirm after internal FC selec</td></tr>
+<tr><td><code>buyerInstructions</code></td><td>optional</td><td>Free-text delivery instructions from buyer. e.g. &quot;Leave at door&quot;, &quot;Call before arriving&quot;, &quot;Do not ring bell after 9pm&quot;.</td></tr>
+<tr><td><code>deliveryPreferences</code></td><td>optional</td><td></td></tr>
+<tr><td><code>invoicePreferences</code></td><td>optional</td><td>Buyer&#x27;s invoice type and tax identity declaration.</td></tr>
+<tr><td><code>fakturPajakReference</code></td><td>conditional</td><td>Faktur Pajak (e-Invoice) reference number assigned by BPP after contract confirm for PKP sellers. 16-digit DJP format.</td></tr>
+<tr><td><code>purchaseOrderReference</code></td><td>conditional</td><td>Buyer&#x27;s Purchase Order number for B2B wholesale transactions. Allows buyer to link ION contract to their internal PO sys</td></tr>
+<tr><td><code>cancellationReasonCode</code></td><td>conditional</td><td>Standardised cancellation reason code when contract is cancelled. Set by BPP on contract at time of cancellation.</td></tr>
+<tr><td><code>quoteTrail</code></td><td>optional</td><td>Trail of quote changes for price adjustment branch. Each entry records a delta to the original confirmed quote.</td></tr>
+<tr><td><code>partialCancellationAllowed</code></td><td>optional</td><td>Whether individual items in a multi-item order can be cancelled.</td></tr>
+<tr><td><code>replacementPreferred</code></td><td>optional</td><td>Whether buyer prefers replacement over refund in case of defective or wrong item. Declared at confirm.</td></tr>
+<tr><td><code>disputeWindowDays</code></td><td>optional</td><td>Number of days after delivery within which buyer may raise a dispute. Defaults to ION network policy if not declared.</td></tr>
+<tr><td><code>creditTermsDays</code></td><td>conditional</td><td>Number of days credit extended to the buyer from delivery date. 0 = prepaid. Common values: 7, 14, 30, 45, 60, 90.</td></tr>
+<tr><td><code>paymentDueDate</code></td><td>conditional</td><td>Absolute datetime by which payment must be made for credit orders. Computed from delivery date + creditTermsDays.</td></tr>
+<tr><td><code>subscriptionBillingCycle</code></td><td>conditional</td><td>Billing cycle for subscription commerce pattern.</td></tr>
+<tr><td><code>subscriptionNextBillingDate</code></td><td>conditional</td><td>Date-time of next billing event. Updated by BPP after each successful billing.</td></tr>
+<tr><td><code>linkedContractId</code></td><td>conditional</td><td>Reference to the Trade Contract this Logistics Contract serves. Enables ION Central to trace causal relationship between</td></tr>
+<tr><td><code>codAmount</code></td><td>conditional</td><td>Total cash amount to be collected from consumer at delivery for COD orders. String decimal in IDR.</td></tr>
+<tr><td><code>beaCukaiReference</code></td><td>conditional</td><td>Indonesian Customs (Bea Cukai) clearance reference number. Required for all international inbound shipments.</td></tr>
+<tr><td><code>liveCommerceContext</code></td><td>conditional</td><td>Context for orders placed via live commerce or social commerce (TikTok Shop, Shopee Live, Tokopedia Play, OTT-embedded c</td></tr>
+<tr><td><code>refundDestination</code></td><td>optional</td><td>Where refund will be credited. When buyer does not specify, default is ORIGINAL_PAYMENT_METHOD. Platform wallets often f</td></tr>
+<tr><td><code>subscriptionTrialDays</code></td><td>optional</td><td>First N days free. Billing starts on day N+1.</td></tr>
+<tr><td><code>subscriptionPauseType</code></td><td>optional</td><td>Current pause state for B2C-SUB orders</td></tr>
+<tr><td><code>subscriptionPauseUntil</code></td><td>conditional</td><td>Date to automatically resume. Required when pauseType=PAUSED_UNTIL_DATE</td></tr>
+<tr><td><code>giftingDetails</code></td><td>optional</td><td>Structured gifting details replacing the simple gift flag.</td></tr>
+<tr><td><code>paymentSchedule</code></td><td>conditional</td><td>Multi-milestone payment schedule for partial-payment offers (down-payment + balance, milestone-based for services, etc.)</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>trade/contract/v1</h1>
+
+<p>Order-level contract attributes — buyer instructions, gift, invoice preferences, credit terms, subscription.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Contract.contractAttributes`</p>
+
+<p>See `attributes.yaml` for complete field definitions.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/trade/contract/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

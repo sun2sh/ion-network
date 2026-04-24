@@ -1,0 +1,10 @@
+{
+  "id": "ion-logistics-LOG-HYPERLOCAL-v1",
+  "version": "1.0.0",
+  "status": "ready",
+  "sectorCode": "B",
+  "sector": "Logistics",
+  "maintainer": "ION Council — Sector B Lead",
+  "specVersion": "0.5.1-draft",
+  "beckn": "2.0.0"
+}

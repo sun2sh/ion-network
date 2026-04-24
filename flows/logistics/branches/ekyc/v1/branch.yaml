@@ -1,0 +1,100 @@
+# ION Logistics Branch — eKYC v1
+# NOT OAS. ION flow specification document.
+# Activates for B2B transactions without an active FWA.
+
+id: ion-logistics-branch-ekyc-v1
+version: "1.0.0"
+branchType: ekyc
+sectorCode: B
+status: ready
+description: >
+  Electronic KYC exchange at /init for B2B logistics transactions where
+  no active Framework Agreement exists between consignor and provider.
+  Verifies NIB, NPWP, SIUP, authorised signatories. One-time per party
+  pair; subsequent transactions reuse the verified credentials.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-XB
+
+window:
+  earliest: init
+  latest: on_init
+
+activationTrigger: >
+  Transaction has B2B indicators (NPWP, NIB on consignor or consignee) AND
+  no fwaReference in contract.contractAttributes
+
+subBranches:
+
+  ekyc-first-transaction:
+    id: ekyc-first-transaction
+    description: >
+      First-ever transaction between this consignor-provider pair
+      outside an FWA. Full KYC submission required.
+    steps:
+      - step: init
+        from: BAP
+        to: BPP
+        direction: request
+        overrides: LOG-PARCEL or LOG-FREIGHT init
+        requiredFields:
+          - message.contract.contractAttributes.ekycFormReference
+          - message.contract.participants[role=CONSIGNOR].npwp
+          - message.contract.participants[role=CONSIGNOR].nib
+          - message.contract.participants[role=CONSIGNOR].siupNumber
+          - message.contract.participants[role=CONSIGNOR].authorisedSignatory.name
+          - message.contract.participants[role=CONSIGNOR].authorisedSignatory.nik
+        conditionalFields:
+          - field: message.contract.participants[role=CONSIGNOR].documents.businessRegistrationDoc
+            condition: required for regulated categories
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.ekycStatus
+          - message.contract.contractAttributes.ekycVerificationTimestamp
+        conditionalFields:
+          - field: message.contract.contractAttributes.ekycRejectionReason
+            condition: required if ekycStatus is REJECTED
+
+    businessRules:
+      - If ekycStatus is REJECTED, transaction terminates at /on_init
+      - If ekycStatus is PENDING_MANUAL_REVIEW, /on_init returns PENDING and BPP sends unsolicited /on_init upon resolution
+      - Verified credentials are cached by BPP and re-used for future transactions with this consignor
+
+    errors:
+      - ION-LOG-6001  # eKYC verification failed — NPWP not found in DJP registry
+      - ION-LOG-6002  # eKYC verification failed — NIB invalid
+      - ION-LOG-6003  # eKYC verification pending manual review
+      - ION-LOG-6004  # Authorised signatory mismatch
+
+  ekyc-refresh:
+    id: ekyc-refresh
+    description: >
+      Periodic KYC refresh, e.g., after annual validity period or when
+      business credentials change. Lighter than first-transaction eKYC
+      — references existing verification and updates deltas.
+    steps:
+      - step: init
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.ekycRefreshReason
+          - message.contract.contractAttributes.previousEkycReference
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        direction: callback
+
+policyReferences:
+  - ion://policy/ekyc.b2b-logistics.standard
+  - ion://policy/ekyc.b2b-logistics.high-value
+
+relatedBranches:
+  - fwa-activation  # If an FWA is registered later, future transactions skip eKYC

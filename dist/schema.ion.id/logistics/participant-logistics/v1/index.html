@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/participant-logistics/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/participant-logistics (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/participant-logistics/">participant-logistics</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/participant-logistics/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/participant-logistics/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ 
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsParticipantAddendum</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/participant-logistics/v1#LogisticsParticipantAddendum</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>ppjkLicenceNumber</code></td><td>conditional</td><td>PPJK (Pengusaha Pengurusan Jasa Kepabeanan) licence number — Indonesian customs-broker licence. Governs who may file cus</td></tr>
+<tr><td><code>driverLicenceNumber</code></td><td>conditional</td><td>SIM (Surat Izin Mengemudi) — Indonesian driving licence number</td></tr>
+<tr><td><code>driverLicenceCategory</code></td><td>conditional</td><td>SIM category — Indonesian driving licence classes. A: small passenger cars / light commercial. B_I: heavy trucks under 3</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-logistics/participant-logistics/v1</h1>
+
+<p>Thin addendum to `core/participant/v1` carrying participant identity fields that apply only to logistics roles.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Participant.participantAttributes`</p>
+
+<h2>Depends on</h2>
+<p>`core/participant/v1` — this addendum assumes the role taxonomy, identity fields, and addressDetail are already declared by the core participant pack.</p>
+
+<h2>Fields</h2>
+<li>`ppjkLicenceNumber` — PPJK customs-broker licence (required when `role=CUSTOMS_BROKER`)</li>
+<li>`driverLicenceNumber` — Indonesian SIM (required when `role=DRIVER`)</li>
+<li>`driverLicenceCategory` — SIM class (A, B_I, B_II, C, D)</li>
+
+<h2>Why this exists as a separate pack</h2>
+
+<p>These three fields are strictly logistics-specific — trade, finance, tourism, healthcare have no need for PPJK customs licences or driver SIM categories. Keeping them out of `core/participant/v1` keeps the core pack tight and avoids forcing every sector to carry fields it doesn&#x27;t use.</p>
+
+<h2>How both blocks coexist on one participant</h2>
+
+<p>Beckn 2.0 allows `participantAttributes` to carry multiple JSON-LD typed blocks. Both the core participant block and this addendum attach to the same slot with distinct `@type` values and disjoint field sets. Implementations populating a DRIVER or CUSTOMS_BROKER participant will typically carry both blocks in the same payload.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/participant-logistics/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

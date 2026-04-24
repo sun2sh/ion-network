@@ -1,0 +1,185 @@
+# ION Logistics Branch — Exception v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-exception-v1
+version: "1.0.0"
+branchType: exception
+sectorCode: B
+status: ready
+description: >
+  Exception handling for damage, loss, address-unserviceable, and
+  pickup-failed scenarios. All claims flow through /update with policy
+  IRI references. Escalation to /raise after bilateral SLA breach.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-HYPERLOCAL
+  - LOG-XB
+
+window:
+  earliest: on_confirm
+  latest: contract_COMPLETE
+
+subBranches:
+
+  damage-claim:
+    id: damage-claim
+    description: >
+      Package arrived damaged. Buyer raises claim via /update. BPP
+      responds with assessment. Resolution per damage policy IRI.
+    activationTrigger: >
+      Buyer reports damage at delivery or within evidence policy window.
+      For cold chain, coldChainIntegrityVerified = false auto-qualifies.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.claimType
+          - message.contract.contractAttributes.claimDetail.policyIri
+          - message.contract.contractAttributes.claimDetail.description
+          - message.contract.contractAttributes.claimDetail.claimedAmount
+          - message.contract.contractAttributes.claimDetail.evidenceUrls[]
+          - message.contract.contractAttributes.claimDetail.evidenceType
+          - message.contract.contractAttributes.claimDetail.reportedAt
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.claimAssessment.outcome
+          - message.contract.contractAttributes.claimAssessment.offeredSettlement
+        conditionalFields:
+          - field: message.contract.contractAttributes.claimAssessment.rejectionReason
+            condition: required if outcome is REJECTED
+          - field: message.contract.contractAttributes.claimAssessment.inspectionRequired
+            condition: set to true if LSP wants to inspect the package
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP accepts or counters.
+        requiredFields:
+          - message.contract.contractAttributes.claimResolution.decision
+        decisionOptions:
+          - ACCEPT_SETTLEMENT
+          - COUNTER_WITH_EVIDENCE
+          - ESCALATE
+
+    claimStates:
+      - CLAIM_RAISED
+      - CLAIM_UNDER_REVIEW
+      - CLAIM_RESOLVED_ACCEPTED
+      - CLAIM_RESOLVED_PARTIAL
+      - CLAIM_REJECTED
+      - CLAIM_ESCALATED
+
+    policyReferences:
+      - ion://policy/damage.standard.declared-value-cap
+      - ion://policy/damage.enterprise.full-declared-value
+      - ion://policy/evidence.standard.photo-24hr
+      - ion://policy/evidence.enterprise.photo-2hr-with-gps
+
+  loss-claim:
+    id: loss-claim
+    description: >
+      Package not located after last known scan + SLA breach threshold.
+      Either party can initiate after the threshold defined in loss policy.
+    activationTrigger: >
+      Current timestamp > last known scan timestamp + loss-threshold-hours
+      from the applicable loss policy IRI.
+    steps:
+      - step: update
+        from: BAP or BPP
+        to: counterparty
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.claimType
+          - message.contract.contractAttributes.claimDetail.policyIri
+          - message.contract.contractAttributes.claimDetail.lastKnownScanTimestamp
+          - message.contract.contractAttributes.claimDetail.lastKnownScanLocation
+          - message.contract.contractAttributes.claimDetail.claimedAmount
+
+      - step: on_update
+        from: counterparty
+        to: initiator
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.claimAssessment.outcome
+          - message.contract.contractAttributes.claimAssessment.searchStatus
+
+    policyReferences:
+      - ion://policy/loss.standard.72hr-threshold
+      - ion://policy/loss.enterprise.48hr-threshold
+      - ion://policy/liability.loss-cap-per-shipment
+
+  address-unserviceable:
+    id: address-unserviceable
+    description: >
+      Destination discovered unserviceable after confirmation. BPP
+      notifies BAP. BAP must provide alternative address or cancel.
+    activationTrigger: >
+      BPP discovers pincode is not serviceable in transit
+      (recent coverage changes, remote area, etc.)
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.unserviceableReason
+          - message.contract.contractAttributes.buyerResolutionDeadline
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP provides alternative address or requests cancellation.
+        requiredFields:
+          - message.contract.contractAttributes.addressUnserviceableResolution
+        resolutionOptions:
+          - NEW_ADDRESS
+          - CANCEL_ORDER
+
+  pickup-failed:
+    id: pickup-failed
+    description: >
+      Consignor was not ready or accessible at pickup. Attribution
+      determines if consignor is charged a failed-pickup fee per policy.
+    activationTrigger: >
+      Rider arrives at pickup location; consignor not ready, not present,
+      or package not prepared.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.pickupFailedReason
+          - message.contract.performance[].performanceAttributes.pickupAttemptTimestamp
+          - message.contract.performance[].performanceAttributes.failureAttribution
+        failureAttribution:
+          - CONSIGNOR_FAULT
+          - LSP_FAULT
+          - FORCE_MAJEURE
+        conditionalFields:
+          - field: message.contract.consideration.considerationAttributes.failedPickupFee
+            condition: required if failureAttribution = CONSIGNOR_FAULT and policy charges fee
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP provides rescheduled pickup time or cancels.
+        requiredFields:
+          - message.contract.contractAttributes.pickupFailedResolution
+
+policyReferences:
+  - ion://policy/damage.standard.declared-value-cap
+  - ion://policy/loss.standard.72hr-threshold
+  - ion://policy/liability.loss-cap-per-shipment
+  - ion://policy/penalty.pickup-failed.consignor-fault

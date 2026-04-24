@@ -37,7 +37,7 @@ Each resource carries a `digital` sub-object with denomination, target type, del
 
 ## Tax treatment
 Digital goods often have specific tax treatment:
-- **Pulsa and data packages**: PPN 11% applies on reseller margin (not face value) per PMK 6/2021
+- **Pulsa and data packages**: PPN (at the current applicable rate, e.g. 11% under PMK 131/2024) applies on reseller margin (not face value) per PMK 6/2021
 - **Bill payments**: typically exempt from PPN (pass-through)
 - **Vouchers and gift cards**: PPN on issuance, not on redemption
 - **Cross-border streaming (Netflix)**: PPN PMSE applies (PMK 48/2020)

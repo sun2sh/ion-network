@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>schema.ion.id — ION Network Vocabulary</title>
+<meta name="description" content="ION Network vocabulary — extension attribute types, policies, states, and error categories used across ION-network participants.">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .packs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.8rem;margin-top:1rem}
+ .pack{padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px;text-decoration:none;color:#1a1a1a}
+ .pack:hover{background:#eef3fa}
+ .pack code{color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.95rem}
+ .pack small{display:block;color:#666;margin-top:.3rem}
+ section.layer{margin-top:2.5rem}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+</style>
+</head>
+<body>
+
+<h1>schema.ion.id</h1>
+<p class="meta">The ION Network vocabulary. Extension attribute types, policies, states, and error categories used across ION participants.</p>
+
+<p>ION is built on <a href="https://spec.beckn.io">Beckn Protocol v2.0.0</a>. Beckn's core transport types live at <a href="https://schema.beckn.io">schema.beckn.io</a>. ION's extensions — Indonesian regulatory fields, sector-specific attributes, and ION-specific protocol extensions — live here.</p>
+
+<p>Every pack is addressable at <code>https://schema.ion.id/{layer}/{pack}/{version}/</code>. Every term has a canonical IRI of the form <code>https://schema.ion.id/{layer}/{pack}/{version}#{term}</code>. Contexts are served as <code>application/ld+json</code>; human-readable pages render as <code>text/html</code>.</p>
+
+<section class="layer"><h2>L4 — Cross-sector core</h2>
+<div class="packs-grid">
+<a class="pack" href="/core/address/v1/"><code>core/address/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/identity/v1/"><code>core/identity/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/localization/v1/"><code>core/localization/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/participant/v1/"><code>core/participant/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/payment/v1/"><code>core/payment/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/product/v1/"><code>core/product/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/raise/v1/"><code>core/raise/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/rating/v1/"><code>core/rating/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/reconcile/v1/"><code>core/reconcile/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/support/v1/"><code>core/support/v1</code><small>core &middot; v1</small></a>
+<a class="pack" href="/core/tax/v1/"><code>core/tax/v1</code><small>core &middot; v1</small></a>
+</div></section>
+<section class="layer"><h2>L5 — Trade sector</h2>
+<div class="packs-grid">
+<a class="pack" href="/trade/commitment/v1/"><code>trade/commitment/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/consideration/v1/"><code>trade/consideration/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/contract/v1/"><code>trade/contract/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/offer/v1/"><code>trade/offer/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/performance/v1/"><code>trade/performance/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/performance-states/v1/"><code>trade/performance-states/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/provider/v1/"><code>trade/provider/v1</code><small>trade &middot; v1</small></a>
+<a class="pack" href="/trade/resource/v1/"><code>trade/resource/v1</code><small>trade &middot; v1</small></a>
+</div></section>
+<section class="layer"><h2>L5 — Logistics sector</h2>
+<div class="packs-grid">
+<a class="pack" href="/logistics/commitment/v1/"><code>logistics/commitment/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/consideration/v1/"><code>logistics/consideration/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/contract/v1/"><code>logistics/contract/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/offer/v1/"><code>logistics/offer/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/participant-logistics/v1/"><code>logistics/participant-logistics/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/performance/v1/"><code>logistics/performance/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/performance-states/v1/"><code>logistics/performance-states/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/provider/v1/"><code>logistics/provider/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/resource/v1/"><code>logistics/resource/v1</code><small>logistics &middot; v1</small></a>
+<a class="pack" href="/logistics/tracking/v1/"><code>logistics/tracking/v1</code><small>logistics &middot; v1</small></a>
+</div></section>
+
+<footer>
+ Part of the <a href="https://github.com/ion-network/ion-network">ion-network</a> specification.
+ Built 29 packs from ion-network 0.5.2-draft. Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -146,4 +146,4 @@ considerationAdditions:
   breakupLineType:
     FINANCE_CHARGE: interest on BNPL credit tenure
   pphWithholding:
-    note: PPh23 2% withheld by buyer for services components if applicable
+    note: PPh23 withheld by buyer for services components if applicable (rate per current PMK)

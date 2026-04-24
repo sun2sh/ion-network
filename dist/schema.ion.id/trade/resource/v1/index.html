@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>trade/resource/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for trade/resource (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/trade/">trade</a> &rsaquo; <a href="https://schema.ion.id/trade/resource/">resource</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>trade/resource/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/trade/resource/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Trade sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LocalisedText</h3>
+<p class="iri">IRI: https://schema.ion.id/trade/resource/v1#LocalisedText</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td>optional</td><td></td></tr>
+<tr><td><code>en</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+<h3>TradeResourceAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/trade/resource/v1#TradeResourceAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>quantity</code></td><td>always</td><td></td></tr>
+<tr><td><code>resourceStructure</code></td><td>always</td><td>PLAIN: single SKU, no choices. VARIANT: one of several pre-defined options of a parent. WITH_EXTRAS: base item with opti</td></tr>
+<tr><td><code>resourceTangibility</code></td><td>always</td><td>PHYSICAL: tangible goods requiring logistics fulfilment. DIGITAL_VOUCHER: voucher code, gift card, in-game currency (del</td></tr>
+<tr><td><code>parentResourceId</code></td><td>conditional</td><td>ID of parent resource. Present on VARIANT and WITH_EXTRAS.</td></tr>
+<tr><td><code>isDefaultVariant</code></td><td>conditional</td><td>Whether this is the default variant shown to consumer.</td></tr>
+<tr><td><code>variantGroup</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>variantMatrix</code></td><td>optional</td><td>Multi-axis variant declaration. Use instead of explicit VARIANT resources when combinations are derivable. BPP MUST reso</td></tr>
+<tr><td><code>customisationGroups</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>menuCategory</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>preparationTime</code></td><td>conditional</td><td>ISO 8601 duration. Time from order confirm to item ready.</td></tr>
+<tr><td><code>productCode</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>images</code></td><td>always</td><td>First image is primary thumbnail. Additional images for gallery.</td></tr>
+<tr><td><code>itemRating</code></td><td>optional</td><td>Aggregate seller-maintained rating 1-5. Base items only.</td></tr>
+<tr><td><code>logisticsServiceType</code></td><td>always</td><td>Logistics service type. Determines flow and performance states.</td></tr>
+<tr><td><code>availability</code></td><td>always</td><td></td></tr>
+<tr><td><code>identity</code></td><td>optional</td><td></td></tr>
+<tr><td><code>physical</code></td><td>optional</td><td></td></tr>
+<tr><td><code>packaged</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>regulatory</code></td><td>optional</td><td></td></tr>
+<tr><td><code>food</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>preparation</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>fashion</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>electronics</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>beauty</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>agritech</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>pharmacy</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>installation</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>usage</code></td><td>optional</td><td></td></tr>
+<tr><td><code>warranty</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>ageRestricted</code></td><td>always</td><td>Whether product requires age verification at purchase</td></tr>
+<tr><td><code>minAge</code></td><td>conditional</td><td>Minimum purchaser age when ageRestricted is true</td></tr>
+<tr><td><code>countryOfOrigin</code></td><td>always</td><td>ISO 3166-1 alpha-3 country code</td></tr>
+<tr><td><code>canonicalId</code></td><td>conditional</td><td>Cross-provider product identity. Multiple providers selling the same product share the same canonicalId. Enables Buy Box</td></tr>
+<tr><td><code>featuredOfferEligible</code></td><td>optional</td><td>Whether this offer is eligible for &quot;featured offer&quot; / Buy Box selection. BPP declares eligibility; BAP runs selection al</td></tr>
+<tr><td><code>featuredOfferScore</code></td><td>optional</td><td>BPP-computed score used by BAP Buy Box algorithm. Factors in price competitiveness, rating, SLA reliability, stock depth</td></tr>
+<tr><td><code>imageSet</code></td><td>optional</td><td>Structured images with role metadata. More expressive than the flat images[] array. BAPs can render appropriate images p</td></tr>
+<tr><td><code>videos</code></td><td>optional</td><td></td></tr>
+<tr><td><code>bundleComposition</code></td><td>conditional</td><td>Components of a bundle SKU. Required for bundle offers where individual components carry their own regulatory registrati</td></tr>
+<tr><td><code>brandIdentity</code></td><td>optional</td><td>Structured brand identity. Replaces string-only identity.brand for Official Store / Brand Registry programmes.</td></tr>
+<tr><td><code>regionOfOrigin</code></td><td>conditional</td><td>ISO 3166-2 sub-national region code for geographic indication. Required when product claims origin-protected status (Kop</td></tr>
+<tr><td><code>geographicIndicationCert</code></td><td>conditional</td><td>Geographic Indication certificate number from DJKI (Direktorat Jenderal Kekayaan Intelektual).</td></tr>
+<tr><td><code>digital</code></td><td>conditional</td><td>Digital goods attributes. Required for DIGITAL_VOUCHER, DIGITAL_TOP_UP, and DIGITAL_SUBSCRIPTION resource types.</td></tr>
+<tr><td><code>dataResidency</code></td><td>conditional</td><td>Data residency requirement for this resource. DOMESTIC_ONLY means all PII and transaction data must be processed and sto</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>trade/resource/v1</h1>
+
+<p>Physical product attributes for all Trade sector categories.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Resource.resourceAttributes`</p>
+
+<h2>Availability model</h2>
+<p>**Stock count is NEVER transmitted over the network.**</p>
+<p>Publish availability signal only:</p>
+<li>`IN_STOCK` — adequate quantity</li>
+<li>`LOW_STOCK` — limited, BAP may show urgency</li>
+<li>`OUT_OF_STOCK` — not available</li>
+<li>`PREORDER` — available for pre-order</li>
+<li>`DISCONTINUED` — permanently removed</li>
+
+<h2>Resource types</h2>
+<table>
+<thead><tr><th>Type</th><th>Use</th><th>Required fields</th></tr></thead><tbody>
+<tr><td>PLAIN</td><td>Single SKU, no choices</td><td>availability, images</td></tr>
+<tr><td>VARIANT</td><td>One of several options of a parent</td><td>parentResourceId, variantGroup, isDefaultVariant</td></tr>
+<tr><td>WITH_EXTRAS</td><td>Base + optional add-ons</td><td>customisationGroups</td></tr>
+<tr><td>COMPOSED</td><td>Base + mandatory/optional groups</td><td>customisationGroups</td></tr>
+</tbody></table>
+
+<h2>Category-specific sub-objects</h2>
+<table>
+<thead><tr><th>Sub-object</th><th>Applicable to</th></tr></thead><tbody>
+<tr><td>food</td><td>Food &amp; Beverage, Grocery</td></tr>
+<tr><td>preparation</td><td>F&amp;B, perishables</td></tr>
+<tr><td>packaged</td><td>FMCG, grocery, pharma, cosmetics</td></tr>
+<tr><td>regulatory</td><td>All regulated products</td></tr>
+<tr><td>fashion</td><td>Apparel, accessories</td></tr>
+<tr><td>electronics</td><td>Electronics, appliances</td></tr>
+<tr><td>beauty</td><td>Cosmetics, personal care</td></tr>
+<tr><td>agritech</td><td>Fresh produce, agricultural</td></tr>
+<tr><td>pharmacy</td><td>Medicines, OTC</td></tr>
+<tr><td>installation</td><td>Appliances, furniture</td></tr>
+<tr><td>warranty</td><td>Electronics, durables</td></tr>
+</tbody></table>
+
+<h2>Regulatory</h2>
+<p>PerBPOM 31/2018 (packaged goods), UU 8/1999 (consumer protection),</p>
+<p>PerBPOM 23/2019 (cosmetics), PP 36/2023 (electronics warranty)</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/trade/resource/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "beckn": "https://schema.beckn.io/v2/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "capacityUnitType": "ion:capacityUnitType",
+    "capacityUnits": "ion:capacityUnits",
+    "containerReference": "ion:containerReference",
+    "expiryDate": "ion:expiryDate",
+    "ion:LogisticsCommitmentAttributes": {
+      "@id": "ion:LogisticsCommitmentAttributes"
+    },
+    "lineId": "ion:lineId",
+    "lotNumber": "ion:lotNumber",
+    "offerId": "ion:offerId",
+    "packageCount": "ion:packageCount",
+    "parentCommitmentId": "ion:parentCommitmentId",
+    "quantity": "ion:quantity",
+    "requestedDepartureDate": "ion:requestedDepartureDate",
+    "resourceId": "ion:resourceId",
+    "sealNumber": "ion:sealNumber",
+    "skuId": "ion:skuId",
+    "specialInstructions": "ion:specialInstructions",
+    "totalVolume": "ion:totalVolume",
+    "totalWeight": "ion:totalWeight",
+    "vehicleRegistration": "ion:vehicleRegistration"
+  }
+}

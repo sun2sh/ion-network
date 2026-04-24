@@ -1,0 +1,185 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "on_confirm",
+    "transactionId": "txn-freight-001",
+    "messageId": "msg-freight-onconf-001",
+    "bapId": "tokopedia.com",
+    "bppId": "samudera.co.id",
+    "timestamp": "2026-04-22T11:00:00.000Z",
+    "version": "2.0.0",
+    "networkId": "ion.id/logistics"
+  },
+  "message": {
+    "contract": {
+      "id": "smd-fcl-20260422-001",
+      "status": {
+        "code": "ACTIVE"
+      },
+      "participants": [
+        {
+          "id": "samudera-main",
+          "descriptor": {
+            "name": "Samudera Indonesia"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "PROVIDER"
+          }
+        },
+        {
+          "id": "seller-corp-001",
+          "organization": {
+            "name": "PT Elektronik Nusantara",
+            "npwp": "01.234.567.8-000.000"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNOR"
+          },
+          "descriptor": {
+            "name": "seller-corp-001"
+          }
+        },
+        {
+          "id": "buyer-corp-001",
+          "organization": {
+            "name": "PT Distribusi Sulawesi",
+            "npwp": "02.345.678.9-000.000"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNEE"
+          },
+          "descriptor": {
+            "name": "buyer-corp-001"
+          }
+        }
+      ],
+      "commitments": [
+        {
+          "id": "cmt-freight-001",
+          "commitmentAttributes": {
+            "lineId": "L1",
+            "resourceId": "samudera-fcl-service",
+            "offerId": "samudera-fcl-java-sulawesi",
+            "totalWeight": {
+              "value": 18500,
+              "unit": "kilogram"
+            },
+            "totalVolume": {
+              "value": 24.5,
+              "unit": "cbm"
+            },
+            "containerReference": "SAMU1234567",
+            "sealNumber": "SL987654",
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes"
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "perf-freight-001",
+          "status": {
+            "descriptor": {
+              "code": "BOOKING_CONFIRMED"
+            }
+          },
+          "performanceAttributes": {
+            "billOfLadingReference": "BL-SAMU-20260422-001",
+            "scheduledDeparture": "2026-04-25T08:00:00.000Z",
+            "scheduledArrival": "2026-04-28T14:00:00.000Z",
+            "capacityConfirmed": true,
+            "reservedCapacity": {
+              "quantity": 1,
+              "unit": "container_20ft",
+              "reservationToken": "CAP-RES-20260422-001"
+            },
+            "manifestVerified": false,
+            "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
+            "@type": "ion:LogisticsPerformanceAttributes"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "location": {
+                "address": {
+                  "name": "Pelabuhan Tanjung Priok",
+                  "city": "Jakarta Utara",
+                  "area_code": "14310"
+                }
+              }
+            },
+            {
+              "type": "END",
+              "location": {
+                "address": {
+                  "name": "Pelabuhan Makassar",
+                  "city": "Makassar",
+                  "area_code": "90111"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "consideration": [
+        {
+          "considerationAttributes": {
+            "breakup": [
+              {
+                "titleType": "FREIGHT_BASE",
+                "amount": 8500000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "FUEL_SURCHARGE",
+                "amount": 680000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "PPN_TAX",
+                "amount": 1014800,
+                "currency": "IDR",
+                "ppnRate": 0.11
+              }
+            ],
+            "totalAmount": 10194800,
+            "currency": "IDR",
+            "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
+            "@type": "ion:LogisticsConsiderationAttributes"
+          },
+          "id": "cons-001"
+        }
+      ],
+      "settlements": [
+        {
+          "settlementAttributes": {
+            "status": "PENDING",
+            "method": "BANK_TRANSFER",
+            "collectedBy": "BPP",
+            "@context": "https://schema.ion.id/logistics/v1/payment/context.jsonld",
+            "@type": "ion:LogisticsPaymentAttributes"
+          },
+          "status": "DRAFT"
+        }
+      ],
+      "contractAttributes": {
+        "npwp": "01.234.567.8-000.000",
+        "nib": "1234567890123",
+        "creditTermsDays": 30,
+        "paymentDueDate": "2026-05-22",
+        "invoicePreferences": {
+          "fakturaRequired": true,
+          "invoicingModel": "INDIVIDUAL_PER_SHIPMENT"
+        },
+        "@context": "https://schema.ion.id/logistics/v1/contract/context.jsonld",
+        "@type": "ion:LogisticsContractAttributes"
+      }
+    }
+  }
+}

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/consideration/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/consideration (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/consideration/">consideration</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/consideration/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/consideration/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsConsiderationAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/consideration/v1#LogisticsConsiderationAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>breakup</code></td><td>always</td><td>Line-item financial breakdown. Each entry is one charge type.</td></tr>
+<tr><td><code>totalAmount</code></td><td>always</td><td></td></tr>
+<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
+<tr><td><code>freightBase</code></td><td>optional</td><td>Base freight charge before surcharges</td></tr>
+<tr><td><code>fuelSurcharge</code></td><td>optional</td><td>Fuel surcharge amount (computed from offer&#x27;s fuelSurchargeFormula)</td></tr>
+<tr><td><code>fuelSurchargeRate</code></td><td>optional</td><td>Applied fuel surcharge rate</td></tr>
+<tr><td><code>codCharge</code></td><td>optional</td><td>COD collection fee charged by the LSP</td></tr>
+<tr><td><code>codAmountCollected</code></td><td>optional</td><td>Actual COD amount collected at delivery</td></tr>
+<tr><td><code>codRemittanceAmount</code></td><td>optional</td><td>Net amount remitted to BAP after COD charges</td></tr>
+<tr><td><code>codRemittanceBatchRef</code></td><td>optional</td><td></td></tr>
+<tr><td><code>codRemittanceTimestamp</code></td><td>optional</td><td></td></tr>
+<tr><td><code>codRemittanceMethod</code></td><td>optional</td><td></td></tr>
+<tr><td><code>insurancePremium</code></td><td>optional</td><td></td></tr>
+<tr><td><code>insuranceCoverageAmount</code></td><td>optional</td><td>Amount covered by insurance per shipment</td></tr>
+<tr><td><code>dutyEstimate</code></td><td>optional</td><td>Estimated customs duty (from /on_select)</td></tr>
+<tr><td><code>taxEstimate</code></td><td>optional</td><td>Estimated import tax (from /on_select)</td></tr>
+<tr><td><code>actualDuty</code></td><td>optional</td><td>Actual customs duty (from import customs cleared event)</td></tr>
+<tr><td><code>actualTax</code></td><td>optional</td><td>Actual import tax applied</td></tr>
+<tr><td><code>revisedAmount</code></td><td>optional</td><td>BPP&#x27;s proposed revised total after weight discrepancy</td></tr>
+<tr><td><code>revisionBreakup</code></td><td>optional</td><td>Breakup of the revised amount</td></tr>
+<tr><td><code>weightDiffAdjustment</code></td><td>optional</td><td>Additional charge (or refund) from weight discrepancy resolution</td></tr>
+<tr><td><code>addressChangeSurcharge</code></td><td>optional</td><td>Surcharge when delivery zone changes due to address correction</td></tr>
+<tr><td><code>rescheduleFee</code></td><td>optional</td><td></td></tr>
+<tr><td><code>failedPickupFee</code></td><td>optional</td><td></td></tr>
+<tr><td><code>storageFee</code></td><td>optional</td><td>Periodic storage fee per billing cycle</td></tr>
+<tr><td><code>pickPackFee</code></td><td>optional</td><td>Per-unit pick and pack fee</td></tr>
+<tr><td><code>valueAddedServiceFee</code></td><td>optional</td><td>Aggregated value-added services charge</td></tr>
+<tr><td><code>ppnRate</code></td><td>optional</td><td>PPN (Pajak Pertambahan Nilai) rate applied to applicable charges. Source applicable rate from current DJP/PMK regulation</td></tr>
+<tr><td><code>ppnAmount</code></td><td>conditional</td><td>Computed PPN amount</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>consideration/v1 — Logistics Consideration Attributes</h1>
+
+<p>Attaches to `beckn:Consideration.considerationAttributes`.</p>
+
+<h2>What it covers</h2>
+
+<p>The financial structure of a logistics transaction — from the initial quote breakup through post-delivery adjustments, COD settlements, and final reconciliation.</p>
+
+<h2>Breakup line types</h2>
+
+<p>Every charge in a logistics transaction must be expressed as a breakup line with a declared `titleType`. ION Central validates breakup consistency against offer attributes.</p>
+
+<table>
+<thead><tr><th>titleType</th><th>When it appears</th><th>Notes</th></tr></thead><tbody>
+<tr><td>`FREIGHT_BASE`</td><td>Always</td><td>Core transport charge</td></tr>
+<tr><td>`FUEL_SURCHARGE`</td><td>Always</td><td>Computed from `offer.fuelSurchargeFormula`</td></tr>
+<tr><td>`COD_CHARGE`</td><td>When COD</td><td>Fee for cash collection service</td></tr>
+<tr><td>`INSURANCE_PREMIUM`</td><td>When insurance requested</td><td>Per `offer.insurancePolicy`</td></tr>
+<tr><td>`HANDLING_FEE`</td><td>Fragile, white-glove</td><td>Special handling surcharge</td></tr>
+<tr><td>`COLD_CHAIN_PREMIUM`</td><td>Cold chain resources</td><td>Temperature-controlled transport premium</td></tr>
+<tr><td>`HAZMAT_SURCHARGE`</td><td>Hazmat resources</td><td>DG handling fee</td></tr>
+<tr><td>`REMOTE_AREA_SURCHARGE`</td><td>Outer island delivery</td><td>Remote pincode surcharge</td></tr>
+<tr><td>`OVERSIZE_SURCHARGE`</td><td>Oversized cargo</td><td>Beyond standard max dimensions</td></tr>
+<tr><td>`OVERWEIGHT_SURCHARGE`</td><td>Overweight cargo</td><td>Beyond standard max weight</td></tr>
+<tr><td>`CUSTOMS_DUTY`</td><td>LOG-XB</td><td>Actual Bea Cukai duty assessed</td></tr>
+<tr><td>`CUSTOMS_HANDLING_FEE`</td><td>LOG-XB</td><td>PPJK broker fee</td></tr>
+<tr><td>`VALUE_ADDED_SERVICE_FEE`</td><td>LOG-WAREHOUSE</td><td>Aggregated VAS charges</td></tr>
+<tr><td>`PICK_PACK_FEE`</td><td>LOG-WAREHOUSE</td><td>Per-unit pick and pack</td></tr>
+<tr><td>`STORAGE_FEE`</td><td>LOG-WAREHOUSE</td><td>Periodic storage charge</td></tr>
+<tr><td>`RE_ATTEMPT_FEE`</td><td>After first attempt</td><td>Per `offer.reAttemptPolicy`</td></tr>
+<tr><td>`FAILED_PICKUP_FEE`</td><td>Consignor not ready</td><td>Per pickup-failed policy</td></tr>
+<tr><td>`WEIGHT_DIFF_ADJUSTMENT`</td><td>Weight dispute resolved</td><td>Positive or negative delta</td></tr>
+<tr><td>`CREDIT_NOTE`</td><td>Adjustment</td><td>Negative amount — reduces total</td></tr>
+<tr><td>`DISCOUNT`</td><td>Promotional</td><td>Negative amount</td></tr>
+<tr><td>`PPN_TAX`</td><td>All B2B, B2C over threshold</td><td>Indonesian VAT at the current applicable rate (e.g. 11% under PMK 131/2024)</td></tr>
+<tr><td>`PPNBM_TAX`</td><td>Luxury goods</td><td>Luxury goods tax</td></tr>
+</tbody></table>
+
+<h2>PPN handling</h2>
+
+<p>PPN must be declared as a separate breakup line with `ppnRate` set to the current applicable rate (e.g. `0.11` under PMK 131/2024 — source from DJP, not hardcoded). Every `on_select` and `on_init` response carrying a PPN line must include `ppnRate` on that specific breakup entry.</p>
+
+<p>```yaml</p>
+<p>breakup:</p>
+<p>  - titleType: FREIGHT_BASE</p>
+<p>    amount: 45000</p>
+<p>    currency: IDR</p>
+<p>  - titleType: FUEL_SURCHARGE</p>
+<p>    amount: 3600</p>
+<p>    currency: IDR</p>
+<p>  - titleType: PPN_TAX</p>
+<p>    amount: 5346</p>
+<p>    currency: IDR</p>
+<p>    ppnRate: 0.11      # 11% applied to base + surcharge = 48600 * 0.11 = 5346</p>
+<p>totalAmount: 53946</p>
+<p>```</p>
+
+<h2>COD settlement flow</h2>
+
+<p>```yaml</p>
+<p>codAmountCollected: 500000        # Collected at delivery by rider</p>
+<p>codCharge: 10000                  # Fee deducted by LSP</p>
+<p>codRemittanceAmount: 490000       # Net remitted to BAP</p>
+<p>codRemittanceBatchRef: &quot;BATCH-20260428-001&quot;</p>
+<p>codRemittanceTimestamp: &quot;2026-04-28T10:00:00Z&quot;</p>
+<p>codRemittanceMethod: BANK_TRANSFER</p>
+<p>```</p>
+
+<p>COD collected amounts appear in `on_status[DELIVERED]`. Remittance amounts appear in a separate `on_update` push from BPP when the remittance batch runs (per `offer.codPolicy` schedule — typically weekly).</p>
+
+<h2>Cross-border duties</h2>
+
+<p>```yaml</p>
+<p>dutyEstimate: 1500000             # Returned in /on_select — indicative</p>
+<p>taxEstimate: 750000               # Returned in /on_select — indicative</p>
+<p>actualDuty: 1620000               # Returned at IMPORT_CUSTOMS_CLEARED state — final</p>
+<p>actualTax: 810000</p>
+<p>```</p>
+
+<p>Estimates are provided at `/on_select` for DDP incoterms. Actual amounts are declared when `IMPORT_CUSTOMS_CLEARED` state fires and flow into the final reconcile.</p>
+
+<h2>Weight dispute adjustments</h2>
+
+<p>```yaml</p>
+<p>revisedAmount: 68066              # BPP&#x27;s proposed total after reweigh</p>
+<p>revisionBreakup:</p>
+<p>  - titleType: FREIGHT_BASE</p>
+<p>    originalAmount: 45000</p>
+<p>    revisedAmount: 57600          # 3.2kg actual vs 2.5kg declared</p>
+<p>    diff: 12600</p>
+<p>weightDiffAdjustment: 12600</p>
+<p>```</p>
+
+<p>When a weight discrepancy is raised, BPP sends `revisedAmount` and `revisionBreakup` in `/on_update`. If BAP accepts, the contract amount is updated and flows into reconcile. The `WEIGHT_DIFF_ADJUSTMENT` line appears in the final reconcile breakup.</p>
+
+<h2>Reconciliation structure</h2>
+
+<p>At reconcile time, the full settlement history is consolidated:</p>
+
+<p>```yaml</p>
+<p>settlements:</p>
+<p>  - settlementAttributes:</p>
+<p>    reconId: &quot;RECON-JNE-20260424-001&quot;</p>
+<p>    contractId: &quot;jne-ord-20260422-001&quot;</p>
+<p>    settlementBasis: NET_AMOUNT</p>
+<p>    settlementWindow: &quot;2026-04-24T23:59:59Z&quot;</p>
+<p>    collectedBy: BAP</p>
+<p>    amounts:</p>
+<p>      baseContractAmount: 56721</p>
+<p>      weightAdjustmentAmount: 12600   # Weight dispute resolved</p>
+<p>      slaRebateAmount: 0              # On-time — no rebate</p>
+<p>      codCollectedAmount: 0           # Prepaid order</p>
+<p>      fwaVolumeRebate: 0              # Not yet at rebate threshold</p>
+<p>    netSettlementAmount: 69321</p>
+<p>    reconStatus: AGREED</p>
+<p>```</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/consideration/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

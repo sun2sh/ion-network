@@ -1,0 +1,56 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "ion": "https://schema.ion.id/core/participant/v1#"
+  },
+  "@graph": [
+    {
+      "@id": "ion:ParticipantAttributes",
+      "@type": "rdfs:Class",
+      "rdfs:label": "ION Participant Attributes",
+      "rdfs:comment": "Cross-sector participant attributes attaching to beckn:Participant.participantAttributes. Carries role, Indonesian business/individual identity, authorised-signatory metadata, and full Indonesian administrative address hierarchy with accessibility."
+    },
+    {
+      "@id": "ion:role",
+      "@type": "rdfs:Property",
+      "rdfs:label": "role",
+      "rdfs:comment": "Role this participant plays in the transaction. Spans all ION sectors (BAP, BPP, PROVIDER, MERCHANT, BUYER, SELLER, AGENT, BANK, UNDERWRITER, CONSIGNOR, CONSIGNEE, SHIPPER, NOTIFY_PARTY, FORWARDER, ACTUAL_CARRIER, CUSTOMS_BROKER, INSURANCE_BROKER, DRIVER, CUSTOMS_AUTHORITY, GOVERNMENT_BUYER)."
+    },
+    {
+      "@id": "ion:subscriberId",
+      "@type": "rdfs:Property",
+      "rdfs:label": "subscriberId",
+      "rdfs:comment": "ION-registered subscriber ID when the participant is itself a subscriber."
+    },
+    {
+      "@id": "ion:npwp",
+      "@type": "rdfs:Property",
+      "rdfs:label": "npwp",
+      "rdfs:comment": "Indonesian tax ID (Nomor Pokok Wajib Pajak). 16 digits post-2024 (PMK 112/2022); legacy 15-digit punctuated form also accepted."
+    },
+    {
+      "@id": "ion:nib",
+      "@type": "rdfs:Property",
+      "rdfs:label": "nib",
+      "rdfs:comment": "Business registration number (Nomor Induk Berusaha), 13 digits."
+    },
+    {
+      "@id": "ion:nik",
+      "@type": "rdfs:Property",
+      "rdfs:label": "nik",
+      "rdfs:comment": "Indonesian customs registration number (Nomor Identitas Kepabeanan) for international trade."
+    },
+    {
+      "@id": "ion:ktpNumber",
+      "@type": "rdfs:Property",
+      "rdfs:label": "ktpNumber",
+      "rdfs:comment": "KTP (national ID) number, 16 digits. Used for DRIVER and optional consignee verification."
+    },
+    {
+      "@id": "ion:addressDetail",
+      "@type": "rdfs:Property",
+      "rdfs:label": "addressDetail",
+      "rdfs:comment": "Indonesian administrative hierarchy and accessibility metadata. Attaches here (not to beckn:Address) because beckn:Address is closed."
+    }
+  ]
+}

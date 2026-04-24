@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/identity/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/identity (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/identity/">identity</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/identity/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/identity/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONBusinessIdentity</h3>
+<p class="iri">IRI: https://schema.ion.id/core/identity/v1#IONBusinessIdentity</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>npwp</code></td><td>always</td><td>Nomor Pokok Wajib Pajak — 16-digit tax identification number. New format post-2024 (previously 15 digits). Required for </td></tr>
+<tr><td><code>nib</code></td><td>always</td><td>Nomor Induk Berusaha — 13-digit business registration number issued by OSS (Online Single Submission). Mandatory for all</td></tr>
+<tr><td><code>nikNumber</code></td><td>conditional</td><td>Nomor Induk Kependudukan — 16-digit national identity number from e-KTP. Required for individual (non-business) sellers.</td></tr>
+<tr><td><code>pkpStatus</code></td><td>always</td><td>PKP = Pengusaha Kena Pajak (VAT-registered, can issue Faktur Pajak). NON_PKP = non-VAT-registered (cannot issue Faktur P</td></tr>
+<tr><td><code>legalEntityName</code></td><td>always</td><td>Registered business name as per OSS/notary deed. For PT: &quot;PT Nama Perusahaan Tbk&quot;. For UD/CV: &quot;UD Nama Usaha&quot;. For indiv</td></tr>
+<tr><td><code>businessType</code></td><td>always</td><td>Legal entity type. PT=Limited company, CV=Commanditaire Vennootschap, UD=Usaha Dagang, PERORANGAN=Individual.</td></tr>
+<tr><td><code>siupNumber</code></td><td>optional</td><td>Surat Izin Usaha Perdagangan — business trade license. Legacy field, being replaced by NIB under OSS but still reference</td></tr>
+<tr><td><code>spPIRTNumber</code></td><td>optional</td><td>SP-P-IRT (Surat Pernyataan Pemilik) — small-scale food production license for home industries. Required for UMKM food se</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/identity/v1</h1>
+
+<p>Indonesian business KYC identifiers and licensing.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Provider.providerAttributes` and `beckn:Contract.contractAttributes`</p>
+
+<h2>Fields</h2>
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td>npwp</td><td>string(16)</td><td>always</td><td>Tax ID — Nomor Pokok Wajib Pajak</td></tr>
+<tr><td>nib</td><td>string(13)</td><td>always</td><td>Business registration — Nomor Induk Berusaha</td></tr>
+<tr><td>nikNumber</td><td>string(16)</td><td>conditional</td><td>National ID — for individual sellers</td></tr>
+<tr><td>pkpStatus</td><td>enum</td><td>always</td><td>VAT registration: PKP or NON_PKP</td></tr>
+<tr><td>legalEntityName</td><td>string</td><td>always</td><td>Registered business name</td></tr>
+<tr><td>businessType</td><td>enum</td><td>always</td><td>PT/CV/UD/PERORANGAN etc.</td></tr>
+<tr><td>siupNumber</td><td>string</td><td>optional</td><td>Trade license (legacy, being replaced by NIB)</td></tr>
+<tr><td>spPIRTNumber</td><td>string</td><td>optional</td><td>Small-scale food production license</td></tr>
+</tbody></table>
+
+<h2>Regulatory</h2>
+<p>PMK 136/2023, PP 5/2021, UU 24/2013</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/identity/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

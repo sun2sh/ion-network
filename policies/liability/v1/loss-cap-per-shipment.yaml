@@ -1,0 +1,64 @@
+# Liability Policy: Loss Cap per Shipment — Standard
+# ion://policy/liability.loss-cap-per-shipment
+
+id: liability.loss-cap-per-shipment
+type: LIABILITY_POLICY
+sector: logistics
+
+lossThresholdHours: 72
+description: >
+  A shipment is declared lost when there has been no scan event for
+  more than 72 hours AND the last known scan was before the
+  OUT_FOR_DELIVERY state.
+
+maximumLiabilityPerShipment: 50000000
+currency: IDR
+liabilityBasis: LESSER_OF_DECLARED_VALUE_OR_MAXIMUM
+
+claimProcess:
+  initiatedBy: BAP (after threshold elapsed)
+  via: loss-claim branch (/update with disputeReason.policyIri)
+  bppResponseWithin: PT72H
+  settlementWithin: P14D_after_approval
+
+escalation:
+  path: ion://policy/dispute-resolution.network-adjudication
+  trigger: bilateral_unresolved_after_P30D
+
+---
+
+# Liability Policy: Enterprise Loss Cap
+# ion://policy/liability.enterprise-per-shipment-50m
+
+id: liability.enterprise-per-shipment-50m
+type: LIABILITY_POLICY
+sector: logistics
+
+lossThresholdHours: 48
+maximumLiabilityPerShipment: 50000000
+currency: IDR
+liabilityBasis: DECLARED_VALUE
+
+claimProcess:
+  initiatedBy: BAP_or_BPP
+  responseWithin: PT48H
+  settlementWithin: P7D_after_approval
+
+escalation:
+  path: ion://policy/dispute-resolution.bani-arbitration-jakarta
+  trigger: bilateral_unresolved_after_P14D
+
+---
+
+# Liability Policy: COD Max per Shipment
+# ion://policy/liability.cod-max-per-shipment
+
+id: liability.cod-max-per-shipment
+type: LIABILITY_POLICY
+sector: logistics
+
+coverageTrigger: COD_COLLECTED_AND_NOT_REMITTED
+maximumLiabilityPerShipment: 10000000
+currency: IDR
+evidenceRequired: [COD_COLLECTION_RECEIPT, REMITTANCE_SCHEDULE_REFERENCE]
+claimWindow: P30D_after_remittance_due_date

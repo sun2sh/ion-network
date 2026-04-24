@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/performance-states/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/performance-states (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/performance-states/">performance-states</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/performance-states/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/performance-states/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ 
+</div>
+
+<h2>Schemas in this pack</h2><p><em>This pack has no OpenAPI schema (state-machine or flow pack).</em></p>
+
+<section class="readme"><h2>Pack README</h2><h1>performance-states/v1</h1>
+
+<p>Canonical state machine definitions for all ION Logistics spines.</p>
+
+<h2>Two-level status model (Beckn 2.0)</h2>
+
+<p>ION Logistics maintains **two distinct state levels** per Beckn 2.0 — only the upper level is constrained by Beckn.</p>
+
+<h3>Level 1 — `Contract.status` (Beckn 2.0 native, 4 values)</h3>
+
+<p>Beckn 2.0 `Contract.status.code` is constrained to exactly:</p>
+<li>`DRAFT` — contract being negotiated (pre-confirm)</li>
+<li>`ACTIVE` — confirmed and in execution</li>
+<li>`CANCELLED` — cancelled before completion</li>
+<li>`COMPLETE` — fulfilled successfully</li>
+
+<p>Every contract on the network reports one of these four states. Network-level observers (ION Gateway, regulators, analytics) consume this level.</p>
+
+<h3>Level 2 — `Performance.status` (spine-specific, rich)</h3>
+
+<p>Each performance execution unit carries its own detailed state value. Beckn 2.0 imposes no enum constraint on `Performance.status` — it&#x27;s free-form per domain. ION Logistics uses state machines with 10-30+ states per spine, defined in `states.yaml`.</p>
+
+<h3>Mapping</h3>
+
+<table>
+<thead><tr><th>Performance state category</th><th>Contract.status</th></tr></thead><tbody>
+<tr><td>Pre-confirm states (DRAFT, QUOTED, SELECTED)</td><td>DRAFT</td></tr>
+<tr><td>Active fulfilment states (PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, etc.)</td><td>ACTIVE</td></tr>
+<tr><td>Cancellation terminal states</td><td>CANCELLED</td></tr>
+<tr><td>Successful terminal states (DELIVERED, RTO_DELIVERED with RTO acknowledged, COMPLETED)</td><td>COMPLETE</td></tr>
+</tbody></table>
+
+<p>BPP updates `Performance.status` at every state transition. When a performance enters a terminal state, BPP also updates `Contract.status` to the mapped Beckn value.</p>
+
+<h2>State machines defined</h2>
+<table>
+<thead><tr><th>Name</th><th>Used by</th><th>Terminal states</th></tr></thead><tbody>
+<tr><td>`hyperlocal-pre-assigned`</td><td>LOG-HYPERLOCAL (PRE_ASSIGNED, DEDICATED_FLEET)</td><td>DELIVERED, CANCELLED</td></tr>
+<tr><td>`hyperlocal-fifo`</td><td>LOG-HYPERLOCAL (FIFO_AT_PICKUP, POOL_ASSIGNED)</td><td>DELIVERED, CANCELLED</td></tr>
+<tr><td>`parcel-p2p`</td><td>LOG-PARCEL (P2P topology)</td><td>DELIVERED, RTO_DELIVERED</td></tr>
+<tr><td>`parcel-p2h2p`</td><td>LOG-PARCEL (P2H2P topology)</td><td>DELIVERED, RTO_DELIVERED</td></tr>
+<tr><td>`parcel-p2h2h2p`</td><td>LOG-PARCEL (P2H2H2P topology)</td><td>DELIVERED, RTO_DELIVERED</td></tr>
+<tr><td>`parcel-reverse-qc`</td><td>LOG-PARCEL reverse branch</td><td>RETURN_DELIVERED_TO_ORIGIN, RETURN_DISPUTED</td></tr>
+<tr><td>`freight-capacity`</td><td>LOG-FREIGHT</td><td>DELIVERED, FREIGHT_RETURN_INITIATED</td></tr>
+<tr><td>`roro`</td><td>LOG-RORO</td><td>EXITED_PORT, MISSED_SAILING</td></tr>
+<tr><td>`xb`</td><td>LOG-XB</td><td>DELIVERED, IMPORT_CUSTOMS_REJECTED, DESTROY_IN_PLACE</td></tr>
+<tr><td>`warehouse-inventory`</td><td>LOG-WAREHOUSE</td><td>INVENTORY_RELEASED, STORAGE_CONTRACT_EXPIRED</td></tr>
+</tbody></table>
+
+<h2>How to reference</h2>
+<p>In spine.yaml: `stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#{name}`</p>
+
+<h2>Routing topology selection (parcel)</h2>
+<p>The topology variant is determined by `offer.routingTopology` at catalog time. The spine field is `performanceAttributes.routingTopology` set in `on_select` or inherited from the offer.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/performance-states/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,656 @@
+openapi: 3.1.1
+info:
+  title: ION Logistics Contract Extension (v1)
+  description: >
+    Logistics sector contract attributes. Carries confirmed shipment terms,
+    FWA references, billing identity, dispute states, eKYC, parent contract
+    linkage, and post-confirmation fields.
+    Attaches to: beckn:Contract.contractAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    LogisticsContractAttributes:
+      type: object
+      title: Logistics Contract Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:LogisticsContractAttributes
+      x-beckn-attaches-to: Contract.contractAttributes
+
+      properties:
+
+        # FWA AND PARENT CONTRACT
+        fwaReference:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: >
+            ION policy IRI of the Framework Agreement governing this transaction.
+            When present, rates and policies are inherited from the FWA.
+
+        parentContractReference:
+          x-ion-mandatory: optional
+          type: string
+          description: >
+            Reference to a parent contract (e.g. warehouse contract that
+            triggered this transport contract, or a capacity reservation).
+
+        # BILLING IDENTITY
+        npwp:
+          x-ion-mandatory: optional
+          type: string
+          description: NPWP tax ID of the consignor (B2B transactions)
+          pattern: "^[0-9]{2}\\.[0-9]{3}\\.[0-9]{3}\\.[0-9]-[0-9]{3}\\.[0-9]{3}$"
+
+        nib:
+          x-ion-mandatory: optional
+          type: string
+          description: NIB business registration of the consignor (B2B transactions)
+
+        invoicePreferences:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            fakturaRequired:
+              type: boolean
+              description: True if Faktur Pajak (VAT invoice) is required
+            fakturaReference:
+              type: string
+              description: Faktur Pajak number once issued
+              pattern: "^[0-9]{3}\\.[0-9]{3}-[0-9]{2}\\.[0-9]{8}$"
+            fakturaStatus:
+              type: string
+              enum:
+                - NORMAL                    # Standard Faktur Pajak
+                - PENGGANTI                 # Replacement — corrects a prior FP
+                - BATAL                     # Cancelled
+                - PENDING_GENERATION
+            fakturaPenggantiForReference:
+              type: string
+              description: >
+                If fakturaStatus=PENGGANTI, this references the original FP
+                being replaced. Required per DJP rules.
+            invoicingModel:
+              type: string
+              enum: [INDIVIDUAL_PER_SHIPMENT, CONSOLIDATED_MONTHLY, FWA_SETTLEMENT]
+            coretaxIntegration:
+              type: boolean
+              description: >
+                True if Faktur Pajak is issued through DJP Coretax (2025+ platform
+                replacing e-Faktur). False if legacy e-Faktur is still used.
+            coretaxTransactionId:
+              type: string
+              description: Coretax transaction ID when issued via Coretax
+
+        # ═══ WITHHOLDING TAX (PPh 23) ═══
+        withholdingTax:
+          type: object
+          x-ion-mandatory: conditional
+          description: >
+            PPh 23 withholding applies to logistics services at 2% rate.
+            The buyer (BAP or consignor) withholds this amount and remits
+            to DJP, providing a Bukti Potong certificate to the LSP.
+          properties:
+            applicable:
+              type: boolean
+            rate:
+              type: number
+              description: PPh 23 rate — typically 0.02 (2%). 0.04 if consignor has no NPWP.
+            withheldAmount:
+              type: number
+            buktiPotongReference:
+              type: string
+              description: Bukti Potong (withholding certificate) number
+            buktiPotongDate:
+              type: string
+              format: date
+            buktiPotongDocumentUrl:
+              type: string
+              format: uri
+            withheldBy:
+              type: string
+              enum: [BAP, CONSIGNOR, BPP]
+              description: Party responsible for withholding and remittance
+            remittedToDjp:
+              type: boolean
+            djpRemittanceReference:
+              type: string
+
+        # ═══ PPN EXEMPTION ═══
+        ppnExemption:
+          type: object
+          x-ion-mandatory: conditional
+          description: >
+            PPN Dibebaskan — VAT exemption for specific categories and zones.
+            Common for bonded-zone and free-trade-zone transactions.
+          properties:
+            applicable:
+              type: boolean
+            reason:
+              type: string
+              enum:
+                - BONDED_ZONE              # Kawasan Berikat
+                - FREE_TRADE_ZONE          # FTZ (e.g. Batam, Bintan)
+                - EXPORT                   # Outbound export
+                - STRATEGIC_GOODS
+                - AGRICULTURAL_EXEMPT
+                - EDUCATIONAL_EXEMPT
+            exemptionLicenceReference:
+              type: string
+            validUntil:
+              type: string
+              format: date
+
+        # ═══ STAMP DUTY (BEA METERAI) ═══
+        stampDuty:
+          type: object
+          x-ion-mandatory: conditional
+          description: >
+            Bea Meterai Rp 10,000 applies to invoices over Rp 5,000,000.
+            Required for contracts treated as formal legal documents.
+          properties:
+            applicable:
+              type: boolean
+            amount:
+              type: number
+              default: 10000
+            eMeteraiReference:
+              type: string
+              description: Electronic stamp duty reference from Peruri
+
+        # CREDIT TERMS
+        creditTermsDays:
+          x-ion-mandatory: optional
+          type: integer
+          description: Payment due within N days (for B2B credit-terms transactions)
+
+        paymentDueDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+
+        # eKYC
+        ekycFormReference:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference to the eKYC form submission for B2B first transactions
+
+        ekycStatus:
+          x-ion-mandatory: optional
+          type: string
+          enum: [VERIFIED, PENDING_MANUAL_REVIEW, REJECTED]
+
+        ekycVerificationTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+
+        ekycRejectionReason:
+          x-ion-mandatory: optional
+          type: string
+
+        # ═══ INSURANCE (CARGO) ═══
+        cargoInsurance:
+          type: object
+          x-ion-mandatory: conditional
+          description: >
+            Cargo insurance coverage details. Distinct from driver/vehicle
+            insurance (covered under incident branch).
+          properties:
+            policyReference:
+              type: string
+              format: iri
+              description: ION policy IRI for insurance terms
+            insuranceScope:
+              type: string
+              enum:
+                - ICC_A                      # Institute Cargo Clauses A — all risks
+                - ICC_B                      # ICC B — named perils
+                - ICC_C                      # ICC C — major casualties only
+                - ALL_RISKS                  # Non-ICC all-risks policy
+                - NAMED_PERILS
+                - LIABILITY_ONLY             # Carrier liability only, not cargo insurance
+                - DECLARED_VALUE_CAP         # Domestic cap-based coverage
+              description: >
+                Institute Cargo Clauses scope for ocean/air freight.
+                Required for LOG-FREIGHT and LOG-XB.
+            underwriterSubscriberId:
+              type: string
+              description: >
+                ION subscriber ID of the underwriter (insurer). Required when
+                named insurance is in effect. Separate participant with role=UNDERWRITER.
+            underwriterName:
+              type: string
+              description: Insurer legal name (e.g. "PT Asuransi Jasindo")
+            underwriterPolicyNumber:
+              type: string
+              description: Insurer's policy number — separate from ION contract ID
+            insuredParty:
+              type: string
+              enum: [CONSIGNOR, CONSIGNEE, BANK, FORWARDER]
+              description: Which party holds the claim right — per Incoterms
+            coverageAmount:
+              type: number
+              description: Insured sum
+            currency:
+              type: string
+              default: IDR
+            deductible:
+              type: number
+              description: Deductible / excess amount
+            premiumAmount:
+              type: number
+            validFrom:
+              type: string
+              format: date-time
+            validUntil:
+              type: string
+              format: date-time
+            warRiskAddition:
+              type: boolean
+              description: True if war risk premium was added (separate coverage)
+            strikeRiskAddition:
+              type: boolean
+              description: True if SRCC (Strike, Riot, Civil Commotion) premium added
+            generalAverageParticipation:
+              type: boolean
+              description: >
+                True if cargo is covered for General Average contributions.
+                Required for ocean freight — GA applies when vessel sacrifices
+                cargo to save the voyage.
+            transitClauseExtension:
+              type: string
+              description: Extension clause for multi-leg coverage gaps (warehouse-to-warehouse)
+
+        # DISPUTE STATE
+        disputeReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+
+        disputeState:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+            - DISPUTE_WEIGHT_RAISED
+            - DISPUTE_EVIDENCE_EXCHANGED
+            - DISPUTE_RESOLVED_ACCEPTED
+            - DISPUTE_RESOLVED_NEGOTIATED
+            - DISPUTE_ESCALATED
+            - CLAIM_RAISED
+            - CLAIM_UNDER_REVIEW
+            - CLAIM_RESOLVED_ACCEPTED
+            - CLAIM_RESOLVED_PARTIAL
+            - CLAIM_REJECTED
+            - CLAIM_ESCALATED
+
+        disputeResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            outcome:
+              type: string
+            resolvedAt:
+              type: string
+              format: date-time
+            settlementAmount:
+              type: number
+
+        # CLAIM DETAIL
+        claimType:
+          x-ion-mandatory: optional
+          type: string
+          enum: [WEIGHT_DISCREPANCY, DAMAGE, LOSS, SLA_BREACH, CUSTOMS_DUTY, COD_DISPUTE]
+
+        claimDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+            claimedAmount:
+              type: number
+            evidenceUrls:
+              type: array
+              items:
+                type: string
+                format: uri
+            evidenceType:
+              type: string
+            reportedAt:
+              type: string
+              format: date-time
+
+        claimAssessment:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            outcome:
+              type: string
+              enum: [ACCEPTED, PARTIAL, REJECTED, PENDING_INSPECTION]
+            offeredSettlement:
+              type: number
+            rejectionReason:
+              type: string
+            inspectionRequired:
+              type: boolean
+
+        claimResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            decision:
+              type: string
+              enum: [ACCEPT_SETTLEMENT, COUNTER_WITH_EVIDENCE, ESCALATE]
+
+        # ADDRESS CHANGE
+        addressChangeReason:
+          x-ion-mandatory: optional
+          type: string
+
+        addressUnserviceableResolution:
+          x-ion-mandatory: optional
+          type: string
+          enum: [NEW_ADDRESS, CANCEL_ORDER]
+
+        # RETURN / REVERSE
+        returnReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            code:
+              type: string
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+
+        returnItems:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: object
+            properties:
+              resourceId:
+                type: string
+              quantity:
+                type: integer
+
+        reverseContractReference:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference to the reverse/return contract created
+
+        # EXCURSION (COLD CHAIN)
+        excursionDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            detectedAt:
+              type: string
+              format: date-time
+            location:
+              type: string
+            measuredTemperature:
+              type: number
+            declaredMin:
+              type: number
+            declaredMax:
+              type: number
+            excursionDurationMinutes:
+              type: integer
+
+        excursionResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            decision:
+              type: string
+              enum: [CONTINUE_AT_BUYER_RISK, HOLD_FOR_INSPECTION, CANCEL_AND_RETURN]
+
+        # DISCREPANCY (WEIGHT)
+        discrepancyDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            declaredWeight:
+              type: number
+            measuredWeight:
+              type: number
+            measurementTimestamp:
+              type: string
+              format: date-time
+            measurementLocation:
+              type: string
+              enum: [PICKUP, ORIGIN_HUB, DESTINATION_HUB]
+            scalePhotoUrl:
+              type: string
+              format: uri
+            measuredDimensions:
+              type: object
+
+        disputeCounter:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            counterWeight:
+              type: number
+            evidenceUrls:
+              type: array
+              items:
+                type: string
+            evidenceType:
+              type: string
+
+        # WAREHOUSE INVENTORY RELEASE
+        inventoryReleaseRequest:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            skus:
+              type: array
+              items:
+                type: string
+            quantities:
+              type: array
+              items:
+                type: integer
+            destinationType:
+              type: string
+              enum: [SELLER_ADDRESS, BUYER_ADDRESS, ANOTHER_WAREHOUSE, DISPOSAL]
+            destinationAddress:
+              type: object
+
+        # CROSS-BORDER
+        incoterms:
+          x-ion-mandatory: optional
+          type: string
+          enum: [EXW, FCA, FAS, FOB, CFR, CIF, CPT, CIP, DAP, DPU, DDP]
+
+        incotermsVersion:
+          x-ion-mandatory: optional
+          type: string
+          enum: [INCOTERMS_2010, INCOTERMS_2020]
+
+        incotermsNamedPlace:
+          x-ion-mandatory: conditional
+          type: string
+          description: Named place per Incoterms (e.g. "DDP Jakarta port")
+
+        # ═══ INDONESIAN CUSTOMS (BEA CUKAI — CEISA 4.0) ═══
+        beaCukaiDeclaration:
+          type: object
+          x-ion-mandatory: conditional
+          description: Indonesian customs declaration details — CEISA 4.0 integration
+          properties:
+            declarationType:
+              type: string
+              enum:
+                - BC_1_1            # Inward / Outward manifest
+                - BC_2_0            # Import declaration (PIB)
+                - BC_2_3            # Import from bonded zone (PIB KB)
+                - BC_2_5            # Import from free-trade zone (PIB FTZ)
+                - BC_3_0            # Export declaration (PEB)
+                - BC_3_3            # Export from bonded zone (PEB KB)
+                - BC_4_0            # Customs notification for bonded zone movement
+                - BC_1_6            # Transit declaration
+            declarationNumber:
+              type: string
+              description: CEISA-generated registration number
+            declarationDate:
+              type: string
+              format: date
+            ceisaReceiptNumber:
+              type: string
+              description: CEISA 4.0 transaction receipt
+            nikDeclarant:
+              type: string
+              description: NIK of the declarant (importer/exporter)
+            hsCodeTariffPost:
+              type: string
+              description: Tariff post per BTKI (Buku Tarif Kepabeanan Indonesia)
+            cifValueIdr:
+              type: number
+              description: Declared CIF value converted to IDR
+            exchangeRateUsed:
+              type: number
+              description: Bea Cukai exchange rate applied
+
+        inatradePermits:
+          type: array
+          x-ion-mandatory: conditional
+          description: >
+            INATRADE (Indonesia National Single Window) permits.
+            Required for regulated categories — food, pharma, electronics, chemicals.
+          items:
+            type: object
+            properties:
+              permitType:
+                type: string
+                enum:
+                  - PI                # Persetujuan Impor (import approval)
+                  - PE                # Persetujuan Ekspor (export approval)
+                  - LS                # Laporan Surveyor
+                  - SKI               # Surat Keterangan Impor (MoH for pharma)
+                  - SKI_BPOM          # BPOM SKI
+                  - MASTERLIST        # Master list for capital goods
+              permitNumber:
+                type: string
+              issuingMinistry:
+                type: string
+                enum:
+                  - KEMENDAG          # Ministry of Trade
+                  - KEMENPERIN        # Ministry of Industry
+                  - KEMENKES          # Ministry of Health
+                  - BPOM              # Food and Drug
+                  - KEMENTAN          # Ministry of Agriculture
+                  - KLHK              # Ministry of Environment
+                  - KEMENHUB          # Ministry of Transport
+                  - KEMKOMINFO        # Ministry of Communication
+              validUntil:
+                type: string
+                format: date
+              documentUrl:
+                type: string
+                format: uri
+
+        lartasClassification:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+            - NOT_RESTRICTED
+            - LARANGAN              # Prohibited goods
+            - PEMBATASAN            # Restricted — requires permit
+            - UNKNOWN_REQUIRES_CHECK
+          description: >
+            LARTAS (Larangan dan Pembatasan) classification. Indonesian customs
+            maintains prohibited (LARANGAN) and restricted (PEMBATASAN) goods lists.
+
+        aseanSingleWindowReference:
+          x-ion-mandatory: conditional
+          type: string
+          description: ASW reference for intra-ASEAN shipments
+
+        fumigationCertificate:
+          type: object
+          x-ion-mandatory: conditional
+          description: Required when wood packaging is used (ISPM 15)
+          properties:
+            certificateNumber:
+              type: string
+            treatmentType:
+              type: string
+              enum: [HT_HEAT, MB_METHYL_BROMIDE, DH_DIELECTRIC_HEATING]
+            treatmentDate:
+              type: string
+              format: date
+            facilityCode:
+              type: string
+              description: Registered ISPM 15 facility code
+            documentUrl:
+              type: string
+              format: uri
+
+        phytosanitaryCertificate:
+          type: object
+          x-ion-mandatory: conditional
+          description: Required for agricultural products per Karantina
+          properties:
+            certificateNumber:
+              type: string
+            issuingAuthority:
+              type: string
+            documentUrl:
+              type: string
+              format: uri
+
+        xbReturnDecision:
+          x-ion-mandatory: optional
+          type: string
+          enum: [RETURN_TO_ORIGIN, DESTROY_IN_PLACE, RE_EXPORT_TO_THIRD_COUNTRY]
+
+        # CANCELLATION
+        cancellationReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            id:
+              type: string
+            descriptor:
+              type: object
+              properties:
+                code:
+                  type: string
+                shortDesc:
+                  type: string
+
+        cancellationReasonCode:
+          x-ion-mandatory: optional
+          type: string
+
+        # PICKUP FAILURE
+        pickupFailedResolution:
+          x-ion-mandatory: optional
+          type: string
+          enum: [RESCHEDULE_PICKUP, CANCEL_ORDER]
+
+        # BUYER RESOLUTION
+        buyerResolutionDeadline:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+
+        codPartialReason:
+          x-ion-mandatory: optional
+          type: string
