@@ -84,6 +84,15 @@ There are five logical layers, but you only ever write code against three of the
 
 If this layering is confusing now, skip it. Come back after you've read your sector doc. The full explanation is in [`ION_Layer_Model.md`](ION_Layer_Model.md).
 
+### One rule that spans all layers
+
+ION messages carry JSON-LD `@context` declarations. **Only two context roots are valid:**
+
+- `https://schema.beckn.io/core/v2.0.0/` — Beckn's core vocabulary (envelope, object model). Owned by Beckn Foundation.
+- `https://schema.ion.id/{layer}/{pack}/{version}/` — ION's vocabulary (all extensions, policies, states). Owned by ION Network.
+
+Any other `@context` (Beckn's domain modules, other networks' vocabularies) is rejected at the ION Central gate. See [`ION_Council_Open_Questions.md`](ION_Council_Open_Questions.md) Q5 for the rationale. See [`ION_First_Transaction.md`](ION_First_Transaction.md) for this rule in action across a real transaction.
+
 ---
 
 ## The six docs you'll read (in order)

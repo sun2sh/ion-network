@@ -25,6 +25,21 @@ We'll walk through the Trade transaction in detail, then summarize the Logistics
 
 ---
 
+## A rule you will see enforced throughout
+
+Every JSON-LD `@context` in every ION message resolves to **one of exactly two places**:
+
+- `https://schema.beckn.io/core/v2.0.0/` — Beckn's core transport vocabulary (envelope, object model, signing). Owned by Beckn Foundation.
+- `https://schema.ion.id/{layer}/{pack}/{version}/` — ION's own vocabulary (all extension attributes, policies, states, error categories). Owned by ION Network.
+
+**No other `@context` values are valid on ION.** Beckn's domain-specific modules (`schema.beckn.io/Logistics/`, `schema.beckn.io/Retail/`, etc.) are explicitly NOT imported — their classification does not match ION's sector model. Other networks' vocabularies (ONDC, etc.) are not accepted until Council ratifies mapping entries under `schema.ion.id/mappings/`.
+
+ION Central rejects messages carrying any other `@context` at the protocol gate.
+
+You will see this rule in action in every payload below — every `@context` resolves to one of these two roots.
+
+---
+
 ## Phase 0 — Catalog discovery (happens continuously, not at order time)
 
 Before any of this starts, Sepatu Juara and JNE have already published their catalogs to the Catalog Discovery Service (CDS). Tokopedia has subscribed.
