@@ -1,0 +1,199 @@
+# ION Logistics Branch — Reverse v1
+# NOT OAS. ION flow specification document.
+# Per-spine reverse flavours. Not a separate spine.
+
+id: ion-logistics-branch-reverse-v1
+version: "1.0.0"
+branchType: reverse
+sectorCode: B
+status: ready
+description: >
+  Reverse logistics. Not a separate spine — each forward spine has its
+  own reverse flavour via a branch that modifies its state machine. The
+  reverse branch creates a new contract that references the forward
+  contract. Consignor and consignee parties are swapped. State machine
+  adds QC gating, dual-customs, or inventory-release depending on variant.
+
+subBranches:
+
+  reverse-simple:
+    id: reverse-simple
+    parentSpine: LOG-HYPERLOCAL
+    description: >
+      Immediate reversal for hyperlocal. No QC gate. Rider may turn
+      around or a new rider is assigned. Fast refund path.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: PT2H_post_delivery
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.reverseReason
+          - message.contract.contractAttributes.reversePickupWindow
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.reverseContractReference
+          - message.contract.performance[].performanceAttributes.estimatedPickupEta
+
+    newContractStateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#hyperlocal-reverse
+
+  reverse-with-qc:
+    id: reverse-with-qc
+    parentSpine: LOG-PARCEL
+    description: >
+      Standard e-commerce return. Consumer-right return windows (7-30 days
+      per return policy). QC inspection at warehouse before refund is
+      released. Consignor becomes consignee; original consignee becomes
+      consignor for the return. Refund held until QC passes.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: returnWindow_expiry  # per offer.returnPolicy IRI
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: Buyer initiates return. Return reason mandatory.
+        requiredFields:
+          - message.contract.contractAttributes.returnReason.code
+          - message.contract.contractAttributes.returnReason.policyIri
+          - message.contract.contractAttributes.returnItems[]
+          - message.contract.contractAttributes.returnPickupAddress
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP approves return request and creates reverse contract.
+        requiredFields:
+          - message.contract.contractAttributes.reverseContractReference
+          - message.contract.contractAttributes.returnPickupScheduled
+          - message.contract.contractAttributes.returnPickupWindow
+          - message.contract.contractAttributes.qcAtLocation
+
+    newContractStateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#parcel-reverse-qc
+    newContractStates:
+      - RETURN_REQUESTED
+      - RETURN_PICKUP_SCHEDULED
+      - RETURN_PICKED_UP
+      - RETURN_IN_TRANSIT
+      - RETURN_AT_QC
+      - QC_IN_PROGRESS
+      - QC_APPROVED
+      - QC_REJECTED
+      - RETURN_DELIVERED_TO_ORIGIN
+      - RETURN_DISPUTED
+
+    qcOutcomes:
+      QC_APPROVED:
+        description: Item received in acceptable condition. Refund released.
+        action: Refund amount per return policy IRI credited to buyer
+      QC_REJECTED:
+        description: Item not in acceptable condition or not as described.
+        action: Item returned to buyer or disposed per return policy. Dispute eligible.
+
+    policyReferences:
+      - ion://policy/return.standard-7d-sellerpays
+      - ion://policy/return.standard-14d-sellerpays
+      - ion://policy/return.electronics-14d-unopened
+      - ion://policy/return.fashion-7d-fit-only
+      - ion://policy/evidence.return.unboxing-video-required
+
+  reverse-freight:
+    id: reverse-freight
+    parentSpine: LOG-FREIGHT
+    description: >
+      Freight return — consignee rejects delivery or returns goods.
+      Negotiated path; often governed by original FWA. Credit note
+      commercial model. Acceptance states before release.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: freight_return_window_expiry
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.freightReturnReason
+          - message.contract.contractAttributes.freightReturnManifest[]
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.reverseContractReference
+          - message.contract.contractAttributes.creditNoteReference
+          - message.contract.contractAttributes.acceptanceInspectionSchedule
+
+    newContractStateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#freight-reverse
+
+  reverse-xb:
+    id: reverse-xb
+    parentSpine: LOG-XB
+    description: >
+      Cross-border return. Requires customs on both legs. High cost;
+      destroy-in-place is a valid alternative outcome. Dual customs
+      branch fires on the reverse contract.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: xb_return_window_expiry
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.xbReturnReason
+          - message.contract.contractAttributes.xbReturnDecision
+        returnDecisionOptions:
+          - RETURN_TO_ORIGIN
+          - DESTROY_IN_PLACE
+          - RE_EXPORT_TO_THIRD_COUNTRY
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.reverseContractReference
+          - message.contract.contractAttributes.xbReturnCostEstimate
+
+    newContractStateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#xb-reverse
+
+  inventory-release:
+    id: inventory-release
+    parentSpine: LOG-WAREHOUSE
+    description: >
+      BAP withdraws inventory from warehouse. Spawns a forward transport
+      contract on a transport spine. Not a true reversal — it's an
+      outbound trigger from storage.
+    window:
+      earliest: "on_status[STORED]"
+      latest: "on_status[INVENTORY_RELEASED]"
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.inventoryReleaseRequest.skus[]
+          - message.contract.contractAttributes.inventoryReleaseRequest.quantities[]
+          - message.contract.contractAttributes.inventoryReleaseRequest.destinationType
+          - message.contract.contractAttributes.inventoryReleaseRequest.destinationAddress
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.contractAttributes.transportContractReference
+          - message.contract.performance[].performanceAttributes.estimatedDispatchDate

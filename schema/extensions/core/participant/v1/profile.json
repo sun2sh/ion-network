@@ -1,0 +1,20 @@
+{
+  "id": "ion-core-participant-v1",
+  "version": "1.0.0",
+  "domain": "ion-core",
+  "name": "ION Participant Extension (v1)",
+  "description": "Cross-sector participant role taxonomy, Indonesian business/individual identity, authorised-signatory metadata, and full Indonesian administrative address hierarchy with accessibility. Unified from logistics/participant in v0.5.2.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "attachmentPoints": {
+    "participantAttributes": [
+      "IONParticipantAttributes"
+    ]
+  },
+  "regulatory": [
+    "PMK 112/2022 (16-digit NPWP)",
+    "Permendagri 72/2019 (BPS admin codes)",
+    "OJK licensing (UNDERWRITER role)",
+    "UU 7/2021 HPP"
+  ]
+}

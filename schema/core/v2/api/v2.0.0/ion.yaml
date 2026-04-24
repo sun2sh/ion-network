@@ -1,7 +1,7 @@
 # ION — Indonesia Open Network
 # Network Profile v0.5.1-draft
 #
-# This file is a network profile overlay on top of Beckn Protocol v2.0.1.
+# This file is a network profile overlay on top of Beckn Protocol v2.0.0.
 # It does NOT replace or fork beckn.yaml.
 # beckn.yaml lives at: https://github.com/beckn/protocol-specifications-v2
 #
@@ -12,11 +12,11 @@ openapi: 3.1.1
 info:
   title: ION Indonesia Open Network — Network Profile
   description: >
-    ION network policy and localization overlay for Beckn Protocol v2.0.1.
+    ION network policy and localization overlay for Beckn Protocol v2.0.0.
     Defines Indonesian regulatory defaults, mandatory action sets, payment
     rails, settlement model, and conformance requirements for all ION
     network participants.
-  version: 0.5.1-draft
+  version: 0.5.2-draft
 
 x-ion-profile:
   networkId: ion.id
@@ -32,19 +32,30 @@ x-ion-profile:
 # implementations to validate that all referenced packs and registries
 # are compatible with their local implementation.
 x-ion-compatibility:
-  profileVersion: 0.5.1-draft
-  becknCore: 2.0.1
+  profileVersion: 0.5.2-draft
+  becknCore: 2.0.0
+  # Upstream Beckn tag targeted by this ION profile.
+  # v2.0.0-rc1 is the current release candidate (tagged 2026-01-12).
+  # Final v2.0.0 is expected within ~1 week of this draft; ION will
+  # re-validate and publish v0.5.2 GA (or v0.5.3-draft if corrections
+  # are needed) against final v2.0.0.
+  becknCoreUpstreamTag: core-v2.0.0-rc1
+  becknCoreUpstreamRepo: https://github.com/beckn/protocol-specifications-v2
+  becknCoreStatus: RELEASE_CANDIDATE   # awaiting final v2.0.0
   schemaPacks:
+    # Layer 4 — ION core (cross-sector) attribute packs
     core/address: v1
     core/identity: v1
     core/localization: v1
-    core/payment: v1
+    core/participant: v1          # NEW in v0.5.2 — unified participant pack (supersedes per-sector participant packs)
+    core/payment: v1              # EXPANDED in v0.5.2 — rails, COD, credit, refund, invoice, fees promoted from logistics
     core/product: v1
     core/raise: v1
     core/rating: v1
-    core/reconcile: v1
+    core/reconcile: v1            # EXPANDED in v0.5.2 — COD remittance batch fields added
     core/support: v1
     core/tax: v1
+    # Layer 5 — Trade sector attribute packs
     trade/commitment: v1
     trade/consideration: v1
     trade/contract: v1
@@ -53,7 +64,19 @@ x-ion-compatibility:
     trade/performance-states: v1
     trade/provider: v1
     trade/resource: v1
+    # Layer 5 — Logistics sector attribute packs (NEW in v0.5.2)
+    logistics/commitment: v1
+    logistics/consideration: v1
+    logistics/contract: v1
+    logistics/offer: v1                  # carries COD fraud-control fields
+    logistics/participant-logistics: v1  # carries logistics-only licence fields (PPJK, insurer, driver at contract time)
+    logistics/performance: v1            # carries driver licence fields (performance-time)
+    logistics/performance-states: v1
+    logistics/provider: v1
+    logistics/resource: v1
+    logistics/tracking: v1
   policies:
+    # Trade-originated policy categories (many are cross-sector; logistics reuses cancellation, dispute, payment-terms, penalty)
     return: v1
     cancellation: v1
     warranty: v1
@@ -61,11 +84,22 @@ x-ion-compatibility:
     grievance-sla: v1
     payment-terms: v1
     penalty: v1
+    # Logistics-originated policy categories (NEW in v0.5.2)
+    evidence: v1
+    insurance: v1
+    sla: v1
+    re-attempt: v1
+    weight-dispute: v1
+    liability: v1
+    incident: v1
+    rts-handoff: v1
+    logistics-fwa: v1
   errors:
     registry: v1
     minCode: ION-1001
     # Stable registry — codes are never reused even after deprecation
   spineVersions:
+    # Trade sector spines (13)
     B2C-SF: "1.0.0"
     B2C-MTO: "1.0.0"
     B2C-SUB: "1.0.0"
@@ -79,11 +113,71 @@ x-ion-compatibility:
     AUC-R: "1.0.0"
     XB: "1.0.0"
     B2G: "1.0.0"
+    # Logistics sector spines (6) — NEW in v0.5.2
+    LOG-HYPERLOCAL: "1.0.0"
+    LOG-PARCEL: "1.0.0"
+    LOG-FREIGHT: "1.0.0"
+    LOG-RORO: "1.0.0"
+    LOG-XB: "1.0.0"
+    LOG-WAREHOUSE: "1.0.0"
   # Single-version running policy (ratified v0.4):
   # ION Council ratifies new policy/schema versions with 90-day notice.
   # Catalog entries auto-upgrade to the new version on cutover.
   # No per-seller version pinning.
   upgradeNoticePeriodDays: 90
+
+# Sectors supported by this network profile. Each sector has its own
+# attribute-pack directory under schema/extensions/ and its own flow
+# specifications under flows/. Placeholders are reserved for future
+# sectors.
+x-ion-sectors:
+  active:
+    - trade       # schema/extensions/trade/, flows/trade/
+    - logistics   # schema/extensions/logistics/, flows/logistics/
+  reserved:
+    - mobility
+    - finance
+    - tourism
+    - healthcare
+
+# EXPERIMENTAL (v0.5.2) — spine/pattern and active-branches on the wire.
+# Optional for v0.5.2. Implementations MAY send these on every request
+# context so ION Central can validate: "payload claims pattern X, spine
+# defines required fields Y at step Z — does payload comply?"
+# Intended to become mandatory in v0.6 after Council ratification.
+# Feedback welcome via ION Council issue tracker.
+x-ion-context-extensions:
+  status: EXPERIMENTAL
+  mandatoryFrom: "0.6.0 (tentative — pending Council ratification)"
+  optionalIn: "0.5.2"
+  fields:
+    spine:
+      type: string
+      description: >
+        Spine code claimed by this transaction (e.g. B2C-SF, LOG-PARCEL).
+        Enables deterministic flow validation at ION Central.
+      example: LOG-PARCEL
+    spineVersion:
+      type: string
+      description: Spine version in force for this transaction
+      example: "1.0.0"
+    activeBranches:
+      type: array
+      description: >
+        Branch families currently active for this transaction
+        (e.g. ["cold-chain", "cod", "weight-dispute"]). Tells ION
+        Central which conditional flow rules apply.
+      items:
+        type: string
+    policyIris:
+      type: array
+      description: >
+        Snapshot of policy IRIs applicable to this transaction. Lets
+        ION Central enforce the exact terms declared at contract time
+        even if the registry is later updated.
+      items:
+        type: string
+        format: iri
 
 
 x-ion-localization:
@@ -98,8 +192,13 @@ x-ion-localization:
 x-ion-compliance:
   tax:
     type: PPN
-    standardRate: 0.11       # 11% standard PPN rate
-    luxuryTax: PPNBM         # applied in addition to PPN for luxury goods
+    # Rates shown here are the applicable rates at time of profile
+    # publication. Implementations MUST source the current applicable
+    # rate from Indonesian tax regulation (DJP / PMK), not from this
+    # field. This field documents the default for tooling and example
+    # generation only — it is not normative.
+    standardRate: 0.11       # current PPN standard rate (as of PMK 131/2024, check DJP for current)
+    luxuryTax: PPNBM         # applied in addition to PPN for luxury goods — rates vary by category (10%–75%)
   providerIdentity:
     npwpRequired: true        # 16-digit tax ID mandatory for all sellers
     nibRequired: true         # 13-digit business registration mandatory
@@ -111,41 +210,135 @@ x-ion-security:
     required: true
     algorithm: ed25519
   digest:
+    # The algorithm itself is BLAKE2b-512.
+    # The WIRE TOKEN (what appears in the HTTP signing string and in
+    # RequestDigest.digest) is "BLAKE-512" — NOT "BLAKE2b-512". This
+    # asymmetry is per the Beckn 2.0.0 spec (see `Signature` and
+    # `RequestDigest` schemas in beckn.yaml). Signing strings containing
+    # "BLAKE2b-512=..." will FAIL Beckn's RequestDigest pattern
+    # `^BLAKE-512=[A-Za-z0-9+/]+=*$`.
+    #
+    # Correct signing-string line:  digest: BLAKE-512={base64}
+    # Incorrect:                    digest: BLAKE2b-512={base64}
     algorithm: BLAKE2b-512
+    wireToken: "BLAKE-512"
+    digestLinePattern: "^BLAKE-512=[A-Za-z0-9+/]+=*$"
   clockSkewToleranceSeconds: 30
 
+# ─── ION semantic model ──────────────────────────────────────────────────────
+#
+# ION publishes its vocabulary at schema.ion.id as a first-class, globally
+# dereferenceable linked-data vocabulary. Beckn-core types come from
+# schema.beckn.io; ION extensions come from schema.ion.id. Beckn domain-specific
+# schemas are NOT imported (see ION_Council_Open_Questions.md Q5 for rationale).
+#
+# For v0.5.2-draft the OpenAPI schemas (attributes.yaml) remain the runtime
+# validation source of truth; the JSON-LD contexts are kept consistent via
+# `tools/regenerate_contexts.py` and validated for drift by `tools/validate.py`.
+# Full source-of-truth inversion (vocab → OpenAPI generated) targeted for v0.6.
+
+x-ion-semantic-model:
+  # Current stance — OpenAPI is authoritative for wire validation.
+  # JSON-LD artefacts are published as vocabulary reference.
+  currentAuthoritative: openapi
+  targetAuthoritative: json-ld       # v0.6 target — see transition plan
+  transitionPlan: docs/ION_Semantic_Model_Transition.md
+
+  # Vocabulary publication endpoint.
+  # Every extension pack at schema/extensions/{layer}/{pack}/{version}/
+  # is published to https://schema.ion.id/{layer}/{pack}/{version}/
+  vocabularyRoot: https://schema.ion.id/
+
+  # URL conventions
+  urlPattern:
+    packRoot: "https://schema.ion.id/{layer}/{pack}/{version}/"
+    termIri:  "https://schema.ion.id/{layer}/{pack}/{version}#{term}"
+    contextJson: "https://schema.ion.id/{layer}/{pack}/{version}/context.jsonld"
+    vocabJson:   "https://schema.ion.id/{layer}/{pack}/{version}/vocab.jsonld"
+    openapiYaml: "https://schema.ion.id/{layer}/{pack}/{version}/attributes.yaml"
+    humanHtml:   "https://schema.ion.id/{layer}/{pack}/{version}/"   # with Accept: text/html
+
+  # Content negotiation — what the server returns per Accept header
+  contentNegotiation:
+    "application/ld+json": context.jsonld (or vocab.jsonld under /vocab path)
+    "application/json":    context.jsonld
+    "application/yaml":    attributes.yaml
+    "text/turtle":         vocab.ttl (v0.6+)
+    "text/html":           index.html (human-readable rendering)
+    default:               text/html
+
+  # Namespace prefixes — whitelisted contexts that ION-valid messages may declare.
+  # v0.5.2: only ion: and beckn: (core) are whitelisted. Cross-network vocabularies
+  # (ondc:, schema:, etc.) will be added in v0.6+ after Council ratifies each
+  # mapping. See ION_Council_Open_Questions.md Q7.
+  allowedContexts:
+    - prefix: ion
+      namespace: https://schema.ion.id/
+      description: ION's own vocabulary (extension attribute types, policies, states, error categories)
+      status: authoritative
+    - prefix: beckn
+      namespace: https://spec.beckn.io/vocab/v2.0.0#
+      description: Beckn core transport and object-model types
+      status: authoritative
+      # Note — ION uses only beckn-core types. Beckn domain-specific
+      # vocabularies (Logistics, Mobility, Retail modules at schema.beckn.io)
+      # are deliberately NOT imported — see Q5.
+
+  # Cross-network mapping policy.
+  # When ION wants to declare its types equivalent to types on other networks,
+  # each mapping is published under schema.ion.id/mappings/{other-network}/
+  # and requires Council ratification.
+  crossNetworkMappings:
+    status: none-ratified-yet
+    publishedUnder: https://schema.ion.id/mappings/
+    ratificationRequired: true
+
 x-ion-actions:
+  # Mandatory actions split by endpoint layer.
+  # Layer 1 (Beckn-native) are defined in beckn.yaml.
+  # Layer 3 (ION protocol extensions) are defined in ion-endpoints.yaml.
   mandatory:
-    bpp:
-      - publish_catalog
-      - on_select
-      - on_init
-      - on_confirm
-      - on_status
-      - on_cancel
-      - on_support
-    bap:
-      - subscribe
-      - select
-      - init
-      - confirm
-      - status
-      - support
+    becknNative:
+      bpp:
+        - publish_catalog
+        - on_select
+        - on_init
+        - on_confirm
+        - on_status
+        - on_cancel
+        - on_support
+      bap:
+        - subscribe
+        - select
+        - init
+        - confirm
+        - status
+        - support
   optional:
-    - track
-    - on_track
-    - update
-    - on_update
-    - rate
-    - on_rate
-    - reconcile
-    - on_reconcile
-    - raise
-    - on_raise
-    - raise_status
-    - on_raise_status
-    - raise_details
-    - on_raise_details
+    becknNative:
+      - track
+      - on_track
+      - update
+      - on_update
+      - rate
+      - on_rate
+  # /raise, /on_raise, /raise_status, /on_raise_status,
+  # /raise_details, /on_raise_details, /reconcile, /on_reconcile
+  # are ION protocol extensions (Layer 3). They are NOT Beckn-native
+  # actions and are specified in ion-endpoints.yaml (same directory).
+  # Implementations that claim ION conformance MUST support these
+  # endpoints. Beckn-only implementations need not.
+  ionExtensions:
+    ref: ./ion-endpoints.yaml
+    endpoints:
+      - raise
+      - on_raise
+      - raise_status
+      - on_raise_status
+      - raise_details
+      - on_raise_details
+      - reconcile
+      - on_reconcile
 
 x-ion-catalog:
   publish:
@@ -173,28 +366,41 @@ x-ion-settlement:
     - LSP
 
 x-ion-conformance:
-  protocolVersion: "2.0.1"
-  ionProfileVersion: "0.5.1-draft"
+  protocolVersion: "2.0.0"
+  ionProfileVersion: "0.5.2-draft"
   schemaPackMatrix:
     core:
       - address/v1
       - identity/v1
-      - payment/v1
-      - tax/v1
       - localization/v1
+      - participant/v1      # NEW in v0.5.2
+      - payment/v1
       - product/v1
-      - support/v1
       - raise/v1
       - rating/v1
       - reconcile/v1
+      - support/v1
+      - tax/v1
     trade:
+      - commitment/v1
+      - consideration/v1
+      - contract/v1
+      - offer/v1
+      - performance/v1
+      - performance-states/v1
       - provider/v1
       - resource/v1
-      - offer/v1
-      - consideration/v1
-      - performance/v1
-      - contract/v1
+    logistics:              # NEW in v0.5.2
       - commitment/v1
+      - consideration/v1
+      - contract/v1
+      - offer/v1
+      - participant-logistics/v1
+      - performance/v1
+      - performance-states/v1
+      - provider/v1
+      - resource/v1
+      - tracking/v1
 
 x-ion-policy-registry:
   description: >
@@ -204,6 +410,7 @@ x-ion-policy-registry:
   registryLocation: /policies
   registryIndex: /policies/registry.json
   categories:
+    # Trade-originated (some reused cross-sector)
     - RETURN
     - CANCELLATION
     - WARRANTY
@@ -211,6 +418,16 @@ x-ion-policy-registry:
     - GRIEVANCE_SLA
     - PAYMENT_TERMS
     - PENALTY
+    # Logistics-originated (NEW in v0.5.2)
+    - EVIDENCE
+    - INSURANCE
+    - SLA
+    - RE_ATTEMPT
+    - WEIGHT_DISPUTE
+    - LIABILITY
+    - INCIDENT
+    - RTS_HANDOFF
+    - LOGISTICS_FWA
   currentRegistryVersion: "1.0.0"
   versionUpgradeModel: SINGLE_VERSION_WITH_90D_NOTICE
   customAddendumAllowed: true

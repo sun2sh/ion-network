@@ -1,0 +1,46 @@
+# Insurance Policy: Standard — Declared Value Cap
+# ion://policy/insurance.standard-declared-value-cap
+
+id: insurance.standard-declared-value-cap
+type: INSURANCE_POLICY
+sector: logistics
+
+coverageType: DECLARED_VALUE
+maxCoverageAmount: 50000000
+currency: IDR
+freeUpTo: 500000
+paidTierRate: 0.005
+deductible: 0
+
+claimProcess:
+  initiationBy: BAP
+  via: damage-claim branch (/update)
+  responseWithin: PT72H
+  paymentWithin: P14D_after_approval
+
+excludes:
+  - INHERENT_VICE
+  - INADEQUATE_PACKAGING_BY_CONSIGNOR
+  - ACTS_OF_WAR
+  - NUCLEAR
+
+---
+
+# Insurance Policy: Enterprise — Umbrella 100M
+# ion://policy/insurance.enterprise-umbrella-100m
+
+id: insurance.enterprise-umbrella-100m
+type: INSURANCE_POLICY
+sector: logistics
+
+coverageType: UMBRELLA_PER_SHIPMENT
+maxCoverageAmount: 100000000
+currency: IDR
+premiumModel: INCLUDED_IN_FWA_RATE
+deductible: 0
+
+claimProcess:
+  initiationBy: BAP
+  via: damage-claim branch (/update)
+  responseWithin: PT48H
+  paymentWithin: P7D_after_approval

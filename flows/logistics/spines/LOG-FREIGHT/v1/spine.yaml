@@ -1,0 +1,254 @@
+# ION Logistics Flow - Freight (LOG-FREIGHT) Spine v1
+# NOT OAS. ION flow specification document.
+# Delta from LOG-PARCEL: capacity-based booking, bill-of-lading, departure-based states.
+
+id: ion-logistics-LOG-FREIGHT-v1
+version: "1.0.0"
+pattern: Freight Logistics
+sectorCode: B
+status: ready
+description: >
+  Capacity-based freight. Covers FTL, LTL, FCL, LCL, air cargo, rail
+  freight, river barge, bulk, break-bulk, and project cargo. Unlike
+  parcel, the booking is against reserved capacity (container slots,
+  aircraft payload, truck capacity, vessel deck), not against a rate
+  card per package. Bill-of-lading and manifest replace AWB.
+  Departure-event state machine replaces hub-routed state machine.
+
+participants:
+  BAP: Buyer App Platform (shipper-facing)
+  BPP: Buyer Price Provider (carrier or freight forwarder)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+deltaFromLogParcel:
+  - Rate is per capacity unit (per container, per kg, per cbm), not per package
+  - Capacity confirmation is required at /select for all capacity-constrained offerings
+  - Booking is against a specific departure (date, vessel, flight, truck)
+  - State machine uses departure events (LOADED, DEPARTED, ARRIVED, UNLOADED)
+  - Bill-of-lading and/or manifest reference replace AWB
+  - Multi-leg freight (ocean+road, air+road) carries leg array in performance.stops
+  - Milk-run and dispatch-route patterns use parent FWA with child transactions
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - offer.rateLogic includes per-container, per-cbm, per-kg-freight logics
+          - offer.capacityModel required — declares how capacity is expressed and booked
+          - offer.consolidationType required — FTL, LTL, FCL, LCL, BULK, BREAK_BULK
+          - offer.transportMode enum is richer — road, rail, sea, air, river
+        requiredFields:
+          - message.catalog.providers[].offers[].offerAttributes.capacityModel
+          - message.catalog.providers[].offers[].offerAttributes.consolidationType
+          - message.catalog.providers[].offers[].offerAttributes.scheduleType
+          - message.catalog.providers[].offers[].offerAttributes.departurePattern
+          - message.catalog.providers[].providerAttributes.fleetType
+          - message.catalog.providers[].providerAttributes.vesselsOperated
+        conditionalFields:
+          - field: message.catalog.providers[].offers[].offerAttributes.reefer
+            condition: required for cold-chain freight
+          - field: message.catalog.providers[].offers[].offerAttributes.hazmatTiers
+            condition: required for hazmat freight
+          - field: message.catalog.providers[].offers[].offerAttributes.projectCargoCapability
+            condition: required for oversized / overweight cargo
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - selectRequired is always true for capacity-constrained freight
+          - select carries requested departure date and required capacity
+          - on_select confirms capacity reservation with hold window
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.cargoDescription
+          - message.contract.commitments[].resources[].resourceAttributes.totalWeight
+          - message.contract.commitments[].resources[].resourceAttributes.totalVolume
+          - message.contract.performance[].performanceAttributes.requestedDepartureDate
+          - message.contract.performance[].performanceAttributes.requestedCapacityUnits
+
+      - step: on_select
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - Returns capacity reservation token with hold window
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.reservedCapacity
+          - message.contract.performance[].performanceAttributes.reservationHoldUntil
+          - message.contract.performance[].performanceAttributes.proposedDeparture
+
+      - step: init
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - eKYC typically required (B2B predominant)
+          - Cargo manifest is mandatory
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.cargoManifest[]
+          - message.contract.commitments[].resources[].resourceAttributes.hsCodes[]
+          - message.contract.participants[role=CONSIGNOR].npwp
+          - message.contract.participants[role=CONSIGNOR].nib
+        conditionalFields:
+          - field: message.contract.contractAttributes.fwaReference
+            condition: required when transacting under an FWA
+
+      - step: on_init
+        inheritedFrom: LOG-PARCEL
+
+      - step: confirm
+        inheritedFrom: LOG-PARCEL
+
+      - step: on_confirm
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - Returns bill-of-lading reference instead of AWB
+          - Departure and arrival scheduled times confirmed
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.billOfLadingReference
+          - message.contract.performance[].performanceAttributes.scheduledDeparture
+          - message.contract.performance[].performanceAttributes.scheduledArrival
+
+  phase3:
+    name: Fulfilment
+    communication: BPP pushes unsolicited
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#freight-capacity
+    steps:
+      - step: on_status
+        trigger: BOOKING_CONFIRMED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: READY_FOR_LOADING
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: LOADED
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.loadingTimestamp
+          - message.contract.performance[].performanceAttributes.manifestVerified
+
+      - step: on_status
+        trigger: DEPARTED
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.departureTimestamp
+
+      - step: on_status
+        trigger: IN_TRANSIT
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: ARRIVED_AT_PORT
+        from: BPP
+        to: BAP
+        description: For sea and air freight.
+
+      - step: on_status
+        trigger: ARRIVED
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.arrivalTimestamp
+
+      - step: on_status
+        trigger: UNLOADED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: AVAILABLE_FOR_COLLECTION
+        from: BPP
+        to: BAP
+        description: Cargo available for consignee collection or onward transport.
+
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        description: Final delivery to consignee. Contract COMPLETE.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.proofOfDelivery
+
+branchWindows:
+  rts-handoff:
+    earliest: on_confirm
+    latest: "on_status[READY_FOR_PICKUP]"
+    condition: Origin is a warehouse or B2B seller requiring explicit RTS signal
+
+  during-transaction:
+    earliest: select
+    latest: on_confirm
+  ekyc:
+    earliest: init
+    latest: on_init
+    condition: B2B transaction without active FWA
+  fwa-activation:
+    earliest: select
+    latest: confirm
+  capacity-reservation:
+    earliest: select
+    latest: confirm
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[DEPARTED]"
+  weight-dispute:
+    earliest: "on_status[LOADED]"
+    latest: "on_status[UNLOADED]"
+  cold-chain-proof:
+    earliest: "on_status[LOADED]"
+    latest: "on_status[DELIVERED]"
+    condition: reefer cargo
+  reverse:
+    earliest: "on_status[DELIVERED]"
+    latest: freight_return_window_expiry
+    description: reverse-freight branch applies
+  exception:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+  phase4:
+    name: Post-Fulfilment
+    communication: direct BAP-BPP
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        description: Post-delivery rating. See LOG-PARCEL phase4 for full field specification.
+        requiredFields:
+          - message.rating.contractReference
+          - message.rating.overallRating
+
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+
+      - step: reconcile
+        from: BAP
+        to: BPP
+        direction: request
+        description: Financial reconciliation. Uses ION Core reconcile/v1. See LOG-PARCEL phase4.
+        schemaPacks:
+          core: [reconcile/v1]
+
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        direction: callback

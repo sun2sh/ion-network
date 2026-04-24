@@ -1,0 +1,182 @@
+# ION Logistics Flow - Roll-on/Roll-off (LOG-RORO) Spine v1
+# NOT OAS. ION flow specification document.
+# Delta from LOG-FREIGHT: self-accompanied cargo, port-event state machine, vehicle-as-resource.
+
+id: ion-logistics-LOG-RORO-v1
+version: "1.0.0"
+pattern: Roll-on/Roll-off
+sectorCode: B
+status: ready
+description: >
+  Self-accompanied cargo on Ro-Ro vessels and ferries. The consignor
+  typically drives or accompanies the cargo onto the vessel at origin
+  port and off at destination port. Covers Java-Bali (Ketapang-Gilimanuk),
+  Java-Sumatra (Merak-Bakauheni), and other strait crossings operated
+  by ASDP and private Ro-Ro operators. Also covers inter-island Ro-Ro
+  freight where drivers accompany trucks and containers on trailers.
+  Vehicle is the resource; port events drive the state machine.
+
+participants:
+  BAP: Buyer App Platform (driver or fleet operator facing)
+  BPP: Buyer Price Provider (Ro-Ro operator)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+deltaFromLogFreight:
+  - Resource is a vehicle (car, truck, trailer, motorcycle) with driver present
+  - Consignor and consignee are often the same party (the driver/owner)
+  - No pickup address — drive-in at origin port
+  - No delivery address — drive-out at destination port
+  - Ticket reference replaces bill-of-lading
+  - Port events replace loading/departure events
+  - Vessel-slot capacity model is default
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - transportMode is ferry or roro
+          - capacityModel is PER_VESSEL_SLOT
+          - Ports (origin and destination) are mandatory in coverage
+          - Vehicle categories (passenger car, light truck, heavy truck, motorcycle, trailer) declared in offer
+        requiredFields:
+          - message.catalog.providers[].providerAttributes.portsServed[]
+          - message.catalog.providers[].offers[].offerAttributes.vehicleCategoriesAccepted[]
+          - message.catalog.providers[].offers[].offerAttributes.sailingSchedule[]
+          - message.catalog.providers[].offers[].offerAttributes.crossingDuration
+          - message.catalog.providers[].offers[].offerAttributes.vesselCapacityPerSailing
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Capacity is vessel slot on a specific sailing
+          - Vehicle details (category, registration, dimensions) mandatory
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.vehicleDetails
+          - message.contract.performance[].performanceAttributes.requestedSailing
+
+      - step: on_select
+        inheritedFrom: LOG-FREIGHT
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.confirmedSailing
+          - message.contract.performance[].performanceAttributes.boardingWindow
+
+      - step: init
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Driver identity is mandatory
+          - Vehicle registration and driver licence captured
+        requiredFields:
+          - message.contract.participants[role=DRIVER].person.name
+          - message.contract.participants[role=DRIVER].person.licenceNumber
+          - message.contract.commitments[].resources[].resourceAttributes.vehicleRegistration
+
+      - step: on_init
+        inheritedFrom: LOG-FREIGHT
+
+      - step: confirm
+        inheritedFrom: LOG-FREIGHT
+
+      - step: on_confirm
+        inheritedFrom: LOG-FREIGHT
+        overrides:
+          - Returns boarding ticket reference instead of bill-of-lading
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.ticketReference
+          - message.contract.performance[].performanceAttributes.boardingGate
+
+  phase3:
+    name: Fulfilment
+    communication: BPP pushes unsolicited
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#roro
+    steps:
+      - step: on_status
+        trigger: TICKET_ISSUED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: CHECKED_IN
+        from: BPP
+        to: BAP
+        description: Vehicle checked in at origin port.
+
+      - step: on_status
+        trigger: BOARDED
+        from: BPP
+        to: BAP
+        description: Vehicle loaded onto vessel.
+
+      - step: on_status
+        trigger: SAILED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: ARRIVED_AT_PORT
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: DISEMBARKED
+        from: BPP
+        to: BAP
+        description: Vehicle unloaded from vessel.
+
+      - step: on_status
+        trigger: EXITED_PORT
+        from: BPP
+        to: BAP
+        description: Vehicle cleared destination port. Contract COMPLETE.
+
+branchWindows:
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[CHECKED_IN]"
+  missed-sailing:
+    earliest: "on_status[TICKET_ISSUED]"
+    latest: "on_status[BOARDED]"
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+  phase4:
+    name: Post-Fulfilment
+    communication: direct BAP-BPP
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        description: Post-delivery rating. See LOG-PARCEL phase4 for full field specification.
+        requiredFields:
+          - message.rating.contractReference
+          - message.rating.overallRating
+
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+
+      - step: reconcile
+        from: BAP
+        to: BPP
+        direction: request
+        description: Financial reconciliation. Uses ION Core reconcile/v1. See LOG-PARCEL phase4.
+        schemaPacks:
+          core: [reconcile/v1]
+
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        direction: callback

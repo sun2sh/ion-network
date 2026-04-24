@@ -17,5 +17,5 @@ B2B-PP — all B2B-PP fields apply. Credit adds:
 - Payment timing: POST_FULFILLMENT (not ON_ORDER as in B2B-PP)
 - Dunning flow: BPP sends on_update reminders at T-7, T-3, T-1 before due date
 - BNPL option: Kredivo Business, Akulaku for Merchant — `FINANCE_CHARGE` in breakup
-- PPh23 2% withheld by buyer for service components (if applicable)
+- PPh23 withheld by buyer for service components (rate per current PMK — check DJP; if applicable)
 - `payment.status = PENDING` at confirm (unlike B2B-PP where status = PAID)

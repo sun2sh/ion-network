@@ -1,0 +1,105 @@
+# ION Logistics Branch — COD v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-cod-v1
+version: "1.0.0"
+branchType: cod
+sectorCode: B
+status: ready
+description: >
+  Cash-on-delivery payment collection. LSP collects cash from consignee
+  at the moment of delivery. Covers collection, refusal-at-door, partial
+  collection, and remittance back to the BAP. Settlement is structured
+  via the contract's reconciliation records.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-HYPERLOCAL
+
+window:
+  earliest: confirm
+  latest: "on_status[DELIVERED]"
+
+activationTrigger: >
+  offer.availableOnCod = true AND settlement.collectedBy = BPP AND
+  settlement.method = COD
+
+subBranches:
+
+  cod-collection:
+    id: cod-collection
+    description: Rider collects cash at delivery. Amount confirmed in on_status DELIVERED.
+    steps:
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        additionalRequiredFields:
+          - message.contract.settlements[].settlementAttributes.codAmountCollected
+          - message.contract.settlements[].settlementAttributes.codCollectionTimestamp
+          - message.contract.settlements[].settlementAttributes.codCollectionReceiptRef
+
+  cod-refusal:
+    id: cod-refusal
+    description: >
+      Consignee refuses to pay COD amount or refuses delivery when COD
+      is a condition. Delivery is refused; package goes to RTO path.
+    steps:
+      - step: on_status
+        trigger: DELIVERY_ATTEMPT_FAILED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        additionalRequiredFields:
+          - message.contract.performance[].performanceAttributes.ndrReasonCode
+          - message.contract.performance[].performanceAttributes.codRefusalReason
+        codRefusalReasons:
+          - COD-REF-001  # Consignee says amount different from expected
+          - COD-REF-002  # Consignee does not have exact change
+          - COD-REF-003  # Consignee refuses on delivery without reason
+          - COD-REF-004  # Consignee disputes product — wants to inspect first
+
+  cod-partial-collection:
+    id: cod-partial-collection
+    description: >
+      Consignee pays partial COD amount (e.g. multi-item order with
+      partial return at door). Rare but must be handled.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.codPartialAmount
+          - message.contract.settlements[].settlementAttributes.codRemainingAmount
+          - message.contract.contractAttributes.codPartialReason
+
+  cod-remittance:
+    id: cod-remittance
+    description: >
+      LSP remits collected COD cash to BAP. Scheduled per the offer's
+      COD payment-terms policy IRI (weekly, bi-weekly, etc). Settlement
+      record carries remittance batch reference.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Remittance advice sent to BAP.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.codRemittanceAmount
+          - message.contract.settlements[].settlementAttributes.codRemittanceBatchRef
+          - message.contract.settlements[].settlementAttributes.codRemittanceTimestamp
+          - message.contract.settlements[].settlementAttributes.codRemittanceMethod
+
+    businessRules:
+      - Remittance must occur within the declared COD payment-terms window
+      - Breach of remittance SLA triggers penalty per ion://policy/penalty.cod-remittance-late
+      - BAP reconciles remittance against individual COD collections via batchRef
+
+policyReferences:
+  - ion://policy/payment-terms.cod-weekly-monday
+  - ion://policy/payment-terms.cod-biweekly
+  - ion://policy/penalty.cod-remittance-late
+  - ion://policy/liability.cod-max-per-shipment

@@ -1,0 +1,82 @@
+# Evidence Policy: Standard — Photo within 24 hours
+# ion://policy/evidence.standard.photo-24hr
+
+id: evidence.standard.photo-24hr
+type: EVIDENCE_POLICY
+sector: logistics
+
+appliesTo: [damage-claim, loss-claim]
+
+requirements:
+  damage-claim:
+    - type: PHOTO
+      count: minimum 2
+      within: PT24H
+      metadata: [timestamp, gps]
+      description: >
+        At least 2 photos of the damaged item and packaging,
+        submitted within 24 hours of delivery
+  loss-claim:
+    - type: LAST_KNOWN_SCAN
+      source: carrier-tracking
+    - type: NON_RECEIPT_DECLARATION
+      signedBy: consignee
+      within: PT48H
+
+disputeWindow:
+  damageClaim: PT24H_after_delivery
+  lossClaim: P7D_after_last_known_scan
+
+---
+
+# Evidence Policy: Enterprise — Photo within 2 hours with GPS
+# ion://policy/evidence.enterprise.photo-2hr-with-gps
+
+id: evidence.enterprise.photo-2hr-with-gps
+type: EVIDENCE_POLICY
+sector: logistics
+
+appliesTo: [damage-claim, loss-claim]
+
+requirements:
+  damage-claim:
+    - type: PHOTO
+      count: minimum 3
+      within: PT2H
+      metadata: [timestamp, gps, device_id]
+  loss-claim:
+    - type: LAST_KNOWN_SCAN
+      source: carrier-tracking
+    - type: NON_RECEIPT_DECLARATION
+      signedBy: consignee
+      within: PT24H
+
+disputeWindow:
+  damageClaim: PT2H_after_delivery
+  lossClaim: P3D_after_last_known_scan
+
+---
+
+# Evidence Policy: Cold Chain — Datalogger Required
+# ion://policy/evidence.cold-chain.datalogger-required
+
+id: evidence.cold-chain.datalogger-required
+type: EVIDENCE_POLICY
+sector: logistics
+
+appliesTo: [cold-chain-damage, cold-chain-excursion]
+
+requirements:
+  cold-chain-damage:
+    - type: TEMPERATURE_LOG
+      source: certified_datalogger
+      completeness: full_transit
+      certificationRequired: true
+    - type: PHOTO
+      count: minimum 2
+      within: PT1H
+  cold-chain-excursion:
+    - type: TEMPERATURE_LOG
+      source: certified_datalogger
+      excursionTimestamp: required
+      excursionDuration: required

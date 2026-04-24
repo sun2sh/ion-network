@@ -1,0 +1,73 @@
+# Incident Policy: Standard
+# ion://policy/incident.standard
+
+id: incident.standard
+type: INCIDENT_POLICY
+sector: logistics
+
+description: >
+  Standard incident reporting and resolution policy for logistics operations.
+  Covers accidents, breakdowns, robbery, medical emergencies, and force majeure.
+
+reportingRequirements:
+  driverSafetyStatusWithin: PT15M
+  policeReportWithin: P1D       # For theft, robbery, serious accidents
+  insuranceClaimWithin: P3D     # When cargo is affected
+  bapNotificationWithin: PT15M  # For incidents with cargo impact
+
+severityClassification:
+  MINOR:
+    examples: [minor accident without injury, tire breakdown]
+    cargoImpact: NONE_OR_MINIMAL
+    slaImpact: DELAY_ONLY
+  MODERATE:
+    examples: [accident with minor injuries, significant delay]
+    cargoImpact: PARTIAL
+    slaImpact: LIKELY_BREACH
+  SEVERE:
+    examples: [serious accident, armed robbery]
+    cargoImpact: SIGNIFICANT
+    slaImpact: BREACH
+    triggersLossClaim: true
+  CRITICAL:
+    examples: [fatality, total vehicle loss, cargo fire]
+    cargoImpact: TOTAL
+    slaImpact: FULL_FAILURE
+    triggersLossClaim: true
+    escalationRequired: true
+
+escalation:
+  whenSeverity: [SEVERE, CRITICAL]
+  path: ion://policy/dispute-resolution.commercial-odr
+  timeline: P7D
+
+---
+
+# Incident Policy: High-severity escalation
+# ion://policy/incident.high-severity-escalation
+
+id: incident.high-severity-escalation
+type: INCIDENT_POLICY
+sector: logistics
+
+description: >
+  Escalation procedures for SEVERE and CRITICAL incidents.
+  Includes mandatory regulator notification for hazmat/cold-chain incidents.
+
+mandatoryNotifications:
+  hazmatIncident:
+    regulator: KEMENHUB         # Ministry of Transport
+    within: PT24H
+  coldChainFailure:
+    regulator: BPOM             # For pharma
+    within: PT12H
+  fatality:
+    regulator: POLICE
+    within: PT2H
+
+reportingFields:
+  - incidentDetail.severity
+  - incidentDetail.injuryCount
+  - incidentDetail.fatalityCount
+  - incidentDetail.cargoImpactEstimated
+  - incidentDetail.regulatorNotificationRef

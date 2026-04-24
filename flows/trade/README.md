@@ -159,7 +159,7 @@ ion search "cancellation fee fields"
 ion search "return window"
 ```
 
-Web Explorer: `devlabs.ion.id/atlas (coming soon)`
+Web Explorer: `schema.ion.id/atlas (coming soon)`
 
 
 ---

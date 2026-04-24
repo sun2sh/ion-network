@@ -1,0 +1,70 @@
+openapi: 3.1.1
+info:
+  title: ION Logistics Participant Addendum (v1)
+  description: >
+    Thin logistics addendum to core/participant/v1. Carries the few
+    participant identity fields that apply only to logistics roles —
+    PPJK customs-broker licence and Indonesian driver SIM details.
+
+    Attaches to: beckn:Participant.participantAttributes alongside
+    IONParticipantAttributes (core/participant/v1) on the same
+    participant. Both blocks coexist because they declare disjoint
+    field sets and carry distinct @type values.
+
+    Wire placement on a single participant:
+      message.participants[N].participantAttributes: {
+        "@context": ["https://schema.ion.id/core/participant/v1/context.jsonld",
+                     "https://schema.ion.id/logistics/participant-logistics/v1/context.jsonld"],
+        "@type": ["ion:ParticipantAttributes",
+                  "ion:LogisticsParticipantAddendum"],
+        ...core participant fields...,
+        ...logistics addendum fields...
+      }
+
+    New in v0.5.2. Supersedes the previous logistics/participant/v1
+    pack whose cross-sector fields were promoted to core.
+  version: 1.0.0
+
+components:
+  schemas:
+    LogisticsParticipantAddendum:
+      type: object
+      title: Logistics Participant Addendum
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:LogisticsParticipantAddendum
+      x-beckn-attaches-to: Participant.participantAttributes
+
+      properties:
+
+        ppjkLicenceNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=CUSTOMS_BROKER
+          description: >
+            PPJK (Pengusaha Pengurusan Jasa Kepabeanan) licence number —
+            Indonesian customs-broker licence. Governs who may file
+            customs declarations on behalf of importers/exporters.
+            Only applicable to the CUSTOMS_BROKER role.
+          x-ion-regulatory: PMK 219/PMK.04/2019 tentang PPJK
+
+        driverLicenceNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=DRIVER (LOG-RORO, LOG-FREIGHT, LOG-HYPERLOCAL)
+          description: SIM (Surat Izin Mengemudi) — Indonesian driving licence number
+
+        driverLicenceCategory:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=DRIVER
+          enum: [A, B_I, B_II, C, D]
+          description: >
+            SIM category — Indonesian driving licence classes.
+            A: small passenger cars / light commercial.
+            B_I: heavy trucks under 3500kg.
+            B_II: trailer/trucks over 3500kg.
+            C: motorcycles.
+            D: disabled-persons vehicles.
+          x-ion-regulatory: UU 22/2009 LLAJ; Perpol 5/2021

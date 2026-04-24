@@ -1,0 +1,20 @@
+{
+  "id": "ion-logistics-participant-logistics-v1",
+  "version": "1.0.0",
+  "domain": "ion-logistics",
+  "name": "ION Logistics Participant Addendum (v1)",
+  "description": "Thin addendum to core/participant/v1 carrying logistics-only licence fields — PPJK customs broker licence and Indonesian driver SIM details. Coexists with core participant on the same participantAttributes slot.",
+  "packSchema": "./attributes.yaml",
+  "jsonldContext": "./context.jsonld",
+  "dependsOn": ["core/participant/v1"],
+  "attachmentPoints": {
+    "participantAttributes": [
+      "LogisticsParticipantAddendum"
+    ]
+  },
+  "regulatory": [
+    "PMK 219/PMK.04/2019 (PPJK)",
+    "UU 22/2009 LLAJ",
+    "Perpol 5/2021 (SIM categories)"
+  ]
+}

@@ -1,0 +1,141 @@
+# ION Logistics Branch — Weight Dispute v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-weight-dispute-v1
+version: "1.0.0"
+branchType: weight-dispute
+sectorCode: B
+status: ready
+description: >
+  Handles discrepancies between the declared weight/dimensions at booking
+  and the actual weight/dimensions measured by the LSP at pickup or hub.
+  All exchanges flow through /update and /on_update referencing the
+  weight-dispute policy IRI. Escalation to /raise if bilateral resolution
+  fails within the policy SLA.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-FREIGHT
+
+window:
+  earliest: "on_status[PICKED_UP]"
+  latest: "on_status[DELIVERED]"
+
+activationTrigger: >
+  BPP sends /on_update with reason ion://policy/dispute.weight-discrepancy
+  when measured weight or dimensions differ from declared values by more
+  than the offer's declared tolerance (typically 10% or 0.5kg).
+
+subBranches:
+
+  weight-discrepancy-raised:
+    id: weight-discrepancy-raised
+    description: >
+      BPP raises the discrepancy. Carries measured values and evidence.
+      Contract enters DISPUTE_WEIGHT_RAISED state.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.disputeReason
+          - message.contract.contractAttributes.disputeReason.policyIri
+          - message.contract.performance[].performanceAttributes.discrepancyDetail
+          - message.contract.performance[].performanceAttributes.discrepancyDetail.declaredWeight
+          - message.contract.performance[].performanceAttributes.discrepancyDetail.measuredWeight
+          - message.contract.performance[].performanceAttributes.discrepancyDetail.measurementTimestamp
+          - message.contract.performance[].performanceAttributes.discrepancyDetail.measurementLocation
+          - message.contract.consideration.considerationAttributes.revisedAmount
+          - message.contract.consideration.considerationAttributes.revisionBreakup[]
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.discrepancyDetail.measuredDimensions
+            condition: required if dimensional weight is also disputed
+          - field: message.contract.performance[].performanceAttributes.discrepancyDetail.scalePhotoUrl
+            condition: required per evidence policy if policy demands photo evidence
+
+    businessRules:
+      - policyIri must resolve to a ratified weight-dispute policy
+      - discrepancyDetail.measurementLocation must be PICKUP, ORIGIN_HUB, or DESTINATION_HUB
+      - revisedAmount is BPP's proposal — BAP may accept, counter, or reject
+
+  weight-discrepancy-accepted:
+    id: weight-discrepancy-accepted
+    description: BAP accepts the revised weight and amount.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.contractAttributes.disputeResolution
+          - message.contract.contractAttributes.disputeResolution.outcome
+          - message.contract.settlements[].settlementAttributes.revisedAmount
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP confirms resolution. Contract exits dispute state.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.contractAttributes.disputeResolution.resolvedAt
+
+  weight-discrepancy-countered:
+    id: weight-discrepancy-countered
+    description: >
+      BAP counters with own evidence. Dispute enters evidence-exchange
+      phase. Both sides have the policy-defined evidence window.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.contractAttributes.disputeCounter
+          - message.contract.contractAttributes.disputeCounter.counterWeight
+          - message.contract.contractAttributes.disputeCounter.evidenceUrls[]
+          - message.contract.contractAttributes.disputeCounter.evidenceType
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP acknowledges counter. May accept, re-counter (once), or reject.
+        requiredFields:
+          - message.contract.contractAttributes.disputeState
+
+  weight-discrepancy-escalated:
+    id: weight-discrepancy-escalated
+    description: >
+      Bilateral resolution failed within the policy SLA. BAP or BPP
+      escalates to ION network via /raise (ION extension — not in
+      Beckn 2.0 core; see docs/ION_Beckn_Conformance.md).
+      ION Central adjudicates using the contract's update history as evidence.
+    steps:
+      - step: raise
+        endpointClass: ION_EXTENSION
+        from: BAP or BPP
+        to: ION_GATEWAY
+        direction: request
+        requiredFields:
+          - message.ticket.contractReference
+          - message.ticket.type                  # WEIGHT_DISCREPANCY
+          - message.ticket.applicablePolicyIri
+          - message.ticket.bilateralAttemptLog[]
+
+disputeStates:
+  - DISPUTE_WEIGHT_RAISED
+  - DISPUTE_EVIDENCE_EXCHANGED
+  - DISPUTE_RESOLVED_ACCEPTED
+  - DISPUTE_RESOLVED_NEGOTIATED
+  - DISPUTE_ESCALATED
+
+policyReferences:
+  - ion://policy/weight-dispute.standard-10pct-tolerance
+  - ion://policy/weight-dispute.enterprise-5pct-tolerance
+  - ion://policy/weight-dispute.freight-reweigh-required
+  - ion://policy/evidence.standard.photo-24hr
+  - ion://policy/evidence.enterprise.photo-2hr-with-gps

@@ -1,0 +1,202 @@
+# ION Logistics Branch — Incident v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-incident-v1
+version: "1.0.0"
+branchType: incident
+sectorCode: B
+status: ready
+description: >
+  Driver/rider safety and in-transit incident reporting. Covers accidents,
+  vehicle breakdown, robbery, assault, medical emergency, natural disaster
+  in route, and rider-refusal-of-delivery. All incidents trigger an
+  unsolicited /on_update from BPP with incident classification, affected
+  shipments, and proposed resolution. Driver insurance (distinct from
+  cargo insurance) may be invoked. Incidents with cargo impact may escalate
+  to the damage-claim or loss-claim branches.
+
+appliesTo:
+  - LOG-HYPERLOCAL
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-RORO
+  - LOG-XB
+
+window:
+  earliest: "on_status[OUT_FOR_PICKUP]"
+  latest: contract_COMPLETE
+
+activationTrigger: >
+  BPP detects or reports an incident affecting one or more shipments in transit.
+  Sent as unsolicited /on_update to all BAPs with affected shipments.
+
+subBranches:
+
+  incident-accident:
+    id: incident-accident
+    description: >
+      Vehicle accident — collision, rollover, fire. Driver safety takes
+      priority; shipment status becomes secondary until driver is clear.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.incidentDetail.type
+          - message.contract.contractAttributes.incidentDetail.timestamp
+          - message.contract.contractAttributes.incidentDetail.location
+          - message.contract.contractAttributes.incidentDetail.severity
+          - message.contract.contractAttributes.incidentDetail.driverSafetyStatus
+          - message.contract.contractAttributes.incidentDetail.cargoImpactEstimated
+          - message.contract.contractAttributes.incidentDetail.policeReportReference
+          - message.contract.contractAttributes.incidentDetail.insuranceClaimReference
+        incidentTypes:
+          - ACCIDENT_COLLISION
+          - ACCIDENT_ROLLOVER
+          - ACCIDENT_FIRE
+          - ACCIDENT_DROWNED          # Vehicle submerged
+        severityLevels:
+          - MINOR                      # No injuries, minimal cargo impact
+          - MODERATE                   # Minor injuries, partial cargo damage
+          - SEVERE                     # Serious injuries, significant cargo damage
+          - CRITICAL                   # Fatalities or total cargo loss
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP acknowledges incident and requests resolution plan.
+        requiredFields:
+          - message.contract.contractAttributes.incidentResolution.bapPreference
+        resolutionOptions:
+          - WAIT_FOR_RECOVERY
+          - INITIATE_LOSS_CLAIM
+          - ARRANGE_ALTERNATE_SHIPMENT
+          - CANCEL_WITH_REFUND
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP confirms resolution path. If cargo lost, triggers loss-claim branch.
+
+    policyReferences:
+      - ion://policy/incident.accident.standard
+      - ion://policy/liability.driver-insurance-coverage
+
+  incident-breakdown:
+    id: incident-breakdown
+    description: >
+      Mechanical breakdown. Non-safety-critical. Shipment delayed;
+      recovery vehicle dispatched. SLA may be breached.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.incidentDetail.type
+          - message.contract.contractAttributes.incidentDetail.timestamp
+          - message.contract.contractAttributes.incidentDetail.location
+          - message.contract.contractAttributes.incidentDetail.estimatedResolutionEta
+        incidentTypes:
+          - BREAKDOWN_MECHANICAL
+          - BREAKDOWN_ELECTRICAL
+          - BREAKDOWN_TIRE
+          - BREAKDOWN_FUEL
+
+  incident-robbery:
+    id: incident-robbery
+    description: >
+      Robbery or theft in transit. High-value shipments most at risk.
+      Driver safety, police report, insurance claim on loss simultaneous.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.incidentDetail.type
+          - message.contract.contractAttributes.incidentDetail.timestamp
+          - message.contract.contractAttributes.incidentDetail.location
+          - message.contract.contractAttributes.incidentDetail.driverSafetyStatus
+          - message.contract.contractAttributes.incidentDetail.policeReportReference
+          - message.contract.contractAttributes.incidentDetail.cargoLost
+          - message.contract.contractAttributes.incidentDetail.cargoPartiallyRecovered
+        incidentTypes:
+          - ROBBERY_ARMED
+          - ROBBERY_UNARMED
+          - THEFT_UNATTENDED
+          - HIJACK_VEHICLE
+        businessRules:
+          - Triggers loss-claim branch automatically for affected shipments
+          - Driver safety status must be populated within PT15M of incident
+          - Police report reference required within P1D
+
+  incident-medical-emergency:
+    id: incident-medical-emergency
+    description: >
+      Driver medical emergency. Shipment rerouted via alternative rider.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.incidentDetail.type
+          - message.contract.contractAttributes.incidentDetail.timestamp
+          - message.contract.contractAttributes.incidentDetail.driverSafetyStatus
+          - message.contract.contractAttributes.incidentDetail.reassignmentPlan
+
+  incident-force-majeure:
+    id: incident-force-majeure
+    description: >
+      Natural disaster, flood, civil unrest, pandemic restrictions.
+      All affected shipments treated as a batch.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.incidentDetail.type
+          - message.contract.contractAttributes.incidentDetail.affectedRegion
+          - message.contract.contractAttributes.incidentDetail.expectedResolutionDate
+        incidentTypes:
+          - FORCE_MAJEURE_FLOOD
+          - FORCE_MAJEURE_EARTHQUAKE
+          - FORCE_MAJEURE_VOLCANIC
+          - FORCE_MAJEURE_CIVIL_UNREST
+          - FORCE_MAJEURE_PANDEMIC
+          - FORCE_MAJEURE_WEATHER
+
+    businessRules:
+      - SLA penalties waived per force majeure clause in SLA policy
+      - BAP may cancel without fee
+      - Insurance claim may be excluded per war/catastrophe clause
+
+  rider-refused-delivery:
+    id: rider-refused-delivery
+    description: >
+      Rider refuses to deliver due to safety concerns (e.g. unsafe address,
+      consignee threatens rider, area access denied). Distinct from NDR.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.riderRefusalReason
+        refusalReasons:
+          - UNSAFE_ADDRESS_CONFIRMED
+          - CONSIGNEE_THREAT
+          - AREA_ACCESS_DENIED_BY_AUTHORITIES
+          - SUSPECTED_FRAUD
+          - RIDER_SAFETY_CONCERN_OTHER
+
+policyReferences:
+  - ion://policy/incident.standard
+  - ion://policy/incident.high-severity-escalation
+  - ion://policy/liability.driver-insurance-coverage
+  - ion://policy/liability.force-majeure-exclusions

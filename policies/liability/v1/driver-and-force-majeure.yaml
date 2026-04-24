@@ -1,0 +1,91 @@
+# Liability Policy: Driver Insurance Coverage
+# ion://policy/liability.driver-insurance-coverage
+
+id: liability.driver-insurance-coverage
+type: LIABILITY_POLICY
+sector: logistics
+
+description: >
+  Driver/rider insurance coverage — distinct from cargo insurance.
+  Covers accidents, medical, disability, and death for drivers while on duty.
+
+coverage:
+  accidentalDeath:
+    amount: 100000000         # Rp 100 million
+    currency: IDR
+  permanentDisability:
+    amount: 100000000
+    currency: IDR
+  medicalExpenses:
+    amount: 25000000           # Rp 25 million per incident
+    currency: IDR
+  temporaryDisabilityDaily:
+    amount: 200000            # Rp 200k per day
+    maxDays: 90
+
+vehicleInsurance:
+  thirdPartyLiability: true
+  ownDamage: CONDITIONAL      # Per LSP policy
+  theft: true
+
+claimProcess:
+  initiatedBy: DRIVER_OR_LSP
+  timeline:
+    reportIncident: PT15M
+    submitClaim: P3D
+    insurerAssessment: P7D
+    settlement: P14D
+
+excludes:
+  - DUI_OR_INTOXICATION
+  - WILFUL_MISCONDUCT
+  - OPERATING_WITHOUT_LICENCE
+
+---
+
+# Liability Policy: Force Majeure Exclusions
+# ion://policy/liability.force-majeure-exclusions
+
+id: liability.force-majeure-exclusions
+type: LIABILITY_POLICY
+sector: logistics
+
+description: >
+  Force majeure clause — defines conditions under which LSP and BAP
+  liabilities are suspended and SLA penalties waived.
+
+forceMajeureEvents:
+  - FLOOD
+  - EARTHQUAKE
+  - VOLCANIC_ERUPTION
+  - TSUNAMI
+  - HURRICANE_TYPHOON
+  - WILDFIRE
+  - CIVIL_UNREST
+  - TERRORISM
+  - WAR
+  - PANDEMIC_LOCKDOWN
+  - STRIKE_GENERAL              # Nationwide general strike
+  - GOVERNMENT_ACTION           # E.g. sudden border closure
+  - CYBER_ATTACK_REGIONAL       # Affecting regional infrastructure
+  - POWER_GRID_FAILURE_EXTENDED
+
+declaration:
+  by: BPP_OR_BAP
+  via: /update with type=FORCE_MAJEURE
+  evidenceRequired:
+    - BMKG_METEOROLOGY_REPORT   # For weather events
+    - GOVERNMENT_ANNOUNCEMENT
+    - MEDIA_REPORTS
+    - AFFECTED_AREA_MAP
+
+consequences:
+  slaPenaltiesWaived: true
+  cancellationFeesWaived: true
+  cargoInsuranceApplicable: CHECK_POLICY   # ICC C typically excludes; ICC A may cover
+  driverInsuranceApplicable: true
+
+resolution:
+  extensionGrantedDays: 14      # Initial extension
+  reviewAfterDays: 7
+  terminationRight: EITHER_PARTY  # Either can terminate if FM > 30 days

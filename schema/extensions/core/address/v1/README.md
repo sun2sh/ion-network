@@ -1,9 +1,16 @@
 # ion-core/address/v1
 
-Indonesian address subdivisions extending Beckn Address.
+Indonesian address subdivisions (provinsi / kabupaten / kecamatan / kelurahan / RT / RW). Reusable shape embedded inside other ION Attributes bags — does NOT attach to Beckn's `Address` object directly.
 
-## Attaches to
-`beckn:Address` — used in delivery addresses, provider locations, and fulfilment endpoints.
+## Why not attach to `beckn:Address`?
+
+Beckn 2.0.0's `Address` schema is `additionalProperties: false` — it has no extension slot. The Beckn fields (streetAddress, addressLocality, postalCode, addressRegion, addressCountry, extendedAddress) cover international postal-address needs and are used as-is.
+
+## Where this shape is embedded
+
+- `Participant.participantAttributes.addressDetail` — via `core/participant/v1` (primary use). Every ION participant with a physical location (buyer, seller, merchant, warehouse, consignor, consignee, agent) carries this.
+- `Provider.providerAttributes.availableAt[*].ionSubdivisions` — via sector provider packs, for physical presence locations of a provider.
+- `Performance.performanceAttributes.stops[*].location.ionSubdivisions` — via sector performance packs, for pickup/drop stops in delivery flows.
 
 ## Fields
 | Field | Type | Mandatory | Description |

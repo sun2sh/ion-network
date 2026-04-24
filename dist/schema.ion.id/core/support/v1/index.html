@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/support/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/support (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/support/">support</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/support/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/support/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONSupportTicket</h3>
+<p class="iri">IRI: https://schema.ion.id/core/support/v1#IONSupportTicket</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td>always</td><td>Network-wide unique issue identifier. Assigned at creation.</td></tr>
+<tr><td><code>category</code></td><td>always</td><td>ITEM: wrong item, damaged, not as described. FULFILLMENT: delivery delay, non-delivery, wrong address. PAYMENT: overchar</td></tr>
+<tr><td><code>subCategory</code></td><td>optional</td><td>Sub-category code for more precise classification. e.g. ITM01=wrong item, ITM02=damaged, FLM01=delay, FLM02=non-delivery</td></tr>
+<tr><td><code>complainantInfo</code></td><td>optional</td><td></td></tr>
+<tr><td><code>description</code></td><td>optional</td><td></td></tr>
+<tr><td><code>source</code></td><td>optional</td><td></td></tr>
+<tr><td><code>expectedResponseTime</code></td><td>optional</td><td>ISO 8601 duration. Time within which respondent must acknowledge.</td></tr>
+<tr><td><code>expectedResolutionTime</code></td><td>optional</td><td>ISO 8601 duration. Time within which resolution must be provided.</td></tr>
+<tr><td><code>status</code></td><td>always</td><td></td></tr>
+<tr><td><code>severity</code></td><td>optional</td><td></td></tr>
+<tr><td><code>issueActions</code></td><td>optional</td><td>Action trail — both sides of the conversation.</td></tr>
+<tr><td><code>resolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>rating</code></td><td>optional</td><td>Consumer rating of resolution quality after issue is CLOSED</td></tr>
+<tr><td><code>createdAt</code></td><td>always</td><td></td></tr>
+<tr><td><code>updatedAt</code></td><td>always</td><td></td></tr>
+<tr><td><code>escalationLevel</code></td><td>optional</td><td>Current escalation level of the dispute. Progression: 1. SELLER — buyer contacts seller (default support flow, 1-2 days)</td></tr>
+<tr><td><code>escalationTimestamp</code></td><td>conditional</td><td>When the ticket was escalated to this level</td></tr>
+<tr><td><code>escalationSlaHours</code></td><td>optional</td><td>SLA in hours for the current escalation level</td></tr>
+<tr><td><code>bpskReference</code></td><td>conditional</td><td>BPSK case reference number</td></tr>
+<tr><td><code>kominfoReference</code></td><td>conditional</td><td>Kominfo consumer complaint portal reference</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/support/v1</h1>
+
+<p>Consumer complaint ticket — buyer raises order issues to seller. APIs: support/on_support.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Support`</p>
+
+<p>See `attributes.yaml` for complete field definitions.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/support/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+# ION Logistics Branch — Cold Chain Proof v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-cold-chain-v1
+version: "1.0.0"
+branchType: cold-chain-proof
+sectorCode: B
+status: ready
+description: >
+  Proof-of-condition for cold chain shipments. Mandatory temperature
+  readings at pickup and delivery. Excursion alert if temperature
+  leaves the declared range. Evidence captured and attached to the
+  contract performance record. Applies when resource has a declared
+  temperatureRequirement.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-WAREHOUSE (inbound receipt and outbound dispatch)
+
+window:
+  earliest: "on_status[PICKED_UP]"
+  latest: "on_status[DELIVERED]"
+
+activationTrigger: >
+  Resource has resourceAttributes.temperatureRequirement.controlled = true.
+  Branch fires automatically at PICKED_UP and DELIVERED state events.
+
+subBranches:
+
+  cold-chain-proof-pickup:
+    id: cold-chain-proof-pickup
+    description: >
+      Temperature reading captured at pickup. Mandatory for all cold-chain
+      shipments. If temperature is outside the declared range at pickup,
+      the BPP must flag a pickup excursion and BAP decides whether to
+      proceed or cancel.
+    steps:
+      - step: on_status
+        trigger: PICKED_UP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        additionalRequiredFields:
+          - message.contract.performance[].performanceAttributes.temperatureReading.value
+          - message.contract.performance[].performanceAttributes.temperatureReading.unit
+          - message.contract.performance[].performanceAttributes.temperatureReading.timestamp
+          - message.contract.performance[].performanceAttributes.temperatureReading.location
+          - message.contract.performance[].performanceAttributes.temperatureReading.deviceId
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.temperatureReading.excursionDetected
+            condition: required if reading is outside declared range
+
+  cold-chain-excursion-alert:
+    id: cold-chain-excursion-alert
+    description: >
+      Temperature excursion detected in transit. BPP sends unsolicited
+      /on_update. BAP decides: continue (at buyer risk), hold for
+      inspection, or cancel.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.contractAttributes.excursionDetail.detectedAt
+          - message.contract.contractAttributes.excursionDetail.location
+          - message.contract.contractAttributes.excursionDetail.measuredTemperature
+          - message.contract.contractAttributes.excursionDetail.declaredMin
+          - message.contract.contractAttributes.excursionDetail.declaredMax
+          - message.contract.contractAttributes.excursionDetail.excursionDurationMinutes
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP declares excursion resolution preference.
+        requiredFields:
+          - message.contract.contractAttributes.excursionResolution
+          - message.contract.contractAttributes.excursionResolution.decision
+        decisionOptions:
+          - CONTINUE_AT_BUYER_RISK
+          - HOLD_FOR_INSPECTION
+          - CANCEL_AND_RETURN
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+
+  cold-chain-proof-delivery:
+    id: cold-chain-proof-delivery
+    description: >
+      Temperature reading captured at delivery. Mandatory. If excursion
+      detected at delivery, damage claim branch is automatically eligible.
+    steps:
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        additionalRequiredFields:
+          - message.contract.performance[].performanceAttributes.temperatureReading.value
+          - message.contract.performance[].performanceAttributes.temperatureReading.unit
+          - message.contract.performance[].performanceAttributes.temperatureReading.timestamp
+          - message.contract.performance[].performanceAttributes.temperatureReading.deviceId
+          - message.contract.performance[].performanceAttributes.coldChainIntegrityVerified
+
+    businessRules:
+      - If coldChainIntegrityVerified = false, damage-claim branch is immediately eligible
+      - Temperature log for the full transit must be available on demand within evidence policy window
+      - Temperature device certification number must be carried in deviceId
+
+policyReferences:
+  - ion://policy/cold-chain.pharma.2-8C
+  - ion://policy/cold-chain.frozen.minus-18C
+  - ion://policy/cold-chain.fresh.2-10C
+  - ion://policy/evidence.cold-chain.datalogger-required

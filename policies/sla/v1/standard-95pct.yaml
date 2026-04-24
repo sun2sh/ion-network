@@ -1,0 +1,56 @@
+# Standard SLA Policy
+# ion://policy/sla.standard-95pct
+
+id: sla.standard-95pct
+type: SLA_POLICY
+sector: logistics
+
+metrics:
+  onTimeDeliveryTarget: 0.95
+  onTimeWindow: rolling_7d
+  damagRateThreshold: 0.005
+  lossRateThreshold: 0.001
+
+measurement:
+  method: on_status[DELIVERED].timestamp vs confirm.estimatedDeliveryTime
+  excludes:
+    - FORCE_MAJEURE
+    - BUYER_NOT_AVAILABLE_3_ATTEMPTS
+    - ADDRESS_INCORRECT_BY_BUYER
+
+breachConsequences:
+  firstBreach:
+    type: WARNING
+    notificationWithin: PT24H
+  repeatedBreach:
+    definition: 3 consecutive weeks below target
+    type: REBATE
+    rebateFormula: "base_freight * 0.05 per percentage point below target"
+
+escalation:
+  threshold: 4_consecutive_weeks_below_target
+  path: ion://policy/dispute-resolution.network-adjudication
+
+---
+
+# Enterprise SLA Policy with Rebate
+# ion://policy/sla.enterprise-95pct-rebate
+
+id: sla.enterprise-95pct-rebate
+type: SLA_POLICY
+sector: logistics
+
+metrics:
+  onTimeDeliveryTarget: 0.95
+  damagRateThreshold: 0.002
+  lossRateThreshold: 0.0005
+  measurementWindow: calendar_month
+
+breachConsequences:
+  autoRebate:
+    enabled: true
+    formula: "base_freight_month * max(0, 0.95 - actual_ontime_pct) * 2"
+    appliedTo: next_settlement_cycle
+  terminationThreshold:
+    definition: 3 consecutive months below 0.90
+    noticePeriodDays: 30

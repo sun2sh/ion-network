@@ -1,0 +1,862 @@
+openapi: 3.1.1
+info:
+  title: ION Logistics Offer Extension (v1)
+  description: >
+    Logistics sector offer attributes. Defines the terms of service —
+    service level, mode, rate logic, capacity model, agent assignment,
+    slot availability, policies, and commercial parameters.
+    Attaches to: beckn:Offer.offerAttributes
+  version: 1.0.0
+
+components:
+  schemas:
+    LogisticsOfferAttributes:
+      type: object
+      title: Logistics Offer Attributes
+      additionalProperties: false
+      x-jsonld:
+        "@context": ./context.jsonld
+        "@type": ion:LogisticsOfferAttributes
+      x-beckn-attaches-to: Offer.offerAttributes
+
+      properties:
+
+        # SERVICE LEVEL
+        serviceLevel:
+          type: string
+          enum:
+            - INSTANT
+            - SAME_DAY
+            - NEXT_DAY
+            - STANDARD_2_3D
+            - STANDARD_4_7D
+            - ECONOMY
+            - SCHEDULED
+          x-ion-mandatory: always
+
+        # TRANSPORT MODE
+        transportMode:
+          type: string
+          enum:
+            - motorcycle
+            - bicycle
+            - car
+            - van
+            - truck
+            - rail
+            - sea
+            - air
+            - river
+            - ferry
+          x-ion-mandatory: always
+
+        # ROUTING
+        routingTopology:
+          type: string
+          enum:
+            - P2P
+            - P2H2P
+            - P2H2H2P
+          description: Hub routing topology for LOG-PARCEL
+          x-ion-mandatory: conditional
+
+        # RATE LOGIC
+        rateLogic:
+          type: string
+          enum:
+            - FLAT
+            - TIERED_BY_WEIGHT
+            - TIERED_BY_ZONE
+            - TIERED_BY_ZONE_AND_WEIGHT
+            - PER_KG
+            - PER_CBM
+            - PER_CONTAINER
+            - PER_PALLET
+            - PER_TRUCK
+            - PER_VESSEL_SLOT
+            - DISTANCE_BASED
+            - SURGE_DYNAMIC
+          x-ion-mandatory: always
+
+        zones:
+          x-ion-mandatory: optional
+          type: array
+          description: Zone definitions for zone-based pricing
+          items:
+            type: object
+            properties:
+              zoneId:
+                type: string
+              corridors:
+                type: array
+                items:
+                  type: string
+              provinsiCodes:
+                type: array
+                items:
+                  type: string
+              baseRatePerKg:
+                type: number
+              currency:
+                type: string
+                default: IDR
+
+        weightTiers:
+          x-ion-mandatory: optional
+          type: array
+          description: Weight-based rate tiers
+          items:
+            type: object
+            properties:
+              maxKg:
+                type: number
+              ratePerKg:
+                type: number
+              minimumCharge:
+                type: number
+
+        dimensionalWeightFactor:
+          x-ion-mandatory: optional
+          type: number
+          description: Volumetric weight divisor (typically 5000 for air, 4000 for road)
+
+        chargeableWeightRule:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+            - MAX_ACTUAL_OR_VOLUMETRIC
+            - ACTUAL_ONLY
+            - VOLUMETRIC_ONLY
+            - PER_CARRIER_RULE
+          description: >
+            How chargeable weight is computed. MAX_ACTUAL_OR_VOLUMETRIC (default
+            for air and LTL) means chargeable = max(actual, volumetric).
+
+        minimumChargeableAmount:
+          type: number
+          x-ion-mandatory: conditional
+          description: >
+            Minimum freight charge regardless of weight. Air freight always has
+            this (MAWB minimum). Some LTL carriers as well.
+
+        fuelSurchargeFormula:
+          x-ion-mandatory: optional
+          type: string
+          description: Formula for fuel surcharge computation (e.g. "base * 0.08")
+
+        # ═══ RATE MODIFIERS AND SURCHARGES ═══
+        rateModifiers:
+          type: array
+          x-ion-mandatory: conditional
+          description: >
+            Additional charges beyond base rate. Each modifier is applied at
+            quote time per its trigger and basis. Multiple modifiers can apply
+            to the same shipment.
+          items:
+            type: object
+            properties:
+              modifierType:
+                type: string
+                enum:
+                  - FUEL_SURCHARGE
+                  - PEAK_SEASON_SURCHARGE       # PSS — Christmas, CNY, Ramadan
+                  - EMERGENCY_BUNKER_SURCHARGE  # EBS — ocean fuel adjustment
+                  - CURRENCY_ADJUSTMENT_FACTOR  # CAF — for USD freight settled in IDR
+                  - LOW_SULPHUR_SURCHARGE       # LSS — IMO 2020 ongoing
+                  - SECURITY_SURCHARGE          # Air freight
+                  - CHASSIS_FEE                 # Container chassis
+                  - DEMURRAGE                   # Port over-stay
+                  - DETENTION                   # Container over-hold
+                  - TERMINAL_HANDLING           # THC
+                  - DOCUMENTATION_FEE
+                  - BILL_OF_LADING_FEE
+                  - CONTAINER_CLEANING
+                  - MULTI_STOP_PICKUP
+                  - MULTI_STOP_DELIVERY
+                  - SIGNATURE_ON_DELIVERY
+                  - PROOF_OF_DELIVERY_PHYSICAL
+                  - INSIDE_DELIVERY
+                  - LIFTGATE_DELIVERY
+                  - RESIDENTIAL_DELIVERY
+                  - REMOTE_AREA
+                  - OVERSIZE
+                  - OVERWEIGHT
+                  - HIGH_VALUE_DECLARATION
+                  - HAZMAT_HANDLING
+                  - REEFER_POWER                # Cold chain power
+                  - ARMED_ESCORT                # High-value security
+                  - WAITING_TIME                # Free time exceeded
+                  - REDELIVERY
+                  - RETURN_TO_SENDER
+                  - OTHER
+              basis:
+                type: string
+                enum:
+                  - FLAT
+                  - PERCENT_OF_BASE
+                  - PER_KG
+                  - PER_CBM
+                  - PER_CONTAINER
+                  - PER_PACKAGE
+                  - PER_STOP
+                  - PER_DAY
+                  - PER_HOUR
+              amount:
+                type: number
+                description: Amount per basis unit
+              percentOfBase:
+                type: number
+                description: When basis=PERCENT_OF_BASE
+              currency:
+                type: string
+              appliesWhen:
+                type: string
+                description: Trigger condition in human-readable form
+              validFrom:
+                type: string
+                format: date-time
+                description: For time-limited surcharges like PSS
+              validUntil:
+                type: string
+                format: date-time
+              minimumAmount:
+                type: number
+              maximumAmount:
+                type: number
+
+        # SELECT BEHAVIOUR
+        selectRequired:
+          type: boolean
+          description: >
+            True if /select is required before /init for a firm quote.
+            False if catalog rate is binding and /select may be skipped.
+          x-ion-mandatory: always
+
+        quoteValidityWindow:
+          x-ion-mandatory: optional
+          type: string
+          format: duration
+          description: How long the /on_select quote is binding (ISO 8601 duration)
+          example: PT15M
+
+        # ═══ PICKUP SCHEDULING ═══
+        pickupModels:
+          type: array
+          x-ion-mandatory: conditional
+          description: Pickup scheduling models supported by this offer
+          items:
+            type: string
+            enum:
+              - SCHEDULED_WINDOW
+              - ON_DEMAND
+              - DAILY_PICKUP
+              - BULK_BATCH
+              - DROP_OFF_AT_COUNTER
+              - SELF_LODGEMENT
+
+        pickupWindowGranularityMinutes:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Smallest pickup time window offered
+
+        bulkPickupMaxShipments:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Maximum shipments per bulk pickup batch
+
+        sameDayPickupCutoffTime:
+          type: string
+          format: time
+          x-ion-mandatory: conditional
+          description: Latest on-demand pickup booking time for same-day dispatch
+
+        dropOffLocationsUrl:
+          type: string
+          format: uri
+          x-ion-mandatory: conditional
+          description: URL to LSP agent-point directory for DROP_OFF_AT_COUNTER
+
+        # ═══ CUT-OFF SCHEDULE ═══
+        # Operational cut-offs governing when bookings, documents, cargo, etc.
+        # must be received for onward connection. Different services have very
+        # different cut-off structures — airlines use offset-from-departure,
+        # ocean uses fixed day-of-week deadlines, warehouse uses daily local times.
+        cutoffs:
+          type: array
+          x-ion-mandatory: conditional
+          description: >
+            Operational cut-off schedule. Each entry declares one cut-off.
+            Multiple cut-offs per offer are common (e.g. booking cut-off,
+            SI cut-off, VGM cut-off, documentation cut-off, cargo cut-off).
+          items:
+            type: object
+            required: [cutoffType, cutoffBasis]
+            properties:
+
+              cutoffType:
+                type: string
+                enum:
+                  # Parcel / hyperlocal
+                  - SAME_DAY_BOOKING
+                  - NEXT_DAY_BOOKING
+                  - DAILY_PICKUP_CLOSURE
+                  - DROP_OFF_COUNTER_CLOSING
+                  # Freight ocean
+                  - BOOKING                     # Slot/capacity booking close
+                  - SI_SUBMISSION               # Shipping Instructions cut-off
+                  - VGM_SUBMISSION              # Verified Gross Mass (SOLAS)
+                  - DOCUMENTATION               # All documents received
+                  - CY_CUTOFF                   # Container yard receive cut-off
+                  - CFS_CUTOFF                  # LCL consolidation at CFS
+                  - CARGO_RECEIVED              # Physical cargo at terminal
+                  - REEFER_PLUG_IN              # Reefer container plug-in deadline
+                  - HAZMAT_DECLARATION
+                  # Freight air
+                  - AIR_BOOKING
+                  - AIR_CARGO_RECEIVED          # Typically 3-4h before flight
+                  - AIR_SECURITY_SCREENING      # Before cargo cut-off
+                  - AIR_DGR_ACCEPTANCE          # Dangerous goods acceptance cut-off
+                  # Cross-border customs
+                  - EXPORT_CUSTOMS_SUBMISSION   # PEB submission
+                  - IMPORT_CUSTOMS_SUBMISSION   # PIB submission
+                  - PRE_ARRIVAL_DECLARATION
+                  # Warehouse
+                  - ORDER_CUT_FOR_SAME_DAY_DISPATCH
+                  - ORDER_CUT_FOR_NEXT_DAY_DISPATCH
+                  - INBOUND_APPOINTMENT_CUT
+
+              cutoffBasis:
+                type: string
+                enum:
+                  - FIXED_LOCAL_TIME            # Daily at local time (e.g. 15:00 WIB)
+                  - OFFSET_FROM_DEPARTURE       # N hours before departure/sailing/flight
+                  - WEEKLY_DAY_AND_TIME         # Specific day of week + time
+                  - PER_SAILING                 # Looked up per vessel voyage
+                  - PER_FLIGHT                  # Looked up per flight number
+
+              # For FIXED_LOCAL_TIME
+              localTime:
+                type: string
+                format: time
+                description: Daily cut-off time (for FIXED_LOCAL_TIME basis)
+              timezone:
+                type: string
+                description: IANA zone (e.g. "Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura")
+              applicableDays:
+                type: array
+                description: Days this cut-off applies (for FIXED_LOCAL_TIME)
+                items:
+                  type: string
+                  enum: [MON, TUE, WED, THU, FRI, SAT, SUN]
+
+              # For OFFSET_FROM_DEPARTURE
+              offsetBeforeDeparture:
+                type: string
+                format: duration
+                description: ISO 8601 duration before departure (e.g. PT3H, PT48H, P2D)
+              departureReferenceEvent:
+                type: string
+                enum:
+                  - SCHEDULED_VESSEL_DEPARTURE  # ETD
+                  - SCHEDULED_FLIGHT_DEPARTURE  # STD
+                  - SCHEDULED_TRUCK_DISPATCH
+                  - SCHEDULED_TRAIN_DEPARTURE
+
+              # For WEEKLY_DAY_AND_TIME
+              weeklyDay:
+                type: string
+                enum: [MON, TUE, WED, THU, FRI, SAT, SUN]
+              weeklyTime:
+                type: string
+                format: time
+
+              # For PER_SAILING / PER_FLIGHT
+              lookupUrl:
+                type: string
+                format: uri
+                description: >
+                  URL returning per-sailing or per-flight cut-offs.
+                  Expected response: JSON list of
+                  {voyageOrFlightRef, cutoffType, actualCutoffDateTime}.
+
+              # Common qualifiers for all cut-offs
+              appliesToOriginPorts:
+                type: array
+                items:
+                  type: string
+                description: UN/LOCODE port list (or airport IATA). Empty = all origins.
+              appliesToConsolidationTypes:
+                type: array
+                items:
+                  type: string
+                  enum: [FTL, LTL, FCL, LCL, BULK, BREAK_BULK, PROJECT_CARGO,
+                         DRAYAGE, YARD_TRANSFER, CROSS_DOCK, MILK_RUN, OUT_OF_GAUGE,
+                         RO_RO_ACCOMPANIED]
+              appliesToHazmat:
+                type: boolean
+                description: Cut-off applies only to hazmat (often tighter than general)
+              appliesToReefer:
+                type: boolean
+                description: Cut-off applies only to reefer/cold-chain
+
+              # Behaviour beyond cut-off
+              lateAcceptancePolicy:
+                type: string
+                enum:
+                  - REJECT
+                  - NEXT_SAILING_OR_FLIGHT
+                  - ACCEPT_WITH_LATE_FEE
+                  - ACCEPT_WITH_MANAGER_APPROVAL
+              lateFee:
+                type: object
+                properties:
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+                  basis:
+                    type: string
+                    enum: [FLAT, PER_KG, PER_CBM, PER_CONTAINER, PER_SHIPMENT]
+
+              gracePeriod:
+                type: string
+                format: duration
+                description: >
+                  Duration past cut-off during which late acceptance policy
+                  takes effect (e.g. PT30M grace period before hard REJECT).
+
+              description:
+                type: string
+                description: Free-text operational note (e.g. "extended by 1h on Fridays")
+
+        # ═══ AWB ALLOCATION ═══
+        awbAllocationModel:
+          type: string
+          x-ion-mandatory: conditional
+          description: >
+            How AWB numbers are allocated. LOG-PARCEL spine.
+            BPP_ASSIGNED (default), BAP_PRE_ALLOCATED (enterprise block), HYBRID.
+          enum:
+            - BPP_ASSIGNED
+            - BAP_PRE_ALLOCATED
+            - HYBRID
+
+        awbBlockAllocationSupported:
+          type: boolean
+          x-ion-mandatory: optional
+
+        # ═══ LABEL FORMAT ═══
+        labelFormatsSupported:
+          type: array
+          x-ion-mandatory: conditional
+          items:
+            type: string
+            enum:
+              - PDF_A4
+              - PDF_A5
+              - PDF_A6
+              - ZPL_100X150
+              - ZPL_100X100
+              - EPL_100X150
+              - PNG_DIGITAL
+              - JSON_FIELDS_ONLY
+
+        # ═══ API CAPABILITY DISCLOSURE ═══
+        bulkApiSupported:
+          type: boolean
+          x-ion-mandatory: optional
+          description: True if BPP accepts batched /confirm calls
+
+        maxBulkBatchSize:
+          type: integer
+          x-ion-mandatory: conditional
+
+        apiRateLimitPerSecond:
+          type: integer
+          x-ion-mandatory: optional
+
+        apiSlaCommitment:
+          type: object
+          x-ion-mandatory: optional
+          properties:
+            p50LatencyMs:
+              type: integer
+            p99LatencyMs:
+              type: integer
+            uptimeCommitment:
+              type: string
+            statusPushMaxDelayMs:
+              type: integer
+
+        # ═══ STATE TIMING COMMITMENTS ═══
+        # Operational runbook: what the BPP commits to on timing between state
+        # transitions. Ops dispatch rooms at BAPs use these to drive dashboards,
+        # alert thresholds, and escalation routing.
+        # Different from apiSlaCommitment (API response times) — these are
+        # FULFILMENT timing commitments for the physical execution.
+        stateTimingCommitments:
+          type: array
+          x-ion-mandatory: conditional
+          description: >
+            Per-state maximum dwell time and alert thresholds. Each entry
+            applies to one state in the applicable state machine. When a
+            performance enters a state, BAPs and BPPs use these commitments
+            to compute expected transition times and breach alerts.
+          items:
+            type: object
+            required: [state, maxDwellDuration]
+            properties:
+              state:
+                type: string
+                description: >
+                  State name from the spine's state machine (e.g. "PICKED_UP",
+                  "IN_TRANSIT", "AT_ORIGIN_HUB", "SORTED_AT_DESTINATION").
+              maxDwellDuration:
+                type: string
+                format: duration
+                description: >
+                  Maximum time the performance should stay in this state before
+                  transitioning. ISO 8601 duration (e.g. PT2H, PT24H, P3D).
+                  Exceeding this triggers the alert policy.
+              alertThresholdDuration:
+                type: string
+                format: duration
+                description: >
+                  Time into the dwell after which an AT_RISK alert is raised
+                  (typically 70-80 percent of maxDwellDuration).
+              alertPolicyIri:
+                type: string
+                format: iri
+                description: >
+                  Optional policy IRI governing escalation when maxDwell is
+                  exceeded. If absent, default escalation is a /support
+                  notification with category TRACKING_HELP.
+              cascadeEffect:
+                type: string
+                enum:
+                  - NO_CASCADE            # Delay here does not affect downstream
+                  - PUSH_ALL_DOWNSTREAM   # All downstream states shift by delay
+                  - SLA_BREACH_LIKELY     # Downstream SLA will likely breach
+                  - SLA_BREACH_CERTAIN    # Downstream SLA is now unattainable
+                description: Downstream effect on the rest of the state machine
+              applicableTopology:
+                type: array
+                items:
+                  type: string
+                description: >
+                  If present, this commitment applies only for the listed
+                  routing topologies (P2P, P2H2P, P2H2H2P). Empty = all.
+              note:
+                type: string
+
+        overallTatCommitment:
+          type: object
+          x-ion-mandatory: conditional
+          description: >
+            End-to-end time commitment from PICKED_UP to DELIVERED (or
+            equivalent terminal state per spine). This is the contract-level
+            SLA; stateTimingCommitments are the per-state breakdowns.
+          properties:
+            pickupToDelivery:
+              type: string
+              format: duration
+              description: ISO 8601 duration (e.g. P1D for next-day)
+            measurementBasis:
+              type: string
+              enum:
+                - CALENDAR_TIME           # 24h clock, includes weekends/holidays
+                - BUSINESS_TIME           # Working hours only, skips holidays
+                - OPERATING_HOURS         # Per offer.operatingCalendar
+            operatingCalendar:
+              type: string
+              enum:
+                - STANDARD_INDONESIAN     # National holidays observed
+                - BUSINESS_WEEKDAYS_JKT   # Jakarta business days
+                - CUSTOM
+              description: Which calendar governs BUSINESS_TIME measurement
+            onTimeDefinition:
+              type: string
+              description: How on-time is computed (e.g. "actualDelivery <= pickupTime + pickupToDelivery")
+
+        # CAPACITY (FREIGHT)
+        capacityModel:
+          type: string
+          enum:
+            - PER_CONTAINER
+            - PER_PALLET
+            - PER_CBM
+            - PER_KG
+            - PER_TRUCK
+            - PER_VESSEL_SLOT
+          x-ion-mandatory: conditional
+
+        consolidationType:
+          type: string
+          enum:
+            - FTL                     # Full Truckload
+            - LTL                     # Less Than Truckload
+            - FCL                     # Full Container Load
+            - LCL                     # Less Than Container Load
+            - BULK                    # Bulk cargo (loose, not containerised)
+            - BREAK_BULK              # Break-bulk (general cargo, non-containerised units)
+            - PROJECT_CARGO           # Oversized / overweight / heavy-lift
+            - DRAYAGE                 # Short-haul container movement (port/yard/factory)
+            - YARD_TRANSFER           # Intra-terminal container repositioning
+            - CROSS_DOCK              # Through-movement via cross-dock facility
+            - MILK_RUN                # Multi-pickup recurring route
+            - OUT_OF_GAUGE            # Cargo exceeding standard container dimensions
+            - RO_RO_ACCOMPANIED       # Wheeled cargo on Ro-Ro (references LOG-RORO spine)
+          x-ion-mandatory: conditional
+
+        equipmentType:
+          type: string
+          x-ion-mandatory: conditional
+          description: >
+            Specialised equipment when consolidationType requires it.
+            Drayage often requires SIDELOADER or TILT_TRAY; project cargo
+            requires LOWBED or MODULAR_TRAILER.
+          enum:
+            - STANDARD_TRAILER
+            - SIDELOADER              # Self-loading trailer for ISO containers
+            - TILT_TRAY               # Tilting trailer for heavy equipment
+            - FLATBED
+            - LOWBED                  # For overheight cargo
+            - MODULAR_TRAILER         # Multi-axle for project cargo
+            - TANKER
+            - REEFER_TRAILER
+            - CURTAINSIDE
+            - DOUBLE_STACK_RAIL
+            - CONTAINER_CHASSIS_20FT
+            - CONTAINER_CHASSIS_40FT
+
+        scheduleType:
+          type: string
+          enum: [REGULAR_SAILING, REGULAR_FLIGHT, AD_HOC, ON_DEMAND]
+          x-ion-mandatory: conditional
+
+        # HYPERLOCAL SPECIFIC
+        agentAssignmentModel:
+          type: string
+          enum:
+            - PRE_ASSIGNED
+            - POOL_ASSIGNED
+            - FIFO_AT_PICKUP
+            - DEDICATED_FLEET
+          x-ion-mandatory: conditional
+
+        maxDeliveryRadiusKm:
+          type: number
+          x-ion-mandatory: conditional
+
+        liveTrackingEnabled:
+          type: boolean
+          x-ion-mandatory: conditional
+
+        # SLOTTED DELIVERY
+        slotsAvailable:
+          x-ion-mandatory: optional
+          type: boolean
+
+        slotGranularityMinutes:
+          type: integer
+          description: Slot duration in minutes (e.g. 60, 120)
+          x-ion-mandatory: conditional
+
+        slotWindowsOffered:
+          type: array
+          items:
+            type: object
+            properties:
+              start:
+                type: string
+                format: time
+              end:
+                type: string
+                format: time
+              availableCapacity:
+                type: integer
+          x-ion-mandatory: conditional
+
+        # COD
+        availableOnCod:
+          type: boolean
+          x-ion-mandatory: always
+
+        maxCodAmount:
+          type: number
+          x-ion-mandatory: conditional
+
+        codPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: conditional
+
+        # ═══════════════════════════════════════════════════════════════
+        # COD fraud-control policy fields (offer-time terms)
+        # MIGRATED from the dropped logistics/payment pack in v0.5.2.
+        # These declare how COD is ACCEPTED for this offer. Per-transaction
+        # COD runtime state (amount expected, amount collected, timestamp,
+        # receipt) lives in core/payment/v1 under CashOnDelivery.
+        # Batch-level COD remittance lives in core/reconcile/v1.
+        # ═══════════════════════════════════════════════════════════════
+
+        codVerifiedReceiptOtpRequired:
+          type: boolean
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when availableOnCod=true
+          description: >
+            When true, an anti-fraud OTP is sent to the buyer separately
+            and must be entered by the rider to confirm cash receipt.
+            Distinct from the delivery OTP.
+
+        codDenominationsAccepted:
+          type: array
+          x-ion-mandatory: conditional
+          items:
+            type: string
+            enum: [COIN_500, COIN_1000, NOTE_2000, NOTE_5000, NOTE_10000,
+                   NOTE_20000, NOTE_50000, NOTE_100000]
+          description: >
+            Currency denominations the rider can accept under this offer.
+            Used when consignees must present close-to-exact amounts.
+
+        codBuyerDailyLimit:
+          type: number
+          x-ion-mandatory: conditional
+          description: >
+            Maximum total COD amount accepted from a single consignee per
+            day across all shipments on this offer. Anti-fraud control.
+            Validated at /init.
+
+        codShipmentLimit:
+          type: number
+          x-ion-mandatory: conditional
+          description: Maximum COD amount per single shipment on this offer.
+
+        codHoldPeriodDays:
+          type: integer
+          x-ion-mandatory: conditional
+          description: >
+            Days the LSP holds collected cash before remittance to the BAP.
+            Provides refund buffer for early returns. Typical: 3-5 days.
+
+        codReconciliationVariance:
+          type: number
+          x-ion-mandatory: conditional
+          description: >
+            Acceptable variance (fraction) between sum of collected and
+            remitted amounts at batch level — below this, reconciliation
+            passes automatically. Typical: 0.001 (0.1%).
+
+        # INSURANCE
+        maxDeclaredValue:
+          x-ion-mandatory: optional
+          type: number
+          description: Maximum declared value the BPP accepts
+
+        insurancePolicy:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: ION policy IRI for insurance coverage terms
+
+        # VALUE-ADDED SERVICES (WAREHOUSE)
+        valueAddedServices:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: string
+            enum: [QC, KITTING, LABELLING, PACKAGING, CUSTOM_PACKAGING, RETURNS_PROCESSING]
+
+        storageBillingUnit:
+          type: string
+          enum: [PER_SKU_PER_DAY, PER_CBM_PER_MONTH, PER_PALLET_PER_MONTH]
+          x-ion-mandatory: conditional
+
+        minimumStorageTerm:
+          type: string
+          format: duration
+          x-ion-mandatory: conditional
+
+        # RO-RO SPECIFIC
+        vehicleCategoriesAccepted:
+          type: array
+          items:
+            type: string
+            enum: [PASSENGER_CAR, LIGHT_TRUCK, HEAVY_TRUCK, MOTORCYCLE, TRAILER, BUS]
+          x-ion-mandatory: conditional
+
+        sailingSchedule:
+          type: array
+          items:
+            type: object
+            properties:
+              departurePort:
+                type: string
+              destinationPort:
+                type: string
+              departureTimes:
+                type: array
+                items:
+                  type: string
+                  format: time
+              daysOfWeek:
+                type: array
+                items:
+                  type: string
+          x-ion-mandatory: conditional
+
+        crossingDuration:
+          type: string
+          format: duration
+          x-ion-mandatory: conditional
+
+        # CROSS-BORDER SPECIFIC
+        incotermsSupported:
+          type: array
+          items:
+            type: string
+            enum: [EXW, FCA, FAS, FOB, CFR, CIF, CPT, CIP, DAP, DPU, DDP]
+          x-ion-mandatory: conditional
+
+        dutyAndTaxModel:
+          type: string
+          enum: [DDP_INCLUSIVE, DAP_BUYER_PAYS, DDU_ON_DELIVERY]
+          x-ion-mandatory: conditional
+
+        # POLICY REFERENCES
+        cancellationPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+
+        claimPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+
+        slaPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+
+        evidencePolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+
+        disputePolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+
+        reAttemptPolicy:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: Defines max attempts, attempt fees, and auto-RTO rules
+
+        fwaApplicable:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Whether this offer accepts FWA-governed transactions

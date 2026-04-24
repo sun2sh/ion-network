@@ -1,0 +1,214 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "on_confirm",
+    "transactionId": "txn-xb-001",
+    "messageId": "msg-xb-onconf-001",
+    "bapId": "tokopedia.com",
+    "bppId": "dhl.co.id",
+    "timestamp": "2026-04-22T12:00:00.000Z",
+    "version": "2.0.0",
+    "networkId": "ion.id/logistics"
+  },
+  "message": {
+    "contract": {
+      "id": "dhl-xb-20260422-001",
+      "status": {
+        "code": "ACTIVE"
+      },
+      "participants": [
+        {
+          "id": "dhl-indonesia",
+          "descriptor": {
+            "name": "DHL Express Indonesia"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "PROVIDER"
+          }
+        },
+        {
+          "id": "seller-cn-001",
+          "organization": {
+            "name": "Shenzhen Electronics Co Ltd",
+            "country": "CHN"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNOR"
+          },
+          "descriptor": {
+            "name": "seller-cn-001"
+          }
+        },
+        {
+          "id": "buyer-id-001",
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNEE"
+          },
+          "descriptor": {
+            "name": "buyer-id-001"
+          }
+        },
+        {
+          "id": "dhl-customs-id",
+          "descriptor": {
+            "name": "DHL Global Forwarding Customs"
+          },
+          "organization": {
+            "beaCukaiLicenceNumber": "PPJK-DHL-001"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CUSTOMS_BROKER"
+          }
+        }
+      ],
+      "commitments": [
+        {
+          "id": "cmt-xb-001",
+          "commitmentAttributes": {
+            "lineId": "L1",
+            "resourceId": "dhl-express-service",
+            "offerId": "dhl-express-ddp",
+            "totalWeight": {
+              "value": 3.5,
+              "unit": "kilogram"
+            },
+            "cargoDescription": "Smartphone accessories and cables",
+            "cargoManifest": [
+              {
+                "lineId": "M1",
+                "description": "USB-C Cable 1m",
+                "quantity": 50,
+                "unitWeight": 0.05,
+                "hsCode": "8544.42.90"
+              },
+              {
+                "lineId": "M2",
+                "description": "Phone Case Silicone",
+                "quantity": 20,
+                "unitWeight": 0.025,
+                "hsCode": "3926.90.99"
+              }
+            ],
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes"
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "perf-xb-001",
+          "status": {
+            "descriptor": {
+              "code": "BOOKING_CONFIRMED"
+            }
+          },
+          "performanceAttributes": {
+            "billOfLadingReference": "MAWB-DHL-20260422-001",
+            "scheduledDeparture": "2026-04-23T23:00:00.000Z",
+            "scheduledArrival": "2026-04-25T06:00:00.000Z",
+            "estimatedClearanceDuration": "PT48H",
+            "capacityConfirmed": true,
+            "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
+            "@type": "ion:LogisticsPerformanceAttributes"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "location": {
+                "address": {
+                  "name": "Shenzhen Bao'an International Airport",
+                  "city": "Shenzhen",
+                  "country": {
+                    "code": "CHN"
+                  }
+                }
+              }
+            },
+            {
+              "type": "END",
+              "location": {
+                "address": {
+                  "name": "Soekarno-Hatta International Airport",
+                  "city": "Tangerang",
+                  "country": {
+                    "code": "IDN"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "consideration": [
+        {
+          "considerationAttributes": {
+            "breakup": [
+              {
+                "titleType": "FREIGHT_BASE",
+                "amount": 850000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "FUEL_SURCHARGE",
+                "amount": 68000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "CUSTOMS_DUTY",
+                "amount": 127500,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "INSURANCE_PREMIUM",
+                "amount": 25000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "PPN_TAX",
+                "amount": 118580,
+                "currency": "IDR",
+                "ppnRate": 0.11
+              }
+            ],
+            "totalAmount": 1189080,
+            "currency": "IDR",
+            "dutyEstimate": 127500,
+            "taxEstimate": 118580,
+            "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
+            "@type": "ion:LogisticsConsiderationAttributes"
+          },
+          "id": "cons-001"
+        }
+      ],
+      "settlements": [
+        {
+          "settlementAttributes": {
+            "status": "PAID",
+            "method": "VIRTUAL_ACCOUNT",
+            "collectedBy": "BAP",
+            "@context": "https://schema.ion.id/logistics/v1/payment/context.jsonld",
+            "@type": "ion:LogisticsPaymentAttributes"
+          },
+          "status": "COMMITTED"
+        }
+      ],
+      "contractAttributes": {
+        "incoterms": "DDP",
+        "invoicePreferences": {
+          "fakturaRequired": true,
+          "invoicingModel": "INDIVIDUAL_PER_SHIPMENT"
+        },
+        "@context": "https://schema.ion.id/logistics/v1/contract/context.jsonld",
+        "@type": "ion:LogisticsContractAttributes"
+      }
+    }
+  }
+}

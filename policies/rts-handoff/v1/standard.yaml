@@ -1,0 +1,81 @@
+# RTS Handoff Policy — Standard
+# ion://policy/rts-handoff.standard
+
+id: rts-handoff.standard
+type: RTS_HANDOFF_POLICY
+sector: logistics
+
+description: >
+  Standard RTS handoff terms. Governs how long BPPs have to respond
+  to an RTS signal, what happens on timeout, and evidence requirements.
+
+scenarios:
+  sellerDirect:
+    description: B2C/B2B seller signalling RTS
+    bapToBppAckWindow: PT5M
+    rtsToPickupDispatchWindow: PT30M
+  warehouseSameBpp:
+    description: Integrated warehouse + transport, same BPP
+    internalHandoffWindow: PT5M
+    rtsToPickupDispatchWindow: PT15M
+  warehouseCrossBpp:
+    description: Warehouse BPP and transport BPP are different entities
+    warehouseToGatewayWindow: PT2M
+    gatewayToTransportBppWindow: PT3M
+    transportAckWindow: PT15M
+    totalHandoffWindow: PT20M
+    rtsToPickupDispatchWindow: PT30M
+
+evidenceRequirements:
+  sellerDirect:
+    required: [readyToShipTimestamp, readyToShipBy, confirmedPickupWindow, rtsPickupToken]
+  warehouseSameBpp:
+    required: [readyToShipTimestamp, readyToShipBy, parentWarehouseContractRef, rtsPickupToken]
+  warehouseCrossBpp:
+    required:
+      - readyToShipTimestamp
+      - readyToShipBy
+      - parentWarehouseContractRef
+      - dispatchOriginWarehouseBppId
+      - rtsPickupToken
+      - rtsNotificationRouting.handoffEvidence.warehouseConfirmedAt
+      - rtsNotificationRouting.handoffEvidence.transportAcknowledgedAt
+      - rtsNotificationRouting.handoffEvidence.rtsAcknowledgementRef
+
+onTimeoutActions:
+  warehouseCrossBpp:
+    - notifyBap: true
+    - notifyWarehouseBpp: true
+    - errorCode: ION-LOG-6108
+    - manualInterventionRequired: true
+    - allowRetryAfter: PT5M
+
+---
+
+# RTS Handoff Policy — Cross-BPP extended timeout
+# ion://policy/rts-handoff.cross-bpp-timeout
+
+id: rts-handoff.cross-bpp-timeout
+type: RTS_HANDOFF_POLICY
+sector: logistics
+
+description: >
+  Extended timeout variant for cross-BPP RTS where the transport BPP
+  is known to have longer acknowledgment cycles (e.g. batch-oriented
+  LSPs or legacy integrations). Typically overrides standard on FWA.
+
+scenarios:
+  warehouseCrossBpp:
+    description: Cross-BPP with extended acknowledgment window
+    warehouseToGatewayWindow: PT2M
+    gatewayToTransportBppWindow: PT3M
+    transportAckWindow: PT60M        # 60 minutes vs standard 15
+    totalHandoffWindow: PT65M
+    rtsToPickupDispatchWindow: PT90M
+
+onTimeoutActions:
+  warehouseCrossBpp:
+    - notifyBap: true
+    - notifyWarehouseBpp: true
+    - errorCode: ION-LOG-6108
+    - escalationPath: ion://policy/dispute-resolution.commercial-odr

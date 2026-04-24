@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/offer/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/offer (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/offer/">offer</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/offer/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/offer/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsOfferAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/offer/v1#LogisticsOfferAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>serviceLevel</code></td><td>always</td><td></td></tr>
+<tr><td><code>transportMode</code></td><td>always</td><td></td></tr>
+<tr><td><code>routingTopology</code></td><td>conditional</td><td>Hub routing topology for LOG-PARCEL</td></tr>
+<tr><td><code>rateLogic</code></td><td>always</td><td></td></tr>
+<tr><td><code>zones</code></td><td>optional</td><td>Zone definitions for zone-based pricing</td></tr>
+<tr><td><code>weightTiers</code></td><td>optional</td><td>Weight-based rate tiers</td></tr>
+<tr><td><code>dimensionalWeightFactor</code></td><td>optional</td><td>Volumetric weight divisor (typically 5000 for air, 4000 for road)</td></tr>
+<tr><td><code>chargeableWeightRule</code></td><td>conditional</td><td>How chargeable weight is computed. MAX_ACTUAL_OR_VOLUMETRIC (default for air and LTL) means chargeable = max(actual, vol</td></tr>
+<tr><td><code>minimumChargeableAmount</code></td><td>conditional</td><td>Minimum freight charge regardless of weight. Air freight always has this (MAWB minimum). Some LTL carriers as well.</td></tr>
+<tr><td><code>fuelSurchargeFormula</code></td><td>optional</td><td>Formula for fuel surcharge computation (e.g. &quot;base * 0.08&quot;)</td></tr>
+<tr><td><code>rateModifiers</code></td><td>conditional</td><td>Additional charges beyond base rate. Each modifier is applied at quote time per its trigger and basis. Multiple modifier</td></tr>
+<tr><td><code>selectRequired</code></td><td>always</td><td>True if /select is required before /init for a firm quote. False if catalog rate is binding and /select may be skipped.</td></tr>
+<tr><td><code>quoteValidityWindow</code></td><td>optional</td><td>How long the /on_select quote is binding (ISO 8601 duration)</td></tr>
+<tr><td><code>pickupModels</code></td><td>conditional</td><td>Pickup scheduling models supported by this offer</td></tr>
+<tr><td><code>pickupWindowGranularityMinutes</code></td><td>conditional</td><td>Smallest pickup time window offered</td></tr>
+<tr><td><code>bulkPickupMaxShipments</code></td><td>conditional</td><td>Maximum shipments per bulk pickup batch</td></tr>
+<tr><td><code>sameDayPickupCutoffTime</code></td><td>conditional</td><td>Latest on-demand pickup booking time for same-day dispatch</td></tr>
+<tr><td><code>dropOffLocationsUrl</code></td><td>conditional</td><td>URL to LSP agent-point directory for DROP_OFF_AT_COUNTER</td></tr>
+<tr><td><code>cutoffs</code></td><td>conditional</td><td>Operational cut-off schedule. Each entry declares one cut-off. Multiple cut-offs per offer are common (e.g. booking cut-</td></tr>
+<tr><td><code>awbAllocationModel</code></td><td>conditional</td><td>How AWB numbers are allocated. LOG-PARCEL spine. BPP_ASSIGNED (default), BAP_PRE_ALLOCATED (enterprise block), HYBRID.</td></tr>
+<tr><td><code>awbBlockAllocationSupported</code></td><td>optional</td><td></td></tr>
+<tr><td><code>labelFormatsSupported</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>bulkApiSupported</code></td><td>optional</td><td>True if BPP accepts batched /confirm calls</td></tr>
+<tr><td><code>maxBulkBatchSize</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>apiRateLimitPerSecond</code></td><td>optional</td><td></td></tr>
+<tr><td><code>apiSlaCommitment</code></td><td>optional</td><td></td></tr>
+<tr><td><code>stateTimingCommitments</code></td><td>conditional</td><td>Per-state maximum dwell time and alert thresholds. Each entry applies to one state in the applicable state machine. When</td></tr>
+<tr><td><code>overallTatCommitment</code></td><td>conditional</td><td>End-to-end time commitment from PICKED_UP to DELIVERED (or equivalent terminal state per spine). This is the contract-le</td></tr>
+<tr><td><code>capacityModel</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>consolidationType</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>equipmentType</code></td><td>conditional</td><td>Specialised equipment when consolidationType requires it. Drayage often requires SIDELOADER or TILT_TRAY; project cargo </td></tr>
+<tr><td><code>scheduleType</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>agentAssignmentModel</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>maxDeliveryRadiusKm</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>liveTrackingEnabled</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>slotsAvailable</code></td><td>optional</td><td></td></tr>
+<tr><td><code>slotGranularityMinutes</code></td><td>conditional</td><td>Slot duration in minutes (e.g. 60, 120)</td></tr>
+<tr><td><code>slotWindowsOffered</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>availableOnCod</code></td><td>always</td><td></td></tr>
+<tr><td><code>maxCodAmount</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>codPolicy</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>codVerifiedReceiptOtpRequired</code></td><td>conditional</td><td>When true, an anti-fraud OTP is sent to the buyer separately and must be entered by the rider to confirm cash receipt. D</td></tr>
+<tr><td><code>codDenominationsAccepted</code></td><td>conditional</td><td>Currency denominations the rider can accept under this offer. Used when consignees must present close-to-exact amounts.</td></tr>
+<tr><td><code>codBuyerDailyLimit</code></td><td>conditional</td><td>Maximum total COD amount accepted from a single consignee per day across all shipments on this offer. Anti-fraud control</td></tr>
+<tr><td><code>codShipmentLimit</code></td><td>conditional</td><td>Maximum COD amount per single shipment on this offer.</td></tr>
+<tr><td><code>codHoldPeriodDays</code></td><td>conditional</td><td>Days the LSP holds collected cash before remittance to the BAP. Provides refund buffer for early returns. Typical: 3-5 d</td></tr>
+<tr><td><code>codReconciliationVariance</code></td><td>conditional</td><td>Acceptable variance (fraction) between sum of collected and remitted amounts at batch level — below this, reconciliation</td></tr>
+<tr><td><code>maxDeclaredValue</code></td><td>optional</td><td>Maximum declared value the BPP accepts</td></tr>
+<tr><td><code>insurancePolicy</code></td><td>optional</td><td>ION policy IRI for insurance coverage terms</td></tr>
+<tr><td><code>valueAddedServices</code></td><td>optional</td><td></td></tr>
+<tr><td><code>storageBillingUnit</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>minimumStorageTerm</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>vehicleCategoriesAccepted</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>sailingSchedule</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>crossingDuration</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>incotermsSupported</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>dutyAndTaxModel</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>cancellationPolicy</code></td><td>always</td><td></td></tr>
+<tr><td><code>claimPolicy</code></td><td>always</td><td></td></tr>
+<tr><td><code>slaPolicy</code></td><td>always</td><td></td></tr>
+<tr><td><code>evidencePolicy</code></td><td>always</td><td></td></tr>
+<tr><td><code>disputePolicy</code></td><td>always</td><td></td></tr>
+<tr><td><code>reAttemptPolicy</code></td><td>optional</td><td>Defines max attempts, attempt fees, and auto-RTO rules</td></tr>
+<tr><td><code>fwaApplicable</code></td><td>optional</td><td>Whether this offer accepts FWA-governed transactions</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>offer/v1 — Logistics Offer Attributes</h1>
+
+<p>Attaches to `beckn:Offer.offerAttributes`.</p>
+
+<h2>What it covers</h2>
+
+<p>The complete terms-of-service for a logistics offering. Every logistics offer published in the catalog carries this pack. It defines what service is being sold, at what rate logic, under what commercial conditions, and which policies govern disputes and claims.</p>
+
+<h2>Mandatory fields — always required in catalog</h2>
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>`serviceLevel`</td><td>enum</td><td>INSTANT \</td><td>SAME_DAY \</td><td>NEXT_DAY \</td><td>STANDARD_2_3D \</td><td>ECONOMY \</td><td>SCHEDULED</td></tr>
+<tr><td>`transportMode`</td><td>enum</td><td>motorcycle \</td><td>car \</td><td>van \</td><td>truck \</td><td>rail \</td><td>sea \</td><td>air \</td><td>river \</td><td>ferry</td></tr>
+<tr><td>`rateLogic`</td><td>enum</td><td>How rates are computed — TIERED_BY_ZONE_AND_WEIGHT, DISTANCE_BASED, PER_CONTAINER, etc.</td></tr>
+<tr><td>`selectRequired`</td><td>boolean</td><td>**Most critical field for BAP.** If `true`, BAP must call `/select` before `/init` for a firm quote. If `false`, catalog rate is binding.</td></tr>
+<tr><td>`quoteValidityWindow`</td><td>ISO 8601 duration</td><td>How long the `/on_select` quote is binding before expiry.</td></tr>
+<tr><td>`availableOnCod`</td><td>boolean</td><td>Whether COD payment is accepted for this offer.</td></tr>
+<tr><td>`cancellationPolicy`</td><td>IRI</td><td>`ion://policy/cancel.*` — ratified cancellation terms.</td></tr>
+<tr><td>`claimPolicy`</td><td>IRI</td><td>`ion://policy/damage.*` or `loss.*` — ratified claim handling terms.</td></tr>
+<tr><td>`slaPolicy`</td><td>IRI</td><td>`ion://policy/sla.*` — performance targets and breach consequences.</td></tr>
+<tr><td>`evidencePolicy`</td><td>IRI</td><td>`ion://policy/evidence.*` — evidence requirements for claims.</td></tr>
+<tr><td>`disputePolicy`</td><td>IRI</td><td>`ion://policy/dispute-resolution.*` — resolution channel and arbitration.</td></tr>
+</tbody></table>
+
+<h2>selectRequired — the most important decision</h2>
+
+<p>This flag determines the entire transaction entry path for BAPs:</p>
+
+<p>```</p>
+<p>selectRequired: false  →  Catalog rate is binding</p>
+<p>  BAP flow: catalog lookup → /init → /confirm</p>
+
+<p>selectRequired: true   →  Must get firm quote per shipment</p>
+<p>  BAP flow: catalog lookup → /select → /on_select → /init → /confirm</p>
+<p>```</p>
+
+<p>**When to set `true`:** dynamic surge pricing, capacity-constrained offerings (air, ferry, ocean), zone-computed rates, any offer where catalog rates are indicative rather than binding.</p>
+
+<p>**When to set `false`:** flat rate cards, pre-negotiated FWA rates where catalog accurately reflects what the BAP will be billed.</p>
+
+<p>**Under an active FWA:** `selectRequired` may still be set to `true` for capacity confirmation even when rates are FWA-locked. BAP checks both the FWA and the offer flag.</p>
+
+<h2>Rate logic types</h2>
+
+<table>
+<thead><tr><th>Value</th><th>Description</th><th>Typical use</th></tr></thead><tbody>
+<tr><td>`FLAT`</td><td>Same price regardless of weight/zone</td><td>Simple offerings</td></tr>
+<tr><td>`TIERED_BY_WEIGHT`</td><td>Price per kg changes by weight slab</td><td>Most parcel services</td></tr>
+<tr><td>`TIERED_BY_ZONE`</td><td>Price changes by origin-destination zone</td><td>Intercity parcel</td></tr>
+<tr><td>`TIERED_BY_ZONE_AND_WEIGHT`</td><td>Both zone and weight tiers</td><td>JNE, J&amp;T standard</td></tr>
+<tr><td>`DISTANCE_BASED`</td><td>Price per km from pickup</td><td>GoSend, GrabExpress</td></tr>
+<tr><td>`PER_KG`</td><td>Flat per kg with no tiers</td><td>Air cargo, LTL freight</td></tr>
+<tr><td>`PER_CBM`</td><td>Per cubic metre</td><td>LCL ocean, LTL</td></tr>
+<tr><td>`PER_CONTAINER`</td><td>Per 20ft or 40ft container</td><td>FCL ocean</td></tr>
+<tr><td>`PER_TRUCK`</td><td>Per truck regardless of load</td><td>FTL</td></tr>
+<tr><td>`PER_VESSEL_SLOT`</td><td>Per slot on a sailing</td><td>Ro-Ro, ferry</td></tr>
+<tr><td>`SURGE_DYNAMIC`</td><td>Real-time surge computed at /select</td><td>Hyperlocal, on-demand</td></tr>
+</tbody></table>
+
+<h2>Spine-specific mandatory fields</h2>
+
+<table>
+<thead><tr><th>Spine</th><th>Additional mandatory offer fields</th></tr></thead><tbody>
+<tr><td>LOG-HYPERLOCAL</td><td>`agentAssignmentModel`, `maxDeliveryRadiusKm`, `liveTrackingEnabled`</td></tr>
+<tr><td>LOG-PARCEL</td><td>`routingTopology`</td></tr>
+<tr><td>LOG-FREIGHT</td><td>`capacityModel`, `consolidationType`, `scheduleType`</td></tr>
+<tr><td>LOG-RORO</td><td>`vehicleCategoriesAccepted[]`, `sailingSchedule[]`, `crossingDuration`</td></tr>
+<tr><td>LOG-XB</td><td>`incotermsSupported[]`, `dutyAndTaxModel`</td></tr>
+<tr><td>LOG-WAREHOUSE</td><td>`storageBillingUnit`, `minimumStorageTerm`, `valueAddedServices[]`</td></tr>
+</tbody></table>
+
+<h2>Policy IRI naming convention</h2>
+
+<p>All policy IRIs follow the pattern `ion://policy/{category}.{qualifier}`:</p>
+
+<p>```</p>
+<p>ion://policy/cancel.logistics.prepickup-free</p>
+<p>ion://policy/damage.standard.declared-value-cap</p>
+<p>ion://policy/sla.standard-95pct</p>
+<p>ion://policy/evidence.standard.photo-24hr</p>
+<p>ion://policy/re-attempt.standard-3-free</p>
+<p>ion://policy/weight-dispute.standard-10pct-tolerance</p>
+<p>ion://policy/insurance.standard-declared-value-cap</p>
+<p>ion://policy/payment-terms.cod-weekly-monday</p>
+<p>ion://policy/dispute-resolution.commercial-odr</p>
+<p>```</p>
+
+<p>See `policies/README.md` for the full ratified policy registry.</p>
+
+<h2>FWA interaction</h2>
+
+<p>When a BAP transacts under an active FWA, the FWA&#x27;s `overrides` and `adds` sections supersede offer-level policies. The offer&#x27;s `fwaApplicable: true` signals to BAPs that this offer accepts FWA-governed transactions. ION Central validates consistency between the FWA scope and the transaction at API boundaries.</p>
+
+<h2>FWA targeting via `Offer.availableTo[]` (Beckn 2.0 native)</h2>
+
+<p>For enterprise-specific offers (FWA-restricted rates visible only to named BAPs), use Beckn 2.0&#x27;s native `Offer.availableTo[]` field rather than inventing a custom visibility mechanism. Three targeting types are supported:</p>
+
+<p>```yaml</p>
+<p>offers:</p>
+<p>  # Offer visible to all participants on the network</p>
+<p>  - id: jne-reg-economy</p>
+<p>    availableTo:</p>
+<p>      - type: NETWORK</p>
+<p>        id: ion.id/logistics</p>
+
+<p>  # Offer visible only to a specific BAP (enterprise contract)</p>
+<p>  - id: jne-tokopedia-fwa-nextday</p>
+<p>    availableTo:</p>
+<p>      - type: PARTICIPANT</p>
+<p>        id: tokopedia.com</p>
+
+<p>  # Offer visible only to participants with a specific role</p>
+<p>  - id: jne-b2b-credit-terms</p>
+<p>    availableTo:</p>
+<p>      - type: ROLE</p>
+<p>        id: SHIPPER</p>
+<p>```</p>
+
+<p>Visibility targeting is a Beckn-native mechanism independent of ION policy IRIs. The FWA policy IRI governs commercial terms (rates, credit terms, volume rebates); `availableTo[]` governs WHO can see the offer. Both are needed — the policy alone doesn&#x27;t hide the offer from other BAPs.</p>
+
+<h3>Mapping to FWA registration</h3>
+
+<p>When an FWA is registered in the logistics-fwa policy registry, ION Central automatically validates that offers referencing the FWA also carry a matching `availableTo` entry. Offers tied to a Tokopedia-JNE FWA must have `availableTo: [{type: PARTICIPANT, id: &quot;tokopedia.com&quot;}]`.</p>
+
+<h2>Offer validity window (Beckn 2.0 native)</h2>
+
+<p>Use Beckn 2.0&#x27;s native `Offer.validity` field (TimePeriod) for time-bound offer availability:</p>
+
+<p>```yaml</p>
+<p>offers:</p>
+<p>  - id: jne-ramadan-promo</p>
+<p>    validity:</p>
+<p>      start: &quot;2026-03-01T00:00:00Z&quot;</p>
+<p>      end: &quot;2026-04-15T23:59:59Z&quot;</p>
+<p>    offerAttributes:</p>
+<p>      serviceLevel: NEXT_DAY</p>
+<p>      # PSS rate modifier for Ramadan uplift</p>
+<p>      rateModifiers:</p>
+<p>        - modifierType: PEAK_SEASON_SURCHARGE</p>
+<p>          basis: PERCENT_OF_BASE</p>
+<p>          percentOfBase: 0.15</p>
+<p>          validFrom: &quot;2026-03-15T00:00:00Z&quot;</p>
+<p>          validUntil: &quot;2026-04-15T00:00:00Z&quot;</p>
+<p>```</p>
+
+<p>The rate modifier&#x27;s own validity is independent of the offer&#x27;s validity — peak-season surcharge may kick in mid-way through an offer&#x27;s overall availability window.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/offer/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

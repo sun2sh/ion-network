@@ -1,0 +1,83 @@
+# Re-attempt Policy: Standard 3 Free
+# ion://policy/re-attempt.standard-3-free
+
+id: re-attempt.standard-3-free
+type: RE_ATTEMPT_POLICY
+sector: logistics
+
+maxAttempts: 3
+attemptCharges:
+  - attempt: 1
+    charge: 0
+  - attempt: 2
+    charge: 0
+  - attempt: 3
+    charge: 0
+
+buyerResolutionWindowHours: 24
+afterMaxAttempts: AUTO_RTO
+autoRtoCharge: 0
+rtoDeliveryDays: 3-5
+
+addressChangeRule: FREE_IF_SAME_ZONE
+
+---
+
+# Re-attempt Policy: Hyperlocal 1 Only
+# ion://policy/re-attempt.hyperlocal-1-only
+
+id: re-attempt.hyperlocal-1-only
+type: RE_ATTEMPT_POLICY
+sector: logistics
+
+maxAttempts: 1
+attemptCharges:
+  - attempt: 1
+    charge: 0
+
+buyerResolutionWindowHours: 1
+afterMaxAttempts: AUTO_RTO
+autoRtoCharge: 0
+
+---
+
+# Re-attempt Policy: Enterprise 3 Free
+# ion://policy/re-attempt.enterprise-3-free
+
+id: re-attempt.enterprise-3-free
+type: RE_ATTEMPT_POLICY
+sector: logistics
+
+maxAttempts: 3
+attemptCharges:
+  - attempt: 1
+    charge: 0
+  - attempt: 2
+    charge: 0
+  - attempt: 3
+    charge: 0
+
+buyerResolutionWindowHours: 48
+afterMaxAttempts: AUTO_RTO
+autoRtoCharge: 0
+addressChangeRule: FREE_IF_SAME_PROVINCE
+
+---
+
+# Re-attempt Policy: Standard 2 with Fee on 2nd
+# ion://policy/re-attempt.standard-2-one-fee
+
+id: re-attempt.standard-2-one-fee
+type: RE_ATTEMPT_POLICY
+sector: logistics
+
+maxAttempts: 2
+attemptCharges:
+  - attempt: 1
+    charge: 0
+  - attempt: 2
+    charge: 5000
+    currency: IDR
+
+buyerResolutionWindowHours: 24
+afterMaxAttempts: AUTO_RTO

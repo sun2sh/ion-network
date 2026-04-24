@@ -1,0 +1,11 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/participant-logistics/v1#",
+    "beckn": "https://spec.beckn.io/vocab/v2.0.0#",
+    "ppjkLicenceNumber": "ion:ppjkLicenceNumber",
+    "driverLicenceNumber": "ion:driverLicenceNumber",
+    "driverLicenceCategory": "ion:driverLicenceCategory",
+    "LogisticsParticipantAddendum": "ion:LogisticsParticipantAddendum"
+  }
+}

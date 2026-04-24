@@ -1,0 +1,224 @@
+# ION Logistics Branch — Ready-to-Ship (RTS) Handoff v1
+# NOT OAS. ION flow specification document.
+
+id: ion-logistics-branch-rts-handoff-v1
+version: "1.0.0"
+branchType: rts-handoff
+sectorCode: B
+status: ready
+description: >
+  Ready-To-Ship signal. Fires when the consignor or warehouse has
+  completed packing, labelling, and is ready for the LSP rider to
+  pick up the shipment. Covers three scenarios:
+    (1) B2C / B2B seller RTS — single contract; consignor signals ready
+    (2) Warehouse-dispatched RTS — parent LOG-WAREHOUSE contract spawns
+        a child transport contract; warehouse BPP signals ready
+    (3) Cross-BPP RTS — warehouse BPP and transport BPP are different
+        entities; RTS signal must route via ION Gateway
+  The RTS signal is required before the rider is dispatched for pickup.
+  Without it, riders arrive at empty warehouse docks or unprepared
+  sellers — a top-5 operational issue for Indonesian LSPs.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-HYPERLOCAL
+  - LOG-FREIGHT
+  - LOG-WAREHOUSE         # as parent contract emitting RTS
+
+window:
+  earliest: on_confirm
+  latest: "on_status[RIDER_EN_ROUTE_TO_PICKUP]"
+
+activationTrigger: >
+  offer.pickupModel is SCHEDULED_WINDOW, ON_DEMAND, DAILY_PICKUP, or
+  BULK_BATCH AND shipment origin is a warehouse or B2B seller location
+  requiring explicit ready-signal before pickup dispatch.
+
+subBranches:
+
+  # ═══════════════════════════════════════════════════════════════
+  # Scenario 1 — B2C / B2B seller RTS (single contract)
+  # ═══════════════════════════════════════════════════════════════
+  rts-seller-direct:
+    id: rts-seller-direct
+    description: >
+      Consignor (seller) signals ready-to-ship. BAP forwards to BPP via
+      /update. BPP responds with shipping label URL, confirmed pickup
+      window, and pickup token. Used when the seller is the consignor
+      and packs/labels themselves.
+    window:
+      earliest: on_confirm
+      latest: "on_status[READY_FOR_PICKUP]"
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP signals the consignor has the shipment ready.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.readyToShip
+          - message.contract.performance[].performanceAttributes.readyToShipTimestamp
+          - message.contract.performance[].performanceAttributes.readyToShipBy
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.packageDimensions
+            condition: if dimensions changed from declaration
+          - field: message.contract.performance[].performanceAttributes.actualWeight
+            condition: if weight measured at seller's location
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.shippingLabelUrl
+          - message.contract.performance[].performanceAttributes.shippingLabelFormat
+          - message.contract.performance[].performanceAttributes.confirmedPickupWindow
+          - message.contract.performance[].performanceAttributes.rtsPickupToken
+
+      - step: on_status
+        trigger: READY_FOR_PICKUP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: BPP acknowledges in state machine.
+
+    businessRules:
+      - If BAP does not signal RTS within a policy-defined window, pickup
+        may be auto-rescheduled or cancelled per FWA
+      - Weight/dimension changes at RTS may trigger weight-dispute branch
+
+  # ═══════════════════════════════════════════════════════════════
+  # Scenario 2 — Warehouse-dispatched RTS (same BPP parent & child)
+  # ═══════════════════════════════════════════════════════════════
+  rts-warehouse-same-bpp:
+    id: rts-warehouse-same-bpp
+    description: >
+      Parent LOG-WAREHOUSE contract owned by the same BPP that also owns
+      the child LOG-PARCEL / LOG-FREIGHT transport contract. Simplest
+      warehouse dispatch — no cross-BPP routing. Used by integrated
+      operators (JNE Logistics' warehouse + JNE parcel; Pos Indonesia
+      warehouse + Pos parcel).
+    window:
+      earliest: "on_status[PICKED_AND_PACKED]"
+      latest: "on_status[READY_FOR_PICKUP]"
+    steps:
+      - step: on_status
+        trigger: PICKED_AND_PACKED
+        from: BPP
+        to: BAP
+        contractContext: WAREHOUSE
+        direction: unsolicited
+        description: Warehouse completes pick and pack on parent contract.
+
+      - step: on_status
+        trigger: READY_FOR_PICKUP
+        from: BPP
+        to: BAP
+        contractContext: TRANSPORT
+        direction: unsolicited
+        description: >
+          BPP emits READY_FOR_PICKUP on the transport contract. Since
+          the same BPP owns both, no cross-BPP routing is needed — the
+          BPP internally links warehouse state to transport state.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.readyToShip
+          - message.contract.performance[].performanceAttributes.readyToShipTimestamp
+          - message.contract.performance[].performanceAttributes.readyToShipBy
+          - message.contract.performance[].performanceAttributes.parentWarehouseContractRef
+          - message.contract.performance[].performanceAttributes.parentWarehouseCommitmentRefs
+          - message.contract.performance[].performanceAttributes.shippingLabelUrl
+          - message.contract.performance[].performanceAttributes.confirmedPickupWindow
+          - message.contract.performance[].performanceAttributes.rtsPickupToken
+
+    businessRules:
+      - readyToShipBy = WAREHOUSE_BPP
+      - Transport performance references parent warehouse contract via
+        parentWarehouseContractRef
+      - Warehouse contract performance has spawnedTransportContractRefs
+        updated to include the new transport contract ID
+
+  # ═══════════════════════════════════════════════════════════════
+  # Scenario 3 — Cross-BPP RTS (warehouse BPP ≠ transport BPP)
+  # ═══════════════════════════════════════════════════════════════
+  rts-warehouse-cross-bpp:
+    id: rts-warehouse-cross-bpp
+    description: >
+      Parent LOG-WAREHOUSE contract owned by a different BPP than the
+      child transport contract (e.g. warehouse = K+N Contract Logistics,
+      transport = JNE parcel; or warehouse = TokoCabang, transport = J&T).
+      The RTS signal must cross BPP boundaries via ION Gateway.
+    window:
+      earliest: "on_status[PICKED_AND_PACKED]"
+      latest: "on_status[READY_FOR_PICKUP]"
+    steps:
+      # Step A — Warehouse BPP signals internally to ION Gateway
+      - step: on_status
+        trigger: PICKED_AND_PACKED
+        from: WAREHOUSE_BPP
+        to: BAP
+        contractContext: WAREHOUSE
+        direction: unsolicited
+        description: Warehouse picks, packs, labels the shipment.
+
+      # Step B — Warehouse BPP emits on_status on the transport contract
+      # (which it does NOT own). This is a cross-BPP routed message.
+      - step: on_status
+        trigger: READY_FOR_PICKUP
+        from: WAREHOUSE_BPP
+        to: ION_GATEWAY
+        contractContext: TRANSPORT
+        direction: cross-bpp-routed
+        description: >
+          Warehouse BPP emits READY_FOR_PICKUP on the transport contract.
+          ION Gateway routes the message to the transport BPP on the
+          basis of dispatchOriginWarehouseBppId and the contract ID.
+        requiredFields:
+          - message.contract.id                # Transport contract ID
+          - message.contract.performance[].performanceAttributes.readyToShip
+          - message.contract.performance[].performanceAttributes.readyToShipTimestamp
+          - message.contract.performance[].performanceAttributes.readyToShipBy
+          - message.contract.performance[].performanceAttributes.parentWarehouseContractRef
+          - message.contract.performance[].performanceAttributes.dispatchOriginWarehouseBppId
+          - message.contract.performance[].performanceAttributes.rtsPickupToken
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.warehouseBppEmits
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.transportBppReceives
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.ionGatewayRoutingRequired
+
+      # Step C — Transport BPP acknowledges receipt of RTS
+      - step: on_status
+        trigger: READY_FOR_PICKUP
+        from: TRANSPORT_BPP
+        to: BAP
+        contractContext: TRANSPORT
+        direction: unsolicited
+        description: >
+          Transport BPP has received the cross-BPP RTS signal and
+          acknowledges by pushing its own /on_status to the BAP.
+          This closes the RTS handoff.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.handoffEvidence.warehouseConfirmedAt
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.handoffEvidence.transportAcknowledgedAt
+          - message.contract.performance[].performanceAttributes.rtsNotificationRouting.handoffEvidence.rtsAcknowledgementRef
+          - message.contract.performance[].performanceAttributes.confirmedPickupWindow
+
+    businessRules:
+      - readyToShipBy = WAREHOUSE_BPP
+      - rtsNotificationRouting.ionGatewayRoutingRequired = true
+      - ION Gateway validates warehouse BPP is authorised to emit RTS
+        on the transport contract (typically via a pre-registered
+        dispatch relationship between the two BPPs)
+      - If the transport BPP does not acknowledge within a policy-defined
+        window (default PT15M), ION Gateway pushes a notification to the
+        warehouse BPP and the BAP so manual intervention can occur
+      - handoffEvidence fields are the accountability record if pickup
+        fails due to a broken handoff (e.g. rider arrives, warehouse
+        says not ready — evidence shows who signalled what when)
+
+    errors:
+      - ION-LOG-6108  # RTS handoff timeout — transport BPP did not acknowledge
+      - ION-LOG-6109  # Unauthorised cross-BPP RTS — warehouse BPP not registered for this transport contract
+      - ION-LOG-6110  # RTS handoff evidence mismatch — transport BPP denies receipt
+
+policyReferences:
+  - ion://policy/rts-handoff.standard
+  - ion://policy/rts-handoff.cross-bpp-timeout

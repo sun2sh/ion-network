@@ -2090,9 +2090,24 @@ components:
         considerationAttributes:
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - $ref: '#/components/schemas/ION_TradeConsiderationAttributes'
-          description: 'ION extension for Consideration.considerationAttributes. Must carry JSON-LD @context and @type. Schema:
-            ION_TradeConsiderationAttributes.'
+          - if:
+              properties:
+                '@type':
+                  const: ion:TradeConsiderationAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_TradeConsiderationAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsConsiderationAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsConsiderationAttributes'
+          description: 'ION extension for Consideration.considerationAttributes. @type discriminator selects schema: TradeConsiderationAttributes,
+            LogisticsConsiderationAttributes.'
     Context:
       description: 'Base context schema for all Beckn API calls. Contains addressing information
 
@@ -2279,13 +2294,21 @@ components:
           - if:
               properties:
                 '@type':
+                  const: ion:LogisticsContractAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsContractAttributes'
+          - if:
+              properties:
+                '@type':
                   const: ion:TaxDetail
               required:
               - '@type'
             then:
               $ref: '#/components/schemas/ION_IONTaxDetail'
           description: 'ION extension for Contract.contractAttributes. @type discriminator selects schema: TradeContractAttributes,
-            IONTaxDetail.'
+            LogisticsContractAttributes, IONTaxDetail.'
       additionalProperties: false
       required:
       - commitments
@@ -2336,13 +2359,21 @@ components:
           - if:
               properties:
                 '@type':
+                  const: ion:LogisticsCommitmentAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsCommitmentAttributes'
+          - if:
+              properties:
+                '@type':
                   const: ion:BusinessIdentity
               required:
               - '@type'
             then:
               $ref: '#/components/schemas/ION_IONBusinessIdentity'
           description: 'ION extension for Commitment.commitmentAttributes. @type discriminator selects schema: TradeCommitmentAttributes,
-            IONBusinessIdentity.'
+            LogisticsCommitmentAttributes, IONBusinessIdentity.'
     CounterSignature:
       title: Beckn HTTP Counter-Signature
       description: 'A signed receipt transmitted in the synchronous `Ack` response body, proving that the
@@ -2513,14 +2544,26 @@ components:
         descriptor:
           $ref: '#/components/schemas/Descriptor'
         participantAttributes:
-          description: 'Domain-specific extension attributes for this contract.
-
-            Use beckn:LogisticsContract for hyperlocal physical delivery. Use the generic Attributes schema for
-
-            other fulfillment types where no well-known domain schema exists.'
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - properties: {}
+          - if:
+              properties:
+                '@type':
+                  const: ion:ParticipantAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_IONParticipantAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsParticipantAddendum
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsParticipantAddendum'
+          description: 'ION extension for Participant.participantAttributes. @type discriminator selects schema: IONParticipantAttributes,
+            LogisticsParticipantAddendum.'
     GeoJSONGeometry:
       description: "**GeoJSON geometry** per RFC 7946. Coordinates are in **EPSG:4326 (WGS-84)** and MUST follow **[longitude,\
         \ latitude, (altitude?)]** order.\nSupported types: - Point, LineString, Polygon - MultiPoint, MultiLineString, MultiPolygon\
@@ -2608,9 +2651,24 @@ components:
         performanceAttributes:
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - $ref: '#/components/schemas/ION_TradePerformanceAttributes'
-          description: 'ION extension for Performance.performanceAttributes. Must carry JSON-LD @context and @type. Schema:
-            ION_TradePerformanceAttributes.'
+          - if:
+              properties:
+                '@type':
+                  const: ion:TradePerformanceAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_TradePerformanceAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsPerformanceAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsPerformanceAttributes'
+          description: 'ION extension for Performance.performanceAttributes. @type discriminator selects schema: TradePerformanceAttributes,
+            LogisticsPerformanceAttributes.'
       additionalProperties: false
     RequestDigest:
       title: Request Payload Digest
@@ -2830,8 +2888,24 @@ components:
         offerAttributes:
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - $ref: '#/components/schemas/ION_TradeOfferAttributes'
-          description: 'ION extension for Offer.offerAttributes. Must carry JSON-LD @context and @type. Schema: ION_TradeOfferAttributes.'
+          - if:
+              properties:
+                '@type':
+                  const: ion:TradeOfferAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_TradeOfferAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsOfferAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsOfferAttributes'
+          description: 'ION extension for Offer.offerAttributes. @type discriminator selects schema: TradeOfferAttributes,
+            LogisticsOfferAttributes.'
     Provider:
       type: object
       description: Schema definition for Provider in the Beckn Protocol v2.0.1
@@ -2851,8 +2925,24 @@ components:
         providerAttributes:
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - $ref: '#/components/schemas/ION_TradeProviderAttributes'
-          description: 'ION extension for Provider.providerAttributes. Must carry JSON-LD @context and @type. Schema: ION_TradeProviderAttributes.'
+          - if:
+              properties:
+                '@type':
+                  const: ion:TradeProviderAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_TradeProviderAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsProviderAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsProviderAttributes'
+          description: 'ION extension for Provider.providerAttributes. @type discriminator selects schema: TradeProviderAttributes,
+            LogisticsProviderAttributes.'
       required:
       - id
       - descriptor
@@ -2905,8 +2995,24 @@ components:
         resourceAttributes:
           allOf:
           - $ref: '#/components/schemas/Attributes'
-          - $ref: '#/components/schemas/ION_TradeResourceAttributes'
-          description: 'ION extension for Resource.resourceAttributes. Must carry JSON-LD @context and @type. Schema: ION_TradeResourceAttributes.'
+          - if:
+              properties:
+                '@type':
+                  const: ion:TradeResourceAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_TradeResourceAttributes'
+          - if:
+              properties:
+                '@type':
+                  const: ion:LogisticsResourceAttributes
+              required:
+              - '@type'
+            then:
+              $ref: '#/components/schemas/ION_LogisticsResourceAttributes'
+          description: 'ION extension for Resource.resourceAttributes. @type discriminator selects schema: TradeResourceAttributes,
+            LogisticsResourceAttributes.'
     Settlement:
       type: object
       properties:
@@ -3090,8 +3196,10 @@ components:
           type: string
           format: uri
         trackingAttributes:
-          description: Information specific to the use case for which the tracking is performed
-          $ref: '#/components/schemas/Attributes'
+          allOf:
+          - $ref: '#/components/schemas/Attributes'
+          - $ref: '#/components/schemas/ION_LogisticsTrackingAttributes'
+          description: 'ION extension for Tracking.trackingAttributes. Must carry JSON-LD @context and @type. Schema: ION_LogisticsTrackingAttributes.'
       required:
       - url
       - status
@@ -3373,7 +3481,8 @@ components:
       x-jsonld:
         '@context': ./context.jsonld
         '@type': ion:AddressSubdivisions
-      x-beckn-attaches-to: Address (as ionAddressAttributes)
+      x-beckn-attaches-to: (reusable shape — embedded inside participantAttributes.addressDetail, providerAttributes.availableAt[*].ionSubdivisions,
+        performanceAttributes.stops[*].location.ionSubdivisions)
       properties:
         provinsiCode:
           type: string
@@ -3649,25 +3758,272 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/LocalisedText'
-          description: 'Product or service name as a language object. "id" always mandatory. Replaces/extends beckn descriptor.name.
+          description: 'Product or service name as a language object. Supplements Beckn `Descriptor.name` (which carries the
+            default-locale text, normally `id`). Consumers that read only Beckn-native fields see Indonesian; ION-aware consumers
+            read the multilingual map here. "id" always mandatory.
 
             '
           x-ion-mandatory: always
           x-ion-regulatory: ION Network Policy — Bahasa Indonesia localisation requirement
         shortDesc:
           $ref: '#/components/schemas/LocalisedText'
-          description: 'Short description for catalog listings and search results. Max 150 characters per language. "id" mandatory.
+          description: 'Short description for catalog listings and search results. Max 150 characters per language. Supplements
+            Beckn `Descriptor.shortDesc`. "id" mandatory.
 
             '
           x-ion-mandatory: always
           x-ion-regulatory: ION Network Policy — bilingual catalog requirement
         longDesc:
           $ref: '#/components/schemas/LocalisedText'
-          description: 'Full product description for product detail page. "id" mandatory. "en" mandatory for XB pattern.
+          description: 'Full product description for product detail page. Supplements Beckn `Descriptor.longDesc`. "id" mandatory.
+            "en" mandatory for XB pattern.
 
             '
           x-ion-mandatory: optional
           x-ion-regulatory: ION Network Policy — Bahasa Indonesia localisation requirement
+    ION_IONParticipantAttributes:
+      type: object
+      title: ION Participant Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:ParticipantAttributes
+      x-beckn-attaches-to: Participant.participantAttributes
+      properties:
+        role:
+          type: string
+          x-ion-mandatory: always
+          description: 'Role this participant plays in the transaction. The enum spans all ION sectors. Sector working groups
+            may narrow this at publish time (e.g. trade uses BUYER/SELLER/MERCHANT; logistics uses CONSIGNOR/CONSIGNEE/CARRIER).
+
+            '
+          enum:
+          - BAP
+          - BPP
+          - PROVIDER
+          - MERCHANT
+          - BUYER
+          - SELLER
+          - AGENT
+          - BANK
+          - UNDERWRITER
+          - CONSIGNOR
+          - CONSIGNEE
+          - SHIPPER
+          - NOTIFY_PARTY
+          - FORWARDER
+          - ACTUAL_CARRIER
+          - CUSTOMS_BROKER
+          - INSURANCE_BROKER
+          - DRIVER
+          - CUSTOMS_AUTHORITY
+          - GOVERNMENT_BUYER
+        subscriberId:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when the participant is itself an ION-registered subscriber
+          description: 'ION-registered subscriber ID when the participant is itself a subscriber. Not applicable for individuals
+            (end-consumer CONSIGNEE in B2C).
+
+            '
+        npwp:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when participant is a business (PKP or non-PKP) and NPWP is available
+          description: 'NPWP (Nomor Pokok Wajib Pajak) tax ID. 16 digits post-2024 (Indonesia migrated from 15-digit to 16-digit
+            format per PMK 112/2022). Some implementations still accept legacy 15-digit format via the punctuated pattern
+            below.
+
+            '
+          pattern: ^([0-9]{16}|[0-9]{2}\.[0-9]{3}\.[0-9]{3}\.[0-9]-[0-9]{3}\.[0-9]{3})$
+        nib:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for all seller/provider/merchant participants
+          description: NIB (Nomor Induk Berusaha) business registration — 13 digits
+        nik:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for cross-border trade (Nomor Identitas Kepabeanan — customs registration number)
+          description: NIK — Indonesian customs registration number for international trade
+        pkpStatus:
+          type: string
+          enum:
+          - PKP
+          - NON_PKP
+          - NOT_APPLICABLE
+          x-ion-mandatory: conditional
+          description: VAT-registered status — declared at participant onboarding
+        ktpNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for DRIVER role; optional for consignee verification
+          description: KTP national ID number (16 digits)
+        passportNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for foreign consignees/shippers in cross-border patterns
+        bankCode:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=BANK
+          description: BI bank code
+        insurerLicenceNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=UNDERWRITER
+          description: OJK (Otoritas Jasa Keuangan) licence number
+        authorisedSignatory:
+          type: object
+          x-ion-mandatory: conditional
+          x-ion-condition: Required for B2B contracts over materiality threshold
+          properties:
+            name:
+              type: string
+            nik:
+              type: string
+            position:
+              type: string
+            email:
+              type: string
+              format: email
+        addressDetail:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Full Indonesian administrative hierarchy plus landmark and accessibility metadata. Applies to participants
+            with a physical location: CONSIGNOR, CONSIGNEE, SHIPPER, NOTIFY_PARTY, MERCHANT, BANK branch, CUSTOMS_BROKER office,
+            buyer/seller for trade, etc.
+
+            '
+          properties:
+            provinsiCode:
+              type: string
+              pattern: ^[0-9]{2}$
+              description: 'Province code per BPS. 34 provinces. E.g. "31" DKI Jakarta, "35" Jawa Timur, "51" Bali.
+
+                '
+            provinsiName:
+              type: string
+            kabupatenCode:
+              type: string
+              pattern: ^[0-9]{4}$
+              description: '4-digit kabupaten/kota BPS code. E.g. "3174" Jakarta Selatan, "3578" Surabaya.
+
+                '
+            kabupatenName:
+              type: string
+            kabupatenType:
+              type: string
+              enum:
+              - KOTA
+              - KABUPATEN
+            kecamatanCode:
+              type: string
+              pattern: ^[0-9]{7}$
+              description: '7-digit kecamatan (sub-district) code. Essential for parcel zone-based rate computation.
+
+                '
+            kecamatanName:
+              type: string
+            kelurahanCode:
+              type: string
+              pattern: ^[0-9]{10}$
+              description: 10-digit kelurahan/desa code.
+            kelurahanName:
+              type: string
+            rt:
+              type: string
+              pattern: ^[0-9]{1,3}$
+              description: 'Rukun Tetangga. Required for rural / kampung addresses without formal street numbers. Essential
+                for COD routing and last-mile parcel delivery.
+
+                '
+            rw:
+              type: string
+              pattern: ^[0-9]{1,3}$
+            patokan:
+              type: string
+              description: 'Landmark description. How addresses work in rural Indonesia. Example: "Depan warung Bu Siti, seberang
+                Masjid Al-Ikhlas".
+
+                '
+            patokanLocationType:
+              type: string
+              enum:
+              - MOSQUE
+              - CHURCH
+              - TEMPLE
+              - SCHOOL
+              - WARUNG
+              - MARKET
+              - HEALTH_CENTER
+              - VILLAGE_OFFICE
+              - OTHER
+            areaType:
+              type: string
+              enum:
+              - URBAN_RESIDENTIAL
+              - URBAN_COMMERCIAL
+              - INDUSTRIAL
+              - SUBURBAN
+              - RURAL
+              - REMOTE
+              - PORT_AREA
+              - AIRPORT_AREA
+              - BONDED_ZONE
+              - FREE_TRADE_ZONE
+              - SPECIAL_ECONOMIC_ZONE
+            remoteAreaClassification:
+              type: string
+              enum:
+              - NOT_REMOTE
+              - TERTINGGAL
+              - TERDEPAN
+              - TERLUAR
+              - DISASTER_RECOVERY_AREA
+              description: 3T classification per Kementerian Desa PDTT
+            accessibility:
+              type: object
+              properties:
+                motorcycleAccessible:
+                  type: boolean
+                carAccessible:
+                  type: boolean
+                smallTruckAccessible:
+                  type: boolean
+                heavyTruckAccessible:
+                  type: boolean
+                containerChassisAccessible:
+                  type: boolean
+                requiresBoat:
+                  type: boolean
+                requiresOjek:
+                  type: boolean
+                roadCondition:
+                  type: string
+                  enum:
+                  - PAVED_GOOD
+                  - PAVED_DAMAGED
+                  - GRAVEL
+                  - DIRT
+                  - UNPAVED
+            safeLocationForContactlessDelivery:
+              type: string
+            securityAccessRequired:
+              type: boolean
+            operatingHoursForDelivery:
+              type: array
+              items:
+                type: object
+                properties:
+                  dayOfWeek:
+                    type: string
+                  opens:
+                    type: string
+                    format: time
+                  closes:
+                    type: string
+                    format: time
     ION_PaymentDeclaration:
       type: object
       title: Payment Declaration
@@ -3764,6 +4120,69 @@ components:
           - $ref: '#/components/schemas/BISettlement'
           - $ref: '#/components/schemas/BNPL'
           - $ref: '#/components/schemas/CardPayment'
+        paymentRail:
+          x-ion-mandatory: optional
+          type: string
+          description: 'Specific rail used for this payment. Enables downstream routing and reconciliation regardless of higher-level
+            method. Example: method=BANK_TRANSFER with paymentRail=BI_FAST.
+
+            '
+          enum:
+          - QRIS
+          - BI_FAST
+          - RTGS
+          - SKN
+          - VIRTUAL_ACCOUNT
+          - EWALLET_OVO
+          - EWALLET_DANA
+          - EWALLET_GOPAY
+          - EWALLET_SHOPEEPAY
+          - EWALLET_LINKAJA
+          - EWALLET_ASTRAPAY
+          - CARD_VISA
+          - CARD_MASTERCARD
+          - CARD_JCB
+          - CARD_AMEX
+          - CARD_UNIONPAY
+          - BILYET_GIRO
+          - DIRECT_DEBIT
+          - SWIFT_TT
+          - LETTER_OF_CREDIT
+          - COD_CASH
+          - COD_CARD_TAP
+        paymentGatewayProvider:
+          x-ion-mandatory: optional
+          type: string
+          description: 'Payment gateway aggregator used to route this payment. Declared per transaction. Implementations may
+            use one or more of these aggregators or direct bank/ewallet APIs.
+
+            '
+          enum:
+          - DOKU
+          - XENDIT
+          - MIDTRANS
+          - FINPAY
+          - FASPAY
+          - ESPAY
+          - IPAY88
+          - FINNET
+          - LINKQU
+          - DIRECT
+          - OTHER
+        creditTerms:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when method=CREDIT_FACILITY or credit terms apply (B2B, FWA)
+          $ref: '#/components/schemas/CreditTerms'
+        refund:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when status=REFUNDED or PARTIALLY_REFUNDED
+          $ref: '#/components/schemas/Refund'
+        invoice:
+          x-ion-mandatory: optional
+          $ref: '#/components/schemas/InvoiceReference'
+        processingFee:
+          x-ion-mandatory: optional
+          $ref: '#/components/schemas/ProcessingFee'
     ION_QRIS:
       type: object
       title: QRIS Payment
@@ -3898,12 +4317,32 @@ components:
     ION_CashOnDelivery:
       type: object
       title: Cash On Delivery
+      description: 'Runtime COD collection state. Offer-level COD policy fields (OTP required, denominations accepted, buyer
+        daily limit, hold period, reconciliation variance) are declared per-offer in schema/extensions/logistics/offer/v1
+        — they govern how COD is accepted, not the per-transaction collection record.
+
+        '
       additionalProperties: false
       properties:
         collectionAmount:
           x-ion-mandatory: optional
           type: number
-          description: Exact cash amount to collect from consumer
+          description: Expected cash amount to collect from consumer
+        collectionAmountCollected:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required after handover — actual amount collected
+          type: number
+          description: Actual cash amount the carrier collected
+        collectionTimestamp:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required after handover
+          type: string
+          format: date-time
+          description: UTC timestamp of cash handover at delivery
+        collectionReceiptRef:
+          x-ion-mandatory: optional
+          type: string
+          description: Receipt reference for the collected cash (scan, photo URL, or receipt ID)
         currency:
           x-ion-mandatory: optional
           type: string
@@ -3919,6 +4358,16 @@ components:
           x-ion-mandatory: optional
           type: number
           description: Maximum COD value allowed per ION network policy
+        partialCollectionReason:
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when collectionAmountCollected < collectionAmount
+          type: string
+          enum:
+          - CONSUMER_SHORT_ON_CASH
+          - DENOMINATION_UNAVAILABLE
+          - CONSUMER_NEGOTIATED
+          - CONSUMER_DISPUTED_AMOUNT
+          - OTHER
     ION_BankTransfer:
       type: object
       title: Bank Transfer
@@ -4074,6 +4523,161 @@ components:
           x-ion-mandatory: optional
           type: string
           description: Payment gateway transaction reference
+    ION_CreditTerms:
+      type: object
+      title: Credit Terms
+      description: 'Credit-based payment terms (B2B-CR spine, FWA-governed logistics, any deferred-payment scenario). Populated
+        on PaymentDeclaration when method=CREDIT_FACILITY or when an active FWA grants credit terms to this transaction. ION
+        Central validates credit availability at /init.
+
+        '
+      additionalProperties: false
+      properties:
+        creditTermsDays:
+          type: integer
+          description: Net payment terms in days from invoice date (e.g. 30 for NET-30, 60 for NET-60)
+          example: 30
+        paymentDueDate:
+          type: string
+          format: date
+          description: Computed due date for this specific invoice
+        creditLimit:
+          type: number
+          description: Total credit limit extended to buyer under the governing FWA / contract
+        creditAvailable:
+          type: number
+          description: Credit currently available after open invoices — for ION Central validation at /init
+        dunningSchedule:
+          type: array
+          description: Reminder schedule leading up to and past due date
+          items:
+            type: object
+            properties:
+              daysRelativeToDueDate:
+                type: integer
+                description: Negative before due, positive after
+              channel:
+                type: string
+                enum:
+                - EMAIL
+                - SMS
+                - WHATSAPP
+                - VOICE_CALL
+                - IN_APP
+    ION_Refund:
+      type: object
+      title: Refund
+      description: 'Refund record attached to a PaymentDeclaration when a settlement is fully or partially refunded. Default
+        destination is the original payment instrument (MATI — refund to original); fallbacks are declared explicitly.
+
+        '
+      additionalProperties: false
+      required:
+      - refundAmount
+      - refundMethod
+      properties:
+        refundAmount:
+          type: number
+          description: Refunded amount in IDR
+        refundReason:
+          type: string
+          enum:
+          - BUYER_CANCELLATION
+          - SELLER_CANCELLATION
+          - ITEM_RETURNED
+          - ITEM_UNAVAILABLE
+          - ITEM_DEFECTIVE
+          - DELIVERY_FAILED
+          - WRONG_ITEM_DELIVERED
+          - PARTIAL_FULFILMENT
+          - SLA_BREACH_REBATE
+          - WEIGHT_DISPUTE_RESOLVED
+          - CUSTOMS_REJECTED
+          - OTHER
+        refundTimeline:
+          type: string
+          format: duration
+          description: Expected time-to-land (ISO 8601 duration, e.g. PT24H, P7D)
+        refundMethod:
+          type: string
+          enum:
+          - REFUND_TO_ORIGINAL
+          - REFUND_TO_VA
+          - REFUND_TO_BANK
+          - REFUND_AS_CREDIT
+          - REFUND_AS_VOUCHER
+          description: 'REFUND_TO_ORIGINAL is the default (MATI — Merchant Automatically To Instrument). Fallbacks apply when
+            original instrument is unavailable (e.g. expired card).
+
+            '
+        refundInitiatedAt:
+          type: string
+          format: date-time
+        refundSettledAt:
+          type: string
+          format: date-time
+    ION_InvoiceReference:
+      type: object
+      title: Invoice Reference
+      description: 'Invoice document references. A transaction may have a proforma (issued at /init for credit-term scenarios)
+        and a final invoice (issued at /on_confirm or later). Faktur Pajak tax-invoice references live in core/tax/v1 — this
+        block is for commercial invoices.
+
+        '
+      additionalProperties: false
+      properties:
+        invoiceReference:
+          type: string
+          description: Seller-issued commercial invoice number
+        invoiceIssuedAt:
+          type: string
+          format: date-time
+        proformaInvoiceReference:
+          type: string
+          description: Proforma invoice number (pre-shipment, for credit terms)
+        invoiceUrl:
+          type: string
+          format: uri
+          description: URL to PDF invoice (access-controlled, time-limited)
+    ION_ProcessingFee:
+      type: object
+      title: Payment Processing Fee
+      description: 'Per-transaction processing fee charged by the payment gateway or collecting party. Carried on the PaymentDeclaration
+        so both parties see the fee split.
+
+        '
+      additionalProperties: false
+      properties:
+        amount:
+          type: number
+          description: Processing fee amount in IDR
+        currency:
+          type: string
+          const: IDR
+        borneBy:
+          type: string
+          enum:
+          - BUYER
+          - SELLER
+          - LSP
+          - NETWORK
+          - SPLIT
+          description: Which party bears this fee
+        splitDetail:
+          type: array
+          description: When borneBy=SPLIT, how the fee is split
+          items:
+            type: object
+            properties:
+              party:
+                type: string
+                enum:
+                - BUYER
+                - SELLER
+                - LSP
+                - NETWORK
+              amount:
+                type: number
     ION_IONProductCertifications:
       type: object
       title: Indonesia Product Certifications
@@ -4947,6 +5551,59 @@ components:
           x-ion-mandatory: conditional
           x-ion-condition: Required when seller is Mall-tier or above, or when PPN PMSE applies
           x-ion-regulatory: PMK 41/PMK.03/2022 tentang Penunjukan Pemungut PPh 22; PMK 48/PMK.03/2020 (PPN PMSE); PMK 168/2023
+        codRemittance:
+          type: object
+          description: 'COD remittance record — how the collecting party (LSP or BPP) remits collected cash to the selling
+            party. Batched across many shipments; the batch reference ties line-level reconciliation to the aggregate transfer.
+
+            '
+          additionalProperties: false
+          properties:
+            remittanceAmount:
+              type: number
+              description: Total amount remitted in this batch (IDR)
+            batchRef:
+              type: string
+              description: Remittance batch reference (ties many shipments to one transfer)
+            batchPeriod:
+              type: object
+              description: Window over which collections were aggregated
+              properties:
+                start:
+                  type: string
+                  format: date-time
+                end:
+                  type: string
+                  format: date-time
+            remittanceTimestamp:
+              type: string
+              format: date-time
+            remittanceMethod:
+              type: string
+              enum:
+              - BI_FAST
+              - BANK_TRANSFER_SKN
+              - BANK_TRANSFER_RTGS
+              - VIRTUAL_ACCOUNT
+              - QRIS
+            variance:
+              type: object
+              description: Variance between expected and remitted amounts
+              properties:
+                expectedAmount:
+                  type: number
+                remittedAmount:
+                  type: number
+                variancePercent:
+                  type: number
+                  description: (remitted - expected) / expected, in decimal
+                toleranceApplied:
+                  type: number
+                  description: Per-FWA or network-default tolerance (e.g. 0.001 = 0.1%)
+                withinTolerance:
+                  type: boolean
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when one or more settlements in this reconcile carry method=COD
     ION_IONSupportTicket:
       type: object
       title: ION Consumer Support Ticket
@@ -4954,7 +5611,7 @@ components:
       x-jsonld:
         '@context': ./context.jsonld
         '@type': ion:SupportTicket
-      x-beckn-attaches-to: Support (as issue contents)
+      x-beckn-attaches-to: Support.channels[*] (as an Attributes entry with @type=ion:SupportTicket)
       required:
       - id
       - category
@@ -4970,12 +5627,6 @@ components:
           type: string
           description: Network-wide unique issue identifier. Assigned at creation.
           example: ISSUE-2026-00001234
-        orderId:
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when ticket relates to a specific order
-          type: string
-          description: Contract/order ID this issue relates to.
-          example: ORD-2026-00012345
         category:
           x-ion-mandatory: always
           type: string
@@ -5302,8 +5953,9 @@ components:
           type: number
           minimum: 0
           maximum: 1
-          description: 'Tax rate as decimal fraction. PPN standard: 0.11. PPnBM rates: 0.10, 0.20, 0.30, 0.40, 0.50, 0.75,
-            1.25.
+          description: 'Tax rate as decimal fraction. The applicable rate MUST be sourced from current Indonesian tax regulation
+            (DJP / PMK), not hardcoded. For reference, PPN standard is currently 0.11 (11%) per PMK 131/2024; PPnBM rates
+            vary by category (typical range 0.10 to 0.75). This field documents the rate actually charged on this transaction.
 
             '
           example: 0.11
@@ -5353,6 +6005,3609 @@ components:
           - taxRate
           - taxAmount
           - taxBaseAmount
+    ION_LogisticsCommitmentAttributes:
+      type: object
+      title: Logistics Commitment Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsCommitmentAttributes
+      x-beckn-attaches-to: Commitment.commitmentAttributes
+      properties:
+        lineId:
+          x-ion-mandatory: optional
+          type: string
+          description: Unique identifier for this commitment line
+        resourceId:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference to the resource (shipment, SKU, vehicle) in this line
+        offerId:
+          x-ion-mandatory: optional
+          type: string
+          description: Offer this commitment is placed against
+        packageCount:
+          x-ion-mandatory: optional
+          type: integer
+          description: Number of packages in this commitment line
+        totalWeight:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - gram
+              - kilogram
+              - tonne
+        totalVolume:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - cbm
+              - liter
+        specialInstructions:
+          x-ion-mandatory: optional
+          type: string
+          description: 'Free-text handling instructions for this shipment line. Examples: "Do not stack", "This side up",
+            "Refrigerate on arrival"
+
+            '
+        containerReference:
+          x-ion-mandatory: optional
+          type: string
+          description: Container number for FCL freight commitments
+        sealNumber:
+          x-ion-mandatory: optional
+          type: string
+          description: Container seal number
+        skuId:
+          x-ion-mandatory: optional
+          type: string
+          description: SKU identifier for warehouse commitment lines
+        quantity:
+          x-ion-mandatory: optional
+          type: integer
+          description: Quantity committed for this SKU
+        lotNumber:
+          x-ion-mandatory: optional
+          type: string
+          description: Lot or batch number for traceability
+        expiryDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+          description: Expiry date for perishable or pharma inventory
+        capacityUnits:
+          x-ion-mandatory: optional
+          type: number
+          description: Committed capacity units (kg, cbm, containers, pallets)
+        capacityUnitType:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - kg
+          - cbm
+          - container
+          - pallet
+          - truck
+        requestedDepartureDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+          description: For freight — requested departure date for this commitment line
+        vehicleRegistration:
+          x-ion-mandatory: optional
+          type: string
+          description: Vehicle registration for LOG-RORO commitment lines
+        parentCommitmentId:
+          x-ion-mandatory: optional
+          type: string
+          description: Parent commitment reference for child transactions under a parent contract
+    ION_LogisticsConsiderationAttributes:
+      type: object
+      title: Logistics Consideration Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsConsiderationAttributes
+      x-beckn-attaches-to: Consideration.considerationAttributes
+      properties:
+        breakup:
+          x-ion-mandatory: always
+          type: array
+          description: Line-item financial breakdown. Each entry is one charge type.
+          items:
+            type: object
+            properties:
+              titleType:
+                type: string
+                enum:
+                - FREIGHT_BASE
+                - MINIMUM_CHARGE
+                - COD_COLLECTION_FEE
+                - COD_HANDLING_FEE
+                - COD_CONVENIENCE_FEE
+                - COD_CHARGE
+                - FUEL_SURCHARGE
+                - PEAK_SEASON_SURCHARGE
+                - EMERGENCY_BUNKER_SURCHARGE
+                - CURRENCY_ADJUSTMENT_FACTOR
+                - LOW_SULPHUR_SURCHARGE
+                - SECURITY_SURCHARGE
+                - CHASSIS_FEE
+                - DEMURRAGE
+                - DETENTION
+                - TERMINAL_HANDLING_CHARGE
+                - DOCUMENTATION_FEE
+                - BILL_OF_LADING_FEE
+                - CONTAINER_CLEANING_FEE
+                - MULTI_STOP_PICKUP_FEE
+                - MULTI_STOP_DELIVERY_FEE
+                - SIGNATURE_ON_DELIVERY_FEE
+                - INSIDE_DELIVERY_FEE
+                - LIFTGATE_DELIVERY_FEE
+                - RESIDENTIAL_DELIVERY_FEE
+                - ARMED_ESCORT_FEE
+                - WAITING_TIME_FEE
+                - REDELIVERY_FEE
+                - HANDLING_FEE
+                - COLD_CHAIN_PREMIUM
+                - HAZMAT_SURCHARGE
+                - REEFER_POWER_FEE
+                - REMOTE_AREA_SURCHARGE
+                - OVERSIZE_SURCHARGE
+                - OVERWEIGHT_SURCHARGE
+                - HIGH_VALUE_DECLARATION_FEE
+                - INSURANCE_PREMIUM
+                - WAR_RISK_PREMIUM
+                - STRIKE_RISK_PREMIUM
+                - CUSTOMS_DUTY
+                - CUSTOMS_HANDLING_FEE
+                - INATRADE_PERMIT_FEE
+                - FUMIGATION_FEE
+                - PHYTOSANITARY_FEE
+                - VALUE_ADDED_SERVICE_FEE
+                - PICK_PACK_FEE
+                - STORAGE_FEE
+                - QC_INSPECTION_FEE
+                - KITTING_FEE
+                - LABELLING_FEE
+                - PACKAGING_FEE
+                - RETURNS_PROCESSING_FEE
+                - RE_ATTEMPT_FEE
+                - FAILED_PICKUP_FEE
+                - RETURN_TO_SENDER_FEE
+                - WEIGHT_DIFF_ADJUSTMENT
+                - CREDIT_NOTE
+                - DISCOUNT
+                - VOLUME_REBATE
+                - SLA_REBATE
+                - PAYMENT_PROCESSING_FEE
+                - PPN_TAX
+                - PPNBM_TAX
+                - PPN_DIBEBASKAN_CREDIT
+                - PPH_23_WITHHOLDING
+                - STAMP_DUTY
+              amount:
+                type: number
+              currency:
+                type: string
+                default: IDR
+              ppnRate:
+                type: number
+                description: 'PPN rate actually charged on this line (decimal fraction). Source applicable rate from current
+                  DJP/PMK regulation — current standard is 0.11 per PMK 131/2024.
+
+                  '
+                x-ion-mandatory: conditional
+        totalAmount:
+          type: number
+          x-ion-mandatory: always
+        currency:
+          x-ion-mandatory: optional
+          type: string
+          default: IDR
+        freightBase:
+          x-ion-mandatory: optional
+          type: number
+          description: Base freight charge before surcharges
+        fuelSurcharge:
+          x-ion-mandatory: optional
+          type: number
+          description: Fuel surcharge amount (computed from offer's fuelSurchargeFormula)
+        fuelSurchargeRate:
+          x-ion-mandatory: optional
+          type: number
+          description: Applied fuel surcharge rate
+        codCharge:
+          x-ion-mandatory: optional
+          type: number
+          description: COD collection fee charged by the LSP
+        codAmountCollected:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual COD amount collected at delivery
+        codRemittanceAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Net amount remitted to BAP after COD charges
+        codRemittanceBatchRef:
+          x-ion-mandatory: optional
+          type: string
+        codRemittanceTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        codRemittanceMethod:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - BANK_TRANSFER
+          - VIRTUAL_ACCOUNT
+          - QRIS
+        insurancePremium:
+          x-ion-mandatory: optional
+          type: number
+        insuranceCoverageAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: Amount covered by insurance per shipment
+        dutyEstimate:
+          x-ion-mandatory: optional
+          type: number
+          description: Estimated customs duty (from /on_select)
+        taxEstimate:
+          x-ion-mandatory: optional
+          type: number
+          description: Estimated import tax (from /on_select)
+        actualDuty:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual customs duty (from import customs cleared event)
+        actualTax:
+          x-ion-mandatory: optional
+          type: number
+          description: Actual import tax applied
+        revisedAmount:
+          x-ion-mandatory: optional
+          type: number
+          description: BPP's proposed revised total after weight discrepancy
+        revisionBreakup:
+          x-ion-mandatory: optional
+          type: array
+          description: Breakup of the revised amount
+          items:
+            type: object
+            properties:
+              titleType:
+                type: string
+              originalAmount:
+                type: number
+              revisedAmount:
+                type: number
+              diff:
+                type: number
+        weightDiffAdjustment:
+          x-ion-mandatory: optional
+          type: number
+          description: Additional charge (or refund) from weight discrepancy resolution
+        addressChangeSurcharge:
+          x-ion-mandatory: optional
+          type: number
+          description: Surcharge when delivery zone changes due to address correction
+        rescheduleFee:
+          x-ion-mandatory: optional
+          type: number
+        failedPickupFee:
+          x-ion-mandatory: optional
+          type: number
+        storageFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Periodic storage fee per billing cycle
+        pickPackFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Per-unit pick and pack fee
+        valueAddedServiceFee:
+          x-ion-mandatory: optional
+          type: number
+          description: Aggregated value-added services charge
+        ppnRate:
+          x-ion-mandatory: optional
+          type: number
+          description: 'PPN (Pajak Pertambahan Nilai) rate applied to applicable charges. Source applicable rate from current
+            DJP/PMK regulation — current standard is 0.11 (11%) per PMK 131/2024.
+
+            '
+        ppnAmount:
+          x-ion-mandatory: conditional
+          type: number
+          description: Computed PPN amount
+    ION_LogisticsContractAttributes:
+      type: object
+      title: Logistics Contract Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsContractAttributes
+      x-beckn-attaches-to: Contract.contractAttributes
+      properties:
+        fwaReference:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: 'ION policy IRI of the Framework Agreement governing this transaction. When present, rates and policies
+            are inherited from the FWA.
+
+            '
+        parentContractReference:
+          x-ion-mandatory: optional
+          type: string
+          description: 'Reference to a parent contract (e.g. warehouse contract that triggered this transport contract, or
+            a capacity reservation).
+
+            '
+        npwp:
+          x-ion-mandatory: optional
+          type: string
+          description: NPWP tax ID of the consignor (B2B transactions)
+          pattern: ^[0-9]{2}\.[0-9]{3}\.[0-9]{3}\.[0-9]-[0-9]{3}\.[0-9]{3}$
+        nib:
+          x-ion-mandatory: optional
+          type: string
+          description: NIB business registration of the consignor (B2B transactions)
+        invoicePreferences:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            fakturaRequired:
+              type: boolean
+              description: True if Faktur Pajak (VAT invoice) is required
+            fakturaReference:
+              type: string
+              description: Faktur Pajak number once issued
+              pattern: ^[0-9]{3}\.[0-9]{3}-[0-9]{2}\.[0-9]{8}$
+            fakturaStatus:
+              type: string
+              enum:
+              - NORMAL
+              - PENGGANTI
+              - BATAL
+              - PENDING_GENERATION
+            fakturaPenggantiForReference:
+              type: string
+              description: 'If fakturaStatus=PENGGANTI, this references the original FP being replaced. Required per DJP rules.
+
+                '
+            invoicingModel:
+              type: string
+              enum:
+              - INDIVIDUAL_PER_SHIPMENT
+              - CONSOLIDATED_MONTHLY
+              - FWA_SETTLEMENT
+            coretaxIntegration:
+              type: boolean
+              description: 'True if Faktur Pajak is issued through DJP Coretax (2025+ platform replacing e-Faktur). False
+                if legacy e-Faktur is still used.
+
+                '
+            coretaxTransactionId:
+              type: string
+              description: Coretax transaction ID when issued via Coretax
+        withholdingTax:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'PPh 23 withholding applies to logistics services at 2% rate. The buyer (BAP or consignor) withholds
+            this amount and remits to DJP, providing a Bukti Potong certificate to the LSP.
+
+            '
+          properties:
+            applicable:
+              type: boolean
+            rate:
+              type: number
+              description: PPh 23 rate — typically 0.02 (2%). 0.04 if consignor has no NPWP.
+            withheldAmount:
+              type: number
+            buktiPotongReference:
+              type: string
+              description: Bukti Potong (withholding certificate) number
+            buktiPotongDate:
+              type: string
+              format: date
+            buktiPotongDocumentUrl:
+              type: string
+              format: uri
+            withheldBy:
+              type: string
+              enum:
+              - BAP
+              - CONSIGNOR
+              - BPP
+              description: Party responsible for withholding and remittance
+            remittedToDjp:
+              type: boolean
+            djpRemittanceReference:
+              type: string
+        ppnExemption:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'PPN Dibebaskan — VAT exemption for specific categories and zones. Common for bonded-zone and free-trade-zone
+            transactions.
+
+            '
+          properties:
+            applicable:
+              type: boolean
+            reason:
+              type: string
+              enum:
+              - BONDED_ZONE
+              - FREE_TRADE_ZONE
+              - EXPORT
+              - STRATEGIC_GOODS
+              - AGRICULTURAL_EXEMPT
+              - EDUCATIONAL_EXEMPT
+            exemptionLicenceReference:
+              type: string
+            validUntil:
+              type: string
+              format: date
+        stampDuty:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Bea Meterai Rp 10,000 applies to invoices over Rp 5,000,000. Required for contracts treated as formal
+            legal documents.
+
+            '
+          properties:
+            applicable:
+              type: boolean
+            amount:
+              type: number
+              default: 10000
+            eMeteraiReference:
+              type: string
+              description: Electronic stamp duty reference from Peruri
+        creditTermsDays:
+          x-ion-mandatory: optional
+          type: integer
+          description: Payment due within N days (for B2B credit-terms transactions)
+        paymentDueDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+        ekycFormReference:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference to the eKYC form submission for B2B first transactions
+        ekycStatus:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - VERIFIED
+          - PENDING_MANUAL_REVIEW
+          - REJECTED
+        ekycVerificationTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        ekycRejectionReason:
+          x-ion-mandatory: optional
+          type: string
+        cargoInsurance:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Cargo insurance coverage details. Distinct from driver/vehicle insurance (covered under incident branch).
+
+            '
+          properties:
+            policyReference:
+              type: string
+              format: iri
+              description: ION policy IRI for insurance terms
+            insuranceScope:
+              type: string
+              enum:
+              - ICC_A
+              - ICC_B
+              - ICC_C
+              - ALL_RISKS
+              - NAMED_PERILS
+              - LIABILITY_ONLY
+              - DECLARED_VALUE_CAP
+              description: 'Institute Cargo Clauses scope for ocean/air freight. Required for LOG-FREIGHT and LOG-XB.
+
+                '
+            underwriterSubscriberId:
+              type: string
+              description: 'ION subscriber ID of the underwriter (insurer). Required when named insurance is in effect. Separate
+                participant with role=UNDERWRITER.
+
+                '
+            underwriterName:
+              type: string
+              description: Insurer legal name (e.g. "PT Asuransi Jasindo")
+            underwriterPolicyNumber:
+              type: string
+              description: Insurer's policy number — separate from ION contract ID
+            insuredParty:
+              type: string
+              enum:
+              - CONSIGNOR
+              - CONSIGNEE
+              - BANK
+              - FORWARDER
+              description: Which party holds the claim right — per Incoterms
+            coverageAmount:
+              type: number
+              description: Insured sum
+            currency:
+              type: string
+              default: IDR
+            deductible:
+              type: number
+              description: Deductible / excess amount
+            premiumAmount:
+              type: number
+            validFrom:
+              type: string
+              format: date-time
+            validUntil:
+              type: string
+              format: date-time
+            warRiskAddition:
+              type: boolean
+              description: True if war risk premium was added (separate coverage)
+            strikeRiskAddition:
+              type: boolean
+              description: True if SRCC (Strike, Riot, Civil Commotion) premium added
+            generalAverageParticipation:
+              type: boolean
+              description: 'True if cargo is covered for General Average contributions. Required for ocean freight — GA applies
+                when vessel sacrifices cargo to save the voyage.
+
+                '
+            transitClauseExtension:
+              type: string
+              description: Extension clause for multi-leg coverage gaps (warehouse-to-warehouse)
+        disputeReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+        disputeState:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - DISPUTE_WEIGHT_RAISED
+          - DISPUTE_EVIDENCE_EXCHANGED
+          - DISPUTE_RESOLVED_ACCEPTED
+          - DISPUTE_RESOLVED_NEGOTIATED
+          - DISPUTE_ESCALATED
+          - CLAIM_RAISED
+          - CLAIM_UNDER_REVIEW
+          - CLAIM_RESOLVED_ACCEPTED
+          - CLAIM_RESOLVED_PARTIAL
+          - CLAIM_REJECTED
+          - CLAIM_ESCALATED
+        disputeResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            outcome:
+              type: string
+            resolvedAt:
+              type: string
+              format: date-time
+            settlementAmount:
+              type: number
+        claimType:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - WEIGHT_DISCREPANCY
+          - DAMAGE
+          - LOSS
+          - SLA_BREACH
+          - CUSTOMS_DUTY
+          - COD_DISPUTE
+        claimDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+            claimedAmount:
+              type: number
+            evidenceUrls:
+              type: array
+              items:
+                type: string
+                format: uri
+            evidenceType:
+              type: string
+            reportedAt:
+              type: string
+              format: date-time
+        claimAssessment:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            outcome:
+              type: string
+              enum:
+              - ACCEPTED
+              - PARTIAL
+              - REJECTED
+              - PENDING_INSPECTION
+            offeredSettlement:
+              type: number
+            rejectionReason:
+              type: string
+            inspectionRequired:
+              type: boolean
+        claimResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            decision:
+              type: string
+              enum:
+              - ACCEPT_SETTLEMENT
+              - COUNTER_WITH_EVIDENCE
+              - ESCALATE
+        addressChangeReason:
+          x-ion-mandatory: optional
+          type: string
+        addressUnserviceableResolution:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - NEW_ADDRESS
+          - CANCEL_ORDER
+        returnReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            code:
+              type: string
+            policyIri:
+              type: string
+              format: iri
+            description:
+              type: string
+        returnItems:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: object
+            properties:
+              resourceId:
+                type: string
+              quantity:
+                type: integer
+        reverseContractReference:
+          x-ion-mandatory: optional
+          type: string
+          description: Reference to the reverse/return contract created
+        excursionDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            detectedAt:
+              type: string
+              format: date-time
+            location:
+              type: string
+            measuredTemperature:
+              type: number
+            declaredMin:
+              type: number
+            declaredMax:
+              type: number
+            excursionDurationMinutes:
+              type: integer
+        excursionResolution:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            decision:
+              type: string
+              enum:
+              - CONTINUE_AT_BUYER_RISK
+              - HOLD_FOR_INSPECTION
+              - CANCEL_AND_RETURN
+        discrepancyDetail:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            declaredWeight:
+              type: number
+            measuredWeight:
+              type: number
+            measurementTimestamp:
+              type: string
+              format: date-time
+            measurementLocation:
+              type: string
+              enum:
+              - PICKUP
+              - ORIGIN_HUB
+              - DESTINATION_HUB
+            scalePhotoUrl:
+              type: string
+              format: uri
+            measuredDimensions:
+              type: object
+        disputeCounter:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            counterWeight:
+              type: number
+            evidenceUrls:
+              type: array
+              items:
+                type: string
+            evidenceType:
+              type: string
+        inventoryReleaseRequest:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            skus:
+              type: array
+              items:
+                type: string
+            quantities:
+              type: array
+              items:
+                type: integer
+            destinationType:
+              type: string
+              enum:
+              - SELLER_ADDRESS
+              - BUYER_ADDRESS
+              - ANOTHER_WAREHOUSE
+              - DISPOSAL
+            destinationAddress:
+              type: object
+        incoterms:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - EXW
+          - FCA
+          - FAS
+          - FOB
+          - CFR
+          - CIF
+          - CPT
+          - CIP
+          - DAP
+          - DPU
+          - DDP
+        incotermsVersion:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - INCOTERMS_2010
+          - INCOTERMS_2020
+        incotermsNamedPlace:
+          x-ion-mandatory: conditional
+          type: string
+          description: Named place per Incoterms (e.g. "DDP Jakarta port")
+        beaCukaiDeclaration:
+          type: object
+          x-ion-mandatory: conditional
+          description: Indonesian customs declaration details — CEISA 4.0 integration
+          properties:
+            declarationType:
+              type: string
+              enum:
+              - BC_1_1
+              - BC_2_0
+              - BC_2_3
+              - BC_2_5
+              - BC_3_0
+              - BC_3_3
+              - BC_4_0
+              - BC_1_6
+            declarationNumber:
+              type: string
+              description: CEISA-generated registration number
+            declarationDate:
+              type: string
+              format: date
+            ceisaReceiptNumber:
+              type: string
+              description: CEISA 4.0 transaction receipt
+            nikDeclarant:
+              type: string
+              description: NIK of the declarant (importer/exporter)
+            hsCodeTariffPost:
+              type: string
+              description: Tariff post per BTKI (Buku Tarif Kepabeanan Indonesia)
+            cifValueIdr:
+              type: number
+              description: Declared CIF value converted to IDR
+            exchangeRateUsed:
+              type: number
+              description: Bea Cukai exchange rate applied
+        inatradePermits:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'INATRADE (Indonesia National Single Window) permits. Required for regulated categories — food, pharma,
+            electronics, chemicals.
+
+            '
+          items:
+            type: object
+            properties:
+              permitType:
+                type: string
+                enum:
+                - PI
+                - PE
+                - LS
+                - SKI
+                - SKI_BPOM
+                - MASTERLIST
+              permitNumber:
+                type: string
+              issuingMinistry:
+                type: string
+                enum:
+                - KEMENDAG
+                - KEMENPERIN
+                - KEMENKES
+                - BPOM
+                - KEMENTAN
+                - KLHK
+                - KEMENHUB
+                - KEMKOMINFO
+              validUntil:
+                type: string
+                format: date
+              documentUrl:
+                type: string
+                format: uri
+        lartasClassification:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - NOT_RESTRICTED
+          - LARANGAN
+          - PEMBATASAN
+          - UNKNOWN_REQUIRES_CHECK
+          description: 'LARTAS (Larangan dan Pembatasan) classification. Indonesian customs maintains prohibited (LARANGAN)
+            and restricted (PEMBATASAN) goods lists.
+
+            '
+        aseanSingleWindowReference:
+          x-ion-mandatory: conditional
+          type: string
+          description: ASW reference for intra-ASEAN shipments
+        fumigationCertificate:
+          type: object
+          x-ion-mandatory: conditional
+          description: Required when wood packaging is used (ISPM 15)
+          properties:
+            certificateNumber:
+              type: string
+            treatmentType:
+              type: string
+              enum:
+              - HT_HEAT
+              - MB_METHYL_BROMIDE
+              - DH_DIELECTRIC_HEATING
+            treatmentDate:
+              type: string
+              format: date
+            facilityCode:
+              type: string
+              description: Registered ISPM 15 facility code
+            documentUrl:
+              type: string
+              format: uri
+        phytosanitaryCertificate:
+          type: object
+          x-ion-mandatory: conditional
+          description: Required for agricultural products per Karantina
+          properties:
+            certificateNumber:
+              type: string
+            issuingAuthority:
+              type: string
+            documentUrl:
+              type: string
+              format: uri
+        xbReturnDecision:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - RETURN_TO_ORIGIN
+          - DESTROY_IN_PLACE
+          - RE_EXPORT_TO_THIRD_COUNTRY
+        cancellationReason:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            id:
+              type: string
+            descriptor:
+              type: object
+              properties:
+                code:
+                  type: string
+                shortDesc:
+                  type: string
+        cancellationReasonCode:
+          x-ion-mandatory: optional
+          type: string
+        pickupFailedResolution:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - RESCHEDULE_PICKUP
+          - CANCEL_ORDER
+        buyerResolutionDeadline:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        codPartialReason:
+          x-ion-mandatory: optional
+          type: string
+    ION_LogisticsOfferAttributes:
+      type: object
+      title: Logistics Offer Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsOfferAttributes
+      x-beckn-attaches-to: Offer.offerAttributes
+      properties:
+        serviceLevel:
+          type: string
+          enum:
+          - INSTANT
+          - SAME_DAY
+          - NEXT_DAY
+          - STANDARD_2_3D
+          - STANDARD_4_7D
+          - ECONOMY
+          - SCHEDULED
+          x-ion-mandatory: always
+        transportMode:
+          type: string
+          enum:
+          - motorcycle
+          - bicycle
+          - car
+          - van
+          - truck
+          - rail
+          - sea
+          - air
+          - river
+          - ferry
+          x-ion-mandatory: always
+        routingTopology:
+          type: string
+          enum:
+          - P2P
+          - P2H2P
+          - P2H2H2P
+          description: Hub routing topology for LOG-PARCEL
+          x-ion-mandatory: conditional
+        rateLogic:
+          type: string
+          enum:
+          - FLAT
+          - TIERED_BY_WEIGHT
+          - TIERED_BY_ZONE
+          - TIERED_BY_ZONE_AND_WEIGHT
+          - PER_KG
+          - PER_CBM
+          - PER_CONTAINER
+          - PER_PALLET
+          - PER_TRUCK
+          - PER_VESSEL_SLOT
+          - DISTANCE_BASED
+          - SURGE_DYNAMIC
+          x-ion-mandatory: always
+        zones:
+          x-ion-mandatory: optional
+          type: array
+          description: Zone definitions for zone-based pricing
+          items:
+            type: object
+            properties:
+              zoneId:
+                type: string
+              corridors:
+                type: array
+                items:
+                  type: string
+              provinsiCodes:
+                type: array
+                items:
+                  type: string
+              baseRatePerKg:
+                type: number
+              currency:
+                type: string
+                default: IDR
+        weightTiers:
+          x-ion-mandatory: optional
+          type: array
+          description: Weight-based rate tiers
+          items:
+            type: object
+            properties:
+              maxKg:
+                type: number
+              ratePerKg:
+                type: number
+              minimumCharge:
+                type: number
+        dimensionalWeightFactor:
+          x-ion-mandatory: optional
+          type: number
+          description: Volumetric weight divisor (typically 5000 for air, 4000 for road)
+        chargeableWeightRule:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - MAX_ACTUAL_OR_VOLUMETRIC
+          - ACTUAL_ONLY
+          - VOLUMETRIC_ONLY
+          - PER_CARRIER_RULE
+          description: 'How chargeable weight is computed. MAX_ACTUAL_OR_VOLUMETRIC (default for air and LTL) means chargeable
+            = max(actual, volumetric).
+
+            '
+        minimumChargeableAmount:
+          type: number
+          x-ion-mandatory: conditional
+          description: 'Minimum freight charge regardless of weight. Air freight always has this (MAWB minimum). Some LTL
+            carriers as well.
+
+            '
+        fuelSurchargeFormula:
+          x-ion-mandatory: optional
+          type: string
+          description: Formula for fuel surcharge computation (e.g. "base * 0.08")
+        rateModifiers:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'Additional charges beyond base rate. Each modifier is applied at quote time per its trigger and basis.
+            Multiple modifiers can apply to the same shipment.
+
+            '
+          items:
+            type: object
+            properties:
+              modifierType:
+                type: string
+                enum:
+                - FUEL_SURCHARGE
+                - PEAK_SEASON_SURCHARGE
+                - EMERGENCY_BUNKER_SURCHARGE
+                - CURRENCY_ADJUSTMENT_FACTOR
+                - LOW_SULPHUR_SURCHARGE
+                - SECURITY_SURCHARGE
+                - CHASSIS_FEE
+                - DEMURRAGE
+                - DETENTION
+                - TERMINAL_HANDLING
+                - DOCUMENTATION_FEE
+                - BILL_OF_LADING_FEE
+                - CONTAINER_CLEANING
+                - MULTI_STOP_PICKUP
+                - MULTI_STOP_DELIVERY
+                - SIGNATURE_ON_DELIVERY
+                - PROOF_OF_DELIVERY_PHYSICAL
+                - INSIDE_DELIVERY
+                - LIFTGATE_DELIVERY
+                - RESIDENTIAL_DELIVERY
+                - REMOTE_AREA
+                - OVERSIZE
+                - OVERWEIGHT
+                - HIGH_VALUE_DECLARATION
+                - HAZMAT_HANDLING
+                - REEFER_POWER
+                - ARMED_ESCORT
+                - WAITING_TIME
+                - REDELIVERY
+                - RETURN_TO_SENDER
+                - OTHER
+              basis:
+                type: string
+                enum:
+                - FLAT
+                - PERCENT_OF_BASE
+                - PER_KG
+                - PER_CBM
+                - PER_CONTAINER
+                - PER_PACKAGE
+                - PER_STOP
+                - PER_DAY
+                - PER_HOUR
+              amount:
+                type: number
+                description: Amount per basis unit
+              percentOfBase:
+                type: number
+                description: When basis=PERCENT_OF_BASE
+              currency:
+                type: string
+              appliesWhen:
+                type: string
+                description: Trigger condition in human-readable form
+              validFrom:
+                type: string
+                format: date-time
+                description: For time-limited surcharges like PSS
+              validUntil:
+                type: string
+                format: date-time
+              minimumAmount:
+                type: number
+              maximumAmount:
+                type: number
+        selectRequired:
+          type: boolean
+          description: 'True if /select is required before /init for a firm quote. False if catalog rate is binding and /select
+            may be skipped.
+
+            '
+          x-ion-mandatory: always
+        quoteValidityWindow:
+          x-ion-mandatory: optional
+          type: string
+          format: duration
+          description: How long the /on_select quote is binding (ISO 8601 duration)
+          example: PT15M
+        pickupModels:
+          type: array
+          x-ion-mandatory: conditional
+          description: Pickup scheduling models supported by this offer
+          items:
+            type: string
+            enum:
+            - SCHEDULED_WINDOW
+            - ON_DEMAND
+            - DAILY_PICKUP
+            - BULK_BATCH
+            - DROP_OFF_AT_COUNTER
+            - SELF_LODGEMENT
+        pickupWindowGranularityMinutes:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Smallest pickup time window offered
+        bulkPickupMaxShipments:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Maximum shipments per bulk pickup batch
+        sameDayPickupCutoffTime:
+          type: string
+          format: time
+          x-ion-mandatory: conditional
+          description: Latest on-demand pickup booking time for same-day dispatch
+        dropOffLocationsUrl:
+          type: string
+          format: uri
+          x-ion-mandatory: conditional
+          description: URL to LSP agent-point directory for DROP_OFF_AT_COUNTER
+        cutoffs:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'Operational cut-off schedule. Each entry declares one cut-off. Multiple cut-offs per offer are common
+            (e.g. booking cut-off, SI cut-off, VGM cut-off, documentation cut-off, cargo cut-off).
+
+            '
+          items:
+            type: object
+            required:
+            - cutoffType
+            - cutoffBasis
+            properties:
+              cutoffType:
+                type: string
+                enum:
+                - SAME_DAY_BOOKING
+                - NEXT_DAY_BOOKING
+                - DAILY_PICKUP_CLOSURE
+                - DROP_OFF_COUNTER_CLOSING
+                - BOOKING
+                - SI_SUBMISSION
+                - VGM_SUBMISSION
+                - DOCUMENTATION
+                - CY_CUTOFF
+                - CFS_CUTOFF
+                - CARGO_RECEIVED
+                - REEFER_PLUG_IN
+                - HAZMAT_DECLARATION
+                - AIR_BOOKING
+                - AIR_CARGO_RECEIVED
+                - AIR_SECURITY_SCREENING
+                - AIR_DGR_ACCEPTANCE
+                - EXPORT_CUSTOMS_SUBMISSION
+                - IMPORT_CUSTOMS_SUBMISSION
+                - PRE_ARRIVAL_DECLARATION
+                - ORDER_CUT_FOR_SAME_DAY_DISPATCH
+                - ORDER_CUT_FOR_NEXT_DAY_DISPATCH
+                - INBOUND_APPOINTMENT_CUT
+              cutoffBasis:
+                type: string
+                enum:
+                - FIXED_LOCAL_TIME
+                - OFFSET_FROM_DEPARTURE
+                - WEEKLY_DAY_AND_TIME
+                - PER_SAILING
+                - PER_FLIGHT
+              localTime:
+                type: string
+                format: time
+                description: Daily cut-off time (for FIXED_LOCAL_TIME basis)
+              timezone:
+                type: string
+                description: IANA zone (e.g. "Asia/Jakarta", "Asia/Makassar", "Asia/Jayapura")
+              applicableDays:
+                type: array
+                description: Days this cut-off applies (for FIXED_LOCAL_TIME)
+                items:
+                  type: string
+                  enum:
+                  - MON
+                  - TUE
+                  - WED
+                  - THU
+                  - FRI
+                  - SAT
+                  - SUN
+              offsetBeforeDeparture:
+                type: string
+                format: duration
+                description: ISO 8601 duration before departure (e.g. PT3H, PT48H, P2D)
+              departureReferenceEvent:
+                type: string
+                enum:
+                - SCHEDULED_VESSEL_DEPARTURE
+                - SCHEDULED_FLIGHT_DEPARTURE
+                - SCHEDULED_TRUCK_DISPATCH
+                - SCHEDULED_TRAIN_DEPARTURE
+              weeklyDay:
+                type: string
+                enum:
+                - MON
+                - TUE
+                - WED
+                - THU
+                - FRI
+                - SAT
+                - SUN
+              weeklyTime:
+                type: string
+                format: time
+              lookupUrl:
+                type: string
+                format: uri
+                description: 'URL returning per-sailing or per-flight cut-offs. Expected response: JSON list of {voyageOrFlightRef,
+                  cutoffType, actualCutoffDateTime}.
+
+                  '
+              appliesToOriginPorts:
+                type: array
+                items:
+                  type: string
+                description: UN/LOCODE port list (or airport IATA). Empty = all origins.
+              appliesToConsolidationTypes:
+                type: array
+                items:
+                  type: string
+                  enum:
+                  - FTL
+                  - LTL
+                  - FCL
+                  - LCL
+                  - BULK
+                  - BREAK_BULK
+                  - PROJECT_CARGO
+                  - DRAYAGE
+                  - YARD_TRANSFER
+                  - CROSS_DOCK
+                  - MILK_RUN
+                  - OUT_OF_GAUGE
+                  - RO_RO_ACCOMPANIED
+              appliesToHazmat:
+                type: boolean
+                description: Cut-off applies only to hazmat (often tighter than general)
+              appliesToReefer:
+                type: boolean
+                description: Cut-off applies only to reefer/cold-chain
+              lateAcceptancePolicy:
+                type: string
+                enum:
+                - REJECT
+                - NEXT_SAILING_OR_FLIGHT
+                - ACCEPT_WITH_LATE_FEE
+                - ACCEPT_WITH_MANAGER_APPROVAL
+              lateFee:
+                type: object
+                properties:
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+                  basis:
+                    type: string
+                    enum:
+                    - FLAT
+                    - PER_KG
+                    - PER_CBM
+                    - PER_CONTAINER
+                    - PER_SHIPMENT
+              gracePeriod:
+                type: string
+                format: duration
+                description: 'Duration past cut-off during which late acceptance policy takes effect (e.g. PT30M grace period
+                  before hard REJECT).
+
+                  '
+              description:
+                type: string
+                description: Free-text operational note (e.g. "extended by 1h on Fridays")
+        awbAllocationModel:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'How AWB numbers are allocated. LOG-PARCEL spine. BPP_ASSIGNED (default), BAP_PRE_ALLOCATED (enterprise
+            block), HYBRID.
+
+            '
+          enum:
+          - BPP_ASSIGNED
+          - BAP_PRE_ALLOCATED
+          - HYBRID
+        awbBlockAllocationSupported:
+          type: boolean
+          x-ion-mandatory: optional
+        labelFormatsSupported:
+          type: array
+          x-ion-mandatory: conditional
+          items:
+            type: string
+            enum:
+            - PDF_A4
+            - PDF_A5
+            - PDF_A6
+            - ZPL_100X150
+            - ZPL_100X100
+            - EPL_100X150
+            - PNG_DIGITAL
+            - JSON_FIELDS_ONLY
+        bulkApiSupported:
+          type: boolean
+          x-ion-mandatory: optional
+          description: True if BPP accepts batched /confirm calls
+        maxBulkBatchSize:
+          type: integer
+          x-ion-mandatory: conditional
+        apiRateLimitPerSecond:
+          type: integer
+          x-ion-mandatory: optional
+        apiSlaCommitment:
+          type: object
+          x-ion-mandatory: optional
+          properties:
+            p50LatencyMs:
+              type: integer
+            p99LatencyMs:
+              type: integer
+            uptimeCommitment:
+              type: string
+            statusPushMaxDelayMs:
+              type: integer
+        stateTimingCommitments:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'Per-state maximum dwell time and alert thresholds. Each entry applies to one state in the applicable
+            state machine. When a performance enters a state, BAPs and BPPs use these commitments to compute expected transition
+            times and breach alerts.
+
+            '
+          items:
+            type: object
+            required:
+            - state
+            - maxDwellDuration
+            properties:
+              state:
+                type: string
+                description: 'State name from the spine''s state machine (e.g. "PICKED_UP", "IN_TRANSIT", "AT_ORIGIN_HUB",
+                  "SORTED_AT_DESTINATION").
+
+                  '
+              maxDwellDuration:
+                type: string
+                format: duration
+                description: 'Maximum time the performance should stay in this state before transitioning. ISO 8601 duration
+                  (e.g. PT2H, PT24H, P3D). Exceeding this triggers the alert policy.
+
+                  '
+              alertThresholdDuration:
+                type: string
+                format: duration
+                description: 'Time into the dwell after which an AT_RISK alert is raised (typically 70-80 percent of maxDwellDuration).
+
+                  '
+              alertPolicyIri:
+                type: string
+                format: iri
+                description: 'Optional policy IRI governing escalation when maxDwell is exceeded. If absent, default escalation
+                  is a /support notification with category TRACKING_HELP.
+
+                  '
+              cascadeEffect:
+                type: string
+                enum:
+                - NO_CASCADE
+                - PUSH_ALL_DOWNSTREAM
+                - SLA_BREACH_LIKELY
+                - SLA_BREACH_CERTAIN
+                description: Downstream effect on the rest of the state machine
+              applicableTopology:
+                type: array
+                items:
+                  type: string
+                description: 'If present, this commitment applies only for the listed routing topologies (P2P, P2H2P, P2H2H2P).
+                  Empty = all.
+
+                  '
+              note:
+                type: string
+        overallTatCommitment:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'End-to-end time commitment from PICKED_UP to DELIVERED (or equivalent terminal state per spine). This
+            is the contract-level SLA; stateTimingCommitments are the per-state breakdowns.
+
+            '
+          properties:
+            pickupToDelivery:
+              type: string
+              format: duration
+              description: ISO 8601 duration (e.g. P1D for next-day)
+            measurementBasis:
+              type: string
+              enum:
+              - CALENDAR_TIME
+              - BUSINESS_TIME
+              - OPERATING_HOURS
+            operatingCalendar:
+              type: string
+              enum:
+              - STANDARD_INDONESIAN
+              - BUSINESS_WEEKDAYS_JKT
+              - CUSTOM
+              description: Which calendar governs BUSINESS_TIME measurement
+            onTimeDefinition:
+              type: string
+              description: How on-time is computed (e.g. "actualDelivery <= pickupTime + pickupToDelivery")
+        capacityModel:
+          type: string
+          enum:
+          - PER_CONTAINER
+          - PER_PALLET
+          - PER_CBM
+          - PER_KG
+          - PER_TRUCK
+          - PER_VESSEL_SLOT
+          x-ion-mandatory: conditional
+        consolidationType:
+          type: string
+          enum:
+          - FTL
+          - LTL
+          - FCL
+          - LCL
+          - BULK
+          - BREAK_BULK
+          - PROJECT_CARGO
+          - DRAYAGE
+          - YARD_TRANSFER
+          - CROSS_DOCK
+          - MILK_RUN
+          - OUT_OF_GAUGE
+          - RO_RO_ACCOMPANIED
+          x-ion-mandatory: conditional
+        equipmentType:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'Specialised equipment when consolidationType requires it. Drayage often requires SIDELOADER or TILT_TRAY;
+            project cargo requires LOWBED or MODULAR_TRAILER.
+
+            '
+          enum:
+          - STANDARD_TRAILER
+          - SIDELOADER
+          - TILT_TRAY
+          - FLATBED
+          - LOWBED
+          - MODULAR_TRAILER
+          - TANKER
+          - REEFER_TRAILER
+          - CURTAINSIDE
+          - DOUBLE_STACK_RAIL
+          - CONTAINER_CHASSIS_20FT
+          - CONTAINER_CHASSIS_40FT
+        scheduleType:
+          type: string
+          enum:
+          - REGULAR_SAILING
+          - REGULAR_FLIGHT
+          - AD_HOC
+          - ON_DEMAND
+          x-ion-mandatory: conditional
+        agentAssignmentModel:
+          type: string
+          enum:
+          - PRE_ASSIGNED
+          - POOL_ASSIGNED
+          - FIFO_AT_PICKUP
+          - DEDICATED_FLEET
+          x-ion-mandatory: conditional
+        maxDeliveryRadiusKm:
+          type: number
+          x-ion-mandatory: conditional
+        liveTrackingEnabled:
+          type: boolean
+          x-ion-mandatory: conditional
+        slotsAvailable:
+          x-ion-mandatory: optional
+          type: boolean
+        slotGranularityMinutes:
+          type: integer
+          description: Slot duration in minutes (e.g. 60, 120)
+          x-ion-mandatory: conditional
+        slotWindowsOffered:
+          type: array
+          items:
+            type: object
+            properties:
+              start:
+                type: string
+                format: time
+              end:
+                type: string
+                format: time
+              availableCapacity:
+                type: integer
+          x-ion-mandatory: conditional
+        availableOnCod:
+          type: boolean
+          x-ion-mandatory: always
+        maxCodAmount:
+          type: number
+          x-ion-mandatory: conditional
+        codPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: conditional
+        codVerifiedReceiptOtpRequired:
+          type: boolean
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when availableOnCod=true
+          description: 'When true, an anti-fraud OTP is sent to the buyer separately and must be entered by the rider to confirm
+            cash receipt. Distinct from the delivery OTP.
+
+            '
+        codDenominationsAccepted:
+          type: array
+          x-ion-mandatory: conditional
+          items:
+            type: string
+            enum:
+            - COIN_500
+            - COIN_1000
+            - NOTE_2000
+            - NOTE_5000
+            - NOTE_10000
+            - NOTE_20000
+            - NOTE_50000
+            - NOTE_100000
+          description: 'Currency denominations the rider can accept under this offer. Used when consignees must present close-to-exact
+            amounts.
+
+            '
+        codBuyerDailyLimit:
+          type: number
+          x-ion-mandatory: conditional
+          description: 'Maximum total COD amount accepted from a single consignee per day across all shipments on this offer.
+            Anti-fraud control. Validated at /init.
+
+            '
+        codShipmentLimit:
+          type: number
+          x-ion-mandatory: conditional
+          description: Maximum COD amount per single shipment on this offer.
+        codHoldPeriodDays:
+          type: integer
+          x-ion-mandatory: conditional
+          description: 'Days the LSP holds collected cash before remittance to the BAP. Provides refund buffer for early returns.
+            Typical: 3-5 days.
+
+            '
+        codReconciliationVariance:
+          type: number
+          x-ion-mandatory: conditional
+          description: 'Acceptable variance (fraction) between sum of collected and remitted amounts at batch level — below
+            this, reconciliation passes automatically. Typical: 0.001 (0.1%).
+
+            '
+        maxDeclaredValue:
+          x-ion-mandatory: optional
+          type: number
+          description: Maximum declared value the BPP accepts
+        insurancePolicy:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: ION policy IRI for insurance coverage terms
+        valueAddedServices:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: string
+            enum:
+            - QC
+            - KITTING
+            - LABELLING
+            - PACKAGING
+            - CUSTOM_PACKAGING
+            - RETURNS_PROCESSING
+        storageBillingUnit:
+          type: string
+          enum:
+          - PER_SKU_PER_DAY
+          - PER_CBM_PER_MONTH
+          - PER_PALLET_PER_MONTH
+          x-ion-mandatory: conditional
+        minimumStorageTerm:
+          type: string
+          format: duration
+          x-ion-mandatory: conditional
+        vehicleCategoriesAccepted:
+          type: array
+          items:
+            type: string
+            enum:
+            - PASSENGER_CAR
+            - LIGHT_TRUCK
+            - HEAVY_TRUCK
+            - MOTORCYCLE
+            - TRAILER
+            - BUS
+          x-ion-mandatory: conditional
+        sailingSchedule:
+          type: array
+          items:
+            type: object
+            properties:
+              departurePort:
+                type: string
+              destinationPort:
+                type: string
+              departureTimes:
+                type: array
+                items:
+                  type: string
+                  format: time
+              daysOfWeek:
+                type: array
+                items:
+                  type: string
+          x-ion-mandatory: conditional
+        crossingDuration:
+          type: string
+          format: duration
+          x-ion-mandatory: conditional
+        incotermsSupported:
+          type: array
+          items:
+            type: string
+            enum:
+            - EXW
+            - FCA
+            - FAS
+            - FOB
+            - CFR
+            - CIF
+            - CPT
+            - CIP
+            - DAP
+            - DPU
+            - DDP
+          x-ion-mandatory: conditional
+        dutyAndTaxModel:
+          type: string
+          enum:
+          - DDP_INCLUSIVE
+          - DAP_BUYER_PAYS
+          - DDU_ON_DELIVERY
+          x-ion-mandatory: conditional
+        cancellationPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+        claimPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+        slaPolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+        evidencePolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+        disputePolicy:
+          type: string
+          format: iri
+          x-ion-mandatory: always
+        reAttemptPolicy:
+          x-ion-mandatory: optional
+          type: string
+          format: iri
+          description: Defines max attempts, attempt fees, and auto-RTO rules
+        fwaApplicable:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Whether this offer accepts FWA-governed transactions
+    ION_LogisticsParticipantAddendum:
+      type: object
+      title: Logistics Participant Addendum
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsParticipantAddendum
+      x-beckn-attaches-to: Participant.participantAttributes
+      properties:
+        ppjkLicenceNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=CUSTOMS_BROKER
+          description: 'PPJK (Pengusaha Pengurusan Jasa Kepabeanan) licence number — Indonesian customs-broker licence. Governs
+            who may file customs declarations on behalf of importers/exporters. Only applicable to the CUSTOMS_BROKER role.
+
+            '
+          x-ion-regulatory: PMK 219/PMK.04/2019 tentang PPJK
+        driverLicenceNumber:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=DRIVER (LOG-RORO, LOG-FREIGHT, LOG-HYPERLOCAL)
+          description: SIM (Surat Izin Mengemudi) — Indonesian driving licence number
+        driverLicenceCategory:
+          type: string
+          x-ion-mandatory: conditional
+          x-ion-condition: Required when role=DRIVER
+          enum:
+          - A
+          - B_I
+          - B_II
+          - C
+          - D
+          description: 'SIM category — Indonesian driving licence classes. A: small passenger cars / light commercial. B_I:
+            heavy trucks under 3500kg. B_II: trailer/trucks over 3500kg. C: motorcycles. D: disabled-persons vehicles.
+
+            '
+          x-ion-regulatory: UU 22/2009 LLAJ; Perpol 5/2021
+    ION_LogisticsPerformanceAttributes:
+      type: object
+      title: Logistics Performance Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsPerformanceAttributes
+      x-beckn-attaches-to: Performance.performanceAttributes
+      properties:
+        awbNumber:
+          type: string
+          description: Air waybill or tracking number for parcel services
+          x-ion-mandatory: conditional
+        bookingReference:
+          type: string
+          description: Booking reference for hyperlocal services (replaces AWB)
+          x-ion-mandatory: conditional
+        billOfLadingReference:
+          type: string
+          description: Bill of lading reference for freight
+          x-ion-mandatory: conditional
+        ticketReference:
+          type: string
+          description: Boarding ticket reference for Ro-Ro
+          x-ion-mandatory: conditional
+        storageContractReference:
+          type: string
+          description: Warehouse storage reference number
+          x-ion-mandatory: conditional
+        awbAllocationMode:
+          type: string
+          x-ion-mandatory: conditional
+          description: Which AWB allocation mode was used for this shipment
+          enum:
+          - BPP_ASSIGNED
+          - BAP_PRE_ALLOCATED
+        preAllocatedAwbBlockRef:
+          type: string
+          x-ion-mandatory: conditional
+          description: Reference to the pre-allocated AWB block (BAP_PRE_ALLOCATED mode)
+        pickupModel:
+          type: string
+          x-ion-mandatory: conditional
+          description: Which pickup model BAP chose at /init
+          enum:
+          - SCHEDULED_WINDOW
+          - ON_DEMAND
+          - DAILY_PICKUP
+          - BULK_BATCH
+          - DROP_OFF_AT_COUNTER
+          - SELF_LODGEMENT
+        requestedPickupDate:
+          type: string
+          format: date
+          x-ion-mandatory: conditional
+          description: Requested pickup date (SCHEDULED_WINDOW, DAILY_PICKUP)
+        requestedPickupWindow:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            from:
+              type: string
+              format: time
+            until:
+              type: string
+              format: time
+        confirmedPickupDate:
+          type: string
+          format: date
+          x-ion-mandatory: conditional
+        confirmedPickupWindow:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            from:
+              type: string
+              format: date-time
+            until:
+              type: string
+              format: date-time
+        pickupBatchId:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'Groups multiple shipments under one bulk pickup trip. All shipments sharing the same pickupBatchId
+            are collected by the same rider in one visit. Used for BULK_BATCH pickup model.
+
+            '
+        pickupBatchShipmentCount:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Total shipments in this pickup batch (informational)
+        pickupAgentPointId:
+          type: string
+          x-ion-mandatory: conditional
+          description: Agent point ID where DROP_OFF_AT_COUNTER was lodged
+        pickupLodgementTimestamp:
+          type: string
+          format: date-time
+          x-ion-mandatory: conditional
+          description: When consignor dropped shipment at the agent point / locker
+        appliedCutoffs:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'Per-shipment resolved cut-off deadlines (absolute timestamps). Each entry is one cut-off resolved
+            from the offer''s cutoffs schedule and the actual booking context (vessel voyage, flight number, etc.).
+
+            '
+          items:
+            type: object
+            required:
+            - cutoffType
+            - deadline
+            - status
+            properties:
+              cutoffType:
+                type: string
+                description: Matches the cutoffType enum from offer.cutoffs
+              deadline:
+                type: string
+                format: date-time
+                description: Absolute deadline in UTC
+              status:
+                type: string
+                enum:
+                - UPCOMING
+                - APPROACHING
+                - MET
+                - MISSED
+                - GRACE_PERIOD
+              timeRemaining:
+                type: string
+                format: duration
+                description: ISO 8601 duration from now to deadline (negative if past)
+              lateAcceptancePolicy:
+                type: string
+                enum:
+                - REJECT
+                - NEXT_SAILING_OR_FLIGHT
+                - ACCEPT_WITH_LATE_FEE
+                - ACCEPT_WITH_MANAGER_APPROVAL
+              description:
+                type: string
+        shippingLabelUrl:
+          type: string
+          format: uri
+          x-ion-mandatory: conditional
+        shippingLabelFormat:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - PDF_A4
+          - PDF_A5
+          - PDF_A6
+          - ZPL_100X150
+          - ZPL_100X100
+          - EPL_100X150
+          - PNG_DIGITAL
+          - JSON_FIELDS_ONLY
+        shippingLabelBytes:
+          type: string
+          x-ion-mandatory: conditional
+          description: Base64-encoded raw label bytes for ZPL/EPL direct printing
+        routingTopology:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - P2P
+          - P2H2P
+          - P2H2H2P
+          description: Confirmed routing topology for this shipment
+        estimatedTAT:
+          x-ion-mandatory: optional
+          type: string
+          format: duration
+          description: Estimated time from pickup to delivery
+        estimatedDeliveryTime:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        scheduledDeparture:
+          type: string
+          format: date-time
+          x-ion-mandatory: conditional
+        scheduledArrival:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        pickupTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        deliveryTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        proofOfPickupType:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - OTP
+          - PHOTO
+          - SIGNATURE
+          - BIOMETRIC
+          - NONE
+        proofOfPickup:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            type:
+              type: string
+            value:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            gps:
+              type: string
+            capturedBy:
+              type: string
+        proofOfDeliveryType:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - OTP
+          - PHOTO
+          - SIGNATURE
+          - BIOMETRIC
+          - NONE
+        proofOfDelivery:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            type:
+              type: string
+            value:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            gps:
+              type: string
+            signatory:
+              type: string
+            signatoryRelation:
+              type: string
+        deliveryOtp:
+          type: string
+          x-ion-mandatory: conditional
+        trackingUrl:
+          x-ion-mandatory: optional
+          type: string
+          format: uri
+        liveGps:
+          x-ion-mandatory: optional
+          type: object
+          description: Real-time GPS for LOG-HYPERLOCAL
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+            timestamp:
+              type: string
+              format: date-time
+            accuracy:
+              type: number
+        lastScanTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        lastScanLocation:
+          x-ion-mandatory: optional
+          type: string
+        agentDetails:
+          x-ion-mandatory: optional
+          type: object
+          description: 'Rider or agent identity. Exposed per agentAssignmentModel timing. Phone is always a proxy number.
+
+            '
+          properties:
+            name:
+              type: string
+            phoneProxy:
+              type: string
+            vehicleType:
+              type: string
+            vehiclePlate:
+              type: string
+            photoUrl:
+              type: string
+        hubId:
+          x-ion-mandatory: optional
+          type: string
+          description: Hub identifier for hub-event on_status updates
+        legs:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'Per-leg detail for multi-modal freight journeys. Each leg has its own carrier attribution, booking
+            reference, and status. Required for LOG-FREIGHT and LOG-XB when journey involves multiple carriers (e.g. ocean
+            + inland drayage, air + trucking).
+
+            '
+          items:
+            type: object
+            properties:
+              legId:
+                type: string
+              legSequence:
+                type: integer
+                description: Order of leg in journey (1, 2, 3...)
+              legType:
+                type: string
+                enum:
+                - PRE_CARRIAGE
+                - MAIN_CARRIAGE_OCEAN
+                - MAIN_CARRIAGE_AIR
+                - MAIN_CARRIAGE_ROAD
+                - MAIN_CARRIAGE_RAIL
+                - ON_CARRIAGE
+                - TRANSHIPMENT
+              origin:
+                type: object
+                properties:
+                  locationType:
+                    type: string
+                    enum:
+                    - FACTORY
+                    - WAREHOUSE
+                    - PORT
+                    - AIRPORT
+                    - RAIL_TERMINAL
+                    - CFS
+                    - CY
+                    - YARD
+                  locationCode:
+                    type: string
+                    description: Port code (UN/LOCODE), airport code (IATA), or facility code
+                  address:
+                    type: object
+              destination:
+                type: object
+                properties:
+                  locationType:
+                    type: string
+                  locationCode:
+                    type: string
+                  address:
+                    type: object
+              carrierId:
+                type: string
+                description: ION subscriber ID of the actual performing carrier for this leg
+              carrierName:
+                type: string
+              carrierType:
+                type: string
+                enum:
+                - OCEAN_LINE
+                - AIRLINE
+                - ROAD_CARRIER
+                - RAIL_OPERATOR
+                - RIVER_OPERATOR
+              vesselOrFlightRef:
+                type: string
+                description: Vessel voyage number, flight number, or truck fleet ID
+              subBookingReference:
+                type: string
+                description: Per-leg booking reference from the carrier
+              masterBillReference:
+                type: string
+                description: Master Bill of Lading (ocean) or Master AWB (air) reference
+              houseBillReference:
+                type: string
+                description: House Bill of Lading (forwarder) or House AWB reference
+              scheduledDeparture:
+                type: string
+                format: date-time
+              scheduledArrival:
+                type: string
+                format: date-time
+              actualDeparture:
+                type: string
+                format: date-time
+              actualArrival:
+                type: string
+                format: date-time
+              legStatus:
+                type: string
+                enum:
+                - BOOKED
+                - LOADED
+                - DEPARTED
+                - IN_TRANSIT
+                - TRANSHIPPED
+                - ARRIVED
+                - UNLOADED
+                - COMPLETED
+                - DELAYED
+                - CANCELLED
+              financialAttribution:
+                type: object
+                description: Which participant invoices whom for this leg
+                properties:
+                  billingFromSubscriberId:
+                    type: string
+                  billingToSubscriberId:
+                    type: string
+                  legAmount:
+                    type: number
+                  currency:
+                    type: string
+        temperatureReading:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - celsius
+            timestamp:
+              type: string
+              format: date-time
+            location:
+              type: string
+            deviceId:
+              type: string
+            excursionDetected:
+              type: boolean
+        coldChainIntegrityVerified:
+          x-ion-mandatory: optional
+          type: boolean
+          description: True if temperature was within range throughout the journey
+        actualWeight:
+          x-ion-mandatory: optional
+          type: object
+          description: Weight measured by LSP at pickup or hub (may trigger weight-dispute branch)
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+            measuredAt:
+              type: string
+              enum:
+              - PICKUP
+              - ORIGIN_HUB
+              - DESTINATION_HUB
+            measurementTimestamp:
+              type: string
+              format: date-time
+        reservedCapacity:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            quantity:
+              type: number
+            unit:
+              type: string
+            reservationToken:
+              type: string
+        reservationHoldUntil:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        proposedDeparture:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        requestedDepartureDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+        capacityConfirmed:
+          x-ion-mandatory: optional
+          type: boolean
+        manifestVerified:
+          x-ion-mandatory: optional
+          type: boolean
+          description: True when cargo manifest is verified at loading
+        loadingTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        departureTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        arrivalTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        requestedSailing:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        confirmedSailing:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        boardingWindow:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            until:
+              type: string
+              format: date-time
+        boardingGate:
+          x-ion-mandatory: optional
+          type: string
+        customsHoldReason:
+          x-ion-mandatory: optional
+          type: string
+        customsResolutionPath:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - SUBMIT_DOCS
+          - INSPECTION
+          - PAY_ADDITIONAL_DUTY
+          - RE_EXPORT
+          - DESTROY
+        estimatedClearanceDuration:
+          x-ion-mandatory: optional
+          type: string
+          format: duration
+        attemptNumber:
+          x-ion-mandatory: optional
+          type: integer
+        ndrReasonCode:
+          x-ion-mandatory: optional
+          type: string
+        ndrTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        attemptsRemaining:
+          x-ion-mandatory: optional
+          type: integer
+        buyerResolutionDeadline:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        valueAddedServicesSelected:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: string
+        expectedReceiptDate:
+          x-ion-mandatory: optional
+          type: string
+          format: date
+        inboundReceiptTimestamp:
+          x-ion-mandatory: optional
+          type: string
+          format: date-time
+        receivedQuantities:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: object
+            properties:
+              skuId:
+                type: string
+              receivedQty:
+                type: integer
+              expectedQty:
+                type: integer
+        inboundDiscrepancy:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            hasDiscrepancy:
+              type: boolean
+            discrepancyDetail:
+              type: string
+        pickedSkus:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: object
+            properties:
+              skuId:
+                type: string
+              quantity:
+                type: integer
+        warehouseLocationAllocated:
+          x-ion-mandatory: optional
+          type: string
+        capacityAllocated:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            cbm:
+              type: number
+            pallets:
+              type: integer
+        inboundInstructions:
+          x-ion-mandatory: optional
+          type: string
+        transportContractReference:
+          x-ion-mandatory: optional
+          type: string
+          description: 'Reference to the transport contract created when warehouse dispatches inventory on LOG-PARCEL, LOG-HYPERLOCAL,
+            or LOG-FREIGHT
+
+            '
+        readyToShip:
+          type: boolean
+          x-ion-mandatory: conditional
+          description: 'True when the consignor / warehouse signals the shipment is packed, labelled, and ready for rider
+            pickup.
+
+            '
+        readyToShipTimestamp:
+          type: string
+          format: date-time
+          x-ion-mandatory: conditional
+        readyToShipBy:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - CONSIGNOR
+          - WAREHOUSE_BPP
+          - WAREHOUSE_OPERATOR_STAFF
+          description: Which party raised the RTS signal
+        rtsPickupToken:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'Opaque token included in the RTS signal that the rider must present at pickup (verified against what
+            the warehouse/consignor holds). Provides authentication of the pickup at the handoff moment.
+
+            '
+        parentWarehouseContractRef:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'For transport contracts spawned from a LOG-WAREHOUSE dispatch, reference to the parent warehouse contract.
+            Used to trace the dispatch origin and reconcile warehouse-held inventory.
+
+            '
+        parentWarehouseCommitmentRefs:
+          type: array
+          x-ion-mandatory: conditional
+          description: Specific commitment line IDs from the parent warehouse contract
+          items:
+            type: string
+        dispatchOriginWarehouseBppId:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'ION subscriber ID of the warehouse BPP originating this dispatch. Needed when warehouse BPP and transport
+            BPP are different entities (e.g. warehouse=tokocabang.co.id, transport=jne.co.id).
+
+            '
+        spawnedTransportContractRefs:
+          type: array
+          x-ion-mandatory: conditional
+          description: 'For LOG-WAREHOUSE contracts, list of child transport contract IDs spawned from this storage contract.
+            Populated as each dispatch creates a child contract.
+
+            '
+          items:
+            type: string
+        rtsNotificationRouting:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Routing metadata when the RTS signal must cross BPP boundaries. Warehouse BPP emits /on_status[READY_FOR_PICKUP]
+            on the transport contract (which it does not own) by first notifying ION Gateway, which forwards to the transport
+            BPP.
+
+            '
+          properties:
+            warehouseBppEmits:
+              type: boolean
+              description: 'True when warehouse BPP (parent contract owner) originates the RTS signal on a child contract
+                owned by a different transport BPP.
+
+                '
+            transportBppReceives:
+              type: string
+              description: ION subscriber ID receiving the RTS signal
+            ionGatewayRoutingRequired:
+              type: boolean
+              description: 'True when the RTS message must be routed via ION Gateway because warehouse BPP and transport BPP
+                have no direct subscription relationship.
+
+                '
+            handoffEvidence:
+              type: object
+              description: 'Evidence captured at the BPP-to-BPP handoff, used for accountability when the warehouse-to-transport
+                handoff itself fails (e.g. rider arrived but package wasn''t ready, or transport system didn''t receive the
+                RTS signal).
+
+                '
+              properties:
+                warehouseConfirmedAt:
+                  type: string
+                  format: date-time
+                transportAcknowledgedAt:
+                  type: string
+                  format: date-time
+                rtsAcknowledgementRef:
+                  type: string
+        slaStatus:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - ON_TIME
+          - AT_RISK
+          - BREACHED
+        currentStateTimingStatus:
+          type: object
+          x-ion-mandatory: conditional
+          description: Real-time timing status for the current performance state
+          properties:
+            currentState:
+              type: string
+              description: The state name the performance is currently in
+            enteredAt:
+              type: string
+              format: date-time
+              description: When the current state was entered
+            maxDwellDuration:
+              type: string
+              format: duration
+              description: Committed max dwell from offer.stateTimingCommitments
+            dwellSoFar:
+              type: string
+              format: duration
+              description: Time spent in this state so far
+            timeRemainingInCommitment:
+              type: string
+              format: duration
+              description: maxDwellDuration minus dwellSoFar (negative if breached)
+            alertThresholdDuration:
+              type: string
+              format: duration
+              description: From offer.stateTimingCommitments
+            dwellStatus:
+              type: string
+              enum:
+              - ON_COMMITMENT
+              - AT_RISK
+              - BREACHED
+              - RECOVERED
+            cascadeEffect:
+              type: string
+              enum:
+              - NO_CASCADE
+              - PUSH_ALL_DOWNSTREAM
+              - SLA_BREACH_LIKELY
+              - SLA_BREACH_CERTAIN
+        stateTimingHistory:
+          type: array
+          x-ion-mandatory: optional
+          description: 'Historical record of state dwell durations. Populated progressively as the performance moves through
+            its state machine. One entry per state transition.
+
+            '
+          items:
+            type: object
+            properties:
+              state:
+                type: string
+              enteredAt:
+                type: string
+                format: date-time
+              exitedAt:
+                type: string
+                format: date-time
+              dwellDuration:
+                type: string
+                format: duration
+              maxDwellCommitment:
+                type: string
+                format: duration
+              wasBreached:
+                type: boolean
+              breachDuration:
+                type: string
+                format: duration
+                description: Time past commitment (absent if not breached)
+        sustainabilityReport:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Per-shipment carbon and sustainability metrics. Required for enterprise shippers with CSRD/ISSB disclosure
+            obligations (K+N, DB Schenker, DHL customers). Calculated per GLEC framework.
+
+            '
+          properties:
+            carbonEmissionKgCO2e:
+              type: number
+              description: 'Well-to-wheel greenhouse gas emissions in CO2-equivalent kg. Computed per GLEC (Global Logistics
+                Emissions Council) framework.
+
+                '
+            carbonEmissionCalculationMethod:
+              type: string
+              enum:
+              - GLEC_FRAMEWORK
+              - ISO_14064
+              - EN_16258
+              - EPA_SMARTWAY
+              - OPERATOR_DIRECT
+              - DEFAULT_AVERAGE
+            carbonCalculationScope:
+              type: string
+              enum:
+              - WELL_TO_WHEEL
+              - TANK_TO_WHEEL
+              - WELL_TO_TANK
+            fuelType:
+              type: string
+              enum:
+              - DIESEL
+              - PETROL
+              - LNG
+              - CNG
+              - BIODIESEL
+              - HVO
+              - SAF
+              - ELECTRIC
+              - HYBRID
+              - HYDROGEN
+              - HEAVY_FUEL_OIL
+              - MARINE_GAS_OIL
+              - LOW_SULPHUR_MARINE
+            fuelConsumptionLitres:
+              type: number
+              description: Actual fuel consumption attributed to this shipment
+            safAllocationLitres:
+              type: number
+              description: 'Sustainable Aviation Fuel allocation for this air shipment. Relevant for K+N Airschool Charter
+                and similar SAF-certified programs.
+
+                '
+            carbonOffsetPurchased:
+              type: boolean
+            carbonOffsetRegistryReference:
+              type: string
+              description: Verra, Gold Standard, or CORSIA registry reference
+            carbonOffsetAmountKgCO2e:
+              type: number
+            greenCertification:
+              type: array
+              items:
+                type: string
+                enum:
+                - ISO_14064_CERTIFIED
+                - GLEC_DECLARATION
+                - CORSIA_COMPLIANT
+                - SMARTWAY_PARTNER
+                - GREEN_FREIGHT_ASIA
+                - LEAN_AND_GREEN
+        hygieneProtocolApplied:
+          type: array
+          x-ion-mandatory: optional
+          items:
+            type: string
+            enum:
+            - VEHICLE_SANITIZED
+            - CONTACTLESS_DELIVERY
+            - DRIVER_HEALTH_CHECKED
+            - PPE_WORN
+    ION_LogisticsProviderAttributes:
+      type: object
+      title: Logistics Provider Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsProviderAttributes
+      x-beckn-attaches-to: Provider.providerAttributes
+      properties:
+        catalogVersion:
+          type: string
+          x-ion-mandatory: always
+          description: 'Semver catalog version. Incremented on every catalog publish. BAPs use this to detect changes and
+            trigger allocation recompute.
+
+            '
+        catalogPublishedAt:
+          type: string
+          format: date-time
+          x-ion-mandatory: always
+          description: Timestamp when this catalog version was published
+        catalogValidFrom:
+          type: string
+          format: date-time
+          x-ion-mandatory: always
+          description: 'Timestamp from which this catalog''s offers are bindable. May be in the future for pre-announced rate
+            changes.
+
+            '
+        catalogValidUntil:
+          type: string
+          format: date-time
+          x-ion-mandatory: optional
+          description: 'If present, catalog supersedes at this time. Typically absent — catalog remains valid until a newer
+            version is published.
+
+            '
+        rateCardEffectiveFrom:
+          type: string
+          format: date-time
+          x-ion-mandatory: optional
+          description: 'Sometimes rate card effective date differs from catalog publish date (e.g. publish new rates a week
+            ahead of effective date for transparency).
+
+            '
+        rateCardEffectiveUntil:
+          type: string
+          format: date-time
+          x-ion-mandatory: optional
+        catalogChangelogUrl:
+          type: string
+          format: uri
+          x-ion-mandatory: optional
+          description: URL to human-readable changelog describing what changed vs prior version
+        catalogDeltaReference:
+          type: string
+          x-ion-mandatory: optional
+          description: 'Reference to the prior catalog version. BAPs can request delta from /catalog/pull?from={catalogDeltaReference}
+            to get only changed offers.
+
+            '
+        nibRegistered:
+          type: boolean
+          description: NIB (Nomor Induk Berusaha) business registration status
+          x-ion-mandatory: always
+        nibNumber:
+          type: string
+          description: NIB number for registered logistics entities
+          x-ion-mandatory: conditional
+        siupNumber:
+          type: string
+          description: SIUP (Surat Izin Usaha Perdagangan) trading licence number
+          x-ion-mandatory: conditional
+        alfiMembership:
+          x-ion-mandatory: optional
+          type: boolean
+          description: ALFI (Asosiasi Logistik dan Forwarder Indonesia) member status
+        asperindoMembership:
+          x-ion-mandatory: optional
+          type: boolean
+          description: ASPERINDO (express, postal, logistics association) member status
+        providerCategory:
+          type: string
+          enum:
+          - CARRIER_DIRECT
+          - FREIGHT_FORWARDER
+          - AGGREGATOR
+          - MARKETPLACE_LOGISTICS
+          - 3PL
+          - 4PL
+          - WAREHOUSE_OPERATOR
+          x-ion-mandatory: always
+        aggregatorModel:
+          x-ion-mandatory: optional
+          type: boolean
+          description: True if this BPP aggregates capacity from multiple LSPs
+        spinesSupported:
+          type: array
+          items:
+            type: string
+            enum:
+            - LOG-HYPERLOCAL
+            - LOG-PARCEL
+            - LOG-FREIGHT
+            - LOG-RORO
+            - LOG-XB
+            - LOG-WAREHOUSE
+          x-ion-mandatory: always
+        modesSupported:
+          type: array
+          items:
+            type: string
+            enum:
+            - motorcycle
+            - bicycle
+            - car
+            - van
+            - truck
+            - rail
+            - sea
+            - air
+            - river
+            - ferry
+          x-ion-mandatory: always
+        coverage:
+          type: array
+          description: Geographic coverage declarations
+          items:
+            type: object
+            properties:
+              provinsiCode:
+                type: string
+              cityCode:
+                type: string
+              pincodes:
+                type: array
+                items:
+                  type: string
+              coverageType:
+                type: string
+                enum:
+                - PICKUP
+                - DELIVERY
+                - BOTH
+          x-ion-mandatory: always
+        coldChainCertified:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Cold chain handling capability
+        coldChainTemperatureZones:
+          type: array
+          items:
+            type: string
+            enum:
+            - FROZEN
+            - CHILLED
+            - AMBIENT
+            - CONTROLLED_ROOM
+          x-ion-mandatory: conditional
+        hazmatCertified:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Dangerous goods handling certification
+        hazmatClasses:
+          type: array
+          description: IATA/IMO dangerous goods classes supported
+          items:
+            type: string
+          x-ion-mandatory: conditional
+        highValueCapable:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Capable of handling high-declared-value shipments with enhanced security
+        beaCukaiLicenceNumber:
+          x-ion-mandatory: optional
+          type: string
+          description: PPJK (customs broker) licence for LOG-XB providers
+        operatingHours:
+          type: array
+          items:
+            type: object
+            properties:
+              day:
+                type: string
+                enum:
+                - MON
+                - TUE
+                - WED
+                - THU
+                - FRI
+                - SAT
+                - SUN
+                - PUBLIC_HOLIDAY
+              opens:
+                type: string
+                format: time
+              closes:
+                type: string
+                format: time
+          x-ion-mandatory: always
+        holidayCalendar:
+          x-ion-mandatory: optional
+          type: array
+          description: Dates when no service is provided
+          items:
+            type: string
+            format: date
+        pickupCutoffTimes:
+          x-ion-mandatory: optional
+          type: array
+          description: Latest time to request pickup for same-day or next-day dispatch per corridor
+          items:
+            type: object
+            properties:
+              corridor:
+                type: string
+              serviceLevel:
+                type: string
+              cutoffTime:
+                type: string
+                format: time
+        fleetType:
+          x-ion-mandatory: optional
+          type: array
+          items:
+            type: string
+            enum:
+            - OWN_FLEET
+            - PARTNER_FLEET
+            - CROWDSOURCED
+            - DEDICATED_PARTNER
+        maxDeliveryRadiusKm:
+          x-ion-mandatory: optional
+          type: number
+          description: Maximum service radius for hyperlocal providers
+        warehouseLocations:
+          x-ion-mandatory: optional
+          type: array
+          description: For LOG-WAREHOUSE providers
+          items:
+            type: object
+            properties:
+              locationId:
+                type: string
+              address:
+                type: object
+              warehouseType:
+                type: string
+                enum:
+                - BONDED
+                - NON_BONDED
+                - COLD_STORAGE
+                - FULFILMENT_CENTRE
+                - DARK_STORE
+                - CROSS_DOCK
+              totalCapacityCbm:
+                type: number
+              bondedStatus:
+                type: boolean
+        fwaApplicable:
+          x-ion-mandatory: optional
+          type: boolean
+          description: Whether this provider accepts Framework Agreement-governed transactions
+    ION_LogisticsResourceAttributes:
+      type: object
+      title: Logistics Resource Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsResourceAttributes
+      x-beckn-attaches-to: Resource.resourceAttributes
+      properties:
+        serviceType:
+          type: string
+          enum:
+          - PARCEL
+          - DOCUMENT
+          - FREIGHT
+          - VEHICLE
+          - INVENTORY
+          description: Broad category of what is being moved or stored
+          x-ion-mandatory: always
+        quantity:
+          type: object
+          title: Quantity of this resource
+          additionalProperties: false
+          properties:
+            value:
+              type: number
+              minimum: 1
+            unit:
+              type: string
+              enum:
+              - package
+              - unit
+              - container
+              - pallet
+              - lot
+              - carton
+              - document
+              - vehicle
+              - sku
+              description: Unit of measure appropriate to serviceType
+          required:
+          - value
+          - unit
+          x-ion-mandatory: always
+        weight:
+          type: object
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - gram
+              - kilogram
+              - tonne
+          x-ion-mandatory: conditional
+        dimensions:
+          type: object
+          properties:
+            length:
+              type: number
+            width:
+              type: number
+            height:
+              type: number
+            unit:
+              type: string
+              enum:
+              - centimeter
+              - meter
+          x-ion-mandatory: conditional
+        volumetricWeight:
+          x-ion-mandatory: optional
+          type: object
+          description: Computed by BPP; carried in on_select if applicable
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+            formula:
+              type: string
+        totalVolume:
+          x-ion-mandatory: optional
+          type: object
+          description: For freight bookings
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - cbm
+              - liter
+        declaredValue:
+          x-ion-mandatory: optional
+          type: object
+          properties:
+            amount:
+              type: number
+            currency:
+              type: string
+              default: IDR
+          description: 'Declared value for insurance and liability purposes. Mandatory when insurance is requested or value
+            exceeds the provider''s standard liability cap.
+
+            '
+        insuranceRequested:
+          x-ion-mandatory: optional
+          type: boolean
+        fragile:
+          x-ion-mandatory: optional
+          type: boolean
+        stackable:
+          x-ion-mandatory: optional
+          type: boolean
+        hazmatClass:
+          type: string
+          description: 'IATA/IMO/ADR dangerous goods primary class. See IATA DGR for air, IMO IMDG Code for ocean, UN ADR
+            for road/rail.
+
+            '
+          x-ion-mandatory: conditional
+          enum:
+          - '1.1'
+          - '1.2'
+          - '1.3'
+          - '1.4'
+          - '1.5'
+          - '1.6'
+          - '2.1'
+          - '2.2'
+          - '2.3'
+          - '3'
+          - '4.1'
+          - '4.2'
+          - '4.3'
+          - '5.1'
+          - '5.2'
+          - '6.1'
+          - '6.2'
+          - '7'
+          - '8'
+          - '9'
+        hazmatSubsidiaryClasses:
+          type: array
+          x-ion-mandatory: optional
+          items:
+            type: string
+          description: Additional risk classes for multi-hazard DG
+        hazmatUnNumber:
+          x-ion-mandatory: conditional
+          type: string
+          description: UN number (e.g. "UN1950") — required for all DG shipments
+          pattern: ^UN[0-9]{4}$
+        hazmatPackingGroup:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - I
+          - II
+          - III
+          description: Packing Group per IATA DGR / IMO IMDG
+        hazmatProperShippingName:
+          type: string
+          x-ion-mandatory: conditional
+          description: 'Proper Shipping Name (PSN) as listed in the applicable DGR. Must appear on all documents and outer
+            packaging.
+
+            '
+        hazmatNetQuantityPerPackage:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+              enum:
+              - gram
+              - kilogram
+              - liter
+              - milliliter
+          description: Net quantity of dangerous substance per package
+        hazmatNetExplosiveMass:
+          type: number
+          x-ion-mandatory: conditional
+          description: Net Explosive Mass (NEM/NEQ) in kg — Class 1 only
+        hazmatErgCode:
+          type: string
+          x-ion-mandatory: conditional
+          description: Emergency Response Guide (ERG) code for first responders
+        hazmatSegregationGroup:
+          type: string
+          x-ion-mandatory: conditional
+          description: IMDG segregation group code (for mixed-DG ocean)
+        hazmatPackagingInstruction:
+          type: string
+          x-ion-mandatory: conditional
+          description: IATA PI number or IMDG P code specifying packaging used
+        hazmatPackagingCertification:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            unCertifiedMarking:
+              type: string
+              description: UN specification marking on the packaging
+            manufacturer:
+              type: string
+            certificationDate:
+              type: string
+              format: date
+          description: UN-certified packaging marking details
+        hazmatOverpack:
+          type: boolean
+          x-ion-mandatory: optional
+          description: True if DG packages are combined in an overpack
+        hazmatLimitedQuantityExemption:
+          type: boolean
+          x-ion-mandatory: optional
+          description: Shipment qualifies for LQ exemption (smaller documentation burden)
+        hazmatExceptedQuantityExemption:
+          type: boolean
+          x-ion-mandatory: optional
+          description: Shipment qualifies for EQ exemption
+        hazmatAirTransportCode:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - PAX
+          - CAO
+          - FORBIDDEN_AIR
+          description: 'PAX = allowed on passenger aircraft, CAO = Cargo Aircraft Only, FORBIDDEN_AIR = not allowed by air.
+            Applies to air transport only.
+
+            '
+        hazmatOceanStowageCategory:
+          type: string
+          x-ion-mandatory: conditional
+          enum:
+          - A
+          - B
+          - C
+          - D
+          - E
+          description: IMDG stowage category — applies to ocean transport
+        hazmatShippersDeclaration:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            documentReference:
+              type: string
+              description: Reference to the Shipper's Declaration for Dangerous Goods
+            documentUrl:
+              type: string
+              format: uri
+            signatoryName:
+              type: string
+            signedAt:
+              type: string
+              format: date-time
+        lithiumBattery:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Lithium battery-specific fields — mandatory when UN3480/UN3481/UN3090/UN3091 is declared. Additional
+            to standard hazmat fields.
+
+            '
+          properties:
+            chemistry:
+              type: string
+              enum:
+              - LITHIUM_ION
+              - LITHIUM_METAL
+              - LITHIUM_POLYMER
+            wattHourRating:
+              type: number
+              description: Per cell Wh rating
+            lithiumContentGrams:
+              type: number
+              description: For metal Li only
+            stateOfCharge:
+              type: number
+              description: Fractional SoC — required for air, must be ≤0.30 per IATA
+            configuration:
+              type: string
+              enum:
+              - STANDALONE
+              - PACKED_WITH_EQUIPMENT
+              - CONTAINED_IN_EQUIPMENT
+            section:
+              type: string
+              enum:
+              - SECTION_I
+              - SECTION_IA
+              - SECTION_IB
+              - SECTION_II
+              description: IATA PI section classification
+        temperatureRequirement:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            controlled:
+              type: boolean
+            minTempC:
+              type: number
+            maxTempC:
+              type: number
+            category:
+              type: string
+              enum:
+              - FROZEN
+              - CHILLED
+              - AMBIENT
+              - CONTROLLED_ROOM
+        productCategory:
+          x-ion-mandatory: optional
+          type: string
+          description: Product category for classification (Grocery, Electronics, Pharma, etc.)
+          enum:
+          - GROCERY
+          - FOOD_AND_BEVERAGE
+          - FASHION
+          - ELECTRONICS
+          - BEAUTY
+          - PHARMA
+          - AGRITECH
+          - INDUSTRIAL
+          - AUTOMOTIVE
+          - CHEMICALS
+          - HAZMAT
+          - HIGH_VALUE
+          - DOCUMENTS
+          - OTHER
+        hsCodes:
+          type: array
+          items:
+            type: string
+          description: Harmonised System codes for cross-border shipments
+          x-ion-mandatory: conditional
+        commercialInvoice:
+          x-ion-mandatory: optional
+          type: object
+          description: For LOG-XB
+          properties:
+            invoiceNumber:
+              type: string
+            invoiceDate:
+              type: string
+              format: date
+            invoiceValue:
+              type: number
+            currency:
+              type: string
+            invoiceUrl:
+              type: string
+              format: uri
+        certificateOfOrigin:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            certificateNumber:
+              type: string
+            certificateType:
+              type: string
+              enum:
+              - NON_PREFERENTIAL
+              - PREFERENTIAL_AANZFTA
+              - PREFERENTIAL_ACFTA
+              - PREFERENTIAL_AKFTA
+              - PREFERENTIAL_AIFTA
+              - PREFERENTIAL_AJCEP
+              - PREFERENTIAL_RCEP
+              - PREFERENTIAL_IJEPA
+              - PREFERENTIAL_ICFTA
+              - PREFERENTIAL_OTHER
+              description: 'Preferential certificate under trade agreement enables duty reduction. AANZFTA=ASEAN-Australia-NZ,
+                ACFTA=ASEAN-China, RCEP=Regional Comprehensive Economic Partnership, IJEPA=Indonesia-Japan EPA, ICFTA=Indonesia-Chile
+                FTA.
+
+                '
+            form:
+              type: string
+              enum:
+              - FORM_E
+              - FORM_AK
+              - FORM_AI
+              - FORM_D
+              - FORM_AANZ
+              - FORM_AJ
+              - FORM_RCEP
+              - FORM_IJEPA
+              - FORM_GENERAL
+              description: CoO form number
+            issuingAuthority:
+              type: string
+            documentUrl:
+              type: string
+              format: uri
+        packingList:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            documentUrl:
+              type: string
+              format: uri
+        importLicence:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            licenceNumber:
+              type: string
+            validUntil:
+              type: string
+              format: date
+        cargoDescription:
+          x-ion-mandatory: optional
+          type: string
+          description: Detailed cargo description for freight manifests
+        cargoManifest:
+          x-ion-mandatory: optional
+          type: array
+          description: Line-level cargo manifest for freight
+          items:
+            type: object
+            properties:
+              lineId:
+                type: string
+              description:
+                type: string
+              quantity:
+                type: number
+              unitWeight:
+                type: number
+              hsCode:
+                type: string
+        packagingType:
+          x-ion-mandatory: optional
+          type: string
+          enum:
+          - CARTON
+          - PALLET
+          - CRATE
+          - DRUM
+          - BULK
+          - ROLL
+          - OTHER
+        vehicleDetails:
+          type: object
+          x-ion-mandatory: conditional
+          properties:
+            category:
+              type: string
+              enum:
+              - PASSENGER_CAR
+              - LIGHT_TRUCK
+              - HEAVY_TRUCK
+              - MOTORCYCLE
+              - TRAILER
+              - BUS
+              - SPECIAL
+            make:
+              type: string
+            model:
+              type: string
+            year:
+              type: integer
+            lengthM:
+              type: number
+            widthM:
+              type: number
+            heightM:
+              type: number
+            weightKg:
+              type: number
+        vehicleRegistration:
+          type: string
+          description: Vehicle registration plate number
+          x-ion-mandatory: conditional
+        skuCount:
+          type: integer
+          description: Number of distinct SKUs
+          x-ion-mandatory: conditional
+        storageCategory:
+          type: string
+          enum:
+          - AMBIENT
+          - CHILLED
+          - FROZEN
+          - HIGH_VALUE
+          - HAZMAT
+          - OVERSIZED
+          x-ion-mandatory: conditional
+        skuManifest:
+          x-ion-mandatory: optional
+          type: array
+          description: Per-SKU details for warehouse inbound
+          items:
+            type: object
+            properties:
+              skuId:
+                type: string
+              description:
+                type: string
+              quantity:
+                type: integer
+              unitWeightKg:
+                type: number
+              unitVolumeCbm:
+                type: number
+              expiryDate:
+                type: string
+                format: date
+        maxWeight:
+          x-ion-mandatory: optional
+          type: object
+          description: Maximum shipment weight the BPP accepts. Published in catalog.
+          properties:
+            value:
+              type: number
+            unit:
+              type: string
+        maxDimensions:
+          x-ion-mandatory: conditional
+          type: object
+          description: Maximum shipment dimensions the BPP accepts. Published in catalog.
+          properties:
+            length:
+              type: number
+            width:
+              type: number
+            height:
+              type: number
+            unit:
+              type: string
+    ION_LogisticsTrackingAttributes:
+      type: object
+      title: Logistics Tracking Attributes
+      additionalProperties: false
+      x-jsonld:
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsTrackingAttributes
+      x-beckn-attaches-to: Tracking.trackingAttributes
+      properties:
+        trackingType:
+          type: string
+          x-ion-mandatory: always
+          enum:
+          - LIVE_GPS
+          - AWB_URL
+          - WEBHOOK
+          - WEBSOCKET
+          - POLLING_API
+          description: 'Mode of tracking offered. LIVE_GPS for hyperlocal real-time position. AWB_URL for parcel tracking
+            on carrier''s own website. WEBHOOK for event-driven push. WEBSOCKET for bidirectional streaming. POLLING_API for
+            request/response status queries.
+
+            '
+        refreshIntervalSeconds:
+          type: integer
+          x-ion-mandatory: conditional
+          description: 'Recommended polling interval for LIVE_GPS and POLLING_API modes. Typical: 5-15 seconds for hyperlocal,
+            60+ for parcel.
+
+            '
+        credentials:
+          type: object
+          x-ion-mandatory: conditional
+          description: Authentication for WEBSOCKET or authenticated webhook
+          properties:
+            type:
+              type: string
+              enum:
+              - BEARER_TOKEN
+              - API_KEY
+              - SIGNED_URL_PARAM
+            value:
+              type: string
+            validUntil:
+              type: string
+              format: date-time
+        webhookEvents:
+          type: array
+          x-ion-mandatory: conditional
+          description: Events the BPP will push to webhook (if trackingType=WEBHOOK)
+          items:
+            type: string
+            enum:
+            - STATE_CHANGE
+            - LOCATION_UPDATE
+            - SLA_BREACH_IMMINENT
+            - EXCEPTION
+            - DELIVERY_COMPLETE
+        currentLocation:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Last known location snapshot at time of /on_track response. Primarily for LIVE_GPS.
+
+            '
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+            timestamp:
+              type: string
+              format: date-time
+            accuracyMeters:
+              type: number
+            heading:
+              type: number
+              description: Degrees from true north
+            speedKmh:
+              type: number
+        etaMinutes:
+          type: integer
+          x-ion-mandatory: conditional
+          description: Current ETA to next waypoint or destination
+        routePolyline:
+          type: string
+          x-ion-mandatory: optional
+          description: Encoded polyline of planned route (Google-style encoding)
+        agentDetails:
+          type: object
+          x-ion-mandatory: conditional
+          description: 'Agent details exposed based on offer.agentAssignmentModel and current performance state.
+
+            '
+          properties:
+            name:
+              type: string
+            phone:
+              type: string
+              description: Masked proxy phone, never real number
+            vehicleType:
+              type: string
+            vehiclePlate:
+              type: string
+            photoUrl:
+              type: string
+              format: uri
+            languagesSpoken:
+              type: array
+              items:
+                type: string
+        trackingHandoffToCarrier:
+          type: boolean
+          x-ion-mandatory: optional
+          description: 'True if tracking URL redirects to carrier''s own tracking page (common for LOG-PARCEL where AWB is
+            carrier-native).
+
+            '
+        carrierTrackingUrlPattern:
+          type: string
+          x-ion-mandatory: optional
+          description: 'URL template for AWB_URL tracking. E.g. "https://jne.co.id/tracking?awb={awbNumber}"
+
+            '
     ION_TradeCommitmentAttributes:
       type: object
       title: Trade Commitment Attributes
@@ -5500,26 +9755,29 @@ components:
           type: number
           minimum: 0
           maximum: 1
-          description: 'PPN (Pajak Pertambahan Nilai) rate applied to this consideration line. Standard rate is 0.11 (11%).
-            Some categories (basic foods, books, health services) may have reduced or zero rates.
+          description: 'PPN (Pajak Pertambahan Nilai) rate applied to this consideration line. The applicable rate MUST be
+            sourced from current Indonesian tax regulation (DJP / PMK), not hardcoded. Current PPN standard is 0.11 (11%)
+            per PMK 131/2024 under UU 7/2021 HPP; some categories (basic foods, books, health services) have reduced or zero
+            rates.
 
             '
           example: 0.11
           x-ion-mandatory: conditional
           x-ion-condition: Required on TAX consideration lines
-          x-ion-regulatory: UU 7/2021 tentang Harmonisasi Peraturan Perpajakan (HPP); PMK 62/2022
+          x-ion-regulatory: UU 7/2021 HPP; PMK 131/2024 (or current applicable PMK)
         ppnbmRate:
           type: number
           minimum: 0
           maximum: 1
-          description: 'PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods. Applied in addition to PPN. Rates
-            vary by luxury category. Common rates: 0.10, 0.20, 0.30, 0.40, 0.50, 0.75, 1.25.
+          description: 'PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods. Applied in addition to PPN. Applicable
+            rate MUST be sourced from current regulation (rates vary by luxury category — check DJP for the applicable schedule
+            under PMK 141/2021 and later).
 
             '
           example: 0.2
           x-ion-mandatory: conditional
           x-ion-condition: Required on PPNBM consideration lines for luxury goods
-          x-ion-regulatory: UU 42/2009 tentang PPN dan PPnBM; PMK 141/2021
+          x-ion-regulatory: UU 42/2009 tentang PPN dan PPnBM; current applicable PMK
         discountType:
           type: string
           enum:
@@ -7602,6 +11860,34 @@ components:
         '@type': ion:TradeResourceAttributes
       x-beckn-attaches-to: Resource.resourceAttributes
       properties:
+        quantity:
+          type: object
+          title: Quantity of this resource on the order line
+          additionalProperties: false
+          properties:
+            value:
+              type: number
+              minimum: 0
+              description: Numeric quantity — may be fractional for weight-based goods
+            unit:
+              type: string
+              enum:
+              - piece
+              - pack
+              - box
+              - carton
+              - kilogram
+              - gram
+              - litre
+              - millilitre
+              - subscription
+              - voucher
+              - topup
+              description: Unit of measure appropriate to what is being ordered
+          required:
+          - value
+          - unit
+          x-ion-mandatory: always
         resourceStructure:
           type: string
           enum:
@@ -9060,12 +13346,16 @@ x-ion-profile:
   catalogPublishingService: https://catalog.ion.id
   discoverService: https://discover.ion.id
 x-ion-compatibility:
-  profileVersion: 0.5.1-draft
-  becknCore: 2.0.1
+  profileVersion: 0.5.2-draft
+  becknCore: 2.0.0
+  becknCoreUpstreamTag: core-v2.0.0-rc1
+  becknCoreUpstreamRepo: https://github.com/beckn/protocol-specifications-v2
+  becknCoreStatus: RELEASE_CANDIDATE
   schemaPacks:
     core/address: v1
     core/identity: v1
     core/localization: v1
+    core/participant: v1
     core/payment: v1
     core/product: v1
     core/raise: v1
@@ -9081,6 +13371,16 @@ x-ion-compatibility:
     trade/performance-states: v1
     trade/provider: v1
     trade/resource: v1
+    logistics/commitment: v1
+    logistics/consideration: v1
+    logistics/contract: v1
+    logistics/offer: v1
+    logistics/participant-logistics: v1
+    logistics/performance: v1
+    logistics/performance-states: v1
+    logistics/provider: v1
+    logistics/resource: v1
+    logistics/tracking: v1
   policies:
     return: v1
     cancellation: v1
@@ -9089,6 +13389,15 @@ x-ion-compatibility:
     grievance-sla: v1
     payment-terms: v1
     penalty: v1
+    evidence: v1
+    insurance: v1
+    sla: v1
+    re-attempt: v1
+    weight-dispute: v1
+    liability: v1
+    incident: v1
+    rts-handoff: v1
+    logistics-fwa: v1
   errors:
     registry: v1
     minCode: ION-1001
@@ -9106,7 +13415,55 @@ x-ion-compatibility:
     AUC-R: 1.0.0
     XB: 1.0.0
     B2G: 1.0.0
+    LOG-HYPERLOCAL: 1.0.0
+    LOG-PARCEL: 1.0.0
+    LOG-FREIGHT: 1.0.0
+    LOG-RORO: 1.0.0
+    LOG-XB: 1.0.0
+    LOG-WAREHOUSE: 1.0.0
   upgradeNoticePeriodDays: 90
+x-ion-sectors:
+  active:
+  - trade
+  - logistics
+  reserved:
+  - mobility
+  - finance
+  - tourism
+  - healthcare
+x-ion-context-extensions:
+  status: EXPERIMENTAL
+  mandatoryFrom: 0.6.0 (tentative — pending Council ratification)
+  optionalIn: 0.5.2
+  fields:
+    spine:
+      type: string
+      description: 'Spine code claimed by this transaction (e.g. B2C-SF, LOG-PARCEL). Enables deterministic flow validation
+        at ION Central.
+
+        '
+      example: LOG-PARCEL
+    spineVersion:
+      type: string
+      description: Spine version in force for this transaction
+      example: 1.0.0
+    activeBranches:
+      type: array
+      description: 'Branch families currently active for this transaction (e.g. ["cold-chain", "cod", "weight-dispute"]).
+        Tells ION Central which conditional flow rules apply.
+
+        '
+      items:
+        type: string
+    policyIris:
+      type: array
+      description: 'Snapshot of policy IRIs applicable to this transaction. Lets ION Central enforce the exact terms declared
+        at contract time even if the registry is later updated.
+
+        '
+      items:
+        type: string
+        format: iri
 x-ion-localization:
   country: ID
   defaultCurrency: IDR
@@ -9131,39 +13488,78 @@ x-ion-security:
     algorithm: ed25519
   digest:
     algorithm: BLAKE2b-512
+    wireToken: BLAKE-512
+    digestLinePattern: ^BLAKE-512=[A-Za-z0-9+/]+=*$
   clockSkewToleranceSeconds: 30
+x-ion-semantic-model:
+  currentAuthoritative: openapi
+  targetAuthoritative: json-ld
+  transitionPlan: docs/ION_Semantic_Model_Transition.md
+  vocabularyRoot: https://schema.ion.id/
+  urlPattern:
+    packRoot: https://schema.ion.id/{layer}/{pack}/{version}/
+    termIri: https://schema.ion.id/{layer}/{pack}/{version}#{term}
+    contextJson: https://schema.ion.id/{layer}/{pack}/{version}/context.jsonld
+    vocabJson: https://schema.ion.id/{layer}/{pack}/{version}/vocab.jsonld
+    openapiYaml: https://schema.ion.id/{layer}/{pack}/{version}/attributes.yaml
+    humanHtml: https://schema.ion.id/{layer}/{pack}/{version}/
+  contentNegotiation:
+    application/ld+json: context.jsonld (or vocab.jsonld under /vocab path)
+    application/json: context.jsonld
+    application/yaml: attributes.yaml
+    text/turtle: vocab.ttl (v0.6+)
+    text/html: index.html (human-readable rendering)
+    default: text/html
+  allowedContexts:
+  - prefix: ion
+    namespace: https://schema.ion.id/
+    description: ION's own vocabulary (extension attribute types, policies, states, error categories)
+    status: authoritative
+  - prefix: beckn
+    namespace: https://spec.beckn.io/vocab/v2.0.0#
+    description: Beckn core transport and object-model types
+    status: authoritative
+  crossNetworkMappings:
+    status: none-ratified-yet
+    publishedUnder: https://schema.ion.id/mappings/
+    ratificationRequired: true
 x-ion-actions:
   mandatory:
-    bpp:
-    - publish_catalog
-    - on_select
-    - on_init
-    - on_confirm
-    - on_status
-    - on_cancel
-    - on_support
-    bap:
-    - subscribe
-    - select
-    - init
-    - confirm
-    - status
-    - support
+    becknNative:
+      bpp:
+      - publish_catalog
+      - on_select
+      - on_init
+      - on_confirm
+      - on_status
+      - on_cancel
+      - on_support
+      bap:
+      - subscribe
+      - select
+      - init
+      - confirm
+      - status
+      - support
   optional:
-  - track
-  - on_track
-  - update
-  - on_update
-  - rate
-  - on_rate
-  - reconcile
-  - on_reconcile
-  - raise
-  - on_raise
-  - raise_status
-  - on_raise_status
-  - raise_details
-  - on_raise_details
+    becknNative:
+    - track
+    - on_track
+    - update
+    - on_update
+    - rate
+    - on_rate
+  ionExtensions:
+    ref: ./ion-endpoints.yaml
+    endpoints:
+    - raise
+    - on_raise
+    - raise_status
+    - on_raise_status
+    - raise_details
+    - on_raise_details
+    - reconcile
+    - on_reconcile
 x-ion-catalog:
   publish:
     requiredForBpp: true
@@ -9188,28 +13584,41 @@ x-ion-settlement:
   - BPP
   - LSP
 x-ion-conformance:
-  protocolVersion: 2.0.1
-  ionProfileVersion: 0.5.1-draft
+  protocolVersion: 2.0.0
+  ionProfileVersion: 0.5.2-draft
   schemaPackMatrix:
     core:
     - address/v1
     - identity/v1
-    - payment/v1
-    - tax/v1
     - localization/v1
+    - participant/v1
+    - payment/v1
     - product/v1
-    - support/v1
     - raise/v1
     - rating/v1
     - reconcile/v1
+    - support/v1
+    - tax/v1
     trade:
+    - commitment/v1
+    - consideration/v1
+    - contract/v1
+    - offer/v1
+    - performance/v1
+    - performance-states/v1
     - provider/v1
     - resource/v1
-    - offer/v1
-    - consideration/v1
-    - performance/v1
-    - contract/v1
+    logistics:
     - commitment/v1
+    - consideration/v1
+    - contract/v1
+    - offer/v1
+    - participant-logistics/v1
+    - performance/v1
+    - performance-states/v1
+    - provider/v1
+    - resource/v1
+    - tracking/v1
 x-ion-policy-registry:
   description: 'ION Policy Terms Registry. Policy IRIs are the authoritative source of policy semantics across the network.
     Each offer declares IRIs; ION Central resolves to the terms document and enforces at every API boundary.
@@ -9225,6 +13634,15 @@ x-ion-policy-registry:
   - GRIEVANCE_SLA
   - PAYMENT_TERMS
   - PENALTY
+  - EVIDENCE
+  - INSURANCE
+  - SLA
+  - RE_ATTEMPT
+  - WEIGHT_DISPUTE
+  - LIABILITY
+  - INCIDENT
+  - RTS_HANDOFF
+  - LOGISTICS_FWA
   currentRegistryVersion: 1.0.0
   versionUpgradeModel: SINGLE_VERSION_WITH_90D_NOTICE
   customAddendumAllowed: true

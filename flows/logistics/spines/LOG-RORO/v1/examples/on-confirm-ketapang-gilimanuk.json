@@ -1,0 +1,162 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "on_confirm",
+    "transactionId": "txn-roro-001",
+    "messageId": "msg-roro-onconf-001",
+    "bapId": "puninar.co.id",
+    "bppId": "asdp.co.id",
+    "timestamp": "2026-04-22T07:00:00.000Z",
+    "version": "2.0.0",
+    "networkId": "ion.id/logistics"
+  },
+  "message": {
+    "contract": {
+      "id": "asdp-roro-20260422-001",
+      "status": {
+        "code": "ACTIVE"
+      },
+      "participants": [
+        {
+          "id": "asdp-main",
+          "descriptor": {
+            "name": "ASDP Indonesia Ferry"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "PROVIDER"
+          }
+        },
+        {
+          "id": "puninar-fleet-001",
+          "organization": {
+            "name": "PT Puninar Logistics"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNOR"
+          },
+          "descriptor": {
+            "name": "puninar-fleet-001"
+          }
+        },
+        {
+          "id": "driver-001",
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "DRIVER"
+          },
+          "descriptor": {
+            "name": "driver-001"
+          }
+        }
+      ],
+      "commitments": [
+        {
+          "id": "cmt-roro-001",
+          "commitmentAttributes": {
+            "lineId": "L1",
+            "resourceId": "asdp-truck-slot",
+            "vehicleRegistration": "B 9999 ZZZ",
+            "capacityUnits": 1,
+            "capacityUnitType": "truck",
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes"
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "perf-roro-001",
+          "status": {
+            "descriptor": {
+              "code": "TICKET_ISSUED"
+            }
+          },
+          "performanceAttributes": {
+            "ticketReference": "ASDP-KTG-GIL-20260423-0600-001",
+            "boardingGate": "Gate 3 \u2014 Heavy Vehicle",
+            "scheduledDeparture": "2026-04-23T06:00:00.000Z",
+            "scheduledArrival": "2026-04-23T06:45:00.000Z",
+            "confirmedSailing": "2026-04-23T06:00:00.000Z",
+            "boardingWindow": {
+              "from": "2026-04-23T04:30:00.000Z",
+              "until": "2026-04-23T05:45:00.000Z"
+            },
+            "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
+            "@type": "ion:LogisticsPerformanceAttributes"
+          },
+          "stops": [
+            {
+              "type": "START",
+              "location": {
+                "address": {
+                  "name": "Pelabuhan Ketapang",
+                  "city": "Banyuwangi",
+                  "area_code": "68461"
+                }
+              }
+            },
+            {
+              "type": "END",
+              "location": {
+                "address": {
+                  "name": "Pelabuhan Gilimanuk",
+                  "city": "Jembrana, Bali",
+                  "area_code": "82252"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "consideration": [
+        {
+          "considerationAttributes": {
+            "breakup": [
+              {
+                "titleType": "FREIGHT_BASE",
+                "amount": 350000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "PPN_TAX",
+                "amount": 38500,
+                "currency": "IDR",
+                "ppnRate": 0.11
+              }
+            ],
+            "totalAmount": 388500,
+            "currency": "IDR",
+            "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
+            "@type": "ion:LogisticsConsiderationAttributes"
+          },
+          "id": "cons-001"
+        }
+      ],
+      "settlements": [
+        {
+          "settlementAttributes": {
+            "status": "PAID",
+            "method": "QRIS",
+            "collectedBy": "BAP",
+            "@context": "https://schema.ion.id/logistics/v1/payment/context.jsonld",
+            "@type": "ion:LogisticsPaymentAttributes"
+          },
+          "status": "COMMITTED"
+        }
+      ],
+      "contractAttributes": {
+        "npwp": "03.456.789.0-000.000",
+        "invoicePreferences": {
+          "fakturaRequired": false
+        },
+        "@context": "https://schema.ion.id/logistics/v1/contract/context.jsonld",
+        "@type": "ion:LogisticsContractAttributes"
+      }
+    }
+  }
+}

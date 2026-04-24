@@ -1,0 +1,9 @@
+{
+  "id": "ion-logistics-commitment-v1",
+  "version": "1.0.0",
+  "status": "ready",
+  "sectorCode": "B",
+  "attaches-to": "beckn:commitment Attributes",
+  "maintainer": "ION Council — Sector B Lead",
+  "specVersion": "0.5.1-draft"
+}

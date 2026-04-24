@@ -1,0 +1,243 @@
+# ION Logistics Flow - Warehouse (LOG-WAREHOUSE) Spine v1
+# NOT OAS. ION flow specification document.
+# Fundamentally different from transport spines. Inventory lifecycle, not transit.
+
+id: ion-logistics-LOG-WAREHOUSE-v1
+version: "1.0.0"
+pattern: Warehousing and Fulfilment
+sectorCode: B
+status: ready
+description: >
+  Storage and fulfilment services. Covers bonded and non-bonded warehousing,
+  fulfilment-by-marketplace (TokoCabang, Shopee SLS, Lazada LEX), local
+  fulfilment centres, dark stores for quick commerce, cold storage, and
+  value-added logistics services (QC, kitting, labelling, packaging).
+  
+  This is NOT a transport flow. The resource is inventory (SKUs with
+  quantities); the state machine is inventory lifecycle (received, stored,
+  picked, dispatched, released); the commercial model is per-SKU-per-day
+  or per-cubic-metre-per-month. Dispatching triggers a separate transport
+  contract on LOG-PARCEL, LOG-HYPERLOCAL, or LOG-FREIGHT.
+
+participants:
+  BAP: Buyer App Platform (merchant or marketplace)
+  BPP: Buyer Price Provider (warehouse operator)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+deltaFromTransportSpines:
+  - Resource is inventory (SKUs + quantities), not shipments in transit
+  - No destination at booking time — destinations emerge with fulfilment requests
+  - Commercial model is per-SKU-per-day, per-cbm-per-month, or per-pallet-per-month
+  - State machine is inventory lifecycle (RECEIVED, STORED, PICKED, DISPATCHED, RELEASED)
+  - Dispatching triggers a NEW transport contract on a transport spine
+  - Value-added services (QC, kitting, labelling) attach as branches during storage
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        description: Warehouse capabilities and storage offerings published to ION Catalogue Service.
+        requiredFields:
+          - context.domain
+          - context.bppId
+          - context.timestamp
+          - message.catalog.providers[].id
+          - message.catalog.providers[].descriptor.name
+          - message.catalog.providers[].providerAttributes.nibRegistered
+          - message.catalog.providers[].providerAttributes.warehouseLocations[]
+          - message.catalog.providers[].providerAttributes.warehouseType
+          - message.catalog.providers[].providerAttributes.totalCapacity
+          - message.catalog.providers[].providerAttributes.bondedStatus
+          - message.catalog.providers[].items[].id
+          - message.catalog.providers[].items[].resourceAttributes.storageType
+          - message.catalog.providers[].offers[].id
+          - message.catalog.providers[].offers[].offerAttributes.storageBillingUnit
+          - message.catalog.providers[].offers[].offerAttributes.minimumStorageTerm
+          - message.catalog.providers[].offers[].offerAttributes.valueAddedServices[]
+        conditionalFields:
+          - field: message.catalog.providers[].providerAttributes.coldStorageCapacity
+            condition: required if cold storage supported
+          - field: message.catalog.providers[].providerAttributes.hazmatStorageCapability
+            condition: required if hazmat storage supported
+          - field: message.catalog.providers[].offers[].offerAttributes.pickPackFee
+            condition: required when offering fulfilment (not pure storage)
+          - field: message.catalog.providers[].offers[].offerAttributes.fbaEquivalentModel
+            condition: required for fulfilment-by-marketplace offerings
+
+      - step: on_discover
+        from: ION_CATALOG
+        to: BAP
+        direction: push
+
+  phase2:
+    name: Storage Contract Setup
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP requests storage offer for specific SKU inventory — volume,
+          duration, services required. Typically transacted under an active
+          FWA for enterprise marketplaces.
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - context.domain
+          - context.bapId
+          - context.bppId
+          - context.timestamp
+          - message.contract.commitments[].resources[].resourceAttributes.skuCount
+          - message.contract.commitments[].resources[].resourceAttributes.totalVolume
+          - message.contract.commitments[].resources[].resourceAttributes.storageCategory
+          - message.contract.performance[].performanceAttributes.requestedStorageDuration
+        conditionalFields:
+          - field: message.contract.contractAttributes.fwaReference
+            condition: required when transacting under an FWA
+          - field: message.contract.commitments[].resources[].resourceAttributes.temperatureRequirement
+            condition: required for cold storage
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP confirms capacity, returns quote.
+        requiredFields:
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+          - message.contract.performance[].performanceAttributes.capacityAllocated
+          - message.contract.performance[].performanceAttributes.warehouseLocationAllocated
+
+      - step: init
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP provides SKU-level manifest and value-added service selections.
+        requiredFields:
+          - message.contract.commitments[].resources[].resourceAttributes.skuManifest[]
+          - message.contract.performance[].performanceAttributes.valueAddedServicesSelected[]
+          - message.contract.performance[].performanceAttributes.expectedReceiptDate
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail[]
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        direction: request
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP creates storage contract. Returns warehouse reference, bay assignments.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.performance[].id
+          - message.contract.performance[].performanceAttributes.storageContractReference
+          - message.contract.performance[].performanceAttributes.inboundInstructions
+
+  phase3:
+    name: Inventory Lifecycle
+    communication: BPP pushes unsolicited
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#warehouse-inventory
+    steps:
+      - step: on_status
+        trigger: INBOUND_EXPECTED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: INBOUND_RECEIVED
+        from: BPP
+        to: BAP
+        description: Inventory received at warehouse. Counted and verified against manifest.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.inboundReceiptTimestamp
+          - message.contract.performance[].performanceAttributes.receivedQuantities[]
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.inboundDiscrepancy
+            condition: required if received quantity differs from manifest
+
+      - step: on_status
+        trigger: QC_IN_PROGRESS
+        from: BPP
+        to: BAP
+        description: If vas-qc branch is active.
+
+      - step: on_status
+        trigger: STORED
+        from: BPP
+        to: BAP
+        description: Inventory put away. Storage billing commences.
+
+      - step: on_status
+        trigger: FULFILMENT_REQUEST_RECEIVED
+        from: BPP
+        to: BAP
+        direction: solicited
+        description: >
+          BAP sends /update with a fulfilment request: specific SKUs,
+          quantities, destination. This spawns a new transport contract.
+
+      - step: on_status
+        trigger: PICKED
+        from: BPP
+        to: BAP
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.pickedSkus[]
+
+      - step: on_status
+        trigger: PACKED
+        from: BPP
+        to: BAP
+
+      - step: on_status
+        trigger: DISPATCHED
+        from: BPP
+        to: BAP
+        description: >
+          Outbound shipment handed to transport LSP. A new contract is
+          created on LOG-HYPERLOCAL, LOG-PARCEL, or LOG-FREIGHT. The
+          transport contract references this warehouse contract via
+          contractAttributes.parentContractReference.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.transportContractReference
+
+      - step: on_status
+        trigger: INVENTORY_RELEASED
+        from: BPP
+        to: BAP
+        description: All inventory dispatched or withdrawn. Storage contract COMPLETE.
+
+branchWindows:
+  vas-qc:
+    earliest: "on_status[INBOUND_RECEIVED]"
+    latest: "on_status[STORED]"
+  vas-kitting:
+    earliest: "on_status[STORED]"
+    latest: "on_status[DISPATCHED]"
+  vas-labelling:
+    earliest: "on_status[STORED]"
+    latest: "on_status[DISPATCHED]"
+  vas-packaging:
+    earliest: "on_status[PICKED]"
+    latest: "on_status[PACKED]"
+  inventory-release:
+    earliest: "on_status[STORED]"
+    latest: "on_status[INVENTORY_RELEASED]"
+    description: BAP withdraws inventory — spawns a reverse/outbound transport contract
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE

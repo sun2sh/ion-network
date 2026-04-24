@@ -1,0 +1,117 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "select",
+    "version": "2.0.0",
+    "bapId": "tokopedia.com",
+    "bapUri": "https://api.tokopedia.com/ion",
+    "bppId": "jne.co.id",
+    "bppUri": "https://api.jne.co.id/ion",
+    "networkId": "ion.id/logistics",
+    "transactionId": "550e8400-e29b-41d4-a716-446655440000",
+    "messageId": "550e8400-e29b-41d4-a716-446655440001",
+    "timestamp": "2026-04-22T10:00:00.000Z",
+    "ttl": "PT30S",
+    "location": {
+      "city": { "code": "std:031" },
+      "country": { "code": "IDN" }
+    },
+    "schemaContext": [
+      "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+      "https://schema.ion.id/logistics/v1/resource/context.jsonld",
+      "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+      "https://schema.ion.id/logistics/v1/performance/context.jsonld"
+    ]
+  },
+  "message": {
+    "contract": {
+      "participants": [
+        {
+          "id": "consignor-budi-001",
+          "descriptor": {
+            "name": "Budi Santoso"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNOR",
+            "addressDetail": {
+              "provinsiCode": "31",
+              "kabupatenCode": "3171",
+              "kecamatanCode": "3171030",
+              "kelurahanCode": "3171030005"
+            }
+          }
+        },
+        {
+          "id": "consignee-siti-001",
+          "descriptor": {
+            "name": "Siti Rahma"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "CONSIGNEE",
+            "addressDetail": {
+              "provinsiCode": "35",
+              "kabupatenCode": "3578",
+              "kecamatanCode": "3578010",
+              "kelurahanCode": "3578010001"
+            }
+          }
+        }
+      ],
+      "commitments": [
+        {
+          "id": "cmt-001",
+          "commitmentAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes",
+            "lineId": "L1",
+            "resourceId": "jne-parcel-service",
+            "offerId": "jne-yes-nextday"
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "perf-001",
+          "performanceAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
+            "@type": "ion:LogisticsPerformanceAttributes",
+            "serviceLevel": "NEXT_DAY",
+            "stops": [
+              {
+                "type": "START",
+                "locationRef": "consignor-budi-001"
+              },
+              {
+                "type": "END",
+                "locationRef": "consignee-siti-001"
+              }
+            ]
+          }
+        }
+      ],
+      "contractAttributes": {
+        "@context": "https://schema.ion.id/logistics/v1/contract/context.jsonld",
+        "@type": "ion:LogisticsContractAttributes",
+        "shipmentResource": {
+          "resourceAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/resource/context.jsonld",
+            "@type": "ion:LogisticsResourceAttributes",
+            "serviceType": "PARCEL",
+            "weight": { "value": 2.5, "unit": "kilogram" },
+            "dimensions": {
+              "length": 30, "width": 20, "height": 15, "unit": "centimeter"
+            },
+            "declaredValue": { "amount": 500000, "currency": "IDR" },
+            "insuranceRequested": true,
+            "fragile": false,
+            "productCategory": "ELECTRONICS"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>logistics/commitment/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for logistics/commitment (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/logistics/">logistics</a> &rsaquo; <a href="https://schema.ion.id/logistics/commitment/">commitment</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>logistics/commitment/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/logistics/commitment/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Logistics sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>LogisticsCommitmentAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/logistics/commitment/v1#LogisticsCommitmentAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>lineId</code></td><td>optional</td><td>Unique identifier for this commitment line</td></tr>
+<tr><td><code>resourceId</code></td><td>optional</td><td>Reference to the resource (shipment, SKU, vehicle) in this line</td></tr>
+<tr><td><code>offerId</code></td><td>optional</td><td>Offer this commitment is placed against</td></tr>
+<tr><td><code>packageCount</code></td><td>optional</td><td>Number of packages in this commitment line</td></tr>
+<tr><td><code>totalWeight</code></td><td>optional</td><td></td></tr>
+<tr><td><code>totalVolume</code></td><td>optional</td><td></td></tr>
+<tr><td><code>specialInstructions</code></td><td>optional</td><td>Free-text handling instructions for this shipment line. Examples: &quot;Do not stack&quot;, &quot;This side up&quot;, &quot;Refrigerate on arriva</td></tr>
+<tr><td><code>containerReference</code></td><td>optional</td><td>Container number for FCL freight commitments</td></tr>
+<tr><td><code>sealNumber</code></td><td>optional</td><td>Container seal number</td></tr>
+<tr><td><code>skuId</code></td><td>optional</td><td>SKU identifier for warehouse commitment lines</td></tr>
+<tr><td><code>quantity</code></td><td>optional</td><td>Quantity committed for this SKU</td></tr>
+<tr><td><code>lotNumber</code></td><td>optional</td><td>Lot or batch number for traceability</td></tr>
+<tr><td><code>expiryDate</code></td><td>optional</td><td>Expiry date for perishable or pharma inventory</td></tr>
+<tr><td><code>capacityUnits</code></td><td>optional</td><td>Committed capacity units (kg, cbm, containers, pallets)</td></tr>
+<tr><td><code>capacityUnitType</code></td><td>optional</td><td></td></tr>
+<tr><td><code>requestedDepartureDate</code></td><td>optional</td><td>For freight — requested departure date for this commitment line</td></tr>
+<tr><td><code>vehicleRegistration</code></td><td>optional</td><td>Vehicle registration for LOG-RORO commitment lines</td></tr>
+<tr><td><code>parentCommitmentId</code></td><td>optional</td><td>Parent commitment reference for child transactions under a parent contract</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>commitment/v1 — Logistics Commitment Attributes</h1>
+
+<p>Attaches to `beckn:Commitment.commitmentAttributes`.</p>
+
+<h2>What it covers</h2>
+
+<p>Line-level details within a logistics transaction. Each commitment line represents one discrete unit being committed — a package, a cargo line, a container, a SKU stock unit, or a vehicle slot. The commitment is the &quot;what&quot; of the contract; performance is the &quot;how it went.&quot;</p>
+
+<h2>Spine-specific usage</h2>
+
+<h3>LOG-PARCEL and LOG-HYPERLOCAL (package-level)</h3>
+
+<p>```yaml</p>
+<p>commitmentAttributes:</p>
+<p>  lineId: &quot;L1&quot;</p>
+<p>  resourceId: &quot;jne-parcel-service&quot;</p>
+<p>  offerId: &quot;jne-yes-nextday&quot;</p>
+<p>  packageCount: 1</p>
+<p>  totalWeight:</p>
+<p>    value: 2.5</p>
+<p>    unit: kilogram</p>
+<p>  specialInstructions: &quot;Do not stack. Fragile — handle with care.&quot;</p>
+<p>```</p>
+
+<p>Most parcel transactions have a single commitment line. Multi-box orders have multiple lines with separate package counts.</p>
+
+<h3>LOG-FREIGHT (cargo manifest level)</h3>
+
+<p>```yaml</p>
+<p>commitmentAttributes:</p>
+<p>  lineId: &quot;L1&quot;</p>
+<p>  resourceId: &quot;samudera-fcl-service&quot;</p>
+<p>  offerId: &quot;samudera-fcl-java-sulawesi&quot;</p>
+<p>  totalWeight:</p>
+<p>    value: 18500</p>
+<p>    unit: kilogram</p>
+<p>  totalVolume:</p>
+<p>    value: 24.5</p>
+<p>    unit: cbm</p>
+<p>  containerReference: &quot;SAMU1234567&quot;   # FCL — specific container</p>
+<p>  sealNumber: &quot;SL987654&quot;</p>
+<p>  capacityUnits: 1</p>
+<p>  capacityUnitType: container</p>
+<p>  requestedDepartureDate: &quot;2026-04-25&quot;</p>
+<p>```</p>
+
+<p>Freight commitments carry cargo-level manifest detail. For FCL, the container reference is the booking unit. For LTL, multiple commitment lines share the same carrier&#x27;s space.</p>
+
+<h3>LOG-RORO (vehicle slot)</h3>
+
+<p>```yaml</p>
+<p>commitmentAttributes:</p>
+<p>  lineId: &quot;L1&quot;</p>
+<p>  resourceId: &quot;asdp-roro-service&quot;</p>
+<p>  offerId: &quot;asdp-ketapang-gilimanuk-heavy-truck&quot;</p>
+<p>  vehicleRegistration: &quot;B 1234 ABC&quot;</p>
+<p>  capacityUnits: 1</p>
+<p>  capacityUnitType: vessel_slot</p>
+<p>  requestedDepartureDate: &quot;2026-04-22&quot;</p>
+<p>```</p>
+
+<p>One vehicle = one commitment line. Vehicle registration cross-references the `resource.vehicleRegistration` field.</p>
+
+<h3>LOG-WAREHOUSE (SKU level)</h3>
+
+<p>```yaml</p>
+<p>commitmentAttributes:</p>
+<p>  lineId: &quot;L1&quot;</p>
+<p>  skuId: &quot;GMI-SKU-IPHONE-15-BLK-128&quot;</p>
+<p>  quantity: 500</p>
+<p>  lotNumber: &quot;LOT-2026-Q2-001&quot;</p>
+<p>  expiryDate: null</p>
+<p>```</p>
+
+<p>Each distinct SKU is a separate commitment line. Lot numbers and expiry dates are mandatory for pharma and food items.</p>
+
+<h3>Child transactions referencing parent</h3>
+
+<p>```yaml</p>
+<p>commitmentAttributes:</p>
+<p>  lineId: &quot;L1&quot;</p>
+<p>  parentCommitmentId: &quot;wh-cmt-001&quot;    # Reference to warehouse contract commitment</p>
+<p>```</p>
+
+<p>When LOG-WAREHOUSE spawns a LOG-PARCEL dispatch, the transport commitment references the parent warehouse commitment via `parentCommitmentId`.</p>
+
+<h2>specialInstructions</h2>
+
+<p>Free-text handling instructions carried at the commitment line level. These appear on the shipping label and are visible to the rider/driver:</p>
+
+<li>&quot;Do not stack — fragile item below&quot;</li>
+<li>&quot;Keep upright at all times&quot;</li>
+<li>&quot;Refrigerate immediately on receipt&quot;</li>
+<li>&quot;Signature required — do not leave unattended&quot;</li>
+<li>&quot;Government procurement — requires official receipt&quot;</li>
+
+<h2>Multiple commitment lines</h2>
+
+<p>A single contract may carry multiple commitment lines when:</p>
+<li>An order has boxes going to different zones (different rates per line)</li>
+<li>A freight booking covers multiple cargo types</li>
+<li>A warehouse inbound covers multiple SKUs</li>
+<li>A dispatch request covers partial inventory (specific SKUs from stored pool)</li></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/logistics/commitment/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

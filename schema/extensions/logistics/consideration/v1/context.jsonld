@@ -1,0 +1,40 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "beckn": "https://schema.beckn.io/v2/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "actualDuty": "ion:actualDuty",
+    "actualTax": "ion:actualTax",
+    "addressChangeSurcharge": "ion:addressChangeSurcharge",
+    "breakup": "ion:breakup",
+    "codAmountCollected": "ion:codAmountCollected",
+    "codCharge": "ion:codCharge",
+    "codRemittanceAmount": "ion:codRemittanceAmount",
+    "codRemittanceBatchRef": "ion:codRemittanceBatchRef",
+    "codRemittanceMethod": "ion:codRemittanceMethod",
+    "codRemittanceTimestamp": "ion:codRemittanceTimestamp",
+    "currency": "ion:currency",
+    "dutyEstimate": "ion:dutyEstimate",
+    "failedPickupFee": "ion:failedPickupFee",
+    "freightBase": "ion:freightBase",
+    "fuelSurcharge": "ion:fuelSurcharge",
+    "fuelSurchargeRate": "ion:fuelSurchargeRate",
+    "insuranceCoverageAmount": "ion:insuranceCoverageAmount",
+    "insurancePremium": "ion:insurancePremium",
+    "ion:LogisticsConsiderationAttributes": {
+      "@id": "ion:LogisticsConsiderationAttributes"
+    },
+    "pickPackFee": "ion:pickPackFee",
+    "ppnAmount": "ion:ppnAmount",
+    "ppnRate": "ion:ppnRate",
+    "rescheduleFee": "ion:rescheduleFee",
+    "revisedAmount": "ion:revisedAmount",
+    "revisionBreakup": "ion:revisionBreakup",
+    "storageFee": "ion:storageFee",
+    "taxEstimate": "ion:taxEstimate",
+    "totalAmount": "ion:totalAmount",
+    "valueAddedServiceFee": "ion:valueAddedServiceFee",
+    "weightDiffAdjustment": "ion:weightDiffAdjustment"
+  }
+}

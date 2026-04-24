@@ -1,0 +1,499 @@
+openapi: 3.1.1
+info:
+  title: ION Protocol Endpoint Extensions
+  description: >
+    ION-specific protocol endpoints that extend Beckn 2.0.0 core.
+    This file is Layer 3 of the ION layer model: endpoint-level
+    extensions to Beckn. It applies to every ION sector (Trade,
+    Logistics, Mobility, Finance, Tourism, Healthcare) — not to
+    Logistics alone.
+
+    Beckn 2.0 defines exactly 30 endpoints. ION adds the endpoints
+    below for two capabilities not present in Beckn 2.0 core:
+
+    1. Network escalation for commercial dispute adjudication
+       (/raise family of 6 endpoints)
+    2. Standardised financial settlement reconciliation
+       (/reconcile, /on_reconcile)
+
+    These are declared as extensions so conformant implementations
+    can distinguish Beckn 2.0 core endpoints from ION additions.
+    An implementation that supports only the 30 Beckn 2.0 endpoints
+    is conformant to Beckn; to be conformant to ION, the extensions
+    below must also be implemented by every BAP and BPP regardless
+    of sector.
+
+    All ION extension endpoints use the same Beckn Context schema,
+    same Signature/CounterSignature scheme, same Ack/NACK response
+    pattern as Beckn 2.0 core.
+  version: 1.0.0
+  x-extension-to: Beckn 2.0.0-rc1 (beckn.yaml)
+
+paths:
+
+  # ═══════════════════════════════════════════════════════════════
+  # ION EXTENSION: /raise family (network dispute escalation)
+  # ═══════════════════════════════════════════════════════════════
+
+  /raise:
+    post:
+      summary: Raise a commercial dispute to the ION network for adjudication
+      description: >
+        ION EXTENSION. Not in Beckn 2.0 core. Either BAP or BPP submits
+        a dispute to the ION Gateway when bilateral resolution via /update
+        has exceeded the policy-defined SLA. The ION Gateway routes to the
+        appropriate ION adjudication service.
+      operationId: raise
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: raise
+                message:
+                  $ref: '#/components/schemas/RaiseAction'
+      responses:
+        '200':
+          description: Ack — ticket accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /on_raise:
+    post:
+      summary: Callback — ticket ID and expected resolution timeline
+      description: ION EXTENSION. ION Gateway returns ticket ID and expected resolution timeline.
+      operationId: onRaise
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: on_raise
+                message:
+                  $ref: '#/components/schemas/OnRaiseAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /raise_status:
+    post:
+      summary: Query current dispute ticket status
+      description: ION EXTENSION. Poll for ticket status by ID.
+      operationId: raiseStatus
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: raise_status
+                message:
+                  $ref: '#/components/schemas/RaiseStatusAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /on_raise_status:
+    post:
+      summary: Callback — current ticket status and stage
+      description: ION EXTENSION.
+      operationId: onRaiseStatus
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: on_raise_status
+                message:
+                  $ref: '#/components/schemas/OnRaiseStatusAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /raise_details:
+    post:
+      summary: Request full ticket thread
+      description: ION EXTENSION. Request the full dispute thread with all messages and evidence.
+      operationId: raiseDetails
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: raise_details
+                message:
+                  $ref: '#/components/schemas/RaiseDetailsAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /on_raise_details:
+    post:
+      summary: Callback — full ticket thread with messages and evidence
+      description: ION EXTENSION.
+      operationId: onRaiseDetails
+      tags: [ION Extensions — Escalation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: on_raise_details
+                message:
+                  $ref: '#/components/schemas/OnRaiseDetailsAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  # ═══════════════════════════════════════════════════════════════
+  # ION EXTENSION: /reconcile (financial settlement reconciliation)
+  # ═══════════════════════════════════════════════════════════════
+
+  /reconcile:
+    post:
+      summary: Initiate financial settlement reconciliation
+      description: >
+        ION EXTENSION. Not in Beckn 2.0 core. BAP initiates reconciliation
+        of settlement amounts after contract COMPLETE. Covers final amount
+        with all adjustments (weight disputes, SLA rebates, COD remittance,
+        FWA rebates, tax).
+
+        Supports context.try=true (ION-extended use of the Beckn try pattern)
+        for preview without committing Settlement state transition.
+      operationId: reconcile
+      tags: [ION Extensions — Reconciliation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: reconcile
+                message:
+                  $ref: '#/components/schemas/ReconcileAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+  /on_reconcile:
+    post:
+      summary: Callback — reconciliation result
+      description: >
+        ION EXTENSION. BPP returns reconciliation status (AGREED, DISPUTED,
+        PENDING_ADJUSTMENT), net settlement amount, and dispute reason if
+        applicable. Settlement state transitions: DRAFT → COMMITTED on
+        AGREED; stays DRAFT on DISPUTED pending further bilateral exchange
+        or /raise escalation.
+      operationId: onReconcile
+      tags: [ION Extensions — Reconciliation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, message]
+              properties:
+                context:
+                  allOf:
+                    - $ref: 'beckn.yaml#/components/schemas/Context'
+                    - type: object
+                      properties:
+                        action:
+                          type: string
+                          const: on_reconcile
+                message:
+                  $ref: '#/components/schemas/OnReconcileAction'
+      responses:
+        '200':
+          description: Ack
+          content:
+            application/json:
+              schema:
+                $ref: 'beckn.yaml#/components/schemas/Ack'
+
+components:
+  schemas:
+
+    # ═══ /raise ═══
+    RaiseAction:
+      type: object
+      required: [ticket]
+      additionalProperties: false
+      properties:
+        ticket:
+          $ref: '#/components/schemas/DisputeTicket'
+
+    DisputeTicket:
+      type: object
+      required:
+        - title
+        - description
+        - type
+        - priority
+        - contractReference
+        - applicablePolicyIri
+      properties:
+        id:
+          type: string
+          description: Ticket ID — assigned by ION Gateway on /on_raise. Not set on /raise.
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 4000
+        type:
+          type: string
+          enum:
+            - WEIGHT_DISCREPANCY
+            - DAMAGE_CLAIM
+            - LOSS_CLAIM
+            - SLA_BREACH
+            - COD_REMITTANCE_FAILURE
+            - FWA_TERM_VIOLATION
+            - EKYC_DISPUTE
+            - CUSTOMS_DUTY_DISPUTE
+            - GENERAL_COMMERCIAL
+            - SECURITY_INCIDENT
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        contractReference:
+          type: string
+          description: Contract.id of the contract in dispute
+        applicablePolicyIri:
+          type: string
+          format: iri
+          description: ion://policy/... IRI specifying the resolution regime
+        bilateralAttemptLog:
+          type: array
+          description: Log of bilateral resolution attempts via /update before escalating
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              messageId:
+                type: string
+              summary:
+                type: string
+              outcome:
+                type: string
+        evidence:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [PHOTO, DOCUMENT, MESSAGE_LOG, SIGNATURE, GPS_TRACE, OTHER]
+              url:
+                type: string
+                format: uri
+              description:
+                type: string
+        status:
+          type: string
+          description: Ticket status — set by ION Gateway
+          enum:
+            - SUBMITTED
+            - UNDER_REVIEW
+            - EVIDENCE_REQUESTED
+            - ADJUDICATION_IN_PROGRESS
+            - RESOLVED_IN_FAVOUR_OF_BAP
+            - RESOLVED_IN_FAVOUR_OF_BPP
+            - RESOLVED_PARTIAL
+            - CLOSED_WITHOUT_ADJUDICATION
+        stage:
+          type: string
+        expectedResolutionTimeline:
+          type: string
+          format: duration
+        resolutionNotes:
+          type: string
+
+    OnRaiseAction:
+      type: object
+      required: [ticket]
+      additionalProperties: false
+      properties:
+        ticket:
+          $ref: '#/components/schemas/DisputeTicket'
+
+    RaiseStatusAction:
+      type: object
+      required: [ticket]
+      properties:
+        ticket:
+          type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+
+    OnRaiseStatusAction:
+      type: object
+      required: [ticket]
+      properties:
+        ticket:
+          $ref: '#/components/schemas/DisputeTicket'
+
+    RaiseDetailsAction:
+      type: object
+      required: [ticket]
+      properties:
+        ticket:
+          type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+
+    OnRaiseDetailsAction:
+      type: object
+      required: [ticket]
+      properties:
+        ticket:
+          allOf:
+            - $ref: '#/components/schemas/DisputeTicket'
+            - type: object
+              properties:
+                thread:
+                  type: array
+                  description: All messages exchanged on this ticket
+                  items:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      from:
+                        type: string
+                      message:
+                        type: string
+                      attachments:
+                        type: array
+                        items:
+                          type: object
+
+    # ═══ /reconcile ═══
+    ReconcileAction:
+      type: object
+      required: [contract]
+      additionalProperties: false
+      properties:
+        contract:
+          allOf:
+            - $ref: 'beckn.yaml#/components/schemas/Contract'
+            - required: [id, settlements]
+
+    OnReconcileAction:
+      type: object
+      required: [contract]
+      additionalProperties: false
+      properties:
+        contract:
+          allOf:
+            - $ref: 'beckn.yaml#/components/schemas/Contract'
+            - required: [id, settlements]

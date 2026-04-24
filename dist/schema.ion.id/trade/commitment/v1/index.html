@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>trade/commitment/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for trade/commitment (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/trade/">trade</a> &rsaquo; <a href="https://schema.ion.id/trade/commitment/">commitment</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>trade/commitment/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/trade/commitment/v1#</code> &nbsp;|&nbsp; Layer: <code>L5 — Trade sector</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>TradeCommitmentAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/trade/commitment/v1#TradeCommitmentAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>lineId</code></td><td>always</td><td>Unique identifier for this commitment line within the contract. Assigned by BAP at select. Persists through the contract</td></tr>
+<tr><td><code>resourceId</code></td><td>always</td><td>ID of the resource being committed. References beckn:Resource.id from the catalog. For VARIANT resources, this is the sp</td></tr>
+<tr><td><code>offerId</code></td><td>always</td><td>ID of the offer under which this resource is being committed. References beckn:Offer.id from the catalog.</td></tr>
+<tr><td><code>quantity</code></td><td>always</td><td>Quantity of this resource being committed.</td></tr>
+<tr><td><code>price</code></td><td>conditional</td><td>Locked price for this commitment line as agreed at select. Price is fixed at on_select and does not change unless a pric</td></tr>
+<tr><td><code>customisationSelections</code></td><td>conditional</td><td>Buyer&#x27;s selections from customisationGroups for COMPOSED and WITH_EXTRAS resources. One entry per group selected.</td></tr>
+<tr><td><code>specialInstructions</code></td><td>optional</td><td>Per-line buyer note. e.g. &quot;Extra crispy base&quot;, &quot;No onion&quot;, &quot;Gift wrap this item separately&quot;. Visible to seller at fulfil</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>trade/commitment/v1</h1>
+
+<p>Per-line item — resource, offer, quantity, locked price, customisation selections, special instructions.</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Commitment.commitmentAttributes`</p>
+
+<p>See `attributes.yaml` for complete field definitions.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/trade/commitment/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

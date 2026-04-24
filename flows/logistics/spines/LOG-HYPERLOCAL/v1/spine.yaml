@@ -1,0 +1,229 @@
+# ION Logistics Flow - Hyperlocal (LOG-HYPERLOCAL) Spine v1
+# NOT OAS. ION flow specification document.
+# Delta from LOG-PARCEL: sub-day rider-based delivery, no hub, real-time GPS, rider exposed.
+
+id: ion-logistics-LOG-HYPERLOCAL-v1
+version: "1.0.0"
+pattern: Hyperlocal Delivery
+sectorCode: B
+status: ready
+description: >
+  Sub-day single-rider delivery. Covers GoSend, GrabExpress, Paxel instant,
+  Lalamove, and similar on-demand courier services within a city.
+  Real-time GPS tracking, rider identity exposed mid-flow, no hub states,
+  minutes-scale state machine. FIFO-at-pickup agent assignment supported
+  via offer.agentAssignmentModel.
+
+participants:
+  BAP: Buyer App Platform
+  BPP: Buyer Price Provider (hyperlocal LSP-facing)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+deltaFromLogParcel:
+  - selectRequired is typically true (surge pricing common)
+  - State machine is hyperlocal-fifo or hyperlocal-pre-assigned — no hub states
+  - Rider identity (name, phone via proxy, vehicle, photo) exposed via on_status
+  - on_status frequency near-continuous (GPS pings)
+  - No routingTopology field — always direct P2P
+  - Cold chain rarely applies; hazmat not supported
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - message.catalog.providers[].offers[].offerAttributes.serviceLevel must be INSTANT or sub-3h
+          - message.catalog.providers[].offers[].offerAttributes.agentAssignmentModel is mandatory
+          - message.catalog.providers[].offers[].offerAttributes.modesSupported restricted to motorcycle, bicycle, car
+          - message.catalog.providers[].offers[].offerAttributes.selectRequired MUST be true if surge applies
+        requiredFields:
+          - message.catalog.providers[].offers[].offerAttributes.agentAssignmentModel
+          - message.catalog.providers[].offers[].offerAttributes.maxDeliveryRadiusKm
+          - message.catalog.providers[].offers[].offerAttributes.liveTrackingEnabled
+          - message.catalog.providers[].providerAttributes.coverage[].cityCode
+        schemaPacks:
+          core: [localization/v1, identity/v1, address/v1]
+          logistics: [provider/v1, resource/v1, offer/v1]
+
+      - step: on_discover
+        from: ION_CATALOG
+        to: BAP
+        direction: push
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - selectRequired is almost always true — binding surge-adjusted quote
+          - Quote validity window is short (PT5M typical)
+        description: Firm quote including any surge.
+
+      - step: on_select
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - Returns binding surge-inclusive amount
+          - routingTopology always P2P
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.estimatedTAT
+          - message.contract.offerAttributes.quoteValidityWindow
+
+      - step: init
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - No ekyc branch (consumer-facing typical)
+          - Proxy phone infrastructure indicated here
+        requiredFields:
+          - message.contract.participants[role=CONSIGNOR].contact.phone
+          - message.contract.participants[role=CONSIGNEE].contact.phone
+
+      - step: on_init
+        inheritedFrom: LOG-PARCEL
+
+      - step: confirm
+        inheritedFrom: LOG-PARCEL
+
+      - step: on_confirm
+        inheritedFrom: LOG-PARCEL
+        overrides:
+          - awbNumber replaced with bookingReference (no AWB in hyperlocal)
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.bookingReference
+
+  phase3:
+    name: Fulfilment
+    communication: BPP pushes unsolicited, BAP polls optionally
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#hyperlocal-fifo OR #hyperlocal-pre-assigned
+    description: >
+      The stateMachine variant is determined by offer.agentAssignmentModel:
+      - PRE_ASSIGNED: rider identity known at booking confirmation
+      - POOL_ASSIGNED: rider identity known at merchant arrival
+      - FIFO_AT_PICKUP: rider identity known at PICKED_UP (after pairing)
+      - DEDICATED_FLEET: rider identity known at booking confirmation; from a committed pool
+    steps:
+      - step: on_status
+        trigger: RIDER_ASSIGNED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: PRE_ASSIGNED and DEDICATED_FLEET models only. Rider identity exposed.
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.agentDetails
+            condition: required
+
+      - step: on_status
+        trigger: MERCHANT_PREPARING
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Consignor is preparing the shipment.
+
+      - step: on_status
+        trigger: RIDER_EN_ROUTE_TO_PICKUP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Rider heading to pickup location. GPS exposed.
+
+      - step: on_status
+        trigger: RIDER_AT_PICKUP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+
+      - step: on_status
+        trigger: PICKED_UP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: FIFO_AT_PICKUP model — rider identity exposed here for the first time.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.pickupTimestamp
+          - message.contract.performance[].performanceAttributes.proofOfPickup
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.agentDetails
+            condition: required if not previously exposed
+
+      - step: on_status
+        trigger: IN_TRANSIT
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Real-time GPS pings throughout. No hub states.
+
+      - step: on_status
+        trigger: RIDER_AT_DELIVERY
+        from: BPP
+        to: BAP
+        direction: unsolicited
+
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Contract COMPLETE.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.deliveryTimestamp
+          - message.contract.performance[].performanceAttributes.proofOfDelivery
+
+branchWindows:
+  rts-handoff:
+    earliest: on_confirm
+    latest: "on_status[READY_FOR_PICKUP]"
+    condition: Origin is a warehouse or B2B seller requiring explicit RTS signal
+
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[RIDER_AT_PICKUP]"
+    description: Tighter window than LOG-PARCEL — once picked up, hyperlocal typically delivers
+  attempts:
+    earliest: "on_status[RIDER_AT_DELIVERY]"
+    latest: "on_status[DELIVERED]"
+    description: One or two attempts only — fast retry windows
+  reverse:
+    earliest: "on_status[DELIVERED]"
+    latest: PT2H_post_delivery
+    description: Reverse-simple branch applies. Minutes-to-hours window.
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+  phase4:
+    name: Post-Fulfilment
+    communication: direct BAP-BPP
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        description: Post-delivery rating. See LOG-PARCEL phase4 for full field specification.
+        requiredFields:
+          - message.rating.contractReference
+          - message.rating.overallRating
+
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+
+      - step: reconcile
+        from: BAP
+        to: BPP
+        direction: request
+        description: Financial reconciliation. Uses ION Core reconcile/v1. See LOG-PARCEL phase4.
+        schemaPacks:
+          core: [reconcile/v1]
+
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        direction: callback

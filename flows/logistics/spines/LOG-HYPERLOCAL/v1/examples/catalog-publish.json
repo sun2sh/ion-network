@@ -1,0 +1,180 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "catalog/publish",
+    "bppId": "gosend.gojek.com",
+    "bppUri": "https://api.gosend.gojek.com/ion",
+    "timestamp": "2026-04-22T06:00:00.000Z",
+    "ttl": "PT1H",
+    "version": "2.0.0",
+    "networkId": "ion.id/logistics"
+  },
+  "message": {
+    "catalog": {
+      "providers": [
+        {
+          "id": "gosend-main",
+          "descriptor": {
+            "name": "GoSend",
+            "shortDesc": "Instant and same-day delivery by Gojek"
+          },
+          "providerAttributes": {
+            "nibRegistered": true,
+            "nibNumber": "9876543210987",
+            "providerCategory": "CARRIER_DIRECT",
+            "aggregatorModel": false,
+            "spinesSupported": [
+              "LOG-HYPERLOCAL"
+            ],
+            "modesSupported": [
+              "motorcycle",
+              "car"
+            ],
+            "coverage": [
+              {
+                "provinsiCode": "31",
+                "cityCode": "std:031",
+                "coverageType": "BOTH"
+              },
+              {
+                "provinsiCode": "32",
+                "cityCode": "std:022",
+                "coverageType": "BOTH"
+              }
+            ],
+            "coldChainCertified": false,
+            "hazmatCertified": false,
+            "operatingHours": [
+              {
+                "day": "MON",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "TUE",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "WED",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "THU",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "FRI",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "SAT",
+                "opens": "06:00",
+                "closes": "23:00"
+              },
+              {
+                "day": "SUN",
+                "opens": "06:00",
+                "closes": "23:00"
+              }
+            ],
+            "fleetType": [
+              "CROWDSOURCED"
+            ],
+            "maxDeliveryRadiusKm": 75,
+            "fwaApplicable": true,
+            "@context": "https://schema.ion.id/logistics/v1/provider/context.jsonld",
+            "@type": "ion:LogisticsProviderAttributes"
+          },
+          "items": [
+            {
+              "id": "gosend-instant-service",
+              "descriptor": {
+                "name": "GoSend Instant"
+              },
+              "resourceAttributes": {
+                "serviceType": "PARCEL",
+                "maxWeight": {
+                  "value": 20,
+                  "unit": "kilogram"
+                },
+                "maxDimensions": {
+                  "length": 70,
+                  "width": 50,
+                  "height": 50,
+                  "unit": "centimeter"
+                },
+                "@context": "https://schema.ion.id/logistics/v1/resource/context.jsonld",
+                "@type": "ion:LogisticsResourceAttributes"
+              }
+            }
+          ],
+          "offers": [
+            {
+              "id": "gosend-instant",
+              "descriptor": {
+                "name": "GoSend Instant — < 60 min"
+              },
+              "offerAttributes": {
+                "serviceLevel": "INSTANT",
+                "transportMode": "motorcycle",
+                "rateLogic": "DISTANCE_BASED",
+                "selectRequired": true,
+                "quoteValidityWindow": "PT5M",
+                "agentAssignmentModel": "POOL_ASSIGNED",
+                "maxDeliveryRadiusKm": 25,
+                "liveTrackingEnabled": true,
+                "slotsAvailable": false,
+                "availableOnCod": true,
+                "maxCodAmount": 2000000,
+                "codPolicy": "ion://policy/payment-terms.cod-weekly-monday",
+                "maxDeclaredValue": 5000000,
+                "insurancePolicy": "ion://policy/insurance.standard-500k-cap",
+                "cancellationPolicy": "ion://policy/cancel.hyperlocal.before-pickup-free",
+                "claimPolicy": "ion://policy/damage.standard.declared-value-cap",
+                "slaPolicy": "ion://policy/sla.hyperlocal-95pct",
+                "evidencePolicy": "ion://policy/evidence.standard.photo-24hr",
+                "disputePolicy": "ion://policy/dispute-resolution.consumer-fast-track",
+                "reAttemptPolicy": "ion://policy/re-attempt.hyperlocal-1-only",
+                "fwaApplicable": true,
+                "@context": "https://schema.ion.id/logistics/v1/offer/context.jsonld",
+                "@type": "ion:LogisticsOfferAttributes"
+              }
+            },
+            {
+              "id": "gosend-sameday",
+              "descriptor": {
+                "name": "GoSend SameDay"
+              },
+              "offerAttributes": {
+                "serviceLevel": "SAME_DAY",
+                "transportMode": "motorcycle",
+                "rateLogic": "DISTANCE_BASED",
+                "selectRequired": true,
+                "quoteValidityWindow": "PT10M",
+                "agentAssignmentModel": "FIFO_AT_PICKUP",
+                "maxDeliveryRadiusKm": 75,
+                "liveTrackingEnabled": true,
+                "slotsAvailable": false,
+                "availableOnCod": true,
+                "maxCodAmount": 5000000,
+                "cancellationPolicy": "ion://policy/cancel.hyperlocal.before-pickup-free",
+                "claimPolicy": "ion://policy/damage.standard.declared-value-cap",
+                "slaPolicy": "ion://policy/sla.hyperlocal-95pct",
+                "evidencePolicy": "ion://policy/evidence.standard.photo-24hr",
+                "disputePolicy": "ion://policy/dispute-resolution.consumer-fast-track",
+                "reAttemptPolicy": "ion://policy/re-attempt.hyperlocal-1-only",
+                "fwaApplicable": false,
+                "@context": "https://schema.ion.id/logistics/v1/offer/context.jsonld",
+                "@type": "ion:LogisticsOfferAttributes"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

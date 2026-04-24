@@ -1,0 +1,153 @@
+# ION Logistics Branch — During-Transaction v1
+# NOT OAS. ION flow specification document.
+# Sub-branches active between select and on_confirm.
+
+id: ion-logistics-branch-during-transaction-v1
+version: "1.0.0"
+branchType: during-transaction
+sectorCode: B
+status: ready
+description: >
+  Sub-branches that activate between select and on_confirm. Shape the
+  transaction before it is committed — determining payment method,
+  FWA activation, eKYC, and handling technical failures at confirm.
+
+appliesTo:
+  - All logistics spines
+
+attachmentWindow:
+  earliest: select
+  latest: on_confirm
+
+subBranches:
+
+  payment-prepaid-bap-collected:
+    id: payment-prepaid-bap-collected
+    description: >
+      BAP collects payment from buyer before /confirm. QRIS, EWallet,
+      Virtual Account. Most common for B2C parcel and hyperlocal.
+    window:
+      earliest: init
+      latest: on_confirm
+    steps:
+      - step: init
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.method: QRIS | VIRTUAL_ACCOUNT | EWALLET
+          - message.contract.settlements[].settlementAttributes.collectedBy: BAP
+      - step: on_init
+        from: BPP
+        to: BAP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail.qrisString
+          - message.contract.settlements[].settlementAttributes.methodDetail.vaNumber
+          - message.contract.settlements[].settlementAttributes.methodDetail.deepLink
+      - step: confirm
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.status: PAID
+
+  payment-cod-bpp-collected:
+    id: payment-cod-bpp-collected
+    description: >
+      COD where LSP collects cash at delivery. Common for Indonesian
+      parcel deliveries, especially tier 2/3. Triggers cod branch
+      post-confirm.
+    window:
+      earliest: init
+      latest: on_confirm
+    steps:
+      - step: init
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.method: COD
+          - message.contract.settlements[].settlementAttributes.collectedBy: BPP
+      - step: on_init
+        from: BPP
+        to: BAP
+        description: BPP confirms COD acceptance.
+      - step: confirm
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.status: PENDING
+
+  payment-credit-fwa:
+    id: payment-credit-fwa
+    description: >
+      Post-delivery credit payment under an active FWA. Enterprise
+      accounts (Tokopedia, Shopee) typically have net-30 or net-60
+      credit terms.
+    window:
+      earliest: init
+      latest: on_confirm
+    activationCondition: contractAttributes.fwaReference is present AND FWA.adds.paymentTermsPolicy = credit-net-N
+    steps:
+      - step: init
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.settlements[].settlementAttributes.method: BANK_TRANSFER
+          - message.contract.settlements[].settlementAttributes.collectedBy: BPP
+          - message.contract.contractAttributes.creditTermsDays: [per FWA]
+
+  fwa-activation:
+    id: fwa-activation
+    description: >
+      Transaction references an active Framework Agreement. Rates and
+      policies are inherited. /select may be skipped if the FWA declares
+      rates as binding.
+    window:
+      earliest: select
+      latest: confirm
+    steps:
+      - step: select or init
+        from: BAP
+        to: BPP
+        additionalFields:
+          - message.contract.contractAttributes.fwaReference: ion://policy/logistics-fwa/{id}
+      - step: on_select or on_init
+        from: BPP
+        to: BAP
+        description: >
+          BPP validates FWA is active and in scope. If valid, rates from
+          FWA rate card are applied. /select may be omitted if FWA declares
+          rates as binding and selectRequired was overridden to false.
+    businessRules:
+      - FWA must be active (within validity.from and validity.until)
+      - Transaction spine, corridor, and mode must be within FWA.scope
+      - eKYC is waived — parties verified at FWA registration
+      - Rate card from FWA overrides catalog rate card
+
+  technical-cancel-confirm-bap:
+    id: technical-cancel-confirm-bap
+    description: >
+      BAP receives a NACK on /confirm or /on_confirm times out.
+      BAP cancels with code ION-LOG-9001. Prevents orphaned contracts.
+    window:
+      earliest: confirm
+      latest: on_confirm
+    steps:
+      - step: cancel
+        from: BAP
+        to: BPP
+        requiredFields:
+          - message.contract.contractAttributes.cancellationReason.descriptor.code: LOG-CANCEL-999
+        businessRules:
+          - No cancellation fee — technical failure
+          - BPP must acknowledge and confirm no contract was created
+
+  technical-cancel-confirm-bpp:
+    id: technical-cancel-confirm-bpp
+    description: >
+      BPP cannot process /confirm (inventory, system error).
+      BPP NACKs /on_confirm with code ION-LOG-9001.
+    window:
+      earliest: on_confirm
+      latest: on_confirm
+    businessRules:
+      - BPP must respond with NACK, not a delayed on_confirm
+      - BAP treats NACK as cancellation — no retry expected

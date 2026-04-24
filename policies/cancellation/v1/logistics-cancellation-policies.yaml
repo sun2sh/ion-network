@@ -1,0 +1,118 @@
+# Cancellation Policy: Logistics Pre-pickup Free
+# ion://policy/cancel.logistics.prepickup-free
+
+id: cancel.logistics.prepickup-free
+type: CANCELLATION_POLICY
+sector: logistics
+
+description: >
+  Buyer may cancel at no charge before the package is picked up by the LSP.
+  After PICKED_UP state, this policy no longer applies.
+
+window:
+  from: on_confirm
+  until: "on_status[OUT_FOR_PICKUP]"
+
+cancellationFee: 0
+currency: IDR
+
+refund:
+  prepaidOrders: FULL_REFUND
+  codOrders: NO_CHARGE
+  timeline: PT24H
+
+attribution: BUYER
+rtoTriggered: false
+
+---
+
+# Cancellation Policy: Logistics Pre-pickup with Futile Trip Fee
+# ion://policy/cancel.logistics.prepickup-futile-trip-fee
+
+id: cancel.logistics.prepickup-futile-trip-fee
+type: CANCELLATION_POLICY
+sector: logistics
+
+description: >
+  Buyer may cancel before pickup but if a rider has already been dispatched
+  to the pickup location (OUT_FOR_PICKUP state or later), a futile trip fee
+  applies. Typically used by hyperlocal providers.
+
+window:
+  from: on_confirm
+  until: "on_status[RIDER_AT_PICKUP]"
+
+feeStructure:
+  beforeDispatch:
+    fee: 0
+  afterDispatch:
+    fee: 5000
+    currency: IDR
+    description: Futile trip fee — rider already en route
+
+refund:
+  prepaidOrders: FULL_REFUND_MINUS_FEE
+  timeline: PT24H
+
+attribution: BUYER
+rtoTriggered: false
+
+---
+
+# Cancellation Policy: Logistics In-transit Buyer Cost
+# ion://policy/cancel.logistics.intransit-buyer-cost
+
+id: cancel.logistics.intransit-buyer-cost
+type: CANCELLATION_POLICY
+sector: logistics
+
+description: >
+  Cancellation after pickup. Buyer bears forward freight cost.
+  Package is returned to origin (RTO). RTO freight charge applies.
+
+window:
+  from: "on_status[PICKED_UP]"
+  until: "on_status[OUT_FOR_DELIVERY]"
+
+fees:
+  forwardFreightCharged: true
+  rtoFreightCharged: true
+  description: Buyer pays forward + RTO freight
+
+refund:
+  declaredValueInsurance: REFUNDED
+  timeline: P3D_after_RTO_delivery
+
+attribution: BUYER
+rtoTriggered: true
+
+---
+
+# Cancellation Policy: LSP TAT Breach — LSP Cost
+# ion://policy/cancel.logistics.tat-breach-lsp-cost
+
+id: cancel.logistics.tat-breach-lsp-cost
+type: CANCELLATION_POLICY
+sector: logistics
+
+description: >
+  Buyer cancels because LSP has breached the committed TAT (SLA).
+  LSP bears all costs. Full refund to buyer. SLA penalty applies per slaPolicy.
+
+window:
+  from: on_confirm
+  until: "on_status[DELIVERED]"
+
+triggerCondition: >
+  Current timestamp > estimated_delivery_time AND delivery not yet completed
+
+fees:
+  allChargesWaived: true
+
+refund:
+  prepaidOrders: FULL_REFUND
+  timeline: PT12H
+
+attribution: LSP
+rtoTriggered: true
+slaBreachPenaltyApplies: true

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/reconcile/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/reconcile (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/reconcile/">reconcile</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/reconcile/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/reconcile/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONReconcileAttributes</h3>
+<p class="iri">IRI: https://schema.ion.id/core/reconcile/v1#IONReconcileAttributes</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reconId</code></td><td>always</td><td>ION-assigned unique identifier for this reconciliation session.</td></tr>
+<tr><td><code>contractId</code></td><td>always</td><td>The trade contract this reconciliation covers.</td></tr>
+<tr><td><code>settlementBasis</code></td><td>always</td><td>The event that triggers the settlement window countdown. Agreed at order init and locked at confirm.</td></tr>
+<tr><td><code>settlementWindow</code></td><td>always</td><td>Time window after settlementBasis event within which settlement must be completed. ISO 8601 duration.</td></tr>
+<tr><td><code>collectedBy</code></td><td>always</td><td>Which participant collected payment from consumer.</td></tr>
+<tr><td><code>amounts</code></td><td>always</td><td>Declared amounts for reconciliation.</td></tr>
+<tr><td><code>returnWindowExpiry</code></td><td>optional</td><td>Date-time when return window closes and withholding amount releases. After this date, withholdingAmount is settled to BP</td></tr>
+<tr><td><code>adjustments</code></td><td>optional</td><td>Contract-level adjustments to the base order amount that must be agreed before final settlement. These are post-confirm </td></tr>
+<tr><td><code>netSettlementAmount</code></td><td>optional</td><td>Final net amount to settle to BPP/receiver after all adjustments. Computed: baseContractAmount - finderFee - withholding</td></tr>
+<tr><td><code>netWithholdingRelease</code></td><td>optional</td><td>Withholding amount to release to BPP after return window. withholdingAmount - returnDeductions - refunds</td></tr>
+<tr><td><code>counterparty</code></td><td>always</td><td>Identification of the counterparty in this reconciliation.</td></tr>
+<tr><td><code>bankDetails</code></td><td>optional</td><td>Settlement bank account details for the receiver.</td></tr>
+<tr><td><code>reconStatus</code></td><td>always</td><td>PENDING: recon initiated, awaiting counterparty acknowledgment. AGREED: both parties agree on amounts. DISPUTED: amounts</td></tr>
+<tr><td><code>disputeReason</code></td><td>conditional</td><td>Human-readable reason for DISPUTED status. Referenced when raising a dispute ticket via raise/on_raise.</td></tr>
+<tr><td><code>recon_status</code></td><td>conditional</td><td>Numeric recon status compatible with ONDC RSF receiver_recon model. 01=amounts match, 02=collector paid more than expect</td></tr>
+<tr><td><code>slaPenaltyDeduction</code></td><td>optional</td><td>Amount deducted from BPP&#x27;s net settlement due to confirmed SLA breaches on this contract. BAP tracks breaches in perform</td></tr>
+<tr><td><code>slaPenaltyBreakdown</code></td><td>optional</td><td>Per-breach penalty calculation for transparency.</td></tr>
+<tr><td><code>streamerCommissionAmount</code></td><td>conditional</td><td>Amount to settle to streamer/creator for B2C-LIVE orders. Deducted from BPP or BAP per commercial agreement.</td></tr>
+<tr><td><code>affiliateCommissionAmount</code></td><td>conditional</td><td>Amount to settle to affiliate for affiliate-sourced orders.</td></tr>
+<tr><td><code>isBatch</code></td><td>optional</td><td>Whether this reconcile covers multiple contracts as a batch. Marketplace scale requires batched settlement (daily, weekl</td></tr>
+<tr><td><code>contractIds</code></td><td>conditional</td><td>List of contract IDs covered when isBatch=true. Single-contract reconcile populates contractId instead.</td></tr>
+<tr><td><code>batchPeriod</code></td><td>conditional</td><td>Time window this batch covers.</td></tr>
+<tr><td><code>contractDetails</code></td><td>conditional</td><td>Per-contract financial breakdown for batch reconcile.</td></tr>
+<tr><td><code>parentReconId</code></td><td>conditional</td><td>When this reconcile corrects an earlier one, references the earlier reconId. Used for clawbacks, additional payments, po</td></tr>
+<tr><td><code>adjustmentType</code></td><td>conditional</td><td>Type of adjustment being made against a prior reconcile. CLAWBACK: recover funds previously settled incorrectly. ADDITIO</td></tr>
+<tr><td><code>adjustmentReason</code></td><td>conditional</td><td>Plain-language reason for the adjustment</td></tr>
+<tr><td><code>adjustmentEvidence</code></td><td>conditional</td><td>Evidence URLs supporting the adjustment (audit logs, screenshots, communications)</td></tr>
+<tr><td><code>taxWithholdings</code></td><td>conditional</td><td>Indonesian tax withholdings applied to this settlement. Marketplaces in Indonesia withhold PPh 22 on certain transaction</td></tr>
+<tr><td><code>codRemittance</code></td><td>conditional</td><td>COD remittance record — how the collecting party (LSP or BPP) remits collected cash to the selling party. Batched across</td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/reconcile/v1</h1>
+
+<p>Inter-NP financial reconciliation between BAP (collector) and BPP (receiver).</p>
+
+<h2>Attaches to</h2>
+<p>`beckn:Settlement.settlementAttributes`</p>
+
+<h2>APIs</h2>
+<p>`reconcile` → `on_reconcile`</p>
+
+<h2>Flow</h2>
+<p>1. BAP initiates `/reconcile` with contract amounts, finder fee, withholding, adjustments</p>
+<p>2. BPP responds via `/on_reconcile` with `recon_status`: 01=AGREED, 02=OVERPAID, 03=UNDERPAID</p>
+<p>3. If DISPUTED, either party raises a ticket via `raise/on_raise`</p>
+
+<h2>Adjustments</h2>
+<p>Adjustments cover contract-level changes that must be agreed before settlement:</p>
+<p>PRICE_ADJUSTMENT, CANCELLATION_FEE, RETURN_DEDUCTION, DAMAGE_PENALTY, COD_REMITTANCE, REFUND</p>
+
+<h2>Relationship to ONDC RSF</h2>
+<p>reconcile/on_reconcile maps conceptually to ONDC RSF `recon/on_recon`.</p>
+<p>The adjustment object is an ION addition — ONDC RSF does not define adjustment types at the protocol level.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/reconcile/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "catalog/publish",
+    "version": "2.0.0",
+    "bppId": "jne.co.id",
+    "bppUri": "https://api.jne.co.id/ion",
+    "networkId": "ion.id/logistics",
+    "transactionId": "cat-pub-20260422-0001",
+    "messageId": "msg-cat-pub-20260422-0001",
+    "timestamp": "2026-04-22T08:00:00.000Z",
+    "ttl": "PT24H",
+    "schemaContext": [
+      "https://schema.ion.id/logistics/v1/provider/context.jsonld",
+      "https://schema.ion.id/logistics/v1/offer/context.jsonld",
+      "https://schema.ion.id/logistics/v1/resource/context.jsonld"
+    ]
+  },
+  "message": {
+    "catalog": {
+      "bppId": "jne.co.id",
+      "bppUri": "https://api.jne.co.id/ion",
+      "providers": [
+        {
+          "id": "jne-main",
+          "descriptor": {
+            "name": "JNE Express",
+            "shortDesc": "Indonesia's leading parcel delivery network",
+            "images": [
+              {
+                "url": "https://jne.co.id/logo.png"
+              }
+            ]
+          },
+          "availableAt": [
+            {
+              "id": "jne-hub-cengkareng",
+              "descriptor": {
+                "name": "JNE Hub Cengkareng"
+              }
+            }
+          ],
+          "providerAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/provider/context.jsonld",
+            "@type": "ion:LogisticsProviderAttributes",
+            "catalogVersion": "2026.04.22-001",
+            "catalogPublishedAt": "2026-04-22T08:00:00.000Z",
+            "catalogValidFrom": "2026-04-22T08:00:00.000Z",
+            "rateCardEffectiveFrom": "2026-04-22T08:00:00.000Z",
+            "nibRegistered": true,
+            "nibNumber": "1234567890123",
+            "siupNumber": "SIUP-LOG-001234",
+            "alfiMembership": true,
+            "asperindoMembership": true,
+            "providerCategory": "CARRIER_DIRECT",
+            "aggregatorModel": false,
+            "spinesSupported": ["LOG-PARCEL", "LOG-FREIGHT"],
+            "modesSupported": ["road", "air"],
+            "coverage": [
+              { "provinsiCode": "31", "coverageType": "BOTH" },
+              { "provinsiCode": "32", "coverageType": "BOTH" },
+              { "provinsiCode": "33", "coverageType": "BOTH" },
+              { "provinsiCode": "35", "coverageType": "BOTH" }
+            ],
+            "coldChainCertified": false,
+            "hazmatCertified": false,
+            "operatingHours": [
+              { "day": "MON", "opens": "08:00", "closes": "17:00" },
+              { "day": "TUE", "opens": "08:00", "closes": "17:00" },
+              { "day": "WED", "opens": "08:00", "closes": "17:00" },
+              { "day": "THU", "opens": "08:00", "closes": "17:00" },
+              { "day": "FRI", "opens": "08:00", "closes": "17:00" },
+              { "day": "SAT", "opens": "08:00", "closes": "13:00" }
+            ],
+            "pickupCutoffTimes": [
+              {
+                "corridor": "CGK-SUB",
+                "serviceLevel": "NEXT_DAY",
+                "cutoffTime": "15:00"
+              },
+              {
+                "corridor": "CGK-MES",
+                "serviceLevel": "STANDARD_2_3D",
+                "cutoffTime": "14:00"
+              }
+            ],
+            "fwaApplicable": true
+          }
+        }
+      ],
+      "resources": [
+        {
+          "id": "jne-parcel-service",
+          "descriptor": {
+            "name": "JNE Parcel Service"
+          },
+          "resourceAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/resource/context.jsonld",
+            "@type": "ion:LogisticsResourceAttributes",
+            "serviceType": "PARCEL",
+            "maxWeight": { "value": 30, "unit": "kilogram" },
+            "maxDimensions": {
+              "length": 150, "width": 150, "height": 150, "unit": "centimeter"
+            }
+          }
+        }
+      ],
+      "offers": [
+        {
+          "id": "jne-yes-nextday",
+          "descriptor": {
+            "name": "JNE YES — Next Day"
+          },
+          "provider": {
+            "id": "jne-main"
+          },
+          "resourceIds": ["jne-parcel-service"],
+          "validity": {
+            "start": "2026-04-22T00:00:00.000Z",
+            "end": "2026-12-31T23:59:59.000Z"
+          },
+          "availableTo": [
+            { "type": "NETWORK", "id": "ion.id/logistics" }
+          ],
+          "offerAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/offer/context.jsonld",
+            "@type": "ion:LogisticsOfferAttributes",
+            "serviceLevel": "NEXT_DAY",
+            "transportMode": "air",
+            "routingTopology": "P2H2H2P",
+            "rateLogic": "TIERED_BY_ZONE_AND_WEIGHT",
+            "chargeableWeightRule": "MAX_ACTUAL_OR_VOLUMETRIC",
+            "minimumChargeableAmount": 18000,
+            "zones": [
+              {
+                "zoneId": "Z1",
+                "corridors": ["CGK-SUB", "CGK-YOG"],
+                "baseRatePerKg": 18000,
+                "currency": "IDR"
+              },
+              {
+                "zoneId": "Z2",
+                "corridors": ["CGK-MES", "CGK-BPN"],
+                "baseRatePerKg": 26000,
+                "currency": "IDR"
+              }
+            ],
+            "weightTiers": [
+              { "maxKg": 1, "ratePerKg": 18000, "minimumCharge": 18000 },
+              { "maxKg": 5, "ratePerKg": 17000, "minimumCharge": 18000 },
+              { "maxKg": 10, "ratePerKg": 16000, "minimumCharge": 18000 }
+            ],
+            "dimensionalWeightFactor": 5000,
+            "fuelSurchargeFormula": "base * 0.08",
+            "rateModifiers": [
+              {
+                "modifierType": "FUEL_SURCHARGE",
+                "basis": "PERCENT_OF_BASE",
+                "percentOfBase": 0.08
+              },
+              {
+                "modifierType": "REMOTE_AREA",
+                "basis": "FLAT",
+                "amount": 15000,
+                "currency": "IDR",
+                "appliesWhen": "destination.remoteAreaClassification != NOT_REMOTE"
+              }
+            ],
+            "selectRequired": true,
+            "quoteValidityWindow": "PT15M",
+            "pickupModels": ["SCHEDULED_WINDOW", "ON_DEMAND", "BULK_BATCH"],
+            "pickupWindowGranularityMinutes": 120,
+            "bulkPickupMaxShipments": 500,
+            "sameDayPickupCutoffTime": "15:00",
+            "awbAllocationModel": "HYBRID",
+            "awbBlockAllocationSupported": true,
+            "labelFormatsSupported": ["PDF_A6", "ZPL_100X150", "PNG_DIGITAL"],
+            "bulkApiSupported": true,
+            "maxBulkBatchSize": 500,
+            "apiRateLimitPerSecond": 50,
+            "apiSlaCommitment": {
+              "p50LatencyMs": 250,
+              "p99LatencyMs": 1500,
+              "uptimeCommitment": "99.9%",
+              "statusPushMaxDelayMs": 2000
+            },
+            "agentAssignmentModel": "PRE_ASSIGNED",
+            "slotsAvailable": false,
+            "availableOnCod": true,
+            "maxCodAmount": 10000000,
+            "codPolicy": "ion://policy/payment-terms.cod-weekly-monday",
+            "codShipmentLimit": 10000000,
+            "codBuyerDailyLimit": 50000000,
+            "codHoldPeriodDays": 5,
+            "maxDeclaredValue": 50000000,
+            "insurancePolicy": "ion://policy/insurance.standard-declared-value-cap",
+            "cancellationPolicy": "ion://policy/cancel.logistics.prepickup-free",
+            "claimPolicy": "ion://policy/liability.loss-cap-per-shipment",
+            "slaPolicy": "ion://policy/sla.standard-95pct",
+            "evidencePolicy": "ion://policy/evidence.standard.photo-24hr",
+            "disputePolicy": "ion://policy/dispute-resolution.commercial-odr",
+            "reAttemptPolicy": "ion://policy/re-attempt.standard-3-free",
+            "fwaApplicable": true
+          }
+        },
+        {
+          "id": "jne-reg-economy",
+          "descriptor": {
+            "name": "JNE REG — Economy"
+          },
+          "provider": {
+            "id": "jne-main"
+          },
+          "resourceIds": ["jne-parcel-service"],
+          "validity": {
+            "start": "2026-04-22T00:00:00.000Z",
+            "end": "2026-12-31T23:59:59.000Z"
+          },
+          "availableTo": [
+            { "type": "NETWORK", "id": "ion.id/logistics" }
+          ],
+          "offerAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/offer/context.jsonld",
+            "@type": "ion:LogisticsOfferAttributes",
+            "serviceLevel": "STANDARD_2_3D",
+            "transportMode": "road",
+            "routingTopology": "P2H2H2P",
+            "rateLogic": "TIERED_BY_ZONE_AND_WEIGHT",
+            "zones": [
+              {
+                "zoneId": "Z1",
+                "corridors": ["CGK-SUB", "CGK-YOG"],
+                "baseRatePerKg": 9000,
+                "currency": "IDR"
+              },
+              {
+                "zoneId": "Z2",
+                "corridors": ["CGK-MES", "CGK-BPN"],
+                "baseRatePerKg": 14000,
+                "currency": "IDR"
+              }
+            ],
+            "weightTiers": [
+              { "maxKg": 1, "ratePerKg": 9000, "minimumCharge": 9000 },
+              { "maxKg": 5, "ratePerKg": 8500, "minimumCharge": 9000 }
+            ],
+            "selectRequired": false,
+            "quoteValidityWindow": "PT1H",
+            "pickupModels": ["DAILY_PICKUP", "DROP_OFF_AT_COUNTER"],
+            "awbAllocationModel": "BPP_ASSIGNED",
+            "labelFormatsSupported": ["PDF_A6"],
+            "availableOnCod": true,
+            "maxCodAmount": 10000000,
+            "codPolicy": "ion://policy/payment-terms.cod-weekly-monday",
+            "codShipmentLimit": 10000000,
+            "codBuyerDailyLimit": 20000000,
+            "codHoldPeriodDays": 5,
+            "cancellationPolicy": "ion://policy/cancel.logistics.prepickup-free",
+            "claimPolicy": "ion://policy/liability.loss-cap-per-shipment",
+            "slaPolicy": "ion://policy/sla.standard-95pct",
+            "evidencePolicy": "ion://policy/evidence.standard.photo-24hr",
+            "disputePolicy": "ion://policy/dispute-resolution.commercial-odr",
+            "reAttemptPolicy": "ion://policy/re-attempt.standard-3-free",
+            "fwaApplicable": true
+          }
+        }
+      ]
+    }
+  }
+}

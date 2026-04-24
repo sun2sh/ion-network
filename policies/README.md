@@ -23,18 +23,29 @@ Each IRI resolves to a terms document in this directory. BAP renders display tex
 
 ```
 policies/
-  return/v1/                15 return policies
-  cancellation/v1/          10 cancellation policies
-  warranty/v1/              8 warranty policies
-  dispute/v1/               5 dispute resolution policies
-  grievance-sla/v1/         4 grievance SLA policies
-  payment-terms/v1/         8 payment terms policies
-  penalty/v1/               17 penalty policies (referenced by others)
+  # Trade-originated (some categories are cross-sector)
+  return/v1/                15 return policies (trade)
+  cancellation/v1/          10 trade policies + logistics-cancellation-policies.yaml (multi-policy doc)
+  warranty/v1/              8 warranty policies (trade)
+  dispute/v1/               5 dispute resolution policies (cross-sector)
+  grievance-sla/v1/         4 grievance SLA policies (cross-sector)
+  payment-terms/v1/         8 payment terms policies (cross-sector)
+  penalty/v1/               17 trade penalties + logistics-penalty-policies.yaml (multi-policy doc)
+
+  # Logistics-originated (NEW in v0.5.2)
+  evidence/v1/              Delivery evidence policies (photo, GPS, signature)
+  insurance/v1/              Cargo insurance policies (ICC A/B/C, declared-value caps)
+  sla/v1/                   Logistics SLA policies (95% / rebate tiers)
+  re-attempt/v1/            NDR / re-delivery attempt policies
+  weight-dispute/v1/        Weight discrepancy resolution policies
+  liability/v1/             Loss and damage liability caps
+  incident/v1/              Accident, breakdown, robbery, force-majeure
+  rts-handoff/v1/           Return-to-sender handoff models
+  logistics-fwa/v1/         Framework Agreement instances (per-enterprise)
+
   registry.json             generated aggregate index
   generate_registry.py      builds registry.json from per-file YAML
 ```
-
-Total: **67 ratified policy documents**.
 
 ## Versioning
 
@@ -76,4 +87,4 @@ ion search "penalty for seller late dispatch"
 
 Atlas surfaces matching IRIs with their display text and applicability.
 
-Web Explorer: `devlabs.ion.id/atlas/policies` (coming soon)
+Web Explorer: `schema.ion.id/atlas/policies` (coming soon)

@@ -1,0 +1,402 @@
+# ION Logistics Performance States v1
+# Canonical state machine definitions for all logistics spines.
+# Referenced by spine definitions via: stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#{name}
+
+states:
+
+  # ─────────────────────────────────────────────────────────────
+  # HYPERLOCAL — PRE-ASSIGNED (rider known at booking)
+  # ─────────────────────────────────────────────────────────────
+  hyperlocal-pre-assigned:
+    description: Hyperlocal delivery where rider is assigned at booking confirmation.
+    terminal: [DELIVERED, CANCELLED, FAILED]
+    transitions:
+      BOOKING_CONFIRMED:
+        next: [RIDER_ASSIGNED]
+      RIDER_ASSIGNED:
+        next: [RIDER_EN_ROUTE_TO_PICKUP]
+        exposesRiderIdentity: true
+      RIDER_EN_ROUTE_TO_PICKUP:
+        next: [RIDER_AT_PICKUP]
+      RIDER_AT_PICKUP:
+        next: [PICKED_UP, PICKUP_FAILED]
+      PICKUP_FAILED:
+        next: [BOOKING_CONFIRMED, CANCELLED]
+        triggers: [pickup-failed branch]
+      PICKED_UP:
+        next: [IN_TRANSIT]
+        requiredFields: [pickupTimestamp, proofOfPickup]
+      IN_TRANSIT:
+        next: [RIDER_AT_DELIVERY]
+      RIDER_AT_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [IN_TRANSIT, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [deliveryTimestamp, proofOfDelivery]
+      RTO_INITIATED:
+        next: [RETURNED_TO_ORIGIN]
+      RETURNED_TO_ORIGIN:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # HYPERLOCAL — FIFO AT PICKUP (rider identity known at pickup)
+  # ─────────────────────────────────────────────────────────────
+  hyperlocal-fifo:
+    description: Hyperlocal with FIFO assignment. Rider identity known at PICKED_UP.
+    terminal: [DELIVERED, CANCELLED, FAILED]
+    transitions:
+      BOOKING_CONFIRMED:
+        next: [MERCHANT_PREPARING]
+        exposesRiderIdentity: false
+      MERCHANT_PREPARING:
+        next: [MERCHANT_READY]
+      MERCHANT_READY:
+        next: [PICKED_UP]
+        description: First available rider takes the order
+      PICKED_UP:
+        next: [IN_TRANSIT]
+        exposesRiderIdentity: true
+        requiredFields: [pickupTimestamp, proofOfPickup, agentDetails]
+      IN_TRANSIT:
+        next: [RIDER_AT_DELIVERY]
+      RIDER_AT_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [IN_TRANSIT, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [deliveryTimestamp, proofOfDelivery]
+      RTO_INITIATED:
+        next: [RETURNED_TO_ORIGIN]
+      RETURNED_TO_ORIGIN:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # PARCEL — P2P (direct, no hub)
+  # ─────────────────────────────────────────────────────────────
+  parcel-p2p:
+    description: Direct parcel delivery, no hub events.
+    terminal: [DELIVERED, CANCELLED, RTO_DELIVERED, RTO_DISPOSED]
+    transitions:
+      READY_FOR_PICKUP:
+        next: [OUT_FOR_PICKUP]
+      OUT_FOR_PICKUP:
+        next: [PICKED_UP, PICKUP_FAILED]
+      PICKUP_FAILED:
+        next: [READY_FOR_PICKUP, CANCELLED]
+        triggers: [pickup-failed branch]
+      PICKED_UP:
+        next: [OUT_FOR_DELIVERY]
+        requiredFields: [pickupTimestamp, proofOfPickup]
+        triggers: [cold-chain-proof branch if cold chain, weight-dispute branch if reweighed]
+      OUT_FOR_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [OUT_FOR_DELIVERY, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [deliveryTimestamp, proofOfDelivery]
+      RTO_INITIATED:
+        next: [OUT_FOR_RTO_DELIVERY]
+      OUT_FOR_RTO_DELIVERY:
+        next: [RTO_DELIVERED, RTO_DISPOSED]
+      RTO_DELIVERED:
+        terminal: true
+      RTO_DISPOSED:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # PARCEL — P2H2P (single-hub)
+  # ─────────────────────────────────────────────────────────────
+  parcel-p2h2p:
+    description: Parcel via single consolidation hub.
+    terminal: [DELIVERED, CANCELLED, RTO_DELIVERED, RTO_DISPOSED]
+    transitions:
+      READY_FOR_PICKUP:
+        next: [OUT_FOR_PICKUP]
+      OUT_FOR_PICKUP:
+        next: [PICKED_UP, PICKUP_FAILED]
+      PICKUP_FAILED:
+        next: [READY_FOR_PICKUP, CANCELLED]
+        triggers: [pickup-failed branch]
+      PICKED_UP:
+        next: [AT_ORIGIN_HUB]
+        requiredFields: [pickupTimestamp, proofOfPickup]
+      AT_ORIGIN_HUB:
+        next: [IN_TRANSIT]
+        requiredFields: [hubId]
+      IN_TRANSIT:
+        next: [AT_DESTINATION_HUB]
+      AT_DESTINATION_HUB:
+        next: [OUT_FOR_DELIVERY]
+        requiredFields: [hubId]
+      OUT_FOR_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [OUT_FOR_DELIVERY, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [deliveryTimestamp, proofOfDelivery]
+      RTO_INITIATED:
+        next: [AT_DESTINATION_HUB, IN_TRANSIT, AT_ORIGIN_HUB, RTO_DELIVERED]
+      RTO_DELIVERED:
+        terminal: true
+      RTO_DISPOSED:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # PARCEL — P2H2H2P (multi-hub)
+  # ─────────────────────────────────────────────────────────────
+  parcel-p2h2h2p:
+    description: Parcel via both origin and destination hubs with inter-hub transit.
+    terminal: [DELIVERED, CANCELLED, RTO_DELIVERED, RTO_DISPOSED]
+    transitions:
+      READY_FOR_PICKUP:
+        next: [OUT_FOR_PICKUP]
+      OUT_FOR_PICKUP:
+        next: [PICKED_UP, PICKUP_FAILED]
+      PICKUP_FAILED:
+        next: [READY_FOR_PICKUP, CANCELLED]
+      PICKED_UP:
+        next: [AT_ORIGIN_HUB]
+        requiredFields: [pickupTimestamp, proofOfPickup]
+      AT_ORIGIN_HUB:
+        next: [SORTED_AT_ORIGIN, IN_TRANSIT_INTERHUB]
+        requiredFields: [hubId]
+      SORTED_AT_ORIGIN:
+        next: [IN_TRANSIT_INTERHUB]
+      IN_TRANSIT_INTERHUB:
+        next: [AT_DESTINATION_HUB]
+      AT_DESTINATION_HUB:
+        next: [SORTED_AT_DESTINATION, OUT_FOR_DELIVERY]
+        requiredFields: [hubId]
+      SORTED_AT_DESTINATION:
+        next: [OUT_FOR_DELIVERY]
+      OUT_FOR_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [OUT_FOR_DELIVERY, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [deliveryTimestamp, proofOfDelivery]
+      RTO_INITIATED:
+        next: [AT_DESTINATION_HUB, IN_TRANSIT_INTERHUB, AT_ORIGIN_HUB, RTO_DELIVERED]
+      RTO_DELIVERED:
+        terminal: true
+      RTO_DISPOSED:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # PARCEL — REVERSE WITH QC
+  # ─────────────────────────────────────────────────────────────
+  parcel-reverse-qc:
+    description: Consumer return with QC gating before refund release.
+    terminal: [RETURN_DELIVERED_TO_ORIGIN, RETURN_DISPUTED, RETURN_CANCELLED]
+    transitions:
+      RETURN_REQUESTED:
+        next: [RETURN_PICKUP_SCHEDULED]
+      RETURN_PICKUP_SCHEDULED:
+        next: [RETURN_PICKED_UP, RETURN_PICKUP_FAILED]
+      RETURN_PICKUP_FAILED:
+        next: [RETURN_PICKUP_SCHEDULED, RETURN_CANCELLED]
+      RETURN_PICKED_UP:
+        next: [RETURN_IN_TRANSIT]
+      RETURN_IN_TRANSIT:
+        next: [RETURN_AT_QC]
+      RETURN_AT_QC:
+        next: [QC_IN_PROGRESS]
+      QC_IN_PROGRESS:
+        next: [QC_APPROVED, QC_REJECTED]
+      QC_APPROVED:
+        next: [RETURN_DELIVERED_TO_ORIGIN]
+        triggers: [Refund released]
+      QC_REJECTED:
+        next: [RETURN_TO_BUYER, RETURN_DISPUTED]
+      RETURN_TO_BUYER:
+        next: [RETURN_CANCELLED]
+      RETURN_DELIVERED_TO_ORIGIN:
+        terminal: true
+      RETURN_DISPUTED:
+        terminal: true
+      RETURN_CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # FREIGHT — CAPACITY BASED
+  # ─────────────────────────────────────────────────────────────
+  freight-capacity:
+    description: Capacity-based freight — truck, ocean, air, rail, river.
+    terminal: [DELIVERED, CANCELLED, FREIGHT_RETURN_INITIATED]
+    transitions:
+      BOOKING_CONFIRMED:
+        next: [READY_FOR_LOADING]
+      READY_FOR_LOADING:
+        next: [LOADED, LOADING_FAILED]
+      LOADING_FAILED:
+        next: [READY_FOR_LOADING, CANCELLED]
+      LOADED:
+        next: [DEPARTED]
+        requiredFields: [loadingTimestamp, manifestVerified]
+      DEPARTED:
+        next: [IN_TRANSIT]
+        requiredFields: [departureTimestamp]
+      IN_TRANSIT:
+        next: [ARRIVED_AT_PORT, ARRIVED]
+      ARRIVED_AT_PORT:
+        next: [UNLOADED]
+      ARRIVED:
+        next: [UNLOADED]
+        requiredFields: [arrivalTimestamp]
+      UNLOADED:
+        next: [AVAILABLE_FOR_COLLECTION]
+      AVAILABLE_FOR_COLLECTION:
+        next: [DELIVERED]
+      DELIVERED:
+        terminal: true
+        requiredFields: [proofOfDelivery]
+      CANCELLED:
+        terminal: true
+      FREIGHT_RETURN_INITIATED:
+        terminal: false
+        triggers: [reverse-freight branch]
+
+  # ─────────────────────────────────────────────────────────────
+  # RO-RO
+  # ─────────────────────────────────────────────────────────────
+  roro:
+    description: Roll-on/Roll-off ferry and vessel transport.
+    terminal: [EXITED_PORT, CANCELLED, MISSED_SAILING]
+    transitions:
+      TICKET_ISSUED:
+        next: [CHECKED_IN, MISSED_SAILING]
+      CHECKED_IN:
+        next: [BOARDED]
+      BOARDED:
+        next: [SAILED]
+      SAILED:
+        next: [ARRIVED_AT_PORT]
+      ARRIVED_AT_PORT:
+        next: [DISEMBARKED]
+      DISEMBARKED:
+        next: [EXITED_PORT]
+      EXITED_PORT:
+        terminal: true
+      MISSED_SAILING:
+        terminal: false
+        triggers: [missed-sailing branch]
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # CROSS-BORDER (XB)
+  # ─────────────────────────────────────────────────────────────
+  xb:
+    description: Cross-border with customs at both ends.
+    terminal: [DELIVERED, CANCELLED, IMPORT_CUSTOMS_REJECTED, DESTROY_IN_PLACE]
+    transitions:
+      BOOKING_CONFIRMED:
+        next: [LOADED_AT_ORIGIN]
+      LOADED_AT_ORIGIN:
+        next: [EXPORT_CUSTOMS_SUBMITTED]
+      EXPORT_CUSTOMS_SUBMITTED:
+        next: [EXPORT_CUSTOMS_CLEARED, EXPORT_CUSTOMS_HELD]
+      EXPORT_CUSTOMS_HELD:
+        next: [EXPORT_CUSTOMS_CLEARED, CANCELLED]
+        triggers: [customs-hold branch]
+      EXPORT_CUSTOMS_CLEARED:
+        next: [DEPARTED_ORIGIN]
+      DEPARTED_ORIGIN:
+        next: [IN_TRANSIT_INTERNATIONAL]
+      IN_TRANSIT_INTERNATIONAL:
+        next: [ARRIVED_DESTINATION_PORT]
+      ARRIVED_DESTINATION_PORT:
+        next: [IMPORT_CUSTOMS_SUBMITTED]
+      IMPORT_CUSTOMS_SUBMITTED:
+        next: [IMPORT_CUSTOMS_CLEARED, IMPORT_CUSTOMS_HELD, IMPORT_CUSTOMS_REJECTED]
+      IMPORT_CUSTOMS_HELD:
+        next: [IMPORT_CUSTOMS_CLEARED, IMPORT_CUSTOMS_REJECTED]
+        triggers: [customs-hold branch]
+      IMPORT_CUSTOMS_REJECTED:
+        terminal: true
+        triggers: [reverse-xb branch or DESTROY_IN_PLACE decision]
+      IMPORT_CUSTOMS_CLEARED:
+        next: [RELEASED_FOR_DOMESTIC_DELIVERY]
+      RELEASED_FOR_DOMESTIC_DELIVERY:
+        next: [OUT_FOR_DELIVERY]
+      OUT_FOR_DELIVERY:
+        next: [DELIVERED, DELIVERY_ATTEMPT_FAILED]
+      DELIVERY_ATTEMPT_FAILED:
+        next: [OUT_FOR_DELIVERY, RTO_INITIATED]
+        triggers: [attempts branch]
+      DELIVERED:
+        terminal: true
+        requiredFields: [proofOfDelivery]
+      DESTROY_IN_PLACE:
+        terminal: true
+      CANCELLED:
+        terminal: true
+
+  # ─────────────────────────────────────────────────────────────
+  # WAREHOUSE — INVENTORY LIFECYCLE
+  # ─────────────────────────────────────────────────────────────
+  warehouse-inventory:
+    description: Inventory storage lifecycle. Not a transit state machine.
+    terminal: [INVENTORY_RELEASED, STORAGE_CONTRACT_EXPIRED]
+    transitions:
+      INBOUND_EXPECTED:
+        next: [INBOUND_RECEIVED]
+      INBOUND_RECEIVED:
+        next: [QC_IN_PROGRESS, STORED]
+        requiredFields: [inboundReceiptTimestamp, receivedQuantities]
+        triggers: [vas-qc branch if selected]
+      QC_IN_PROGRESS:
+        next: [STORED, INBOUND_REJECTED]
+      INBOUND_REJECTED:
+        next: [RETURN_TO_SENDER]
+        terminal: false
+      RETURN_TO_SENDER:
+        terminal: true
+      STORED:
+        next: [FULFILMENT_REQUEST_RECEIVED, INVENTORY_HOLD, MARKED_FOR_RELEASE]
+        triggers: [storage billing commences]
+      FULFILMENT_REQUEST_RECEIVED:
+        next: [PICKING]
+        triggers: [vas-kitting, vas-labelling branches if selected]
+      INVENTORY_HOLD:
+        next: [STORED, MARKED_FOR_RELEASE]
+      PICKING:
+        next: [PACKED]
+        requiredFields: [pickedSkus]
+      PACKED:
+        next: [DISPATCHED]
+        triggers: [vas-packaging branch if selected]
+      DISPATCHED:
+        next: [STORED]
+        description: >
+          Returns to STORED if more inventory remains. New transport
+          contract created and referenced in transportContractReference.
+        requiredFields: [transportContractReference]
+      MARKED_FOR_RELEASE:
+        next: [INVENTORY_RELEASED]
+        triggers: [inventory-release branch]
+      INVENTORY_RELEASED:
+        terminal: true
+      STORAGE_CONTRACT_EXPIRED:
+        terminal: true

@@ -1,0 +1,340 @@
+# ION Logistics Branch — Cross-Cutting v1
+# NOT OAS. ION flow specification document.
+#
+# IMPORTANT ARCHITECTURAL NOTE:
+# This branch uses two classes of endpoints:
+#
+#   (1) Beckn 2.0 native endpoints:
+#       /track, /on_track, /status, /on_status, /support, /on_support,
+#       /rate, /on_rate, /update, /on_update
+#
+#   (2) ION protocol extensions (NOT in Beckn 2.0 core):
+#       /raise, /on_raise, /raise_status, /on_raise_status,
+#       /raise_details, /on_raise_details
+#       /reconcile, /on_reconcile
+#
+# ION extensions are intentional additions to support network-adjudicated
+# dispute resolution (/raise family) and standardised financial settlement
+# reconciliation (/reconcile, /on_reconcile). These are documented explicitly
+# as extensions so conformant implementations can distinguish core Beckn 2.0
+# surface from ION additions.
+#
+# See docs/ION_Beckn_Conformance.md for full treatment.
+
+id: ion-logistics-branch-cross-cutting-v1
+version: "1.0.0"
+branchType: cross-cutting
+sectorCode: B
+status: ready
+description: >
+  Branches available on all logistics spines throughout the transaction lifecycle.
+  Mix of Beckn 2.0 native endpoints and ION-specific extension endpoints
+  (each clearly marked). context.try=true is supported on Beckn 2.0's
+  update, cancel, rate, and support actions (per Beckn 2.0 spec) and by
+  ION extension also on reconcile.
+
+appliesTo:
+  - LOG-HYPERLOCAL
+  - LOG-PARCEL
+  - LOG-FREIGHT
+  - LOG-RORO
+  - LOG-XB
+  - LOG-WAREHOUSE
+
+window:
+  earliest: on_confirm
+  latest: contract_COMPLETE
+
+subBranches:
+
+  track:
+    id: track
+    apis: [track, on_track]
+    endpointClass: BECKN_2_0_NATIVE
+    description: >
+      Real-time tracking handle request. BPP returns a tracking URL, WebSocket
+      endpoint, or webhook handle for live fulfilment tracking. For
+      LOG-HYPERLOCAL, returns live GPS. For LOG-PARCEL, returns AWB tracking
+      URL. Distinct from /status which returns point-in-time state.
+      Extension fields ride on Beckn's native Tracking.trackingAttributes slot.
+    window:
+      earliest: on_confirm
+      latest: "on_status[DELIVERED]"
+    steps:
+      - step: track
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.tracking.contract.id
+      - step: on_track
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.tracking.url            # Beckn required
+          - message.tracking.status         # Beckn required: ACTIVE | INACTIVE
+        conditionalFields:
+          - field: message.tracking.trackingAttributes.trackingType
+            condition: LIVE_GPS | AWB_URL | WEBHOOK | WEBSOCKET
+          - field: message.tracking.trackingAttributes.credentials
+            condition: required for WEBSOCKET or authenticated webhook
+          - field: message.tracking.trackingAttributes.refreshIntervalSeconds
+            condition: for LIVE_GPS tracking
+    extensionPacks:
+      - logistics/tracking/v1           # ION Tracking extension pack
+
+  status:
+    id: status
+    apis: [status, on_status]
+    endpointClass: BECKN_2_0_NATIVE
+    description: >
+      Point-in-time state query. BAP calls /status to get current contract
+      state. BPP also sends unsolicited /on_status at every state transition
+      throughout the spine's state machine.
+    window:
+      earliest: on_confirm
+      latest: contract_COMPLETE
+    steps:
+      - step: status
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+      - step: on_status
+        from: BPP
+        to: BAP
+        direction: callback_or_unsolicited
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.performance[].status
+
+  support:
+    id: support
+    apis: [support, on_support]
+    endpointClass: BECKN_2_0_NATIVE
+    description: >
+      Customer-support channel. Supports context.try=true to preview available
+      support channels without opening a ticket. Standard customer-care
+      categories only — commercial dispute escalation is NOT routed through
+      support; use the 'raise' sub-branch (ION extension) for that.
+    window:
+      earliest: on_confirm
+      latest: unbounded
+    steps:
+      - step: support
+        from: BAP_or_BPP
+        to: counterparty
+        direction: request
+        requiredFields:
+          - message.support.orderId
+        conditionalFields:
+          - field: context.try
+            condition: optional. If true, returns support channels without opening ticket.
+          - field: message.support.supportAttributes.supportCategory
+            condition: see supportCategories
+      - step: on_support
+        from: recipient
+        to: requester
+        direction: callback
+        requiredFields:
+          - message.support.callback_url
+    supportCategories:
+      - RIDER_CONTACT
+      - DELIVERY_RESCHEDULE
+      - CHANGE_ADDRESS
+      - DOCUMENT_REQUEST
+      - INVOICE_REQUEST
+      - TRACKING_HELP
+      - GENERAL_ENQUIRY
+    extensionPacks:
+      - logistics/support/v1
+
+  rate:
+    id: rate
+    apis: [rate, on_rate]
+    endpointClass: BECKN_2_0_NATIVE
+    description: >
+      Post-fulfilment ratings. Supports context.try=true to preview the
+      rating form before submission. Beckn 2.0 RatingInput.target.targetAttributes
+      is the native extension slot for rating categories.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: contract_COMPLETE
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.ratingInput.target.id
+          - message.ratingInput.target.descriptor
+          - message.ratingInput.range
+        conditionalFields:
+          - field: context.try
+            condition: optional. If true, returns the rating form without recording.
+          - field: message.ratingInput.target.targetAttributes
+            condition: ION rating target extension — see logistics/rating/v1
+          - field: message.ratingInput.feedbackFormSubmission
+            condition: when a detailed feedback form is completed
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.ratingInput.target.id
+    ratingTargetTypes:
+      - CONTRACT
+      - FULFILLMENT
+      - AGENT
+      - PROVIDER
+      - ITEM
+    extensionPacks:
+      - logistics/rating/v1
+
+  reconcile:
+    id: reconcile
+    apis: [reconcile, on_reconcile]
+    endpointClass: ION_EXTENSION           # NOT in Beckn 2.0 core
+    description: >
+      ION EXTENSION (beyond Beckn 2.0 core). Financial settlement
+      reconciliation endpoint. BAP initiates after contract COMPLETE.
+      Covers final amount including weight-dispute adjustments, SLA
+      rebates, COD collected amounts, PPN declarations, net settlement.
+      context.try=true previews the reconciliation statement without
+      committing Settlement state transition.
+      Rationale for extension: Beckn 2.0 has no dedicated reconciliation
+      endpoint; ION networks require standardised reconciliation for
+      regulatory and audit purposes. See extensions/ion-endpoints.yaml.
+    window:
+      earliest: "on_status[DELIVERED]"
+      latest: settlementWindow_expiry
+    steps:
+      - step: reconcile
+        from: BAP
+        to: BPP
+        direction: request
+        additionalFields:
+          - context.try
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconId
+          - message.contract.settlements[].settlementAttributes.contractId
+          - message.contract.settlements[].settlementAttributes.settlementBasis
+          - message.contract.settlements[].settlementAttributes.settlementWindow
+          - message.contract.settlements[].settlementAttributes.collectedBy
+          - message.contract.settlements[].settlementAttributes.amounts.baseContractAmount
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.amounts.weightAdjustmentAmount
+            condition: if weight-dispute branch resolved with amount change
+          - field: message.contract.settlements[].settlementAttributes.amounts.slaRebateAmount
+            condition: if SLA breach rebate applies per slaPolicy IRI
+          - field: message.contract.settlements[].settlementAttributes.amounts.codCollectedAmount
+            condition: for COD transactions
+          - field: message.contract.settlements[].settlementAttributes.amounts.codRemittanceAmount
+            condition: net COD after COD charge deduction
+          - field: message.contract.settlements[].settlementAttributes.amounts.fwaVolumeRebate
+            condition: if FWA includes volume-based rebate tiers
+
+      - step: on_reconcile
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconId
+          - message.contract.settlements[].settlementAttributes.reconStatus
+          - message.contract.settlements[].settlementAttributes.netSettlementAmount
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.disputeReason
+            condition: if reconStatus=DISPUTED
+        reconStatusValues:
+          - AGREED
+          - DISPUTED
+          - PENDING_ADJUSTMENT
+
+  raise:
+    id: raise
+    apis: [raise, on_raise, raise_status, on_raise_status, raise_details, on_raise_details]
+    endpointClass: ION_EXTENSION           # NOT in Beckn 2.0 core
+    description: >
+      ION EXTENSION (beyond Beckn 2.0 core). Network escalation for
+      commercial dispute adjudication. Direction is participant → ION
+      network (not BAP↔BPP). Triggered when bilateral resolution via
+      /update exceeds the policy-defined SLA. ION Central reads the
+      contract's /update history as the evidence trail and adjudicates
+      per the applicable policy IRI.
+      Rationale for extension: Beckn 2.0 core has no network-adjudication
+      primitive. /support is for bilateral customer-care only; escalation
+      to a network operator requires ION-specific protocol support.
+      See extensions/ion-endpoints.yaml for full endpoint surface.
+    window:
+      earliest: on_confirm
+      latest: unbounded
+    steps:
+      - step: raise
+        from: BAP_or_BPP
+        to: ION_GATEWAY
+        direction: escalation
+        requiredFields:
+          - message.ticket.title
+          - message.ticket.description
+          - message.ticket.type
+          - message.ticket.priority
+          - message.ticket.contractReference
+          - message.ticket.applicablePolicyIri
+          - message.ticket.bilateralAttemptLog[]
+        disputeTypes:
+          - WEIGHT_DISCREPANCY
+          - DAMAGE_CLAIM
+          - LOSS_CLAIM
+          - SLA_BREACH
+          - COD_REMITTANCE_FAILURE
+          - FWA_TERM_VIOLATION
+          - EKYC_DISPUTE
+          - CUSTOMS_DUTY_DISPUTE
+          - GENERAL_COMMERCIAL
+          - SECURITY_INCIDENT
+
+      - step: on_raise
+        from: ION_GATEWAY
+        to: BAP_and_BPP
+        direction: notification
+        description: Acknowledgment with assigned ticket ID.
+        requiredFields:
+          - message.ticket.id
+          - message.ticket.status
+          - message.ticket.expectedResolutionTimeline
+
+      - step: raise_status
+        from: BAP_or_BPP
+        to: ION_GATEWAY
+        direction: request
+        description: Poll for current ticket status.
+        requiredFields:
+          - message.ticket.id
+
+      - step: on_raise_status
+        from: ION_GATEWAY
+        to: requester
+        direction: callback
+        requiredFields:
+          - message.ticket.status
+          - message.ticket.stage
+
+      - step: raise_details
+        from: BAP_or_BPP
+        to: ION_GATEWAY
+        direction: request
+        description: Request full ticket thread.
+
+      - step: on_raise_details
+        from: ION_GATEWAY
+        to: requester
+        direction: callback
+        description: Full ticket with all thread messages and resolution notes.
+
+    policyReferences:
+      - ion://policy/dispute-resolution.commercial-odr
+      - ion://policy/dispute-resolution.consumer-bpsk
+      - ion://policy/dispute-resolution.commercial-bani

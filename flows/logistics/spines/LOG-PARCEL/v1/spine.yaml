@@ -1,0 +1,478 @@
+# ION Logistics Flow - Parcel (LOG-PARCEL) Spine v1
+# NOT OAS. ION flow specification document.
+# The reference logistics spine. Every other logistics spine is defined as a delta from this one.
+
+id: ion-logistics-LOG-PARCEL-v1
+version: "1.0.0"
+pattern: Parcel Logistics
+sectorCode: B
+status: ready
+description: >
+  Hub-routed parcel logistics — domestic and cross-border-by-parcel,
+  B2C and B2B. Covers standard express and economy parcel services
+  (JNE, J&T, SiCepat, Lion Parcel, Anteraja, Pos Indonesia, domestic
+  carriers and international parcel express). AWB-centric, scan-event
+  tracking, hub-aware state machine. B2B transactions without an active
+  FWA trigger the ekyc branch at init.
+
+participants:
+  BAP: Buyer App Platform
+  BPP: Buyer Price Provider (LSP-facing)
+  ION_CATALOG: ION Catalogue Service (Phase 1 only)
+
+phases:
+  phase1:
+    name: Catalog
+    communication: async pub/sub
+    steps:
+      - step: publish_catalog
+        from: BPP
+        to: ION_CATALOG
+        direction: publish
+        requiredFields:
+          - context.domain
+          - context.bppId
+          - context.timestamp
+          - message.catalog.providers[].id
+          - message.catalog.providers[].descriptor.name
+          - message.catalog.providers[].providerAttributes.nibRegistered
+          - message.catalog.providers[].providerAttributes.siupNumber
+          - message.catalog.providers[].providerAttributes.spinesSupported[]
+          - message.catalog.providers[].providerAttributes.modesSupported[]
+          - message.catalog.providers[].providerAttributes.coverage[]
+          - message.catalog.providers[].providerAttributes.operatingHours[]
+          - message.catalog.providers[].providerAttributes.providerCategory
+          - message.catalog.providers[].providerAttributes.aggregatorModel
+          - message.catalog.providers[].items[].id
+          - message.catalog.providers[].items[].resourceAttributes.serviceType
+          - message.catalog.providers[].items[].resourceAttributes.maxWeight
+          - message.catalog.providers[].items[].resourceAttributes.maxDimensions
+          - message.catalog.providers[].offers[].id
+          - message.catalog.providers[].offers[].offerAttributes.serviceLevel
+          - message.catalog.providers[].offers[].offerAttributes.routingTopology
+          - message.catalog.providers[].offers[].offerAttributes.transportMode
+          - message.catalog.providers[].offers[].offerAttributes.rateLogic
+          - message.catalog.providers[].offers[].offerAttributes.selectRequired
+          - message.catalog.providers[].offers[].offerAttributes.quoteValidityWindow
+          - message.catalog.providers[].offers[].offerAttributes.cancellationPolicy
+          - message.catalog.providers[].offers[].offerAttributes.claimPolicy
+          - message.catalog.providers[].offers[].offerAttributes.slaPolicy
+          - message.catalog.providers[].offers[].offerAttributes.evidencePolicy
+          - message.catalog.providers[].offers[].offerAttributes.disputePolicy
+          - message.catalog.providers[].offers[].offerAttributes.availableOnCod
+          - message.catalog.providers[].offers[].offerAttributes.maxDeclaredValue
+        conditionalFields:
+          - field: message.catalog.providers[].offers[].offerAttributes.zones[]
+            condition: required when rateLogic is TIERED_BY_ZONE or TIERED_BY_ZONE_AND_WEIGHT
+          - field: message.catalog.providers[].offers[].offerAttributes.weightTiers[]
+            condition: required when rateLogic is TIERED_BY_WEIGHT or TIERED_BY_ZONE_AND_WEIGHT
+          - field: message.catalog.providers[].offers[].offerAttributes.dimensionalWeightFactor
+            condition: required when rateLogic uses volumetric weight
+          - field: message.catalog.providers[].offers[].offerAttributes.codPolicy
+            condition: required when availableOnCod is true
+          - field: message.catalog.providers[].offers[].offerAttributes.insurancePolicy
+            condition: required when insurance is offered
+          - field: message.catalog.providers[].providerAttributes.coldChainCertified
+            condition: required if cold chain is supported
+          - field: message.catalog.providers[].providerAttributes.hazmatCertified
+            condition: required if hazmat is supported
+          - field: message.catalog.providers[].offers[].offerAttributes.fwaApplicable
+            condition: true if this offer accepts transactions under Framework Agreements
+        schemaPacks:
+          core: [localization/v1, identity/v1, address/v1]
+          logistics: [provider/v1, resource/v1, offer/v1]
+
+      - step: on_discover
+        from: ION_CATALOG
+        to: BAP
+        direction: push
+        description: Catalog pushed to BAP subscription. Incremental on updates.
+
+  phase2:
+    name: Transaction
+    communication: direct BAP-BPP
+    steps:
+      - step: select
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP requests firm quote for specific shipment. Required when
+          offer.selectRequired is true (zone-computed, capacity-constrained,
+          or surge-priced offers). Optional when offer.selectRequired is
+          false AND catalog rate is binding. Skipped when transaction
+          references an active FWA covering the shipment parameters.
+        requiredFields:
+          - context.transactionId
+          - context.messageId
+          - context.domain
+          - context.bapId
+          - context.bapUri
+          - context.bppId
+          - context.bppUri
+          - context.timestamp
+          - context.ttl
+          - message.contract.participants[role=CONSIGNOR].id
+          - message.contract.participants[role=CONSIGNEE].id
+          - message.contract.commitments[].resources[].resourceAttributes.weight
+          - message.contract.commitments[].resources[].resourceAttributes.dimensions
+          - message.contract.performance[].stops[].location.address.area_code
+          - message.contract.performance[].stops[].type
+          - message.contract.performance[].performanceAttributes.serviceLevel
+        conditionalFields:
+          - field: message.contract.contractAttributes.fwaReference
+            condition: required when transacting under an FWA
+          - field: message.contract.commitments[].resources[].resourceAttributes.declaredValue
+            condition: required when insurance is requested
+          - field: message.contract.commitments[].resources[].resourceAttributes.temperatureRequirement
+            condition: required for cold chain
+          - field: message.contract.commitments[].resources[].resourceAttributes.hazmatClass
+            condition: required for hazmat shipments
+
+      - step: on_select
+        from: BPP
+        to: BAP
+        direction: callback
+        description: >
+          BPP validates serviceability, confirms capacity, computes firm
+          quote, returns supported routing topology and TAT commitment.
+          The quote is binding for the duration of quoteValidityWindow.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+          - message.contract.performance[].performanceAttributes.routingTopology
+          - message.contract.performance[].performanceAttributes.estimatedTAT
+          - message.contract.offerAttributes.quoteValidityWindow
+        conditionalFields:
+          - field: message.contract.consideration.considerationAttributes.breakup[].considerationAttributes.ppnRate
+            condition: required on TAX breakup lines
+          - field: message.contract.performance[].performanceAttributes.capacityConfirmed
+            condition: required for capacity-constrained offerings
+        schemaPacks:
+          logistics: [consideration/v1, performance/v1]
+          core: [tax/v1]
+
+      - step: init
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP provides consignor and consignee details, pickup and drop
+          addresses, payment method. For B2B without an active FWA, eKYC
+          sub-flow is triggered (see ekyc branch).
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.participants[role=CONSIGNOR].person.name
+          - message.contract.participants[role=CONSIGNOR].contact.phone
+          - message.contract.participants[role=CONSIGNOR].address
+          - message.contract.participants[role=CONSIGNEE].person.name
+          - message.contract.participants[role=CONSIGNEE].contact.phone
+          - message.contract.participants[role=CONSIGNEE].address
+          - message.contract.performance[].id
+          - message.contract.performance[].stops[].location.address
+          - message.contract.performance[].stops[].location.gps
+          - message.contract.performance[].stops[].location.area_code
+          - message.contract.performance[].stops[].location.ionAddressAttributes.provinsiCode
+          - message.contract.settlements[].settlementAttributes.method
+          - message.contract.settlements[].settlementAttributes.paymentRail
+          - message.contract.settlements[].settlementAttributes.collectedBy
+        conditionalFields:
+          - field: message.contract.participants[role=CONSIGNOR].npwp
+            condition: required for B2B shipments from registered businesses
+          - field: message.contract.participants[role=CONSIGNEE].npwp
+            condition: required for B2B shipments to registered businesses
+          - field: message.contract.contractAttributes.ekycFormReference
+            condition: required for B2B first transaction without active FWA
+          - field: message.contract.contractAttributes.invoicePreferences
+            condition: if Faktur Pajak is requested
+          - field: message.contract.contractAttributes.fwaReference
+            condition: required when transacting under an FWA
+          - field: message.contract.contractAttributes.parentContractReference
+            condition: required when this is a child transaction of a parent capacity contract
+        schemaPacks:
+          core: [address/v1, payment/v1, identity/v1]
+          logistics: [contract/v1]
+
+      - step: on_init
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP returns payment instructions. Final quote confirmed. eKYC status returned if ekyc branch was active.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.methodDetail[]
+          - message.contract.consideration.considerationAttributes.breakup[]
+          - message.contract.consideration.considerationAttributes.totalAmount
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.methodDetail.qrisString
+            condition: for QRIS method
+          - field: message.contract.settlements[].settlementAttributes.methodDetail.vaNumber
+            condition: for VIRTUAL_ACCOUNT method
+          - field: message.contract.settlements[].settlementAttributes.methodDetail.deepLink
+            condition: for EWALLET method
+          - field: message.contract.contractAttributes.ekycStatus
+            condition: returned if ekyc branch was triggered
+        schemaPacks:
+          core: [payment/v1]
+
+      - step: confirm
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP confirms booking. Binding commit. Payment status declared.
+        requiredFields:
+          - message.contract.participants[role=PROVIDER].id
+          - message.contract.commitments[]
+          - message.contract.participants[role=CONSIGNOR]
+          - message.contract.participants[role=CONSIGNEE]
+          - message.contract.performance[]
+          - message.contract.settlements[].settlementAttributes.status
+          - message.contract.settlements[].settlementAttributes.method
+
+      - step: on_confirm
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP creates booking. Returns contract ID, AWB number, performance ID.
+        requiredFields:
+          - message.contract.id
+          - message.contract.status
+          - message.contract.performance[].id
+          - message.contract.performance[].performanceAttributes.awbNumber
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.settlements[].settlementAttributes.status
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.proofOfPickupType
+            condition: always declared (OTP, PHOTO, SIGNATURE, BIOMETRIC)
+          - field: message.contract.performance[].performanceAttributes.proofOfDeliveryType
+            condition: always declared
+          - field: message.contract.performance[].performanceAttributes.deliveryOtp
+            condition: if proofOfDeliveryType=OTP
+          - field: message.contract.performance[].performanceAttributes.shippingLabelUrl
+            condition: returned when label is ready for printing
+        schemaPacks:
+          core: [payment/v1, reconcile/v1]
+          logistics: [performance/v1, contract/v1]
+
+  phase3:
+    name: Fulfilment
+    communication: BPP pushes unsolicited, BAP polls optionally
+    stateMachine: schema/extensions/logistics/performance-states/v1/states.yaml#parcel
+    description: >
+      The stateMachine variant is determined by the offer's routingTopology:
+      - P2P: parcel-p2p state machine (direct pickup to delivery, no hub states)
+      - P2H2P: parcel-p2h2p state machine (single hub consolidation)
+      - P2H2H2P: parcel-p2h2h2p state machine (multi-hub transit)
+    steps:
+      - step: on_status
+        trigger: READY_FOR_PICKUP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Shipping label generated and shared with consignor.
+
+      - step: on_status
+        trigger: OUT_FOR_PICKUP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Rider assigned and en-route to consignor location.
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.agentDetails
+            condition: required when agentAssignmentModel is PRE_ASSIGNED
+
+      - step: on_status
+        trigger: PICKED_UP
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Package picked up. Proof of pickup captured. For P2H2P and P2H2H2P topologies, state machine continues to hub events.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.pickupTimestamp
+          - message.contract.performance[].performanceAttributes.proofOfPickup
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.temperatureReading
+            condition: required for cold chain (triggers cold-chain-proof branch)
+          - field: message.contract.performance[].performanceAttributes.actualWeight
+            condition: if LSP reweighs at pickup (may trigger weight-dispute branch)
+
+      - step: on_status
+        trigger: AT_ORIGIN_HUB
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: P2H2P and P2H2H2P only. Package arrived at origin hub.
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.hubId
+            condition: required for hub events
+
+      - step: on_status
+        trigger: IN_TRANSIT
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Package in transit between hubs (P2H2H2P) or to destination (P2H2P).
+
+      - step: on_status
+        trigger: AT_DESTINATION_HUB
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: P2H2P and P2H2H2P only. Package arrived at destination hub.
+
+      - step: on_status
+        trigger: OUT_FOR_DELIVERY
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Package out for final delivery. ETA provided.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.estimatedDeliveryTime
+
+      - step: on_status
+        trigger: DELIVERED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Package delivered. Proof of delivery captured. Contract COMPLETE. Rating window opens.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.status
+          - message.contract.performance[].performanceAttributes.deliveryTimestamp
+          - message.contract.performance[].performanceAttributes.proofOfDelivery
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.temperatureReading
+            condition: required for cold chain (cold-chain-proof branch)
+          - field: message.contract.settlements[].settlementAttributes.codAmountCollected
+            condition: required for COD transactions
+
+branchWindows:
+  during-transaction:
+    earliest: select
+    latest: on_confirm
+  ekyc:
+    earliest: init
+    latest: on_init
+    condition: B2B transaction without active FWA
+  rts-handoff:
+    earliest: on_confirm
+    latest: "on_status[READY_FOR_PICKUP]"
+    condition: >
+      Origin is a warehouse or B2B seller requiring explicit RTS signal
+      before rider dispatch. Scenario selected per contract:
+      seller-direct, warehouse-same-bpp, or warehouse-cross-bpp.
+  cancellation:
+    earliest: on_confirm
+    latest: "on_status[OUT_FOR_DELIVERY]"
+  attempts:
+    earliest: "on_status[OUT_FOR_DELIVERY]"
+    latest: "on_status[DELIVERED]"
+  weight-dispute:
+    earliest: "on_status[PICKED_UP]"
+    latest: "on_status[DELIVERED]"
+  cold-chain-proof:
+    earliest: "on_status[PICKED_UP]"
+    latest: "on_status[DELIVERED]"
+  reverse:
+    earliest: "on_status[DELIVERED]"
+    latest: returnWindow_expiry
+  exception:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+  cross-cutting:
+    earliest: on_confirm
+    latest: contract_COMPLETE
+
+  phase4:
+    name: Post-Fulfilment
+    communication: direct BAP-BPP
+    steps:
+      - step: rate
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP submits ratings for the delivery experience. Supports
+          context.try: true to preview rating form without recording.
+          Ratable entities: contract (overall), fulfillment (delivery
+          timeliness), agent (rider behaviour), provider (LSP service).
+        requiredFields:
+          - message.rating.contractReference
+          - message.rating.overallRating
+        conditionalFields:
+          - field: message.rating.dimensions.onTime
+          - field: message.rating.dimensions.packageCondition
+          - field: message.rating.dimensions.agentBehaviour
+          - field: message.rating.feedback
+
+      - step: on_rate
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.rating.acknowledgement
+
+      - step: reconcile
+        endpointClass: ION_EXTENSION
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          ION EXTENSION (not in Beckn 2.0 core).
+          BAP initiates financial reconciliation. Reconcile covers the
+          agreed final amount (after any weight-dispute adjustments),
+          SLA rebates applied, COD amounts, PPN declarations, and net
+          settlement. Uses ION Core reconcile/v1 schema.
+          context.try: true previews the reconciliation without recording.
+          See docs/ION_Beckn_Conformance.md.
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconId
+          - message.contract.settlements[].settlementAttributes.contractId
+          - message.contract.settlements[].settlementAttributes.settlementBasis
+          - message.contract.settlements[].settlementAttributes.settlementWindow
+          - message.contract.settlements[].settlementAttributes.collectedBy
+          - message.contract.settlements[].settlementAttributes.amounts.baseContractAmount
+        conditionalFields:
+          - field: message.contract.settlements[].settlementAttributes.amounts.weightAdjustmentAmount
+            condition: if weight-dispute branch resolved with amount change
+          - field: message.contract.settlements[].settlementAttributes.amounts.slaRebateAmount
+            condition: if SLA breach rebate applies per slaPolicy
+          - field: message.contract.settlements[].settlementAttributes.amounts.codCollectedAmount
+            condition: for COD transactions
+        schemaPacks:
+          core: [reconcile/v1]
+
+      - step: on_reconcile
+        endpointClass: ION_EXTENSION
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.settlements[].settlementAttributes.reconId
+          - message.contract.settlements[].settlementAttributes.netSettlementAmount
+          - message.contract.settlements[].settlementAttributes.status
+
+rtsPattern:
+  description: >
+    Ready-to-Ship signal. For B2B and marketplace flows where the seller
+    must explicitly signal the package is ready for pickup (as opposed to
+    B2C where pickup is at seller's convenience after confirm).
+    BAP sends /update with readyToShip=true → BPP responds with
+    /on_update carrying shipping label URL and confirmed pickup window.
+  trigger:
+    earliest: on_confirm
+    latest: "on_status[PICKED_UP]"
+  steps:
+    - step: update
+      from: BAP
+      to: BPP
+      requiredFields:
+        - message.contract.performance[].performanceAttributes.readyToShip
+        - message.contract.performance[].performanceAttributes.readyToShipTimestamp
+    - step: on_update
+      from: BPP
+      to: BAP
+      requiredFields:
+        - message.contract.performance[].performanceAttributes.shippingLabelUrl
+        - message.contract.performance[].performanceAttributes.confirmedPickupWindow

@@ -1,0 +1,193 @@
+# ION Logistics Branch — Attempts v1
+# NOT OAS. ION flow specification document.
+# Five sub-branches covering all delivery attempt scenarios.
+
+id: ion-logistics-branch-attempts-v1
+version: "1.0.0"
+branchType: attempts
+sectorCode: B
+status: ready
+description: >
+  Delivery attempt management. Covers failed delivery (NDR), buyer
+  rescheduling, address correction, self-pickup conversion, and
+  auto-RTO after max attempts. All sub-branches flow through /update
+  and /on_update. Each LSP's attempt limits and re-attempt charges
+  are declared via ion://policy/re-attempt references on the offer.
+
+appliesTo:
+  - LOG-PARCEL
+  - LOG-HYPERLOCAL (lighter window — 1-2 attempts typical)
+
+window:
+  earliest: "on_status[OUT_FOR_DELIVERY]"
+  latest: "on_status[DELIVERED]"
+
+activationTrigger: >
+  BPP sends on_status with state DELIVERY_ATTEMPT_FAILED and an NDR
+  reason code. This opens the attempt resolution window.
+
+subBranches:
+
+  attempt-ndr:
+    id: attempt-ndr
+    description: >
+      Delivery attempt failed. BPP records the attempt, notifies BAP
+      with reason. Buyer must choose resolution within the policy window.
+    steps:
+      - step: on_status
+        trigger: DELIVERY_ATTEMPT_FAILED
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.attemptNumber
+          - message.contract.performance[].performanceAttributes.ndrReasonCode
+          - message.contract.performance[].performanceAttributes.ndrTimestamp
+          - message.contract.performance[].performanceAttributes.attemptsRemaining
+          - message.contract.performance[].performanceAttributes.buyerResolutionDeadline
+        ndrReasonCodes:
+          - NDR-001  # Consignee not available
+          - NDR-002  # Address not found or incomplete
+          - NDR-003  # Consignee refused delivery
+          - NDR-004  # Consignee requested reschedule
+          - NDR-005  # Access to premises denied
+          - NDR-006  # Shipment not accepted — condition concern
+          - NDR-007  # Safe location not available for OTP-less delivery
+          - NDR-008  # COD amount not available
+        businessRules:
+          - attemptsRemaining must be accurate per the offer's re-attempt policy
+          - buyerResolutionDeadline must be within the policy's buyer-response window
+
+  attempt-reschedule:
+    id: attempt-reschedule
+    description: >
+      Buyer requests a new delivery window after failed attempt.
+      Applicable only if attemptsRemaining > 0.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.id
+          - message.contract.performance[].performanceAttributes.rescheduleRequest
+          - message.contract.performance[].performanceAttributes.rescheduleRequest.preferredDate
+          - message.contract.performance[].performanceAttributes.rescheduleRequest.preferredWindow
+        conditionalFields:
+          - field: message.contract.performance[].performanceAttributes.rescheduleRequest.altPhone
+            condition: if buyer provides alternate contact
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+          - message.contract.performance[].performanceAttributes.confirmedRescheduleDate
+        conditionalFields:
+          - field: message.contract.consideration.considerationAttributes.rescheduleFee
+            condition: if re-attempt policy charges for reschedule
+
+    businessRules:
+      - BPP confirms or proposes alternative window within the same day
+      - If no confirmation window offered, auto-confirm the buyer's preferred slot
+    errors:
+      - ION-LOG-5001  # No attempts remaining — cannot reschedule
+
+  attempt-address-change:
+    id: attempt-address-change
+    description: >
+      Buyer provides a corrected delivery address after failed attempt.
+      BPP re-quotes if the new address changes the delivery zone.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.performance[].stops[].location.address
+          - message.contract.performance[].stops[].location.gps
+          - message.contract.performance[].stops[].location.area_code
+          - message.contract.performance[].stops[].location.ionAddressAttributes.provinsiCode
+          - message.contract.contractAttributes.addressChangeReason
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        description: BPP confirms new address. If zone changes, breakup updated.
+        requiredFields:
+          - message.contract.performance[].status.descriptor.code
+        conditionalFields:
+          - field: message.contract.consideration.considerationAttributes.breakup[]
+            condition: required if delivery zone changed and additional charge applies
+          - field: message.contract.consideration.considerationAttributes.addressChangeSurcharge
+            condition: required if surcharge is applicable per policy
+
+    businessRules:
+      - New address must be within the BPP's declared coverage area
+      - Zone change triggers re-quote; buyer must accept new amount before next attempt
+    errors:
+      - ION-LOG-5002  # New address outside provider coverage
+      - ION-LOG-5003  # Zone change not accepted within resolution window
+
+  attempt-self-pickup-conversion:
+    id: attempt-self-pickup-conversion
+    description: >
+      Buyer converts delivery to self-pickup from the LSP's agent point
+      after failed attempt. Contract performance mode changes.
+    steps:
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.performanceMode
+          - message.contract.performance[].performanceAttributes.selectedAgentPoint
+          - message.contract.performance[].performanceAttributes.selfPickupValidUntil
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: callback
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.selfPickupOtp
+          - message.contract.performance[].performanceAttributes.agentPointAddress
+          - message.contract.performance[].performanceAttributes.holdDurationDays
+
+    businessRules:
+      - Package is held at agent point for holdDurationDays
+      - After holdDurationDays without pickup, auto-RTO is triggered
+      - Delivery-to-self-pickup conversion may trigger partial refund per policy
+
+  attempt-auto-rto:
+    id: attempt-auto-rto
+    description: >
+      All delivery attempts exhausted or buyer resolution deadline missed.
+      Package automatically returned to consignor (RTO).
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: BPP notifies BAP that auto-RTO is being initiated.
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.autoRtoReason
+          - message.contract.performance[].performanceAttributes.rtoInitiatedAt
+          - message.contract.performance[].status.descriptor.code
+        autoRtoReasons:
+          - RTO-AUTO-001  # Max delivery attempts reached
+          - RTO-AUTO-002  # Buyer resolution window expired
+          - RTO-AUTO-003  # Self-pickup hold expired without collection
+          - RTO-AUTO-004  # Address correction not provided within window
+        businessRules:
+          - RTO charges applied per ion://policy/re-attempt reference on the offer
+          - RTO state machine continues on the same spine
+          - Refund (if any) is net of forward freight and RTO charges per policy
+
+policyReferences:
+  - ion://policy/re-attempt.standard-3-free
+  - ion://policy/re-attempt.standard-2-one-fee
+  - ion://policy/re-attempt.premium-3-free-rebook
+  - ion://policy/re-attempt.hyperlocal-1-only

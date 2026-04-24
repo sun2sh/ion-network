@@ -1,0 +1,146 @@
+# ION Logistics Framework Agreement Policy Schema
+# policies/logistics-fwa/v1/_schema.yaml
+# Ratified by ION Council. All FWA documents submitted to the registry must conform.
+
+LogisticsFWAPolicy:
+  id:
+    type: string
+    pattern: "^logistics-fwa\\.[a-z0-9-]+\\.[a-z0-9-]+\\.[0-9]{4}.*$"
+    description: "Canonical ID: logistics-fwa.{bap-short}.{bpp-short}.{year}"
+    example: logistics-fwa.tokopedia.jne.2026q2
+
+  type:
+    type: string
+    const: LOGISTICS_FWA
+
+  parties:
+    bap:
+      subscriberId:
+        type: string
+        description: ION-registered subscriber ID of the BAP
+      legalName:
+        type: string
+      npwp:
+        type: string
+    bpp:
+      subscriberId:
+        type: string
+        description: ION-registered subscriber ID of the BPP (LSP)
+      legalName:
+        type: string
+      npwp:
+        type: string
+      nibNumber:
+        type: string
+
+  validity:
+    from:
+      type: string
+      format: date
+    until:
+      type: string
+      format: date
+    autoRenew:
+      type: boolean
+    noticePeriodDays:
+      type: integer
+
+  scope:
+    spines:
+      type: array
+      items:
+        type: string
+        enum: [LOG-HYPERLOCAL, LOG-PARCEL, LOG-FREIGHT, LOG-RORO, LOG-XB, LOG-WAREHOUSE]
+    transportModes:
+      type: array
+    corridors:
+      type: array
+      description: List of origin-destination corridor codes (e.g. CGK-SUB)
+    nationalCoverage:
+      type: boolean
+
+  rateCard:
+    type:
+      type: string
+      enum:
+        - TIERED_BY_WEIGHT
+        - TIERED_BY_ZONE_AND_WEIGHT
+        - PERCENT_OFF_PUBLIC
+        - FLAT_PER_KG
+        - FLAT_PER_PARCEL
+        - CAPACITY_BLOCK
+    structure:
+      type: object
+      description: Rate card content — shape depends on type
+    volumeCommitment:
+      minMonthlyParcels:
+        type: integer
+      discountTiers:
+        type: array
+        items:
+          type: object
+          properties:
+            threshold:
+              type: integer
+            discount:
+              type: number
+
+  overrides:
+    description: >
+      Policies from the ION policy registry that this FWA overrides.
+      These replace the offer-level policy for all transactions under this FWA.
+    cancellationPolicy:
+      type: string
+      format: iri
+    paymentTermsPolicy:
+      type: string
+      format: iri
+    reAttemptPolicy:
+      type: string
+      format: iri
+    weightDisputePolicy:
+      type: string
+      format: iri
+
+  adds:
+    description: >
+      Additional policies that apply to transactions under this FWA
+      but don't override existing offer-level policies.
+    slaPolicy:
+      type: string
+      format: iri
+    evidencePolicy:
+      type: string
+      format: iri
+    insurancePolicy:
+      type: string
+      format: iri
+    codRemittancePolicy:
+      type: string
+      format: iri
+    disputeResolutionPolicy:
+      type: string
+      format: iri
+    liabilityPolicy:
+      type: string
+      format: iri
+
+  registration:
+    registeredAt:
+      type: string
+      format: date-time
+    registryEntryId:
+      type: string
+    bapSignatoryId:
+      type: string
+    bapSignedAt:
+      type: string
+      format: date-time
+    bppSignatoryId:
+      type: string
+    bppSignedAt:
+      type: string
+      format: date-time
+    legalDocumentRef:
+      type: string
+      description: Reference to the signed legal MSA document (stored externally)

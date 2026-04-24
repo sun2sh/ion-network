@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>core/raise/v1 — schema.ion.id</title>
+<meta name="description" content="ION vocabulary reference for core/raise (v1)">
+<link rel="alternate" type="application/ld+json" href="context.jsonld">
+<link rel="alternate" type="application/yaml" href="attributes.yaml">
+<style>
+ body{font-family:system-ui,-apple-system,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;line-height:1.55}
+ h1{border-bottom:1px solid #ddd;padding-bottom:.3rem;margin-bottom:.2rem}
+ h2{margin-top:2rem;color:#444}
+ h3{margin-top:1.5rem;color:#555}
+ .meta{color:#666;font-size:.9rem;margin-bottom:2rem}
+ .meta code{background:#f4f4f4;padding:.15rem .35rem;border-radius:3px}
+ .links{margin:1rem 0;padding:.8rem 1rem;background:#f8f9fb;border-left:3px solid #2a7ade;border-radius:2px}
+ .links a{display:inline-block;margin-right:1rem;color:#2a7ade;font-family:ui-monospace,Menlo,monospace;font-size:.9rem}
+ table{border-collapse:collapse;width:100%;margin:1rem 0}
+ th,td{text-align:left;padding:.4rem .6rem;border-bottom:1px solid #e5e5e5;vertical-align:top}
+ th{background:#f4f4f4;font-weight:600}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:.9em}
+ .readme{margin-top:2rem;padding-top:1.5rem;border-top:1px solid #eee}
+ .iri{font-family:ui-monospace,Menlo,monospace;font-size:.85em;color:#666;word-break:break-all}
+ footer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #eee;color:#888;font-size:.85rem}
+ li{margin-left:1.5rem}
+</style>
+</head>
+<body>
+
+<nav><a href="https://schema.ion.id/">schema.ion.id</a> &rsaquo; <a href="https://schema.ion.id/core/">core</a> &rsaquo; <a href="https://schema.ion.id/core/raise/">raise</a> &rsaquo; <strong>v1</strong></nav>
+
+<h1>core/raise/v1</h1>
+<p class="meta">Pack IRI: <code>https://schema.ion.id/core/raise/v1#</code> &nbsp;|&nbsp; Layer: <code>L4 — Cross-sector core</code> &nbsp;|&nbsp; Version: <code>v1</code></p>
+
+<div class="links">
+ <a href="context.jsonld">context.jsonld</a>
+ <a href="attributes.yaml">attributes.yaml</a>
+ <a href="vocab.jsonld">vocab.jsonld</a>
+</div>
+
+<h2>Schemas in this pack</h2>
+<h3>IONTicket</h3>
+<p class="iri">IRI: https://schema.ion.id/core/raise/v1#IONTicket</p>
+<table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>id</code></td><td>always</td><td>Ticket ID assigned by ION ticketing system.</td></tr>
+<tr><td><code>externalRef</code></td><td>optional</td><td>Reference ID in external ticketing system (Freshdesk/Jira/Zendesk ticket number)</td></tr>
+<tr><td><code>title</code></td><td>always</td><td>Short subject line for this ticket.</td></tr>
+<tr><td><code>description</code></td><td>always</td><td>Full description of the issue.</td></tr>
+<tr><td><code>type</code></td><td>always</td><td>NP_DISPUTE: BAP/BPP disagreement on transaction terms. POLICY_VIOLATION: participant violating ION network policy. SETTL</td></tr>
+<tr><td><code>priority</code></td><td>always</td><td>CRITICAL: network-wide impact or financial fraud. Escalated immediately. HIGH: significant impact on transactions. Respo</td></tr>
+<tr><td><code>raisedBy</code></td><td>always</td><td>Subscriber ID of the network participant raising the ticket.</td></tr>
+<tr><td><code>assignedTo</code></td><td>conditional</td><td>Subscriber ID of counterparty NP, or &quot;ION&quot; if raised to network operator.</td></tr>
+<tr><td><code>contractId</code></td><td>conditional</td><td>Related trade contract ID, if issue is transaction-specific.</td></tr>
+<tr><td><code>reconId</code></td><td>optional</td><td>Related reconciliation session ID, if issue is settlement-related.</td></tr>
+<tr><td><code>status</code></td><td>always</td><td>OPEN: ticket created, not yet acknowledged. ACKNOWLEDGED: assigned party has received and acknowledged. IN_PROGRESS: act</td></tr>
+<tr><td><code>thread</code></td><td>optional</td><td>Complete conversation trail for this ticket.</td></tr>
+<tr><td><code>resolution</code></td><td>optional</td><td></td></tr>
+<tr><td><code>sla</code></td><td>optional</td><td></td></tr>
+<tr><td><code>createdAt</code></td><td>always</td><td></td></tr>
+<tr><td><code>updatedAt</code></td><td>always</td><td></td></tr>
+<tr><td><code>resolvedAt</code></td><td>optional</td><td></td></tr>
+</tbody></table>
+
+<section class="readme"><h2>Pack README</h2><h1>ion-core/raise/v1</h1>
+
+<p>NP-to-NP and NP-to-ION issue ticketing. APIs: raise, on_raise, raise_status, on_raise_status, raise_details, on_raise_details.</p>
+
+<h2>Attaches to</h2>
+<p>`ION network channel`</p>
+
+<p>See `attributes.yaml` for complete field definitions.</p></section>
+
+<footer>
+ Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
+ Built from <code>schema/extensions/core/raise/v1/</code> in the ion-network spec.
+ Generated 2026-04-24 19:01 UTC.
+</footer>
+
+</body>
+</html>

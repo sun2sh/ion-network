@@ -12,7 +12,7 @@ ion validate yourFieldName        # clash detection before proposing
 ion propose                       # draft + submit PR in one flow
 ```
 
-Web Explorer: `devlabs.ion.id/atlas (coming soon)`
+Web Explorer: `schema.ion.id/atlas (coming soon)`
 
 ---
 
@@ -30,12 +30,16 @@ If you prefer GitHub directly, use `.github/ISSUE_TEMPLATE/field_proposal.md`.
 
 **Approval bar by type:**
 
-| Type | Bar |
-|---|---|
-| New field within existing pack | Standard PR — single reviewer |
-| New pack within existing sector | Elevated — sector lead + council |
-| New sector | Exceptional — full council + Beckn team |
-| ION core field (cross-sector) | High — full council decision |
+| Type | Layer | Bar |
+|---|---|---|
+| New field within existing pack | L4 or L5 | Standard PR — single reviewer |
+| New pack within existing sector | L5 | Elevated — sector lead + council |
+| New pack in ION core (cross-sector) | L4 | High — full council decision |
+| New ION protocol endpoint | L3 | Exceptional — full council + Beckn team |
+| New ION network policy rule | L2 | High — full council decision |
+| New sector | L5 directory activation | Exceptional — full council + Beckn team |
+
+**Which layer am I touching?** Read `docs/ION_Layer_Model.md` if unsure. The layer determines which working group reviews the change. In general: sector-specific fields go in L5 under that sector's directory, cross-sector fields in L4 core, new endpoints in L3, network-wide policy in L2.
 
 ### Reporting a spec issue
 

@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ion": "https://schema.ion.id/logistics/v1/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {"@id": "ion:LogisticsProviderAttributes", "@type": "rdfs:Class", "rdfs:comment": "ION Logistics provider attributes. Attaches to beckn:Provider.providerAttributes.", "rdfs:label": "Logistics Provider Attributes"},
+    {"@id": "ion:nibRegistered", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "NIB (Nomor Induk Berusaha) registration status. Mandatory."},
+    {"@id": "ion:providerCategory", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "Provider business model. CARRIER_DIRECT|FREIGHT_FORWARDER|AGGREGATOR|3PL|4PL|WAREHOUSE_OPERATOR."},
+    {"@id": "ion:spinesSupported", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:comment": "ION logistics spines this provider supports. LOG-PARCEL|LOG-HYPERLOCAL|LOG-FREIGHT|LOG-RORO|LOG-XB|LOG-WAREHOUSE."},
+    {"@id": "ion:modesSupported", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:comment": "Transport modes. motorcycle|car|van|truck|rail|sea|air|river|ferry."},
+    {"@id": "ion:selectRequired", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "If true, BAP must call /select before /init. Per-offer, declared in offer attributes."},
+    {"@id": "ion:fwaApplicable", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "Provider accepts FWA-governed transactions."},
+    {"@id": "ion:coldChainCertified", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:boolean"}, "rdfs:comment": "Cold chain handling capability."},
+    {"@id": "ion:beaCukaiLicenceNumber", "@type": "rdfs:Property", "rdfs:domain": {"@id": "ion:LogisticsProviderAttributes"}, "rdfs:range": {"@id": "xsd:string"}, "rdfs:comment": "PPJK customs brokerage licence. Required for LOG-XB providers."}
+  ]
+}

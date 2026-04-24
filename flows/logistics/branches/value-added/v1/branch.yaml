@@ -1,0 +1,215 @@
+# ION Logistics Branch — Value-Added Services v1
+# NOT OAS. ION flow specification document.
+# Applies to LOG-WAREHOUSE spine only.
+
+id: ion-logistics-branch-value-added-v1
+version: "1.0.0"
+branchType: value-added
+sectorCode: B
+status: ready
+description: >
+  Value-added logistics services performed within the warehouse.
+  Covers QC inspection, kitting, labelling, and packaging.
+  All sub-branches are instructed via the original storage contract's
+  valueAddedServicesSelected field at /init. Execution is tracked
+  via on_status updates within the warehouse-inventory state machine.
+
+appliesTo:
+  - LOG-WAREHOUSE
+
+window:
+  earliest: "on_status[INBOUND_RECEIVED]"
+  latest: "on_status[DISPATCHED]"
+
+activationTrigger: >
+  One or more value-added services were declared in
+  performance.valueAddedServicesSelected at /init.
+
+subBranches:
+
+  vas-qc:
+    id: vas-qc
+    description: >
+      Quality control inspection of inbound goods. Per-SKU or per-batch
+      sampling. Inspection criteria defined in the storage contract.
+      Rejected goods trigger INBOUND_REJECTED state.
+    window:
+      earliest: "on_status[INBOUND_RECEIVED]"
+      latest: "on_status[STORED]"
+    steps:
+      - step: on_status
+        trigger: QC_IN_PROGRESS
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        requiredFields:
+          - message.contract.performance[].performanceAttributes.qcStartTimestamp
+          - message.contract.performance[].performanceAttributes.qcScope
+
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: QC report delivered per SKU batch.
+        requiredFields:
+          - message.contract.contractAttributes.qcReport[]
+          - message.contract.contractAttributes.qcReport[].skuId
+          - message.contract.contractAttributes.qcReport[].sampleSize
+          - message.contract.contractAttributes.qcReport[].outcome
+          - message.contract.contractAttributes.qcReport[].defectRate
+          - message.contract.contractAttributes.qcReport[].rejectedQty
+        conditionalFields:
+          - field: message.contract.contractAttributes.qcReport[].defectPhotoUrls[]
+            condition: required if outcome is PARTIAL_FAIL or FAIL
+          - field: message.contract.contractAttributes.qcReport[].defectDescription
+            condition: required if outcome is PARTIAL_FAIL or FAIL
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: BAP provides disposition instructions for failed units.
+        requiredFields:
+          - message.contract.contractAttributes.qcDisposition.failedUnitsAction
+        failedUnitsActions:
+          - RETURN_TO_SENDER
+          - DESTROY
+          - QUARANTINE_FOR_REVIEW
+          - ACCEPT_AS_IS
+
+  vas-kitting:
+    id: vas-kitting
+    description: >
+      Assembly of kits from multiple SKUs per a kitting instruction.
+      Output is a new virtual SKU representing the assembled kit.
+      Kitting instructions provided as part of the /init manifest.
+    window:
+      earliest: "on_status[STORED]"
+      latest: "on_status[DISPATCHED]"
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Kitting completion report.
+        requiredFields:
+          - message.contract.contractAttributes.kittingReport.kittedSkuId
+          - message.contract.contractAttributes.kittingReport.kittedQty
+          - message.contract.contractAttributes.kittingReport.componentSkusConsumed[]
+          - message.contract.contractAttributes.kittingReport.completedAt
+
+  vas-labelling:
+    id: vas-labelling
+    description: >
+      Labelling, tagging, and barcode application per specifications.
+      Covers product labels, price tags, brand labels, regulatory
+      compliance labels, and shipping labels.
+    window:
+      earliest: "on_status[STORED]"
+      latest: "on_status[DISPATCHED]"
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Labelling completion confirmation.
+        requiredFields:
+          - message.contract.contractAttributes.labellingReport.skuId
+          - message.contract.contractAttributes.labellingReport.labelType
+          - message.contract.contractAttributes.labellingReport.unitsLabelled
+          - message.contract.contractAttributes.labellingReport.completedAt
+        labelTypes:
+          - PRODUCT_LABEL
+          - PRICE_TAG
+          - BRAND_LABEL
+          - BPOM_COMPLIANCE
+          - HALAL_LABEL
+          - SHIPPING_LABEL
+          - BARCODE_STICKER
+
+  vas-packaging:
+    id: vas-packaging
+    description: >
+      Custom packaging services — branded boxes, gift wrapping, void
+      fill, fragile wrapping, custom inserts. Applied at the packing
+      stage before dispatch.
+    window:
+      earliest: "on_status[PICKING]"
+      latest: "on_status[PACKED]"
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Packaging completion confirmation.
+        requiredFields:
+          - message.contract.contractAttributes.packagingReport.packagingType
+          - message.contract.contractAttributes.packagingReport.unitsPackaged
+          - message.contract.contractAttributes.packagingReport.completedAt
+        packagingTypes:
+          - BRANDED_BOX
+          - GIFT_WRAP
+          - VOID_FILL_PROTECTION
+          - FRAGILE_WRAP
+          - CUSTOM_INSERT
+          - POLY_MAILER
+          - STANDARD_CARTON
+  vas-returns-processing:
+    id: vas-returns-processing
+    description: >
+      Processing of returned inventory arriving at the warehouse.
+      Inspection, grading (A/B/C stock), return-to-saleable disposition,
+      destruction, or ship-back to consignor. Common for FBA-style operators
+      (TokoCabang, Shopee SLS, Lazada LEX) handling marketplace returns.
+    window:
+      earliest: "on_status[INBOUND_RECEIVED]"
+      latest: "on_status[STORED]"
+    activationTrigger: >
+      Inbound shipment is flagged as a return (contractAttributes.inboundType=RETURN).
+      Typically inbound from a reverse-with-qc branch on a parent LOG-PARCEL contract.
+    steps:
+      - step: on_update
+        from: BPP
+        to: BAP
+        direction: unsolicited
+        description: Return processing report — per returned SKU grading and disposition.
+        requiredFields:
+          - message.contract.contractAttributes.returnsProcessingReport[]
+          - message.contract.contractAttributes.returnsProcessingReport[].skuId
+          - message.contract.contractAttributes.returnsProcessingReport[].grade
+          - message.contract.contractAttributes.returnsProcessingReport[].disposition
+          - message.contract.contractAttributes.returnsProcessingReport[].completedAt
+        returnGrades:
+          - GRADE_A                    # Saleable as new — return to main inventory
+          - GRADE_B                    # Saleable as used/open-box — separate inventory pool
+          - GRADE_C                    # Refurbishable — set aside for refurb
+          - GRADE_D                    # Damaged beyond resale — destroy or salvage
+          - GRADE_UNSELLABLE           # Cannot resell — destroy or return to consignor
+        dispositions:
+          - RETURN_TO_MAIN_INVENTORY
+          - RETURN_TO_OPENBOX_INVENTORY
+          - SEND_FOR_REFURBISHMENT
+          - DESTROY
+          - RETURN_TO_CONSIGNOR
+          - SALVAGE_FOR_PARTS
+          - DONATE
+        conditionalFields:
+          - field: message.contract.contractAttributes.returnsProcessingReport[].destructionCertificateRef
+            condition: required when disposition=DESTROY
+          - field: message.contract.contractAttributes.returnsProcessingReport[].condition PhotosUrls[]
+            condition: required when grade is B, C, D, or UNSELLABLE
+
+      - step: update
+        from: BAP
+        to: BPP
+        direction: request
+        description: >
+          BAP confirms disposition preferences if any SKU requires decision.
+          Only needed when BPP returns PENDING_DECISION for some items.
+        requiredFields:
+          - message.contract.contractAttributes.returnsDispositionDecisions[]
+
+    businessRules:
+      - Grade B inventory must be priced separately; BAP notified via inventory update
+      - Grade D destruction requires authorisation from BAP unless FWA pre-authorises
+      - DONATE disposition requires charitable organisation reference per FWA policy

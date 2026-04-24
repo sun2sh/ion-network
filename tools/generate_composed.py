@@ -44,19 +44,55 @@ ROOT = Path(__file__).parent.parent
 
 # Maps Beckn *Attributes slot → [(ION schema name, pack path)]
 # Order within each list matters for oneOf presentation; put primary schema first.
+#
+# Expanded in v0.5.2:
+#   - core/participant/v1 added for participantAttributes
+#   - All 10 logistics packs attached to their respective slots
+#   - trackingAttributes slot activated (logistics tracking pack)
+#   - participantAttributes carries both core + logistics addendum
 PACK_MAP = {
-    "resourceAttributes":       [("TradeResourceAttributes",      "trade/resource/v1"),
-                                  ("ProductCertifications",        "core/product/v1")],
-    "offerAttributes":          [("TradeOfferAttributes",         "trade/offer/v1")],
-    "providerAttributes":       [("TradeProviderAttributes",      "trade/provider/v1")],
-    "commitmentAttributes":     [("TradeCommitmentAttributes",    "trade/commitment/v1"),
-                                  ("IONBusinessIdentity",          "core/identity/v1")],
-    "considerationAttributes":  [("TradeConsiderationAttributes", "trade/consideration/v1")],
-    "performanceAttributes":    [("TradePerformanceAttributes",   "trade/performance/v1")],
-    "contractAttributes":       [("TradeContractAttributes",      "trade/contract/v1"),
-                                  ("IONTaxDetail",                 "core/tax/v1")],
-    "settlementAttributes":     [("PaymentDeclaration",           "core/payment/v1"),
-                                  ("IONReconcileAttributes",       "core/reconcile/v1")],
+    "resourceAttributes": [
+        ("TradeResourceAttributes",       "trade/resource/v1"),
+        ("LogisticsResourceAttributes",   "logistics/resource/v1"),
+        ("ProductCertifications",         "core/product/v1"),
+    ],
+    "offerAttributes": [
+        ("TradeOfferAttributes",          "trade/offer/v1"),
+        ("LogisticsOfferAttributes",      "logistics/offer/v1"),
+    ],
+    "providerAttributes": [
+        ("TradeProviderAttributes",       "trade/provider/v1"),
+        ("LogisticsProviderAttributes",   "logistics/provider/v1"),
+    ],
+    "commitmentAttributes": [
+        ("TradeCommitmentAttributes",     "trade/commitment/v1"),
+        ("LogisticsCommitmentAttributes", "logistics/commitment/v1"),
+        ("IONBusinessIdentity",           "core/identity/v1"),
+    ],
+    "considerationAttributes": [
+        ("TradeConsiderationAttributes",  "trade/consideration/v1"),
+        ("LogisticsConsiderationAttributes", "logistics/consideration/v1"),
+    ],
+    "performanceAttributes": [
+        ("TradePerformanceAttributes",    "trade/performance/v1"),
+        ("LogisticsPerformanceAttributes","logistics/performance/v1"),
+    ],
+    "contractAttributes": [
+        ("TradeContractAttributes",       "trade/contract/v1"),
+        ("LogisticsContractAttributes",   "logistics/contract/v1"),
+        ("IONTaxDetail",                  "core/tax/v1"),
+    ],
+    "settlementAttributes": [
+        ("PaymentDeclaration",            "core/payment/v1"),
+        ("IONReconcileAttributes",        "core/reconcile/v1"),
+    ],
+    "participantAttributes": [
+        ("IONParticipantAttributes",      "core/participant/v1"),
+        ("LogisticsParticipantAddendum",  "logistics/participant-logistics/v1"),
+    ],
+    "trackingAttributes": [
+        ("LogisticsTrackingAttributes",   "logistics/tracking/v1"),
+    ],
 }
 
 # Beckn schemas that carry *Attributes slots → which slots they carry
@@ -69,6 +105,8 @@ BECKN_SCHEMA_SLOTS = {
     "Performance":   ["performanceAttributes"],
     "Contract":      ["contractAttributes"],
     "Settlement":    ["settlementAttributes"],
+    "Participant":   ["participantAttributes"],
+    "Tracking":      ["trackingAttributes"],
 }
 
 
@@ -204,7 +242,8 @@ def main():
     out = ROOT / "schema" / "core" / "v2" / "api" / "v2.0.0" / "ion-with-beckn.yaml"
     out.write_text(
         yaml.dump(composed, default_flow_style=False, allow_unicode=True,
-                  sort_keys=False, width=120, encoding='utf-8')
+                  sort_keys=False, width=120),
+        encoding='utf-8'
     )
 
     # Verify

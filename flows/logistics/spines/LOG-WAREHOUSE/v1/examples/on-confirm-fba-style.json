@@ -1,0 +1,151 @@
+{
+  "context": {
+    "domain": "ion:logistics",
+    "action": "on_confirm",
+    "transactionId": "txn-wh-001",
+    "messageId": "msg-wh-onconf-001",
+    "bapId": "tokopedia.com",
+    "bppId": "tokocabang.tokopedia.com",
+    "timestamp": "2026-04-22T09:00:00.000Z",
+    "version": "2.0.0",
+    "networkId": "ion.id/logistics"
+  },
+  "message": {
+    "contract": {
+      "id": "tc-wh-20260422-001",
+      "status": {
+        "code": "ACTIVE"
+      },
+      "participants": [
+        {
+          "id": "tokocabang-bekasi",
+          "descriptor": {
+            "name": "TokoCabang Bekasi \u2014 Fulfilment Centre"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "PROVIDER"
+          }
+        },
+        {
+          "id": "merchant-001",
+          "organization": {
+            "name": "PT Gadget Murah Indonesia",
+            "npwp": "03.456.789.0-000.000"
+          },
+          "participantAttributes": {
+            "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
+            "@type": "ion:LogisticsParticipantAttributes",
+            "role": "MERCHANT"
+          },
+          "descriptor": {
+            "name": "merchant-001"
+          }
+        }
+      ],
+      "commitments": [
+        {
+          "id": "cmt-wh-001",
+          "commitmentAttributes": {
+            "lineId": "L1",
+            "skuId": "GMI-SKU-IPHONE-15-BLK-128",
+            "quantity": 500,
+            "storageCategory": "HIGH_VALUE",
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes"
+          }
+        },
+        {
+          "id": "cmt-wh-002",
+          "commitmentAttributes": {
+            "lineId": "L2",
+            "skuId": "GMI-SKU-SAMSUNG-S24-WHT-256",
+            "quantity": 250,
+            "storageCategory": "HIGH_VALUE",
+            "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
+            "@type": "ion:LogisticsCommitmentAttributes"
+          }
+        }
+      ],
+      "performance": [
+        {
+          "id": "perf-wh-001",
+          "status": {
+            "descriptor": {
+              "code": "INBOUND_EXPECTED"
+            }
+          },
+          "performanceAttributes": {
+            "storageContractReference": "TC-BKS-2026-001",
+            "warehouseLocationAllocated": "Zone-B-Rack-14",
+            "capacityAllocated": {
+              "cbm": 12.5,
+              "pallets": 10
+            },
+            "valueAddedServicesSelected": [
+              "QC",
+              "LABELLING"
+            ],
+            "expectedReceiptDate": "2026-04-25",
+            "inboundInstructions": "Deliver to Gate 3. Reference TC-BKS-2026-001. QC team will inspect on receipt.",
+            "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
+            "@type": "ion:LogisticsPerformanceAttributes"
+          }
+        }
+      ],
+      "consideration": [
+        {
+          "considerationAttributes": {
+            "breakup": [
+              {
+                "titleType": "STORAGE_FEE",
+                "amount": 2500000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "VALUE_ADDED_SERVICE_FEE",
+                "amount": 750000,
+                "currency": "IDR"
+              },
+              {
+                "titleType": "PPN_TAX",
+                "amount": 357500,
+                "currency": "IDR",
+                "ppnRate": 0.11
+              }
+            ],
+            "totalAmount": 3607500,
+            "currency": "IDR",
+            "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
+            "@type": "ion:LogisticsConsiderationAttributes"
+          },
+          "id": "cons-001"
+        }
+      ],
+      "settlements": [
+        {
+          "settlementAttributes": {
+            "status": "PENDING",
+            "method": "BANK_TRANSFER",
+            "collectedBy": "BPP",
+            "@context": "https://schema.ion.id/logistics/v1/payment/context.jsonld",
+            "@type": "ion:LogisticsPaymentAttributes"
+          },
+          "status": "DRAFT"
+        }
+      ],
+      "contractAttributes": {
+        "npwp": "03.456.789.0-000.000",
+        "nib": "9876543210987",
+        "invoicePreferences": {
+          "fakturaRequired": true,
+          "invoicingModel": "CONSOLIDATED_MONTHLY"
+        },
+        "fwaReference": "ion://policy/logistics-fwa/tokopedia-tokocabang-2026",
+        "@context": "https://schema.ion.id/logistics/v1/contract/context.jsonld",
+        "@type": "ion:LogisticsContractAttributes"
+      }
+    }
+  }
+}

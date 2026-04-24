@@ -1,5 +1,115 @@
 # ION Network Specification — Changelog
 
+## v0.5.2-draft (April 2026)
+
+**Theme: Logistics sector merge, five-layer clarity, and schema.ion.id vocabulary publishing.**
+
+Prior to v0.5.2, ION Logistics lived in a separate repository (`ion-logistics`) that duplicated cross-sector concerns already present in `ion-network`. This release unifies them into a single repo structured around an explicit five-layer model. It also introduces `schema.ion.id` as ION's canonical, dereferenceable vocabulary endpoint — a strategic commitment for cross-country interoperability.
+
+Trade readers see no changes to their reading path; logistics readers get a parallel path plus shared network-wide docs. All participants get dereferenceable vocabulary IRIs.
+
+### schema.ion.id — vocabulary publication
+
+ION now publishes its extension vocabulary at `https://schema.ion.id/` with dereferenceable IRIs per pack/term. This is a strategic move for multi-network interoperability: third parties can resolve ION term definitions without reverse-engineering the wire format, and ION can publish cross-network mappings (ION ↔ ONDC, ION ↔ other Beckn networks) as first-class artefacts.
+
+- New `x-ion-semantic-model` block in `ion.yaml` declares URL patterns, content-negotiation, allowed context prefixes
+- New tool `tools/build_schema_site.py` generates `dist/schema.ion.id/` — static site with per-pack HTML + context.jsonld + attributes.yaml + root landing page + sitemap + headers file
+- New tool `tools/regenerate_contexts.py` keeps `context.jsonld` in lockstep with `attributes.yaml` (fixed 14 pre-existing drifts)
+- Validator now catches context↔schema drift via new `DRIFT_*` check family (WARN in v0.5.2, escalated to ERROR in v0.6)
+- URL pattern: `https://schema.ion.id/{layer}/{pack}/{version}/` with term IRIs `https://schema.ion.id/{layer}/{pack}/{version}#{term}`
+- New doc `docs/ION_Semantic_Model_Transition.md` describes v0.5 → v0.6 → v1.0 evolution plan
+
+Full JSON-LD source-of-truth inversion (vocabulary file → generated OpenAPI) is deferred to v0.6 pending cross-network demand. v0.5.2 makes JSON-LD artefacts load-bearing without flipping authority yet. See Council open question Q7.
+
+### Structural changes
+
+**Five-layer model, now explicit.** The layers were present in code before but never named together. New authoritative doc: `docs/ION_Layer_Model.md`.
+
+- L1 — Beckn core (external, unchanged)
+- L2 — ION network profile (`schema/core/v2/api/v2.0.0/ion.yaml`)
+- L3 — ION protocol endpoint extensions (NEW canonical home: `schema/core/v2/api/v2.0.0/ion-endpoints.yaml`)
+- L4 — ION core attribute packs (`schema/extensions/core/*`)
+- L5 — ION sector attribute packs (`schema/extensions/{trade,logistics}/*`)
+
+**Layer 3 file introduced.** `/raise`, `/on_raise`, `/raise_status`, `/on_raise_status`, `/raise_details`, `/on_raise_details`, `/reconcile`, `/on_reconcile` are no longer listed as "optional actions" in `ion.yaml`. They now live in a dedicated `ion-endpoints.yaml` that `ion.yaml` references. Zero behavioural change; big clarity win.
+
+**Two sectors active, four reserved.** `ion.yaml` now declares `x-ion-sectors.active: [trade, logistics]` and `x-ion-sectors.reserved: [mobility, finance, tourism, healthcare]` so the directory placeholders have explicit meaning.
+
+### Breaking changes
+
+**None on the wire.** All changes are additive. Logistics implementations that used the old `ion-logistics` repo paths will need to update references to the new consolidated paths, but payload shapes are preserved.
+
+### Duplicates removed (logistics → core promotion)
+
+The old logistics repo had its own `payment`, `rating`, `support`, `participant` packs duplicating equivalents in `ion-core`. These have been consolidated:
+
+- **`logistics/payment` → dropped.** Cross-sector primitives (`paymentRail`, `paymentGatewayProvider`, `creditTerms`, `refund`, `invoice`, `processingFee`, COD runtime fields) promoted to `core/payment/v1`. COD batch remittance moved to `core/reconcile/v1`. COD offer-time fraud controls (OTP required, denominations, daily limits, hold period, reconciliation variance) moved to `logistics/offer/v1`.
+- **`logistics/rating` → dropped.** Use `core/rating/v1`.
+- **`logistics/support` → dropped.** Use `core/support/v1`.
+- **`logistics/participant` → dropped** and **new `core/participant/v1` created.** The cross-sector fields (20-role taxonomy, NPWP/NIB/NIK/KTP/passport, `authorisedSignatory`, full Indonesian `addressDetail` with RT/RW/patokan/areaType/accessibility/operatingHours) moved to core. Logistics-only licence fields (PPJK customs-broker licence, driver SIM number & category) live in the thin new `logistics/participant-logistics/v1` addendum that mounts on the same `Participant.participantAttributes` slot alongside core.
+
+### New in L4 (core)
+
+- **`core/participant/v1`** — unified cross-sector participant pack. Used by trade participants, logistics participants, and every future sector.
+- **`core/payment/v1`** — expanded: `paymentRail`, `paymentGatewayProvider`, `creditTerms` (B2B/FWA), `refund` (with MATI default and fallback methods), `invoice` (proforma + final), `processingFee`. `CashOnDelivery` gains `collectionAmountCollected`, `collectionTimestamp`, `collectionReceiptRef`, `partialCollectionReason`.
+- **`core/reconcile/v1`** — expanded: `codRemittance` batch block (amount, batchRef, batchPeriod, timestamp, method, variance with tolerance).
+
+### New in L5 (logistics)
+
+10 logistics attribute packs imported: `commitment`, `consideration`, `contract`, `offer` (now carries COD fraud-control fields), `performance`, `performance-states`, `provider`, `resource`, `tracking`, `participant-logistics` (thin addendum).
+
+6 logistics spines imported into `flows/logistics/spines/`: LOG-HYPERLOCAL, LOG-PARCEL, LOG-FREIGHT, LOG-RORO, LOG-XB, LOG-WAREHOUSE.
+
+13 logistics branch families imported into `flows/logistics/branches/`: attempts, cancellation, cod, cold-chain, cross-cutting, customs, during-transaction, ekyc, exception, incident, reverse, rts-handoff, value-added, weight-dispute.
+
+### New policy categories
+
+9 logistics-originated policy categories added: `evidence`, `insurance`, `sla`, `re-attempt`, `weight-dispute`, `liability`, `incident`, `rts-handoff`, `logistics-fwa`. Total ratified policies across trade + logistics: 97.
+
+### Errors
+
+`errors/logistics.yaml` imported. Logistics errors use the `ION-LOG-Nxxx` format and are compiled into a separate `errors/logistics-registry.json`. The cross-sector `ION-Nxxx` registry is unchanged.
+
+### EXPERIMENTAL — spine/pattern on the wire
+
+New optional block in the profile: `x-ion-context-extensions`. When populated on a request `context`, carries:
+
+- `spine` — the spine code claimed by this transaction (e.g. `B2C-SF`, `LOG-PARCEL`)
+- `spineVersion` — spine version in force
+- `activeBranches` — branch families active for this transaction
+- `policyIris` — snapshot of applicable policy IRIs at contract time
+
+Enables deterministic validation at ION Central: "payload claims pattern X → load the spine → verify required fields per step." Optional in v0.5.2 (status `EXPERIMENTAL`), targeted to become mandatory in v0.6 after Council ratification. Feedback welcome via ION Council issue tracker.
+
+### Tax rate language — softened
+
+Hardcoded tax rates in schema descriptions, doc prose, flow README notes, and vocab comments have been rewritten as illustrative. Example transformation: "Standard rate is 0.11 (11%)" → "Applicable rate MUST be sourced from current DJP/PMK regulation. Current standard is 0.11 (11%) per PMK 131/2024." This affects `core/tax/v1`, `trade/consideration/v1`, `logistics/consideration/v1`, and several docs. Enum values, schema field names, and concrete worked-example payloads (which show the actual rate charged on a specific transaction) are preserved as-is.
+
+### Beckn version
+
+All references normalized to Beckn `2.0.0` (targeting [`core-v2.0.0-rc1`](https://github.com/beckn/protocol-specifications-v2/releases/tag/core-v2.0.0-rc1) upstream). `context.version` in messages is `"2.0.0"` (matches Beckn `Context.version` `const: "2.0.0"`). Prior ION drafts had incorrectly labeled this as `2.0.1` — corrected here.
+
+**Target status.** Beckn v2.0.0 is currently a Release Candidate (RC1 tagged 2026-01-12). Final v2.0.0 is expected within ~1 week of this draft. ION will re-validate v0.5.2-draft against final v2.0.0 when released and publish v0.5.2 GA (or v0.5.3-draft if corrections are needed). The upstream target is declared in `schema/core/v2/api/v2.0.0/ion.yaml → x-ion-compatibility.becknCoreUpstreamTag`.
+
+### Tooling
+
+- **`tools/generate_composed.py`** — `PACK_MAP` expanded to include both sectors and the new `core/participant` pack; `participantAttributes` and `trackingAttributes` slots activated. Output now merges 40 ION extension schemas (up from the trade-only baseline) + 69 Beckn core schemas = 109 total, 30 paths.
+- **`tools/validate.py`** — replaced with the logistics-superset validator (15 checks vs. 7 previously); duplicate-error-code check generalized to walk every `errors/*.yaml` rather than a single file.
+- **`policies/generate_registry.py`** — now handles both the trade per-file `iri:` format and the logistics multi-doc `id:` format; emits a unified `policies/registry.json`.
+- **`errors/generate_registry.py`** — emits the cross-sector `registry.json` unchanged plus a new `logistics-registry.json` for `ION-LOG-Nxxx` codes.
+
+### Doc renames (logistics docs lifted to top-level `docs/`)
+
+- `ion-logistics/logistics/docs/ION_Developer_Orientation.md` → `docs/ION_Sector_B_Logistics.md`
+- `ion-logistics/logistics/docs/02-sector-guide.md` → `docs/ION_Sector_B_Logistics.md`
+- `ion-logistics/logistics/docs/03-onboarding-and-auth.md` → `docs/ION_Onboarding_and_Auth.md` *(generalized to cover every sector)*
+- `ion-logistics/logistics/docs/04-beckn-conformance-and-ion-extensions.md` → `docs/ION_Beckn_Conformance.md` *(generalized; attachment table now covers both trade and logistics)*
+- `ion-logistics/logistics/docs/ION_Sector_B_Logistics.md (§11)` → `docs/ION_Sector_B_Logistics.md`
+
+Trade docs (`ION_Developer_Orientation.md`, `ION_Sector_A_Trade.md`) are unchanged except for the PPN language sweep noted above.
+
+---
+
 ## v0.5.1-draft (April 2026)
 
 **Theme: Beckn Protocol v2.0 alignment.**
@@ -341,7 +451,7 @@ Based on critical review from Amazon Indonesia / Tokopedia / Shopee implementati
 
 - Repository restructured from individual example YAML files (A01–A07) into a layered `schema/` + `flows/` + `errors/` architecture
 - `beckn.yaml` no longer copied — referenced externally from Beckn Foundation repository
-- `ion.yaml` added as ION network profile overlay on top of Beckn v2.0.1
+- `ion.yaml` added as ION network profile overlay on top of Beckn v2.0.0
 - Schema extensions reorganised into `core/` (cross-sector) and `trade/` (sector-specific)
 - Flow specs restructured into `spines/` (happy path) + `branches/` (conditional sub-flows)
 - Error registry restructured into category YAML files with generated `registry.json`

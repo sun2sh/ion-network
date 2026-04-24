@@ -59,7 +59,7 @@ These are network-mandated — not optional. A catalog that violates any of thes
 | Seller NPWP | `contractAttributes.npwp` (16 digits) | confirm / on_confirm | PMK 136/2023 |
 | Seller NIB | `contractAttributes.nib` (13 digits) | confirm / on_confirm | PP 5/2021 |
 | PKP status | `identity.pkpStatus` | onboarding | UU 8/1983 |
-| PPN 11% | `considerationAttributes.ppnRate: 0.11` | on_select breakup | UU 7/2021 HPP |
+| PPN (current standard rate, e.g. 11%) | `considerationAttributes.ppnRate` set to the applicable decimal (e.g. 0.11 under PMK 131/2024 — source from DJP) | on_select breakup | UU 7/2021 HPP; current applicable PMK |
 | Faktur Pajak | `contractAttributes.fakturPajakReference` | on_confirm (PKP sellers) | PMK 168/2023 |
 
 ---
@@ -90,7 +90,7 @@ providers[].offers[].offerAttributes:
 ```
 on_select adds:
   quote.breakup[].considerationAttributes:
-    ← core/tax/v1            ppnRate (0.11 on TAX lines), taxIncluded
+    ← core/tax/v1            ppnRate on TAX lines (applicable decimal, e.g. 0.11), taxIncluded
     ← trade/consideration/v1 breakupLineType (ITEM/DELIVERY/TAX/PROVIDER_BENEFIT/etc.)
 
   performance[].performanceAttributes:
@@ -276,7 +276,7 @@ ion validate yourProposedFieldName
 
 This checks for clashes with reserved Beckn terms and near-matches in existing packs.
 
-Web Explorer: `devlabs.ion.id/atlas` (coming soon)
+Web Explorer: `schema.ion.id/atlas` (coming soon)
 
 
 
@@ -378,7 +378,40 @@ ion search "COD payment terms"
 ```
 
 
-## 8. Further reading
+## 8. Live and OTT commerce patterns (B2C-LIVE)
+
+ION supports orders placed from live streams, short videos, OTT-embedded shoppable content, affiliate links, and group buys through the **B2C-LIVE** spine.
+
+**OTT-embedded commerce example**: Consumer watches a match on Vidio. A jersey appears as a shoppable moment. Tap → ION `/select` fires with `liveCommerceContext.sourceChannel=OTT_EMBEDDED`, `ottPlatform=VIDIO`, `ottContentId=VIDIO-MATCH-PERSIJA-PERSIB-2026-04-19`, `ottTimestampSeconds=2847`. The seller BPP confirms as usual; the OTT platform earns an `AFFILIATE_COMMISSION` line at reconcile.
+
+**Live stream example**: Consumer watches a Shopee Live session. Streamer pins a product. `sourceChannel=LIVE_STREAM`, `liveSessionId`, `streamerId`, `streamerCommissionPercent` populated. `STREAMER_COMMISSION` line in breakup, settled to streamer at reconcile.
+
+**Group buy example**: Consumer joins a group-buy for a product. `sourceChannel=GROUP_BUY`, `groupBuyId`, `groupBuyMinParticipants`. Order is `ACTIVE_PENDING_GROUP` until minimum reached, then normal fulfilment proceeds.
+
+Fields: `contract.liveCommerceContext`, `offer.isFlashSale`, `offer.totalStockCap`, `offer.queueEnabled`, `offer.reservationWindowSeconds`, new consideration line types `STREAMER_COMMISSION` and `AFFILIATE_COMMISSION`.
+
+See `flows/trade/spines/B2C-LIVE/v1/` for complete spec.
+
+Regulatory note — **Kemendag Permen 31/2023** requires social commerce to operate as e-commerce. ION's `sourceChannel` field captures origin attribution transparently while keeping the transaction as a compliant e-commerce flow, not a social media transaction.
+
+
+## 9. Digital goods (B2C-DIG)
+
+Digital goods — pulsa, PLN tokens, bill payments, gift cards, game currencies, streaming vouchers — are covered by the **B2C-DIG** spine. These use the `digital` performance state machine (PENDING_OPERATOR → DELIVERED / DELIVERY_FAILED) rather than the standard physical-goods machine.
+
+**Fields**: `resource.resourceType` includes new values `DIGITAL_VOUCHER`, `DIGITAL_TOP_UP`, `DIGITAL_SUBSCRIPTION`. Each digital resource carries a `digital` sub-object with:
+- `digitalCategory` (MOBILE_PULSA, ELECTRICITY_TOKEN, GAME_VOUCHER, STREAMING_VOUCHER, etc.)
+- `operatorOrIssuer` (TELKOMSEL, PLN, Moonton, Netflix, etc.)
+- `denomination` (value + unit: IDR, MB, GB, DIAMONDS, COINS)
+- `deliveryMethod` (PUSH_TO_TARGET, CODE_TO_BUYER, ACCOUNT_CREDIT, QR_VOUCHER)
+- `target` (mobile number, meter number, game user ID)
+- `redemptionCode` (returned in `on_status[DELIVERED]` for CODE_TO_BUYER)
+- `expiryAfterPurchase`, `refundable`, `cancellable`
+
+See `flows/trade/spines/B2C-DIG/v1/` for complete spec.
+
+
+## 10. Further reading
 
 | Document | What it covers |
 |---|---|
@@ -451,3 +484,15 @@ For down-payment + balance orders (furniture, pre-order, services), use `contrac
 
 The Trade protocol does NOT surface: rider reassignments, pickup failures at seller premises, hub handoffs, LSP-internal SLA clocks, cold-chain sensor excursions, multi-package tracking. BPP aggregates only the events that affect the consumer view (final DELIVERED, final RTO, consumer-facing ETA delay) into Trade performance. For full logistics visibility, BAPs subscribe to the Logistics sector transactions linked via `contractAttributes.linkedContractId`.
 
+
+---
+
+## See also
+
+- **First time here?** [`ION_Start_Here.md`](ION_Start_Here.md)
+- **Confused by an acronym?** [`ION_Glossary.md`](ION_Glossary.md)
+- **End-to-end transaction example?** [`ION_First_Transaction.md`](ION_First_Transaction.md)
+- **Cross-sector concepts?** [`ION_Developer_Orientation.md`](ION_Developer_Orientation.md)
+- **Layer model (L1-L5)?** [`ION_Layer_Model.md`](ION_Layer_Model.md)
+- **Signing and auth?** [`ION_Onboarding_and_Auth.md`](ION_Onboarding_and_Auth.md)
+- **Doing logistics instead?** [`ION_Sector_B_Logistics.md`](ION_Sector_B_Logistics.md)
