@@ -52,7 +52,7 @@ If you haven't used ION (or Beckn) before, read these in order. The whole sequen
          │                          │                       │
     ┌────┴─────────────────┐  ┌─────┴──────────────┐  ┌────┴──────────────┐
     │  BAP                 │  │  BPP               │  │  BAP              │
-    │  (Tokopedia, Shopee, │  │  (Sepatu Juara,    │  │                   │
+    │  (Tokopedia, Shopee, │  │  (merchants,       │  │                   │
     │   Lazada, apps)      │◄─┤   JNE, J&T, LSPs,  │  │                   │
     │                      │  │   warehouses)      │  │                   │
     └──────────────────────┘  └────────────────────┘  └───────────────────┘
