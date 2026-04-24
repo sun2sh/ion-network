@@ -32,7 +32,7 @@ You're likely building one of these. Which one decides which sector doc you read
 
 ## How it works (high level)
 
-Here's what happens when someone buys a pair of shoes on Tokopedia from a Jakarta seller with JNE delivery:
+Here's what happens when someone buys a pair of shoes on BuyerApp Indonesia from a Jakarta seller with LogisticsApp Indonesia delivery:
 
 ```
   Consumer                              ION Network
@@ -40,23 +40,23 @@ Here's what happens when someone buys a pair of shoes on Tokopedia from a Jakart
      ↓
 ┌─────────┐                      ┌─────────────────┐
 │  BAP    │ ────/select────────→ │  BPP (seller)   │  "Reserve 1 pair, size 42"
-│ Tokope- │                      └─────────────────┘
-│  dia    │ ←──/on_select────────────── "Reserved. Total IDR 500k."
+│ BuyerApp│                      └─────────────────┘
+│Indonesia│ ←──/on_select────────────── "Reserved. Total IDR 500k."
 │         │                      ┌─────────────────┐
-│         │ ────/select────────→ │  BPP (JNE)      │  "Quote me for delivery"
+│         │ ────/select────────→ │  BPP (Logistics)│  "Quote me for delivery"
 │         │ ←──/on_select────────────── "IDR 15k, next-day"
 │         │
-│         │ ────/init──→ seller     "Lock in the shoe"
-│         │ ←──/on_init── seller     "Locked. Payment link: XYZ"
+│         │ ────/init──→ seller           "Lock in the shoe"
+│         │ ←──/on_init── seller          "Locked. Payment link: XYZ"
 │         │
-│         │ ────/confirm──→ seller   "Payment done, ship it"
-│         │ ←──/on_confirm── seller  "Confirmed. Order ID: ORD-123"
-│         │ ────/confirm──→ JNE      "Ship this order"
-│         │ ←──/on_confirm── JNE     "Booked. AWB: JNE-456"
+│         │ ────/confirm──→ seller         "Payment done, ship it"
+│         │ ←──/on_confirm── seller        "Confirmed. Order ID: ORD-123"
+│         │ ────/confirm──→ logistics      "Ship this order"
+│         │ ←──/on_confirm── logistics     "Booked. AWB: LAI-456"
 │         │
-│         │ ←──/on_status── JNE      "Picked up"    (pushed as events happen)
-│         │ ←──/on_status── JNE      "In transit"
-│         │ ←──/on_status── JNE      "Delivered"
+│         │ ←──/on_status── logistics      "Picked up"    (pushed as events happen)
+│         │ ←──/on_status── logistics      "In transit"
+│         │ ←──/on_status── logistics      "Delivered"
 └─────────┘                      └─────────────────┘
 ```
 

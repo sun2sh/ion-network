@@ -8,17 +8,17 @@ If you've read [`ION_Start_Here.md`](ION_Start_Here.md) and [`ION_Glossary.md`](
 
 ## The scenario
 
-A consumer uses Tokopedia (a BAP) to order a pair of running shoes from Sepatu Juara (a BPP — merchant seller) in Jakarta. JNE (another BPP — LSP) handles delivery to the buyer in Surabaya.
+A consumer uses BuyerApp Indonesia (a BAP) to order a pair of running shoes from SellerApp Indonesia (a BPP — merchant seller) in Jakarta. LogisticsApp Indonesia (another BPP — LSP) handles delivery to the buyer in Surabaya.
 
 Participants:
 - **Buyer:** Sari Wijayanti, living in Surabaya.
-- **BAP:** Tokopedia (app she's using).
-- **Seller BPP:** Sepatu Juara — a shoe merchant in Jakarta.
-- **Logistics BPP:** JNE — Indonesian parcel carrier.
+- **BAP:** BuyerApp Indonesia (app she's using).
+- **Seller BPP:** SellerApp Indonesia — a shoe merchant in Jakarta.
+- **Logistics BPP:** LogisticsApp Indonesia — Indonesian parcel carrier.
 
 Three transactions actually happen:
-1. **Trade transaction** — Tokopedia ↔ Sepatu Juara for the shoes
-2. **Logistics transaction** — Tokopedia ↔ JNE for delivery
+1. **Trade transaction** — BuyerApp Indonesia ↔ SellerApp Indonesia for the shoes
+2. **Logistics transaction** — BuyerApp Indonesia ↔ LogisticsApp Indonesia for delivery
 3. **Child coordination** — the two transactions reference each other by contract ID
 
 We'll walk through the Trade transaction in detail, then summarize the Logistics one.
@@ -42,13 +42,13 @@ You will see this rule in action in every payload below — every `@context` res
 
 ## Phase 0 — Catalog discovery (happens continuously, not at order time)
 
-Before any of this starts, Sepatu Juara and JNE have already published their catalogs to the Catalog Discovery Service (CDS). Tokopedia has subscribed.
+Before any of this starts, SellerApp Indonesia and LogisticsApp Indonesia have already published their catalogs to the Catalog Discovery Service (CDS). BuyerApp Indonesia has subscribed.
 
-Sepatu Juara's catalog might include this offer (simplified):
+SellerApp Indonesia's catalog might include this offer (simplified):
 
 ```json
 {
-  "id": "SJ-RUN-AIRZOOM-42-BLK",
+  "id": "SAI-RUN-AIRZOOM-42-BLK",
   "descriptor": { "name": "AirZoom Running Shoes — Size 42 Black" },
   "offerAttributes": {
     "@context": "https://schema.ion.id/trade/offer/v1/",
@@ -73,9 +73,9 @@ Notice:
 
 ## Phase 1 — Consumer taps "Buy"
 
-Sari has browsed Tokopedia's app, found the shoes (surfaced from the catalog), picked size 42 black, tapped **Add to cart** and then **Checkout**. She's entered her delivery address in Surabaya. Payment is via GoPay (e-wallet).
+Sari has browsed BuyerApp Indonesia's app, found the shoes (surfaced from the catalog), picked size 42 black, tapped **Add to cart** and then **Checkout**. She's entered her delivery address in Surabaya. Payment is via GoPay (e-wallet).
 
-Tokopedia (BAP) now needs to:
+BuyerApp Indonesia (BAP) now needs to:
 1. Lock in the seller's price and stock
 2. Get a delivery quote
 3. Lock in the whole order
@@ -88,11 +88,11 @@ This all happens in the next ~5 seconds.
 
 ## Phase 2 — BAP → Seller BPP: /select
 
-Because `selectRequired: false` was declared in the catalog, Tokopedia could technically skip `/select` and go straight to `/init`. But it still calls `/select` for two reasons:
+Because `selectRequired: false` was declared in the catalog, BuyerApp Indonesia could technically skip `/select` and go straight to `/init`. But it still calls `/select` for two reasons:
 - To verify the price hasn't changed since the catalog was published
 - To verify stock is still available right now
 
-### Request: `POST https://sepatujuara.id/api/beckn/select`
+### Request: `POST https://sellerapp.id/api/beckn/select`
 
 ```json
 {
@@ -101,12 +101,12 @@ Because `selectRequired: false` was declared in the catalog, Tokopedia could tec
     "domain": "retail",
     "action": "select",
     "version": "2.0.0",
-    "bapId": "tokopedia.co.id",
-    "bapUri": "https://tokopedia.co.id/api/beckn",
-    "bppId": "sepatujuara.id",
-    "bppUri": "https://sepatujuara.id/api/beckn",
-    "transactionId": "txn-tkpd-20260425-8743f2",
-    "messageId": "msg-tkpd-20260425-ab91c0",
+    "bapId": "buyerapp.id",
+    "bapUri": "https://buyerapp.id/api/beckn",
+    "bppId": "sellerapp.id",
+    "bppUri": "https://sellerapp.id/api/beckn",
+    "transactionId": "txn-bapi-20260425-8743f2",
+    "messageId": "msg-bapi-20260425-ab91c0",
     "timestamp": "2026-04-25T10:30:12.445Z",
     "ttl": "PT30S"
   },
@@ -117,7 +117,7 @@ Because `selectRequired: false` was declared in the catalog, Tokopedia could tec
           "id": "cmt-1",
           "resources": [
             {
-              "id": "SJ-RUN-AIRZOOM-42-BLK",
+              "id": "SAI-RUN-AIRZOOM-42-BLK",
               "quantity": {
                 "value": 1,
                 "unit": "piece"
@@ -152,22 +152,22 @@ Also required but not shown: the `Authorization: Signature ...` HTTP header with
 
 ### Synchronous response: Ack
 
-Sepatu Juara's server validates the signature, checks the message is well-formed, and immediately returns:
+SellerApp Indonesia's server validates the signature, checks the message is well-formed, and immediately returns:
 
 ```json
 {
   "message": { "ack": { "status": "ACK" } },
-  "counterSignature": "Signature keyId=\"sepatujuara.id|key-2026-04|ed25519\",algorithm=\"ed25519\",..."
+  "counterSignature": "Signature keyId=\"sellerapp.id|key-2026-04|ed25519\",algorithm=\"ed25519\",..."
 }
 ```
 
-This is the **Ack response** — Sepatu Juara has received the request and queued it for processing. **The actual business response comes via callback**, not in this response.
+This is the **Ack response** — SellerApp Indonesia has received the request and queued it for processing. **The actual business response comes via callback**, not in this response.
 
-The `counterSignature` is Sepatu Juara signing their Ack, proving they received the request. MANDATORY — ION Central rejects Acks without it.
+The `counterSignature` is SellerApp Indonesia signing their Ack, proving they received the request. MANDATORY — ION Central rejects Acks without it.
 
-### Async callback: `POST https://tokopedia.co.id/api/beckn/on_select`
+### Async callback: `POST https://buyerapp.id/api/beckn/on_select`
 
-A few hundred milliseconds later, Sepatu Juara calls Tokopedia back:
+A few hundred milliseconds later, SellerApp Indonesia calls BuyerApp Indonesia back:
 
 ```json
 {
@@ -176,12 +176,12 @@ A few hundred milliseconds later, Sepatu Juara calls Tokopedia back:
     "domain": "retail",
     "action": "on_select",
     "version": "2.0.0",
-    "bapId": "tokopedia.co.id",
-    "bapUri": "https://tokopedia.co.id/api/beckn",
-    "bppId": "sepatujuara.id",
-    "bppUri": "https://sepatujuara.id/api/beckn",
-    "transactionId": "txn-tkpd-20260425-8743f2",   // same transactionId
-    "messageId": "msg-sj-20260425-cd7e14",         // new messageId
+    "bapId": "buyerapp.id",
+    "bapUri": "https://buyerapp.id/api/beckn",
+    "bppId": "sellerapp.id",
+    "bppUri": "https://sellerapp.id/api/beckn",
+    "transactionId": "txn-bapi-20260425-8743f2",   // same transactionId
+    "messageId": "msg-sai-20260425-cd7e14",         // new messageId
     "timestamp": "2026-04-25T10:30:12.702Z",
     "ttl": "PT30S"
   },
@@ -194,7 +194,7 @@ A few hundred milliseconds later, Sepatu Juara calls Tokopedia back:
           "status": { "descriptor": { "code": "DRAFT" } },
           "resources": [
             {
-              "id": "SJ-RUN-AIRZOOM-42-BLK",
+              "id": "SAI-RUN-AIRZOOM-42-BLK",
               "quantity": { "value": 1, "unit": "piece" },
               "resourceAttributes": {
                 "@context": "https://schema.ion.id/trade/resource/v1/",
@@ -225,7 +225,7 @@ A few hundred milliseconds later, Sepatu Juara calls Tokopedia back:
 }
 ```
 
-Now Tokopedia knows:
+Now BuyerApp Indonesia knows:
 - Stock is available (`availability: IN_STOCK`)
 - Price is confirmed (500,000 IDR + 55,000 PPN = 555,000 IDR)
 - Contract is in `DRAFT` status (not committed yet)
@@ -236,17 +236,17 @@ Note: Contract status is `DRAFT` (4-value enum). Commitment status is also `DRAF
 
 ## Phase 3 — BAP → Logistics BPP: /select (for delivery)
 
-In parallel with (or right after) the shoe `/select`, Tokopedia asks JNE for a delivery quote.
+In parallel with (or right after) the shoe `/select`, BuyerApp Indonesia asks LogisticsApp Indonesia for a delivery quote.
 
 ```json
 {
   "context": {
     "domain": "logistics",       // different sector
     "action": "select",
-    "bapId": "tokopedia.co.id",
-    "bppId": "jne.co.id",
-    "transactionId": "txn-tkpd-20260425-logi-4b9c21",  // DIFFERENT transaction
-    "messageId": "msg-tkpd-20260425-logi-xyz",
+    "bapId": "buyerapp.id",
+    "bppId": "logisticsapp.id",
+    "transactionId": "txn-bapi-20260425-logi-4b9c21",  // DIFFERENT transaction
+    "messageId": "msg-bapi-20260425-logi-xyz",
     "version": "2.0.0",
     // ... other context fields
   },
@@ -304,7 +304,7 @@ Key things to notice:
 - `ionSubdivisions` carries the Indonesian address hierarchy (provinsi/kabupaten/kecamatan/kelurahan/RT/RW) — these are from `core/address/v1`
 - RT/RW are included because they're needed for last-mile delivery in Indonesia
 
-JNE responds via `/on_select` callback with a binding quote:
+LogisticsApp Indonesia responds via `/on_select` callback with a binding quote:
 
 ```json
 {
@@ -342,17 +342,17 @@ Delivery cost: 18,000 IDR. Estimated delivery: April 27 by 6pm. Quote valid for 
 
 ## Phase 4 — BAP → both BPPs: /init
 
-Tokopedia now has both prices. Total to collect: 555,000 (shoes) + 18,000 (delivery) = 573,000 IDR.
+BuyerApp Indonesia now has both prices. Total to collect: 555,000 (shoes) + 18,000 (delivery) = 573,000 IDR.
 
-Tokopedia calls `/init` on both BPPs in parallel.
+BuyerApp Indonesia calls `/init` on both BPPs in parallel.
 
-### `/init` to Sepatu Juara (seller)
+### `/init` to SellerApp Indonesia (seller)
 
 The request echoes back the quote from `/on_select`, adding the delivery address (for tax jurisdiction computation) and the buyer's details:
 
 ```json
 {
-  "context": { /* ... */ "action": "init", "transactionId": "txn-tkpd-20260425-8743f2" },
+  "context": { /* ... */ "action": "init", "transactionId": "txn-bapi-20260425-8743f2" },
   "message": {
     "contract": {
       "commitments": [ /* same as select */ ],
@@ -360,7 +360,7 @@ The request echoes back the quote from `/on_select`, adding the delivery address
       "participants": [
         {
           "role": "BUYER",
-          "id": "tkpd-user-sari-wijayanti",
+          "id": "bapi-user-sari-wijayanti",
           "participantAttributes": {
             "@context": "https://schema.ion.id/core/participant/v1/",
             "@type": "ion:ParticipantAttributes",
@@ -370,7 +370,7 @@ The request echoes back the quote from `/on_select`, adding the delivery address
         },
         {
           "role": "SELLER",
-          "id": "sepatujuara.id.merchant.sj-001",
+          "id": "sellerapp.id.merchant.sai-001",
           "participantAttributes": {
             "@context": "https://schema.ion.id/core/participant/v1/",
             "ion:npwp": "XX.XXX.XXX.X-XXX.XXX",
@@ -384,7 +384,7 @@ The request echoes back the quote from `/on_select`, adding the delivery address
 }
 ```
 
-Sepatu Juara responds via `/on_init`:
+SellerApp Indonesia responds via `/on_init`:
 
 ```json
 {
@@ -392,7 +392,7 @@ Sepatu Juara responds via `/on_init`:
     "contract": {
       "status": { "descriptor": { "code": "DRAFT" } },
       "settlement": {
-        "id": "settle-sj-20260425-a1",
+        "id": "settle-sai-20260425-a1",
         "status": { "descriptor": { "code": "DRAFT" } },
         "considerationId": "cons-1",
         "settlementAttributes": {
@@ -400,7 +400,7 @@ Sepatu Juara responds via `/on_init`:
           "@type": "ion:PaymentDeclaration",
           "ion:paymentRail": "E_WALLET",
           "ion:paymentMethod": "GOPAY",
-          "ion:paymentRequestUrl": "https://sepatujuara.id/pay/sj-20260425-a1",
+          "ion:paymentRequestUrl": "https://sellerapp.id/pay/sai-20260425-a1",
           "ion:virtualAccount": "8809123456789012"
         }
       }
@@ -409,27 +409,27 @@ Sepatu Juara responds via `/on_init`:
 }
 ```
 
-Now Tokopedia has the payment link.
+Now BuyerApp Indonesia has the payment link.
 
 ---
 
 ## Phase 5 — Consumer pays
 
-Sari taps "Pay" in Tokopedia. Tokopedia opens GoPay. GoPay processes the payment. Tokopedia gets a callback from GoPay confirming payment received.
+Sari taps "Pay" in BuyerApp Indonesia. BuyerApp Indonesia opens GoPay. GoPay processes the payment. BuyerApp Indonesia gets a callback from GoPay confirming payment received.
 
-This happens outside ION — payment processing is between Tokopedia, GoPay, and Sepatu Juara's payment receiving account. ION does not move money; it only carries metadata.
+This happens outside ION — payment processing is between BuyerApp Indonesia, GoPay, and SellerApp Indonesia's payment receiving account. ION does not move money; it only carries metadata.
 
 ---
 
 ## Phase 6 — BAP → both BPPs: /confirm
 
-With payment confirmed, Tokopedia finalizes both transactions.
+With payment confirmed, BuyerApp Indonesia finalizes both transactions.
 
-### `/confirm` to Sepatu Juara
+### `/confirm` to SellerApp Indonesia
 
 ```json
 {
-  "context": { /* ... */ "action": "confirm", "transactionId": "txn-tkpd-20260425-8743f2" },
+  "context": { /* ... */ "action": "confirm", "transactionId": "txn-bapi-20260425-8743f2" },
   "message": {
     "contract": {
       "settlement": {
@@ -445,13 +445,13 @@ With payment confirmed, Tokopedia finalizes both transactions.
 }
 ```
 
-Sepatu Juara responds with `/on_confirm`:
+SellerApp Indonesia responds with `/on_confirm`:
 
 ```json
 {
   "message": {
     "contract": {
-      "id": "ORD-SJ-2026-04-25-00001234",          // Sepatu Juara's order ID
+      "id": "ORD-SAI-2026-04-25-00001234",          // SellerApp Indonesia's order ID
       "status": { "descriptor": { "code": "ACTIVE" } },
       "commitments": [
         {
@@ -464,21 +464,21 @@ Sepatu Juara responds with `/on_confirm`:
 }
 ```
 
-The contract is now `ACTIVE`. Sepatu Juara knows to pack the shoes.
+The contract is now `ACTIVE`. SellerApp Indonesia knows to pack the shoes.
 
-### `/confirm` to JNE (in parallel)
+### `/confirm` to LogisticsApp Indonesia (in parallel)
 
-Same pattern. Tokopedia tells JNE "go ahead with delivery, here's the shipment detail." JNE responds with `/on_confirm`:
+Same pattern. BuyerApp Indonesia tells LogisticsApp Indonesia "go ahead with delivery, here's the shipment detail." LogisticsApp Indonesia responds with `/on_confirm`:
 
 ```json
 {
   "message": {
     "contract": {
-      "id": "JNE-AWB-2026-04-25-009823",           // JNE's AWB
+      "id": "LogisticsApp Indonesia-AWB-2026-04-25-009823",           // LogisticsApp Indonesia's AWB
       "status": { "descriptor": { "code": "ACTIVE" } },
       "contractAttributes": {
         "@type": "ion:LogisticsContract",
-        "ion:awbNumber": "JNE-AWB-2026-04-25-009823",
+        "ion:awbNumber": "LogisticsApp Indonesia-AWB-2026-04-25-009823",
         "ion:expectedPickupWindow": { "start": "2026-04-26T10:00:00+07:00", "end": "2026-04-26T14:00:00+07:00" }
       }
     }
@@ -490,7 +490,7 @@ Same pattern. Tokopedia tells JNE "go ahead with delivery, here's the shipment d
 
 ## Phase 7 — Fulfilment: unsolicited /on_status pushes
 
-Over the next two days, JNE sends a series of `/on_status` messages (unsolicited — Tokopedia doesn't ask; JNE pushes as events happen).
+Over the next two days, LogisticsApp Indonesia sends a series of `/on_status` messages (unsolicited — BuyerApp Indonesia doesn't ask; LogisticsApp Indonesia pushes as events happen).
 
 ```
 Apr 26 10:23    on_status: { status: "PICKED_UP", performance.currentStop: pickup }
@@ -503,23 +503,23 @@ Apr 27 15:42    on_status: { status: "DELIVERED", performance.deliveryOtp: "veri
 
 `Performance.status.descriptor.code` values are open — ION defines them in the LOG-PARCEL state machine. `PICKED_UP`, `IN_TRANSIT`, `OUT_FOR_DELIVERY`, `DELIVERED` are the main ones for this spine.
 
-When JNE pushes `DELIVERED`, Tokopedia updates Sari's order status to "Delivered" in the app. Sari gets a notification.
+When LogisticsApp Indonesia pushes `DELIVERED`, BuyerApp Indonesia updates Sari's order status to "Delivered" in the app. Sari gets a notification.
 
 ---
 
 ## Phase 8 — Rating and support
 
-A day after delivery, Tokopedia prompts Sari to rate. She gives 5 stars.
+A day after delivery, BuyerApp Indonesia prompts Sari to rate. She gives 5 stars.
 
-Tokopedia → JNE: `/rate` with `RatingInput` (see Beckn `RatingInput.target.targetAttributes` for where ION's rating fields live).
+BuyerApp Indonesia → LogisticsApp Indonesia: `/rate` with `RatingInput` (see Beckn `RatingInput.target.targetAttributes` for where ION's rating fields live).
 
-If Sari had a problem ("delivered to wrong building"), Tokopedia would fire `/support` with `IONSupportTicket` inside `Support.channels[*]`.
+If Sari had a problem ("delivered to wrong building"), BuyerApp Indonesia would fire `/support` with `IONSupportTicket` inside `Support.channels[*]`.
 
 ---
 
 ## Phase 9 — Reconciliation (a few days later)
 
-After the order is complete, Sepatu Juara and Tokopedia reconcile financially. Tokopedia keeps a platform fee; the balance is remitted to Sepatu Juara. This happens via ION's L3 `/reconcile` extension.
+After the order is complete, SellerApp Indonesia and BuyerApp Indonesia reconcile financially. BuyerApp Indonesia keeps a platform fee; the balance is remitted to SellerApp Indonesia. This happens via ION's L3 `/reconcile` extension.
 
 ```json
 {
@@ -543,9 +543,9 @@ After the order is complete, Sepatu Juara and Tokopedia reconcile financially. T
 }
 ```
 
-Sepatu Juara agrees via `/on_reconcile`. The settlement status moves `DRAFT → COMMITTED`. When Tokopedia actually transfers the money to Sepatu Juara's bank account, status moves `COMMITTED → COMPLETE`.
+SellerApp Indonesia agrees via `/on_reconcile`. The settlement status moves `DRAFT → COMMITTED`. When BuyerApp Indonesia actually transfers the money to SellerApp Indonesia's bank account, status moves `COMMITTED → COMPLETE`.
 
-Similarly, Tokopedia reconciles with JNE for delivery fees.
+Similarly, BuyerApp Indonesia reconciles with LogisticsApp Indonesia for delivery fees.
 
 ---
 
@@ -553,7 +553,7 @@ Similarly, Tokopedia reconciles with JNE for delivery fees.
 
 In five seconds of elapsed API time, three minutes of consumer interaction, and two days of fulfilment:
 
-- Tokopedia (BAP) ran two separate transactions — one with Sepatu Juara (Trade), one with JNE (Logistics)
+- BuyerApp Indonesia (BAP) ran two separate transactions — one with SellerApp Indonesia (Trade), one with LogisticsApp Indonesia (Logistics)
 - 10 messages went back and forth per transaction (4 forward + 4 callback + 2 unsolicited status pushes, roughly)
 - Every message was cryptographically signed
 - ION's L4 core vocabulary carried Indonesian specifics (NPWP, PKP status, address hierarchy, tax breakup)
@@ -572,8 +572,8 @@ This walkthrough is the happy path. Reality has branches:
 - **Stock unavailable at /init** → `/on_init` returns error, BAP shows "out of stock" to user
 - **Seller delays dispatch** → BPP misses SLA; cancellation and refund policy trigger (see Trade branches: cancellation, updates)
 - **Package damaged in transit** → buyer initiates `/update` on the Logistics contract with `disputeReason`; evidence exchanged; if unresolved, either party escalates via `/raise` (ION L3 extension)
-- **Weight disputed at JNE hub** → weight-dispute branch fires; JNE adjusts price; BAP either accepts or escalates
-- **Delivery attempt fails** → attempts branch: NDR recorded, reschedule offered; if all attempts fail, RTO branch activates; shoes go back to Sepatu Juara
+- **Weight disputed at LogisticsApp Indonesia hub** → weight-dispute branch fires; LogisticsApp Indonesia adjusts price; BAP either accepts or escalates
+- **Delivery attempt fails** → attempts branch: NDR recorded, reschedule offered; if all attempts fail, RTO branch activates; shoes go back to SellerApp Indonesia
 
 Each of these is a branch — a specific documented sub-flow. See your sector doc for details:
 - Trade branches: [`ION_Sector_A_Trade.md`](ION_Sector_A_Trade.md)
