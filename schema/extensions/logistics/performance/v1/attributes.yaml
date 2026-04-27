@@ -1,86 +1,72 @@
 openapi: 3.1.1
 info:
   title: ION Logistics Performance Extension (v1)
-  description: >
-    Logistics sector performance attributes. Tracks the execution of the
-    shipment or storage contract — AWB, tracking, proof, agent identity,
-    temperature readings, customs state, capacity reservation.
-    Attaches to: beckn:Performance.performanceAttributes
-  version: 1.0.0
+  description: 'Logistics sector performance attributes. Tracks the execution of the shipment or storage contract
+    — AWB, tracking, proof, agent identity, temperature readings, customs state, capacity reservation. Attaches
+    to: beckn:Performance.performanceAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     LogisticsPerformanceAttributes:
       type: object
       title: Logistics Performance Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:LogisticsPerformanceAttributes
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsPerformanceAttributes
       x-beckn-attaches-to: Performance.performanceAttributes
-
       properties:
-
-        # IDENTITY
         awbNumber:
           type: string
           description: Air waybill or tracking number for parcel services
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         bookingReference:
           type: string
           description: Booking reference for hyperlocal services (replaces AWB)
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         billOfLadingReference:
           type: string
           description: Bill of lading reference for freight
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         ticketReference:
           type: string
           description: Boarding ticket reference for Ro-Ro
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         storageContractReference:
           type: string
           description: Warehouse storage reference number
-          x-ion-mandatory: conditional
-
-        # ═══ AWB ALLOCATION (LOG-PARCEL) ═══
+          x-ion-conditional: true
         awbAllocationMode:
           type: string
-          x-ion-mandatory: conditional
           description: Which AWB allocation mode was used for this shipment
-          enum: [BPP_ASSIGNED, BAP_PRE_ALLOCATED]
-
+          enum:
+          - BPP_ASSIGNED
+          - BAP_PRE_ALLOCATED
+          x-ion-conditional: true
         preAllocatedAwbBlockRef:
           type: string
-          x-ion-mandatory: conditional
           description: Reference to the pre-allocated AWB block (BAP_PRE_ALLOCATED mode)
-
-        # ═══ PICKUP SCHEDULING ═══
+          x-ion-conditional: true
         pickupModel:
           type: string
-          x-ion-mandatory: conditional
           description: Which pickup model BAP chose at /init
           enum:
-            - SCHEDULED_WINDOW
-            - ON_DEMAND
-            - DAILY_PICKUP
-            - BULK_BATCH
-            - DROP_OFF_AT_COUNTER
-            - SELF_LODGEMENT
-
+          - SCHEDULED_WINDOW
+          - ON_DEMAND
+          - DAILY_PICKUP
+          - BULK_BATCH
+          - DROP_OFF_AT_COUNTER
+          - SELF_LODGEMENT
+          x-ion-conditional: true
         requestedPickupDate:
           type: string
           format: date
-          x-ion-mandatory: conditional
           description: Requested pickup date (SCHEDULED_WINDOW, DAILY_PICKUP)
-
+          x-ion-conditional: true
         requestedPickupWindow:
           type: object
-          x-ion-mandatory: conditional
           properties:
             from:
               type: string
@@ -88,15 +74,13 @@ components:
             until:
               type: string
               format: time
-
+          x-ion-conditional: true
         confirmedPickupDate:
           type: string
           format: date
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         confirmedPickupWindow:
           type: object
-          x-ion-mandatory: conditional
           properties:
             from:
               type: string
@@ -104,46 +88,36 @@ components:
             until:
               type: string
               format: date-time
-
+          x-ion-conditional: true
         pickupBatchId:
           type: string
-          x-ion-mandatory: conditional
-          description: >
-            Groups multiple shipments under one bulk pickup trip. All shipments
-            sharing the same pickupBatchId are collected by the same rider in
-            one visit. Used for BULK_BATCH pickup model.
+          description: 'Groups multiple shipments under one bulk pickup trip. All shipments sharing the same pickupBatchId
+            are collected by the same rider in one visit. Used for BULK_BATCH pickup model.
 
+            '
+          x-ion-conditional: true
         pickupBatchShipmentCount:
           type: integer
-          x-ion-mandatory: conditional
           description: Total shipments in this pickup batch (informational)
-
+          x-ion-conditional: true
         pickupAgentPointId:
           type: string
-          x-ion-mandatory: conditional
           description: Agent point ID where DROP_OFF_AT_COUNTER was lodged
-
+          x-ion-conditional: true
         pickupLodgementTimestamp:
           type: string
           format: date-time
-          x-ion-mandatory: conditional
           description: When consignor dropped shipment at the agent point / locker
-
-        # ═══ APPLIED CUT-OFFS ═══
-        # BPP returns the cut-offs that were resolved and applied to this
-        # specific shipment in /on_select or /on_confirm. BAPs use these to
-        # drive dispatch timing decisions (when to send the manifest, when to
-        # close the order book for same-day, etc.).
+          x-ion-conditional: true
         appliedCutoffs:
           type: array
-          x-ion-mandatory: conditional
-          description: >
-            Per-shipment resolved cut-off deadlines (absolute timestamps).
-            Each entry is one cut-off resolved from the offer's cutoffs schedule
-            and the actual booking context (vessel voyage, flight number, etc.).
+          description: 'Per-shipment resolved cut-off deadlines (absolute timestamps). Each entry is one cut-off
+            resolved from the offer''s cutoffs schedule and the actual booking context (vessel voyage, flight number,
+            etc.).
+
+            '
           items:
             type: object
-            required: [cutoffType, deadline, status]
             properties:
               cutoffType:
                 type: string
@@ -155,84 +129,85 @@ components:
               status:
                 type: string
                 enum:
-                  - UPCOMING
-                  - APPROACHING            # Within policy alert threshold
-                  - MET
-                  - MISSED
-                  - GRACE_PERIOD
+                - UPCOMING
+                - APPROACHING
+                - MET
+                - MISSED
+                - GRACE_PERIOD
               timeRemaining:
                 type: string
                 format: duration
                 description: ISO 8601 duration from now to deadline (negative if past)
               lateAcceptancePolicy:
                 type: string
-                enum: [REJECT, NEXT_SAILING_OR_FLIGHT, ACCEPT_WITH_LATE_FEE, ACCEPT_WITH_MANAGER_APPROVAL]
+                enum:
+                - REJECT
+                - NEXT_SAILING_OR_FLIGHT
+                - ACCEPT_WITH_LATE_FEE
+                - ACCEPT_WITH_MANAGER_APPROVAL
               description:
                 type: string
-
-        # ═══ LABEL DETAILS ═══
+            required:
+            - cutoffType
+            - deadline
+            - status
+          x-ion-conditional: true
         shippingLabelUrl:
           type: string
           format: uri
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         shippingLabelFormat:
           type: string
-          x-ion-mandatory: conditional
-          enum: [PDF_A4, PDF_A5, PDF_A6, ZPL_100X150, ZPL_100X100, EPL_100X150, PNG_DIGITAL, JSON_FIELDS_ONLY]
-
+          enum:
+          - PDF_A4
+          - PDF_A5
+          - PDF_A6
+          - ZPL_100X150
+          - ZPL_100X100
+          - EPL_100X150
+          - PNG_DIGITAL
+          - JSON_FIELDS_ONLY
+          x-ion-conditional: true
         shippingLabelBytes:
           type: string
-          x-ion-mandatory: conditional
           description: Base64-encoded raw label bytes for ZPL/EPL direct printing
-
-        # ROUTING
+          x-ion-conditional: true
         routingTopology:
-          x-ion-mandatory: optional
           type: string
-          enum: [P2P, P2H2P, P2H2H2P]
+          enum:
+          - P2P
+          - P2H2P
+          - P2H2H2P
           description: Confirmed routing topology for this shipment
-
-        # TIMING
         estimatedTAT:
-          x-ion-mandatory: optional
           type: string
           format: duration
           description: Estimated time from pickup to delivery
-
         estimatedDeliveryTime:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         scheduledDeparture:
           type: string
           format: date-time
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         scheduledArrival:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         pickupTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         deliveryTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
-        # PROOF
         proofOfPickupType:
-          x-ion-mandatory: optional
           type: string
-          enum: [OTP, PHOTO, SIGNATURE, BIOMETRIC, NONE]
-
+          enum:
+          - OTP
+          - PHOTO
+          - SIGNATURE
+          - BIOMETRIC
+          - NONE
         proofOfPickup:
-          x-ion-mandatory: optional
           type: object
           properties:
             type:
@@ -246,14 +221,15 @@ components:
               type: string
             capturedBy:
               type: string
-
         proofOfDeliveryType:
-          x-ion-mandatory: optional
           type: string
-          enum: [OTP, PHOTO, SIGNATURE, BIOMETRIC, NONE]
-
+          enum:
+          - OTP
+          - PHOTO
+          - SIGNATURE
+          - BIOMETRIC
+          - NONE
         proofOfDelivery:
-          x-ion-mandatory: optional
           type: object
           properties:
             type:
@@ -269,19 +245,13 @@ components:
               type: string
             signatoryRelation:
               type: string
-
         deliveryOtp:
           type: string
-          x-ion-mandatory: conditional
-
-        # TRACKING
+          x-ion-conditional: true
         trackingUrl:
-          x-ion-mandatory: optional
           type: string
           format: uri
-
         liveGps:
-          x-ion-mandatory: optional
           type: object
           description: Real-time GPS for LOG-HYPERLOCAL
           properties:
@@ -294,23 +264,17 @@ components:
               format: date-time
             accuracy:
               type: number
-
         lastScanTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         lastScanLocation:
-          x-ion-mandatory: optional
           type: string
-
-        # AGENT / RIDER
         agentDetails:
-          x-ion-mandatory: optional
           type: object
-          description: >
-            Rider or agent identity. Exposed per agentAssignmentModel timing.
-            Phone is always a proxy number.
+          description: 'Rider or agent identity. Exposed per agentAssignmentModel timing. Phone is always a proxy
+            number.
+
+            '
           properties:
             name:
               type: string
@@ -322,22 +286,16 @@ components:
               type: string
             photoUrl:
               type: string
-
-        # HUB EVENTS
         hubId:
-          x-ion-mandatory: optional
           type: string
           description: Hub identifier for hub-event on_status updates
-
-        # ═══ MULTI-LEG FREIGHT (LOG-FREIGHT, LOG-XB) ═══
         legs:
           type: array
-          x-ion-mandatory: conditional
-          description: >
-            Per-leg detail for multi-modal freight journeys. Each leg has
-            its own carrier attribution, booking reference, and status.
-            Required for LOG-FREIGHT and LOG-XB when journey involves
-            multiple carriers (e.g. ocean + inland drayage, air + trucking).
+          description: 'Per-leg detail for multi-modal freight journeys. Each leg has its own carrier attribution,
+            booking reference, and status. Required for LOG-FREIGHT and LOG-XB when journey involves multiple carriers
+            (e.g. ocean + inland drayage, air + trucking).
+
+            '
           items:
             type: object
             properties:
@@ -349,19 +307,27 @@ components:
               legType:
                 type: string
                 enum:
-                  - PRE_CARRIAGE          # Origin to port (drayage)
-                  - MAIN_CARRIAGE_OCEAN
-                  - MAIN_CARRIAGE_AIR
-                  - MAIN_CARRIAGE_ROAD
-                  - MAIN_CARRIAGE_RAIL
-                  - ON_CARRIAGE           # Port to destination (drayage)
-                  - TRANSHIPMENT
+                - PRE_CARRIAGE
+                - MAIN_CARRIAGE_OCEAN
+                - MAIN_CARRIAGE_AIR
+                - MAIN_CARRIAGE_ROAD
+                - MAIN_CARRIAGE_RAIL
+                - ON_CARRIAGE
+                - TRANSHIPMENT
               origin:
                 type: object
                 properties:
                   locationType:
                     type: string
-                    enum: [FACTORY, WAREHOUSE, PORT, AIRPORT, RAIL_TERMINAL, CFS, CY, YARD]
+                    enum:
+                    - FACTORY
+                    - WAREHOUSE
+                    - PORT
+                    - AIRPORT
+                    - RAIL_TERMINAL
+                    - CFS
+                    - CY
+                    - YARD
                   locationCode:
                     type: string
                     description: Port code (UN/LOCODE), airport code (IATA), or facility code
@@ -383,7 +349,12 @@ components:
                 type: string
               carrierType:
                 type: string
-                enum: [OCEAN_LINE, AIRLINE, ROAD_CARRIER, RAIL_OPERATOR, RIVER_OPERATOR]
+                enum:
+                - OCEAN_LINE
+                - AIRLINE
+                - ROAD_CARRIER
+                - RAIL_OPERATOR
+                - RIVER_OPERATOR
               vesselOrFlightRef:
                 type: string
                 description: Vessel voyage number, flight number, or truck fleet ID
@@ -411,16 +382,16 @@ components:
               legStatus:
                 type: string
                 enum:
-                  - BOOKED
-                  - LOADED
-                  - DEPARTED
-                  - IN_TRANSIT
-                  - TRANSHIPPED
-                  - ARRIVED
-                  - UNLOADED
-                  - COMPLETED
-                  - DELAYED
-                  - CANCELLED
+                - BOOKED
+                - LOADED
+                - DEPARTED
+                - IN_TRANSIT
+                - TRANSHIPPED
+                - ARRIVED
+                - UNLOADED
+                - COMPLETED
+                - DELAYED
+                - CANCELLED
               financialAttribution:
                 type: object
                 description: Which participant invoices whom for this leg
@@ -433,17 +404,16 @@ components:
                     type: number
                   currency:
                     type: string
-
-        # COLD CHAIN
+          x-ion-conditional: true
         temperatureReading:
-          x-ion-mandatory: optional
           type: object
           properties:
             value:
               type: number
             unit:
               type: string
-              enum: [celsius]
+              enum:
+              - celsius
             timestamp:
               type: string
               format: date-time
@@ -453,15 +423,10 @@ components:
               type: string
             excursionDetected:
               type: boolean
-
         coldChainIntegrityVerified:
-          x-ion-mandatory: optional
           type: boolean
           description: True if temperature was within range throughout the journey
-
-        # WEIGHT
         actualWeight:
-          x-ion-mandatory: optional
           type: object
           description: Weight measured by LSP at pickup or hub (may trigger weight-dispute branch)
           properties:
@@ -471,14 +436,14 @@ components:
               type: string
             measuredAt:
               type: string
-              enum: [PICKUP, ORIGIN_HUB, DESTINATION_HUB]
+              enum:
+              - PICKUP
+              - ORIGIN_HUB
+              - DESTINATION_HUB
             measurementTimestamp:
               type: string
               format: date-time
-
-        # CAPACITY RESERVATION (FREIGHT)
         reservedCapacity:
-          x-ion-mandatory: optional
           type: object
           properties:
             quantity:
@@ -487,60 +452,36 @@ components:
               type: string
             reservationToken:
               type: string
-
         reservationHoldUntil:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         proposedDeparture:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         requestedDepartureDate:
-          x-ion-mandatory: optional
           type: string
           format: date
-
         capacityConfirmed:
-          x-ion-mandatory: optional
           type: boolean
-
-        # FREIGHT SPECIFIC
         manifestVerified:
-          x-ion-mandatory: optional
           type: boolean
           description: True when cargo manifest is verified at loading
-
         loadingTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         departureTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         arrivalTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
-        # RO-RO SPECIFIC
         requestedSailing:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         confirmedSailing:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         boardingWindow:
-          x-ion-mandatory: optional
           type: object
           properties:
             from:
@@ -549,68 +490,44 @@ components:
             until:
               type: string
               format: date-time
-
         boardingGate:
-          x-ion-mandatory: optional
           type: string
-
-        # CROSS-BORDER / CUSTOMS
         customsHoldReason:
-          x-ion-mandatory: optional
           type: string
-
         customsResolutionPath:
-          x-ion-mandatory: optional
           type: string
-          enum: [SUBMIT_DOCS, INSPECTION, PAY_ADDITIONAL_DUTY, RE_EXPORT, DESTROY]
-
+          enum:
+          - SUBMIT_DOCS
+          - INSPECTION
+          - PAY_ADDITIONAL_DUTY
+          - RE_EXPORT
+          - DESTROY
         estimatedClearanceDuration:
-          x-ion-mandatory: optional
           type: string
           format: duration
-
-        # ATTEMPTS
         attemptNumber:
-          x-ion-mandatory: optional
           type: integer
-
         ndrReasonCode:
-          x-ion-mandatory: optional
           type: string
-
         ndrTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         attemptsRemaining:
-          x-ion-mandatory: optional
           type: integer
-
         buyerResolutionDeadline:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
-        # WAREHOUSE SPECIFIC
         valueAddedServicesSelected:
-          x-ion-mandatory: optional
           type: array
           items:
             type: string
-
         expectedReceiptDate:
-          x-ion-mandatory: optional
           type: string
           format: date
-
         inboundReceiptTimestamp:
-          x-ion-mandatory: optional
           type: string
           format: date-time
-
         receivedQuantities:
-          x-ion-mandatory: optional
           type: array
           items:
             type: object
@@ -621,18 +538,14 @@ components:
                 type: integer
               expectedQty:
                 type: integer
-
         inboundDiscrepancy:
-          x-ion-mandatory: optional
           type: object
           properties:
             hasDiscrepancy:
               type: boolean
             discrepancyDetail:
               type: string
-
         pickedSkus:
-          x-ion-mandatory: optional
           type: array
           items:
             type: object
@@ -641,132 +554,108 @@ components:
                 type: string
               quantity:
                 type: integer
-
         warehouseLocationAllocated:
-          x-ion-mandatory: optional
           type: string
-
         capacityAllocated:
-          x-ion-mandatory: optional
           type: object
           properties:
             cbm:
               type: number
             pallets:
               type: integer
-
         inboundInstructions:
-          x-ion-mandatory: optional
           type: string
-
         transportContractReference:
-          x-ion-mandatory: optional
           type: string
-          description: >
-            Reference to the transport contract created when warehouse
-            dispatches inventory on LOG-PARCEL, LOG-HYPERLOCAL, or LOG-FREIGHT
+          description: 'Reference to the transport contract created when warehouse dispatches inventory on LOG-PARCEL,
+            LOG-HYPERLOCAL, or LOG-FREIGHT
 
-        # ═══ READY-TO-SHIP (RTS) SIGNAL ═══
-        # Fields governing the RTS handoff between warehouse and LSP, and
-        # between B2B seller and LSP. See the rts-handoff branch for the
-        # complete flow. Two scenarios:
-        #   (a) B2C / B2B seller RTS — single contract, consignor signals ready
-        #   (b) Warehouse-dispatched RTS — parent LOG-WAREHOUSE contract triggers
-        #       creation of child LOG-PARCEL contract; warehouse BPP signals
-        #       ready to a (potentially different) transport BPP
+            '
         readyToShip:
           type: boolean
-          x-ion-mandatory: conditional
-          description: >
-            True when the consignor / warehouse signals the shipment is
-            packed, labelled, and ready for rider pickup.
+          description: 'True when the consignor / warehouse signals the shipment is packed, labelled, and ready
+            for rider pickup.
 
+            '
+          x-ion-conditional: true
         readyToShipTimestamp:
           type: string
           format: date-time
-          x-ion-mandatory: conditional
-
+          x-ion-conditional: true
         readyToShipBy:
           type: string
-          x-ion-mandatory: conditional
-          enum: [CONSIGNOR, WAREHOUSE_BPP, WAREHOUSE_OPERATOR_STAFF]
+          enum:
+          - CONSIGNOR
+          - WAREHOUSE_BPP
+          - WAREHOUSE_OPERATOR_STAFF
           description: Which party raised the RTS signal
-
+          x-ion-conditional: true
         rtsPickupToken:
           type: string
-          x-ion-mandatory: conditional
-          description: >
-            Opaque token included in the RTS signal that the rider must present
-            at pickup (verified against what the warehouse/consignor holds).
-            Provides authentication of the pickup at the handoff moment.
+          description: 'Opaque token included in the RTS signal that the rider must present at pickup (verified
+            against what the warehouse/consignor holds). Provides authentication of the pickup at the handoff moment.
 
-        # Linkage between warehouse contract and transport contract
-        # (populated on the transport performance when it is spawned)
+            '
+          x-ion-conditional: true
         parentWarehouseContractRef:
           type: string
-          x-ion-mandatory: conditional
-          description: >
-            For transport contracts spawned from a LOG-WAREHOUSE dispatch,
-            reference to the parent warehouse contract. Used to trace the
-            dispatch origin and reconcile warehouse-held inventory.
+          description: 'For transport contracts spawned from a LOG-WAREHOUSE dispatch, reference to the parent warehouse
+            contract. Used to trace the dispatch origin and reconcile warehouse-held inventory.
 
+            '
+          x-ion-conditional: true
         parentWarehouseCommitmentRefs:
           type: array
-          x-ion-mandatory: conditional
           description: Specific commitment line IDs from the parent warehouse contract
           items:
             type: string
-
+          x-ion-conditional: true
         dispatchOriginWarehouseBppId:
           type: string
-          x-ion-mandatory: conditional
-          description: >
-            ION subscriber ID of the warehouse BPP originating this dispatch.
-            Needed when warehouse BPP and transport BPP are different entities
-            (e.g. warehouse=tokocabang.co.id, transport=jne.co.id).
+          description: 'ION subscriber ID of the warehouse BPP originating this dispatch. Needed when warehouse
+            BPP and transport BPP are different entities (e.g. warehouse=tokocabang.co.id, transport=jne.co.id).
 
-        # Inverse linkage — on the warehouse contract's performance
+            '
+          x-ion-conditional: true
         spawnedTransportContractRefs:
           type: array
-          x-ion-mandatory: conditional
-          description: >
-            For LOG-WAREHOUSE contracts, list of child transport contract IDs
-            spawned from this storage contract. Populated as each dispatch
-            creates a child contract.
+          description: 'For LOG-WAREHOUSE contracts, list of child transport contract IDs spawned from this storage
+            contract. Populated as each dispatch creates a child contract.
+
+            '
           items:
             type: string
-
-        # Multi-BPP RTS routing — when warehouse BPP ≠ transport BPP
+          x-ion-conditional: true
         rtsNotificationRouting:
           type: object
-          x-ion-mandatory: conditional
-          description: >
-            Routing metadata when the RTS signal must cross BPP boundaries.
-            Warehouse BPP emits /on_status[READY_FOR_PICKUP] on the transport
-            contract (which it does not own) by first notifying ION Gateway,
-            which forwards to the transport BPP.
+          description: 'Routing metadata when the RTS signal must cross BPP boundaries. Warehouse BPP emits /on_status[READY_FOR_PICKUP]
+            on the transport contract (which it does not own) by first notifying ION Gateway, which forwards to
+            the transport BPP.
+
+            '
           properties:
             warehouseBppEmits:
               type: boolean
-              description: >
-                True when warehouse BPP (parent contract owner) originates the
-                RTS signal on a child contract owned by a different transport BPP.
+              description: 'True when warehouse BPP (parent contract owner) originates the RTS signal on a child
+                contract owned by a different transport BPP.
+
+                '
             transportBppReceives:
               type: string
               description: ION subscriber ID receiving the RTS signal
             ionGatewayRoutingRequired:
               type: boolean
-              description: >
-                True when the RTS message must be routed via ION Gateway
-                because warehouse BPP and transport BPP have no direct
-                subscription relationship.
+              description: 'True when the RTS message must be routed via ION Gateway because warehouse BPP and transport
+                BPP have no direct subscription relationship.
+
+                '
             handoffEvidence:
               type: object
-              description: >
-                Evidence captured at the BPP-to-BPP handoff, used for
-                accountability when the warehouse-to-transport handoff itself
-                fails (e.g. rider arrived but package wasn't ready, or
-                transport system didn't receive the RTS signal).
+              description: 'Evidence captured at the BPP-to-BPP handoff, used for accountability when the warehouse-to-transport
+                handoff itself fails (e.g. rider arrived but package wasn''t ready, or transport system didn''t
+                receive the RTS signal).
+
+                '
               properties:
                 warehouseConfirmedAt:
                   type: string
@@ -776,21 +665,15 @@ components:
                   format: date-time
                 rtsAcknowledgementRef:
                   type: string
-
-        # SLA
+          x-ion-conditional: true
         slaStatus:
-          x-ion-mandatory: optional
           type: string
-          enum: [ON_TIME, AT_RISK, BREACHED]
-
-        # ═══ CURRENT STATE TIMING ═══
-        # Runtime tracking of state dwell time vs commitments. BPP populates
-        # these on every /on_status push so BAP dispatch rooms see real-time
-        # timing health. Enables dashboards like "which shipments are AT_RISK
-        # right now", "how many hours until breach", "cascade effect warnings".
+          enum:
+          - ON_TIME
+          - AT_RISK
+          - BREACHED
         currentStateTimingStatus:
           type: object
-          x-ion-mandatory: conditional
           description: Real-time timing status for the current performance state
           properties:
             currentState:
@@ -819,27 +702,24 @@ components:
             dwellStatus:
               type: string
               enum:
-                - ON_COMMITMENT
-                - AT_RISK               # Past alertThresholdDuration
-                - BREACHED              # Past maxDwellDuration
-                - RECOVERED             # Transitioned on-time after AT_RISK
+              - ON_COMMITMENT
+              - AT_RISK
+              - BREACHED
+              - RECOVERED
             cascadeEffect:
               type: string
               enum:
-                - NO_CASCADE
-                - PUSH_ALL_DOWNSTREAM
-                - SLA_BREACH_LIKELY
-                - SLA_BREACH_CERTAIN
-
-        # Cumulative state timing history — optional but operationally valuable
-        # for post-hoc analysis and continuous improvement.
+              - NO_CASCADE
+              - PUSH_ALL_DOWNSTREAM
+              - SLA_BREACH_LIKELY
+              - SLA_BREACH_CERTAIN
+          x-ion-conditional: true
         stateTimingHistory:
           type: array
-          x-ion-mandatory: optional
-          description: >
-            Historical record of state dwell durations. Populated progressively
-            as the performance moves through its state machine. One entry per
-            state transition.
+          description: 'Historical record of state dwell durations. Populated progressively as the performance moves
+            through its state machine. One entry per state transition.
+
+            '
           items:
             type: object
             properties:
@@ -863,60 +743,59 @@ components:
                 type: string
                 format: duration
                 description: Time past commitment (absent if not breached)
-
-        # ═══ SUSTAINABILITY AND CARBON REPORTING ═══
         sustainabilityReport:
           type: object
-          x-ion-mandatory: conditional
-          description: >
-            Per-shipment carbon and sustainability metrics. Required for
-            enterprise shippers with CSRD/ISSB disclosure obligations
-            (K+N, DB Schenker, DHL customers). Calculated per GLEC framework.
+          description: 'Per-shipment carbon and sustainability metrics. Required for enterprise shippers with CSRD/ISSB
+            disclosure obligations (K+N, DB Schenker, DHL customers). Calculated per GLEC framework.
+
+            '
           properties:
             carbonEmissionKgCO2e:
               type: number
-              description: >
-                Well-to-wheel greenhouse gas emissions in CO2-equivalent kg.
-                Computed per GLEC (Global Logistics Emissions Council) framework.
+              description: 'Well-to-wheel greenhouse gas emissions in CO2-equivalent kg. Computed per GLEC (Global
+                Logistics Emissions Council) framework.
+
+                '
             carbonEmissionCalculationMethod:
               type: string
               enum:
-                - GLEC_FRAMEWORK           # Industry standard, most common
-                - ISO_14064
-                - EN_16258                 # European standard
-                - EPA_SMARTWAY
-                - OPERATOR_DIRECT          # Carrier-provided actual consumption
-                - DEFAULT_AVERAGE          # Spec average for mode and lane
+              - GLEC_FRAMEWORK
+              - ISO_14064
+              - EN_16258
+              - EPA_SMARTWAY
+              - OPERATOR_DIRECT
+              - DEFAULT_AVERAGE
             carbonCalculationScope:
               type: string
               enum:
-                - WELL_TO_WHEEL            # Full lifecycle including fuel production
-                - TANK_TO_WHEEL            # Combustion only
-                - WELL_TO_TANK             # Fuel production only
+              - WELL_TO_WHEEL
+              - TANK_TO_WHEEL
+              - WELL_TO_TANK
             fuelType:
               type: string
               enum:
-                - DIESEL
-                - PETROL
-                - LNG
-                - CNG
-                - BIODIESEL
-                - HVO                      # Hydrotreated Vegetable Oil
-                - SAF                      # Sustainable Aviation Fuel
-                - ELECTRIC
-                - HYBRID
-                - HYDROGEN
-                - HEAVY_FUEL_OIL           # Marine
-                - MARINE_GAS_OIL
-                - LOW_SULPHUR_MARINE
+              - DIESEL
+              - PETROL
+              - LNG
+              - CNG
+              - BIODIESEL
+              - HVO
+              - SAF
+              - ELECTRIC
+              - HYBRID
+              - HYDROGEN
+              - HEAVY_FUEL_OIL
+              - MARINE_GAS_OIL
+              - LOW_SULPHUR_MARINE
             fuelConsumptionLitres:
               type: number
               description: Actual fuel consumption attributed to this shipment
             safAllocationLitres:
               type: number
-              description: >
-                Sustainable Aviation Fuel allocation for this air shipment.
-                Relevant for K+N Airschool Charter and similar SAF-certified programs.
+              description: 'Sustainable Aviation Fuel allocation for this air shipment. Relevant for K+N Airschool
+                Charter and similar SAF-certified programs.
+
+                '
             carbonOffsetPurchased:
               type: boolean
             carbonOffsetRegistryReference:
@@ -929,21 +808,22 @@ components:
               items:
                 type: string
                 enum:
-                  - ISO_14064_CERTIFIED
-                  - GLEC_DECLARATION
-                  - CORSIA_COMPLIANT
-                  - SMARTWAY_PARTNER
-                  - GREEN_FREIGHT_ASIA
-                  - LEAN_AND_GREEN
-
-        # ═══ COVID/HEALTH HYGIENE (optional, pharma-adjacent) ═══
+                - ISO_14064_CERTIFIED
+                - GLEC_DECLARATION
+                - CORSIA_COMPLIANT
+                - SMARTWAY_PARTNER
+                - GREEN_FREIGHT_ASIA
+                - LEAN_AND_GREEN
+          x-ion-conditional: true
         hygieneProtocolApplied:
           type: array
-          x-ion-mandatory: optional
           items:
             type: string
             enum:
-              - VEHICLE_SANITIZED
-              - CONTACTLESS_DELIVERY
-              - DRIVER_HEALTH_CHECKED
-              - PPE_WORN
+            - VEHICLE_SANITIZED
+            - CONTACTLESS_DELIVERY
+            - DRIVER_HEALTH_CHECKED
+            - PPE_WORN
+      x-ion-closed-extensions: false
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes

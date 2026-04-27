@@ -1,4 +1,6 @@
 {
+  "_comment": "Pack example: contents of Contract.participants[] showing two ION participantAttributes — one CONSIGNEE, one MERCHANT. Each participant carries its own @context/@type because participantAttributes is the bag the pack attaches to.",
+  "_attachesTo": "Contract.participants[]",
   "participants": [
     {
       "role": "CONSIGNEE",

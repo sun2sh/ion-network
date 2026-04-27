@@ -42,26 +42,26 @@
 <h3>IONSupportTicket</h3>
 <p class="iri">IRI: https://schema.ion.id/core/support/v1#IONSupportTicket</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>id</code></td><td>always</td><td>Network-wide unique issue identifier. Assigned at creation.</td></tr>
-<tr><td><code>category</code></td><td>always</td><td>ITEM: wrong item, damaged, not as described. FULFILLMENT: delivery delay, non-delivery, wrong address. PAYMENT: overchar</td></tr>
-<tr><td><code>subCategory</code></td><td>optional</td><td>Sub-category code for more precise classification. e.g. ITM01=wrong item, ITM02=damaged, FLM01=delay, FLM02=non-delivery</td></tr>
-<tr><td><code>complainantInfo</code></td><td>optional</td><td></td></tr>
-<tr><td><code>description</code></td><td>optional</td><td></td></tr>
-<tr><td><code>source</code></td><td>optional</td><td></td></tr>
-<tr><td><code>expectedResponseTime</code></td><td>optional</td><td>ISO 8601 duration. Time within which respondent must acknowledge.</td></tr>
-<tr><td><code>expectedResolutionTime</code></td><td>optional</td><td>ISO 8601 duration. Time within which resolution must be provided.</td></tr>
-<tr><td><code>status</code></td><td>always</td><td></td></tr>
-<tr><td><code>severity</code></td><td>optional</td><td></td></tr>
-<tr><td><code>issueActions</code></td><td>optional</td><td>Action trail — both sides of the conversation.</td></tr>
-<tr><td><code>resolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>rating</code></td><td>optional</td><td>Consumer rating of resolution quality after issue is CLOSED</td></tr>
-<tr><td><code>createdAt</code></td><td>always</td><td></td></tr>
-<tr><td><code>updatedAt</code></td><td>always</td><td></td></tr>
-<tr><td><code>escalationLevel</code></td><td>optional</td><td>Current escalation level of the dispute. Progression: 1. SELLER — buyer contacts seller (default support flow, 1-2 days)</td></tr>
-<tr><td><code>escalationTimestamp</code></td><td>conditional</td><td>When the ticket was escalated to this level</td></tr>
-<tr><td><code>escalationSlaHours</code></td><td>optional</td><td>SLA in hours for the current escalation level</td></tr>
-<tr><td><code>bpskReference</code></td><td>conditional</td><td>BPSK case reference number</td></tr>
-<tr><td><code>kominfoReference</code></td><td>conditional</td><td>Kominfo consumer complaint portal reference</td></tr>
+<tr><td><code>id</code></td><td>—</td><td>Network-wide unique issue identifier. Assigned at creation.</td></tr>
+<tr><td><code>category</code></td><td>—</td><td>ITEM: wrong item, damaged, not as described. FULFILLMENT: delivery delay, non-delivery, wrong address. PAYMENT: overchar</td></tr>
+<tr><td><code>subCategory</code></td><td>—</td><td>Sub-category code for more precise classification. e.g. ITM01=wrong item, ITM02=damaged, FLM01=delay, FLM02=non-delivery</td></tr>
+<tr><td><code>complainantInfo</code></td><td>—</td><td></td></tr>
+<tr><td><code>description</code></td><td>—</td><td></td></tr>
+<tr><td><code>source</code></td><td>—</td><td></td></tr>
+<tr><td><code>expectedResponseTime</code></td><td>—</td><td>ISO 8601 duration. Time within which respondent must acknowledge.</td></tr>
+<tr><td><code>expectedResolutionTime</code></td><td>—</td><td>ISO 8601 duration. Time within which resolution must be provided.</td></tr>
+<tr><td><code>status</code></td><td>—</td><td></td></tr>
+<tr><td><code>severity</code></td><td>—</td><td></td></tr>
+<tr><td><code>issueActions</code></td><td>—</td><td>Action trail — both sides of the conversation.</td></tr>
+<tr><td><code>resolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>rating</code></td><td>—</td><td>Consumer rating of resolution quality after issue is CLOSED</td></tr>
+<tr><td><code>createdAt</code></td><td>—</td><td></td></tr>
+<tr><td><code>updatedAt</code></td><td>—</td><td></td></tr>
+<tr><td><code>escalationLevel</code></td><td>—</td><td>Current escalation level of the dispute. Progression: 1. SELLER — buyer contacts seller (default support flow, 1-2 days)</td></tr>
+<tr><td><code>escalationTimestamp</code></td><td>—</td><td>When the ticket was escalated to this level</td></tr>
+<tr><td><code>escalationSlaHours</code></td><td>—</td><td>SLA in hours for the current escalation level</td></tr>
+<tr><td><code>bpskReference</code></td><td>—</td><td>BPSK case reference number</td></tr>
+<tr><td><code>kominfoReference</code></td><td>—</td><td>Kominfo consumer complaint portal reference</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>ion-core/support/v1</h1>
@@ -76,7 +76,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/support/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

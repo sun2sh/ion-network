@@ -31,12 +31,16 @@
         "name": "JNE YES next-day parcel"
       },
       "status": {
-        "descriptor": { "code": "ACTIVE" }
+        "descriptor": {
+          "code": "ACTIVE"
+        }
       },
       "participants": [
         {
           "id": "jne.co.id",
-          "descriptor": { "name": "JNE Express" },
+          "descriptor": {
+            "name": "JNE Express"
+          },
           "participantAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
             "@type": "ion:LogisticsParticipantAttributes",
@@ -48,7 +52,9 @@
         },
         {
           "id": "jne.co.id",
-          "descriptor": { "name": "JNE Express" },
+          "descriptor": {
+            "name": "JNE Express"
+          },
           "participantAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
             "@type": "ion:LogisticsParticipantAttributes",
@@ -58,7 +64,9 @@
         },
         {
           "id": "consignor-budi-001",
-          "descriptor": { "name": "Budi Santoso" },
+          "descriptor": {
+            "name": "Budi Santoso"
+          },
           "participantAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
             "@type": "ion:LogisticsParticipantAttributes",
@@ -84,7 +92,9 @@
         },
         {
           "id": "consignee-siti-001",
-          "descriptor": { "name": "Siti Rahma" },
+          "descriptor": {
+            "name": "Siti Rahma"
+          },
           "participantAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
             "@type": "ion:LogisticsParticipantAttributes",
@@ -116,8 +126,25 @@
             "resourceId": "jne-parcel-service",
             "offerId": "jne-yes-nextday",
             "packageCount": 1,
-            "totalWeight": { "value": 2.5, "unit": "kilogram" },
+            "totalWeight": {
+              "value": 2.5,
+              "unit": "kilogram"
+            },
             "specialInstructions": "Fragile - handle with care"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "jne-parcel-service"
+            }
+          ],
+          "offer": {
+            "id": "jne-yes-nextday"
           }
         }
       ],
@@ -125,7 +152,9 @@
         {
           "id": "perf-001",
           "status": {
-            "descriptor": { "code": "READY_FOR_PICKUP" }
+            "descriptor": {
+              "code": "READY_FOR_PICKUP"
+            }
           },
           "performanceAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
@@ -179,6 +208,12 @@
             ],
             "totalAmount": 56721,
             "currency": "IDR"
+          },
+          "status": {
+            "descriptor": {
+              "code": "QUOTED",
+              "shortDesc": "Consideration quoted"
+            }
           }
         }
       ],

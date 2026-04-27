@@ -99,6 +99,20 @@
             ],
             "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
             "@type": "ion:LogisticsCommitmentAttributes"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "dhl-express-service"
+            }
+          ],
+          "offer": {
+            "id": "dhl-express-ddp"
           }
         }
       ],
@@ -117,34 +131,34 @@
             "estimatedClearanceDuration": "PT48H",
             "capacityConfirmed": true,
             "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
-            "@type": "ion:LogisticsPerformanceAttributes"
-          },
-          "stops": [
-            {
-              "type": "START",
-              "location": {
-                "address": {
-                  "name": "Shenzhen Bao'an International Airport",
-                  "city": "Shenzhen",
-                  "country": {
-                    "code": "CHN"
+            "@type": "ion:LogisticsPerformanceAttributes",
+            "stops": [
+              {
+                "type": "START",
+                "location": {
+                  "address": {
+                    "name": "Shenzhen Bao'an International Airport",
+                    "city": "Shenzhen",
+                    "country": {
+                      "code": "CHN"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "END",
+                "location": {
+                  "address": {
+                    "name": "Soekarno-Hatta International Airport",
+                    "city": "Tangerang",
+                    "country": {
+                      "code": "IDN"
+                    }
                   }
                 }
               }
-            },
-            {
-              "type": "END",
-              "location": {
-                "address": {
-                  "name": "Soekarno-Hatta International Airport",
-                  "city": "Tangerang",
-                  "country": {
-                    "code": "IDN"
-                  }
-                }
-              }
-            }
-          ]
+            ]
+          }
         }
       ],
       "consideration": [
@@ -185,7 +199,13 @@
             "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
             "@type": "ion:LogisticsConsiderationAttributes"
           },
-          "id": "cons-001"
+          "id": "cons-001",
+          "status": {
+            "descriptor": {
+              "code": "QUOTED",
+              "shortDesc": "Consideration quoted"
+            }
+          }
         }
       ],
       "settlements": [

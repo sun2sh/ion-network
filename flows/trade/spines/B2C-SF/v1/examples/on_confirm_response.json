@@ -6,7 +6,14 @@
     "sent_by": "BPP",
     "received_by": "BAP",
     "becknAction": "OnConfirmAction",
-    "schemaPacks": ["core/identity/v1", "core/payment/v1", "trade/performance/v1", "trade/contract/v1", "trade/consideration/v1", "trade/commitment/v1"]
+    "schemaPacks": [
+      "core/identity/v1",
+      "core/payment/v1",
+      "trade/performance/v1",
+      "trade/contract/v1",
+      "trade/consideration/v1",
+      "trade/commitment/v1"
+    ]
   },
   "context": {
     "domain": "ion:trade",
@@ -22,18 +29,28 @@
     "timestamp": "2026-04-19T10:31:05.000+07:00",
     "ttl": "PT30S",
     "location": {
-      "city": { "code": "std:3171" },
-      "country": { "code": "IDN" }
+      "city": {
+        "code": "std:3171"
+      },
+      "country": {
+        "code": "IDN"
+      }
     }
   },
   "message": {
     "contract": {
       "id": "ORD-2026-00012345",
-      "status": { "descriptor": { "code": "ACTIVE" } },
+      "status": {
+        "descriptor": {
+          "code": "ACTIVE"
+        }
+      },
       "participants": [
         {
           "role": "BUYER",
-          "person": { "name": "Ahmad Fauzi" },
+          "person": {
+            "name": "Ahmad Fauzi"
+          },
           "contact": {
             "phone": "08123456789",
             "email": "ahmad.fauzi@email.com"
@@ -54,25 +71,46 @@
       "commitments": [
         {
           "id": "L01",
-          "status": { "descriptor": { "code": "ACTIVE" } },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE"
+            }
+          },
           "offer": {
             "id": "OFFER-PIZZA-001",
-            "provider": { "id": "PROV-DOMINOS-SUDIRMAN-001" }
+            "provider": {
+              "id": "PROV-DOMINOS-SUDIRMAN-001"
+            }
           },
           "resources": [
             {
               "id": "PIZZA-PEPPERONI-LARGE",
-              "quantity": { "count": 1 }
+              "resourceAttributes": {
+                "@context": "https://schema.ion.id/extensions/trade/resource/v1/context.jsonld",
+                "@type": "ion:TradeResourceAttributes",
+                "quantity": {
+                  "count": 1
+                }
+              }
             }
           ],
           "commitmentAttributes": {
             "@context": "https://devlabs.ion.id/vocab/trade/commitment/v1",
             "@type": "ion:TradeCommitmentAttributes",
             "lineId": "L01",
-            "price": { "value": "89000", "currency": "IDR" },
+            "price": {
+              "value": "89000",
+              "currency": "IDR"
+            },
             "customisationSelections": [
-              { "groupId": "CG-CRUST", "optionId": "OPT-THIN" },
-              { "groupId": "CG-SAUCE", "optionId": "OPT-TOMATO" }
+              {
+                "groupId": "CG-CRUST",
+                "optionId": "OPT-THIN"
+              },
+              {
+                "groupId": "CG-SAUCE",
+                "optionId": "OPT-TOMATO"
+              }
             ],
             "specialInstructions": "Tolong dipotong 8 bagian."
           }
@@ -80,7 +118,11 @@
       ],
       "consideration": {
         "id": "CONSID-ORD-2026-00012345",
-        "status": { "descriptor": { "code": "ACTIVE" } },
+        "status": {
+          "descriptor": {
+            "code": "ACTIVE"
+          }
+        },
         "considerationAttributes": {
           "@context": "https://devlabs.ion.id/vocab/trade/consideration/v1",
           "@type": "ion:TradeConsiderationAttributes",
@@ -115,13 +157,22 @@
       "performance": [
         {
           "id": "PERF-2026-00012345",
-          "commitmentIds": ["L01"],
-          "status": { "descriptor": { "code": "PLANNED" } },
+          "commitmentIds": [
+            "L01"
+          ],
+          "status": {
+            "descriptor": {
+              "code": "PLANNED"
+            }
+          },
           "performanceAttributes": {
             "@context": "https://devlabs.ion.id/vocab/trade/performance/v1",
             "@type": "ion:TradePerformanceAttributes",
             "performanceMode": "DELIVERY",
-            "supportedPerformanceModes": ["DELIVERY", "SELF_PICKUP"],
+            "supportedPerformanceModes": [
+              "DELIVERY",
+              "SELF_PICKUP"
+            ],
             "sla": {
               "min": "PT30M",
               "max": "PT45M",
@@ -146,7 +197,9 @@
                   },
                   "gps": "-6.2271,106.8070"
                 },
-                "contact": { "phone": "08123456789" }
+                "contact": {
+                  "phone": "08123456789"
+                }
               }
             ]
           }
@@ -177,7 +230,9 @@
         "fulfillingLocationId": "FC-DOMINOS-SUDIRMAN-001",
         "npwp": "1234567890123456",
         "nib": "1234567890123",
-        "invoicePreferences": { "invoiceType": "RECEIPT" },
+        "invoicePreferences": {
+          "invoiceType": "RECEIPT"
+        },
         "buyerInstructions": "Tinggalkan di depan pintu jika tidak ada di rumah."
       }
     }

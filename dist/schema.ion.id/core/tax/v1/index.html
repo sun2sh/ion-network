@@ -42,13 +42,13 @@
 <h3>IONTaxDetail</h3>
 <p class="iri">IRI: https://schema.ion.id/core/tax/v1#IONTaxDetail</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>taxRegime</code></td><td>optional</td><td>PPN: Pajak Pertambahan Nilai (VAT), standard 11%. PPNBM: Pajak Penjualan atas Barang Mewah (luxury goods tax). PPH22: In</td></tr>
-<tr><td><code>taxCategory</code></td><td>optional</td><td>BKP: Barang Kena Pajak — taxable goods. JKP: Jasa Kena Pajak — taxable services. NON_BKP: Non-taxable goods or services.</td></tr>
-<tr><td><code>taxRate</code></td><td>conditional</td><td>Tax rate as decimal fraction. The applicable rate MUST be sourced from current Indonesian tax regulation (DJP / PMK), no</td></tr>
-<tr><td><code>taxAmount</code></td><td>conditional</td><td>Calculated tax amount in IDR</td></tr>
-<tr><td><code>taxIncluded</code></td><td>always</td><td>Whether the tax amount is already included in the item price (tax-inclusive pricing) or added on top (tax-exclusive).</td></tr>
-<tr><td><code>eFakturRef</code></td><td>optional</td><td>e-Invoice reference (Faktur Pajak) number from DJP e-Faktur system. Format: XXX.XXX-YY.XXXXXXXX where XXX is kode faktur</td></tr>
-<tr><td><code>taxBaseAmount</code></td><td>conditional</td><td>The amount on which tax is calculated (before tax)</td></tr>
+<tr><td><code>taxRegime</code></td><td>—</td><td>PPN: Pajak Pertambahan Nilai (VAT), standard 11%. PPNBM: Pajak Penjualan atas Barang Mewah (luxury goods tax). PPH22: In</td></tr>
+<tr><td><code>taxCategory</code></td><td>—</td><td>BKP: Barang Kena Pajak — taxable goods. JKP: Jasa Kena Pajak — taxable services. NON_BKP: Non-taxable goods or services.</td></tr>
+<tr><td><code>taxRate</code></td><td>—</td><td>Tax rate as decimal fraction. The applicable rate MUST be sourced from current Indonesian tax regulation (DJP / PMK), no</td></tr>
+<tr><td><code>taxAmount</code></td><td>—</td><td>Calculated tax amount in IDR</td></tr>
+<tr><td><code>taxIncluded</code></td><td>—</td><td>Whether the tax amount is already included in the item price (tax-inclusive pricing) or added on top (tax-exclusive).</td></tr>
+<tr><td><code>eFakturRef</code></td><td>—</td><td>e-Invoice reference (Faktur Pajak) number from DJP e-Faktur system. Format: XXX.XXX-YY.XXXXXXXX where XXX is kode faktur</td></tr>
+<tr><td><code>taxBaseAmount</code></td><td>—</td><td>The amount on which tax is calculated (before tax)</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>ion-core/tax/v1</h1>
@@ -63,7 +63,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/tax/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

@@ -42,19 +42,19 @@
 <h3>IONRatingAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/core/rating/v1#IONRatingAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>ratingCategory</code></td><td>optional</td><td>PROVIDER: overall seller/provider rating. ITEM: specific product quality rating. FULFILLMENT: delivery experience rating</td></tr>
-<tr><td><code>ratingValue</code></td><td>optional</td><td>Rating on a 1-5 scale. Can be decimal to one place e.g. 4.5. BPP stores and aggregates ratings.</td></tr>
-<tr><td><code>feedbackText</code></td><td>optional</td><td>Optional free-text feedback accompanying the rating.</td></tr>
-<tr><td><code>feedbackUrl</code></td><td>optional</td><td>URL returned by BPP in on_rate for consumer to provide extended feedback via seller&#x27;s own feedback form.</td></tr>
-<tr><td><code>ratingWindowDays</code></td><td>optional</td><td>Number of days after DELIVERED state during which rating can be submitted. Declared by BPP in on_confirm.</td></tr>
-<tr><td><code>contractId</code></td><td>optional</td><td>Contract this rating applies to.</td></tr>
-<tr><td><code>ratedEntityId</code></td><td>optional</td><td>ID of the entity being rated. For PROVIDER: provider ID. For ITEM: resource ID. For AGENT: agent identifier.</td></tr>
-<tr><td><code>ratingSubCategory</code></td><td>optional</td><td>Category-specific rating dimension. Enables granular seller insights and more informative reviews. Examples by category:</td></tr>
-<tr><td><code>ratingImages</code></td><td>optional</td><td>Photo URLs attached to the review. Subject to BAP/BPP moderation. Photo reviews drive significant conversion on all majo</td></tr>
-<tr><td><code>ratingVideos</code></td><td>optional</td><td>Video reviews for product feedback. Moderated.</td></tr>
-<tr><td><code>verifiedPurchase</code></td><td>optional</td><td>Whether this rating is from a verified purchase on ION. True by default — all ION ratings are verified purchases by desi</td></tr>
-<tr><td><code>helpfulCount</code></td><td>optional</td><td>Number of users who marked this review as helpful</td></tr>
-<tr><td><code>sellerResponse</code></td><td>optional</td><td>Seller&#x27;s public response to the review</td></tr>
+<tr><td><code>ratingCategory</code></td><td>—</td><td>PROVIDER: overall seller/provider rating. ITEM: specific product quality rating. FULFILLMENT: delivery experience rating</td></tr>
+<tr><td><code>ratingValue</code></td><td>—</td><td>Rating on a 1-5 scale. Can be decimal to one place e.g. 4.5. BPP stores and aggregates ratings.</td></tr>
+<tr><td><code>feedbackText</code></td><td>—</td><td>Optional free-text feedback accompanying the rating.</td></tr>
+<tr><td><code>feedbackUrl</code></td><td>—</td><td>URL returned by BPP in on_rate for consumer to provide extended feedback via seller&#x27;s own feedback form.</td></tr>
+<tr><td><code>ratingWindowDays</code></td><td>—</td><td>Number of days after DELIVERED state during which rating can be submitted. Declared by BPP in on_confirm.</td></tr>
+<tr><td><code>contractId</code></td><td>—</td><td>Contract this rating applies to.</td></tr>
+<tr><td><code>ratedEntityId</code></td><td>—</td><td>ID of the entity being rated. For PROVIDER: provider ID. For ITEM: resource ID. For AGENT: agent identifier.</td></tr>
+<tr><td><code>ratingSubCategory</code></td><td>—</td><td>Category-specific rating dimension. Enables granular seller insights and more informative reviews. Examples by category:</td></tr>
+<tr><td><code>ratingImages</code></td><td>—</td><td>Photo URLs attached to the review. Subject to BAP/BPP moderation. Photo reviews drive significant conversion on all majo</td></tr>
+<tr><td><code>ratingVideos</code></td><td>—</td><td>Video reviews for product feedback. Moderated.</td></tr>
+<tr><td><code>verifiedPurchase</code></td><td>—</td><td>Whether this rating is from a verified purchase on ION. True by default — all ION ratings are verified purchases by desi</td></tr>
+<tr><td><code>helpfulCount</code></td><td>—</td><td>Number of users who marked this review as helpful</td></tr>
+<tr><td><code>sellerResponse</code></td><td>—</td><td>Seller&#x27;s public response to the review</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>ion-core/rating/v1</h1>
@@ -69,7 +69,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/rating/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

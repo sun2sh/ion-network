@@ -6,7 +6,11 @@
     "sent_by": "BAP",
     "received_by": "BPP",
     "becknAction": "SelectAction",
-    "schemaPacks": ["core/localization/v1", "trade/commitment/v1", "trade/resource/v1"]
+    "schemaPacks": [
+      "core/localization/v1",
+      "trade/commitment/v1",
+      "trade/resource/v1"
+    ]
   },
   "context": {
     "domain": "ion:trade",
@@ -22,8 +26,12 @@
     "timestamp": "2026-04-19T10:30:00.000+07:00",
     "ttl": "PT30S",
     "location": {
-      "city": { "code": "std:3171" },
-      "country": { "code": "IDN" }
+      "city": {
+        "code": "std:3171"
+      },
+      "country": {
+        "code": "IDN"
+      }
     }
   },
   "message": {
@@ -31,26 +39,46 @@
       "commitments": [
         {
           "id": "L01",
-          "status": { "descriptor": { "code": "DRAFT" } },
+          "status": {
+            "descriptor": {
+              "code": "DRAFT"
+            }
+          },
           "offer": {
             "id": "OFFER-PIZZA-001",
             "provider": {
               "id": "PROV-DOMINOS-SUDIRMAN-001",
-              "availableAt": [{ "id": "LOC-SUDIRMAN-001" }]
+              "availableAt": [
+                {
+                  "id": "LOC-SUDIRMAN-001"
+                }
+              ]
             }
           },
           "resources": [
             {
               "id": "PIZZA-PEPPERONI-LARGE",
-              "quantity": { "count": 1 }
+              "resourceAttributes": {
+                "@context": "https://schema.ion.id/extensions/trade/resource/v1/context.jsonld",
+                "@type": "ion:TradeResourceAttributes",
+                "quantity": {
+                  "count": 1
+                }
+              }
             }
           ],
           "commitmentAttributes": {
             "@context": "https://devlabs.ion.id/vocab/trade/commitment/v1",
             "@type": "ion:TradeCommitmentAttributes",
             "customisationSelections": [
-              { "groupId": "CG-CRUST", "optionId": "OPT-THIN" },
-              { "groupId": "CG-SAUCE", "optionId": "OPT-TOMATO" }
+              {
+                "groupId": "CG-CRUST",
+                "optionId": "OPT-THIN"
+              },
+              {
+                "groupId": "CG-SAUCE",
+                "optionId": "OPT-TOMATO"
+              }
             ],
             "specialInstructions": "Tolong dipotong 8 bagian."
           }
@@ -59,7 +87,11 @@
       "performance": [
         {
           "id": "PERF-001",
-          "status": { "descriptor": { "code": "PLANNED" } },
+          "status": {
+            "descriptor": {
+              "code": "PLANNED"
+            }
+          },
           "performanceAttributes": {
             "@context": "https://devlabs.ion.id/vocab/trade/performance/v1",
             "@type": "ion:TradePerformanceAttributes",

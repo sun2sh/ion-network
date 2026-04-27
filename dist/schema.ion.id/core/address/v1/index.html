@@ -42,18 +42,18 @@
 <h3>IONAddressSubdivisions</h3>
 <p class="iri">IRI: https://schema.ion.id/core/address/v1#IONAddressSubdivisions</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>provinsiCode</code></td><td>always</td><td>Indonesian province code using BPS 2-digit numeric codes prefixed with BPS-. 34 provinces. Used for serviceability, tax </td></tr>
-<tr><td><code>kabupatenCode</code></td><td>optional</td><td>BPS 4-digit kabupaten/kota code. 514 kabupaten and kota in Indonesia. Used for granular serviceability and tax zone reso</td></tr>
-<tr><td><code>kelurahan</code></td><td>conditional</td><td>Village or urban administrative zone (kelurahan/desa). Required for precise last-mile delivery address.</td></tr>
-<tr><td><code>kecamatan</code></td><td>conditional</td><td>District or sub-city (kecamatan). Administrative level between kabupaten and kelurahan.</td></tr>
-<tr><td><code>rt</code></td><td>optional</td><td>Rukun Tetangga — neighborhood group, typically ~40 households. Critical for last-mile delivery in Indonesia — riders use</td></tr>
-<tr><td><code>rw</code></td><td>optional</td><td>Rukun Warga — association of RTs, typically ~400 people. Used together with RT for precise address resolution.</td></tr>
-<tr><td><code>postalCode</code></td><td>optional</td><td>Indonesian kodepos (postal code). 5 digits. Distinct from Beckn core area_code which conflates many country-specific cod</td></tr>
-<tr><td><code>addressType</code></td><td>optional</td><td>Address classification. Affects delivery SLA and surcharges — offices have restricted delivery hours, apartments require</td></tr>
-<tr><td><code>receiverInstructions</code></td><td>optional</td><td>Instructions for delivery receiver. Distinct from buyerInstructions — used for gift orders where receiver != buyer, and </td></tr>
-<tr><td><code>gpsAccuracyMeters</code></td><td>optional</td><td>Accuracy of GPS coordinate in metres. Required for pin-point delivery addresses in unaddressed areas (kampung, peri-urba</td></tr>
-<tr><td><code>landmark</code></td><td>optional</td><td>Notable nearby landmark for finding the address. Common in Indonesian urban delivery where street numbering is inconsist</td></tr>
-<tr><td><code>blockUnit</code></td><td>optional</td><td>Block/unit identifier for apartments and complexes. Beckn core &#x27;door&#x27; captures house number; this captures block/floor/u</td></tr>
+<tr><td><code>provinsiCode</code></td><td>—</td><td>Indonesian province code using BPS 2-digit numeric codes prefixed with BPS-. 34 provinces. Used for serviceability, tax </td></tr>
+<tr><td><code>kabupatenCode</code></td><td>—</td><td>BPS 4-digit kabupaten/kota code. 514 kabupaten and kota in Indonesia. Used for granular serviceability and tax zone reso</td></tr>
+<tr><td><code>kelurahan</code></td><td>—</td><td>Village or urban administrative zone (kelurahan/desa). Required for precise last-mile delivery address.</td></tr>
+<tr><td><code>kecamatan</code></td><td>—</td><td>District or sub-city (kecamatan). Administrative level between kabupaten and kelurahan.</td></tr>
+<tr><td><code>rt</code></td><td>—</td><td>Rukun Tetangga — neighborhood group, typically ~40 households. Critical for last-mile delivery in Indonesia — riders use</td></tr>
+<tr><td><code>rw</code></td><td>—</td><td>Rukun Warga — association of RTs, typically ~400 people. Used together with RT for precise address resolution.</td></tr>
+<tr><td><code>postalCode</code></td><td>—</td><td>Indonesian kodepos (postal code). 5 digits. Distinct from Beckn core area_code which conflates many country-specific cod</td></tr>
+<tr><td><code>addressType</code></td><td>—</td><td>Address classification. Affects delivery SLA and surcharges — offices have restricted delivery hours, apartments require</td></tr>
+<tr><td><code>receiverInstructions</code></td><td>—</td><td>Instructions for delivery receiver. Distinct from buyerInstructions — used for gift orders where receiver != buyer, and </td></tr>
+<tr><td><code>gpsAccuracyMeters</code></td><td>—</td><td>Accuracy of GPS coordinate in metres. Required for pin-point delivery addresses in unaddressed areas (kampung, peri-urba</td></tr>
+<tr><td><code>landmark</code></td><td>—</td><td>Notable nearby landmark for finding the address. Common in Indonesian urban delivery where street numbering is inconsist</td></tr>
+<tr><td><code>blockUnit</code></td><td>—</td><td>Block/unit identifier for apartments and complexes. Beckn core &#x27;door&#x27; captures house number; this captures block/floor/u</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>ion-core/address/v1</h1>
@@ -90,7 +90,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/address/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

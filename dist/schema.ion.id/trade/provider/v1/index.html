@@ -42,29 +42,29 @@
 <h3>TradeProviderAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/trade/provider/v1#TradeProviderAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>invoicingModel</code></td><td>always</td><td>Whether the brand invoices centrally (one NPWP for all fulfilment centres) or each fulfilment centre invoices separately</td></tr>
-<tr><td><code>invoicingEntity</code></td><td>conditional</td><td>Legal entity name of the invoicing entity when invoicingModel is CENTRAL. This is the brand&#x27;s registered legal entity — </td></tr>
-<tr><td><code>storeStatus</code></td><td>always</td><td>Operational status of this provider location. OPEN: accepting orders normally. TEMPORARILY_CLOSED: closed for a defined </td></tr>
-<tr><td><code>operatingHours</code></td><td>always</td><td>Weekly operating schedule as a typed array. Each entry covers one timing type for a day range. Types: ORDER (when orders</td></tr>
-<tr><td><code>holidayCalendar</code></td><td>always</td><td>Future-dated holiday dates on which this location will not accept or fulfil orders. ISO 8601 date format. Empty array if</td></tr>
-<tr><td><code>temporaryClosureEnd</code></td><td>conditional</td><td>ISO 8601 datetime when temporary closure ends. Required when storeStatus is TEMPORARILY_CLOSED. Timezone must be include</td></tr>
-<tr><td><code>serviceabilityByCategory</code></td><td>optional</td><td>Per-category serviceability polygon overrides. When a provider serves different delivery zones for different categories </td></tr>
-<tr><td><code>averagePreparationTime</code></td><td>conditional</td><td>Average time from order confirm to item ready for logistics pickup at this location. ISO 8601 duration. Used by BAP to c</td></tr>
-<tr><td><code>providerCategory</code></td><td>always</td><td>Category of this provider location. Used by BAP for display, filtering, and UI rendering decisions.</td></tr>
-<tr><td><code>nibRegistered</code></td><td>always</td><td>Whether this provider has a valid active NIB registered with OSS (Online Single Submission). ION Central validates NIB a</td></tr>
-<tr><td><code>trustedSellerBadge</code></td><td>optional</td><td>Whether this provider has earned ION Trusted Seller status. Awarded by ION Central based on transaction volume, rating, </td></tr>
-<tr><td><code>handlingTimeMinutes</code></td><td>optional</td><td>Time in minutes from order confirm to package ready for logistics. More precise than averagePreparationTime. Used for SL</td></tr>
-<tr><td><code>preferredLogisticsProvider</code></td><td>optional</td><td>Preferred on-network logistics provider subscriber ID for this seller&#x27;s shipments. When marketplaceManagedLogistics=true</td></tr>
-<tr><td><code>marketplaceManagedLogistics</code></td><td>optional</td><td>Whether this provider&#x27;s fulfilments use marketplace-managed logistics (Shopee Xpress, Tokopedia TokoCabang, Amazon MFN) </td></tr>
-<tr><td><code>liveCommerceEnabled</code></td><td>optional</td><td>Whether this provider supports live commerce (Shopee Live, Tokopedia Play, TikTok Shop-style sessions). Providers with t</td></tr>
-<tr><td><code>liveCommerceStreamers</code></td><td>optional</td><td>Subscriber IDs of authorised streamers who can feature this provider&#x27;s products in live sessions. Commission and settlem</td></tr>
-<tr><td><code>ottPartnerEnabled</code></td><td>optional</td><td>Whether this provider allows its catalog to be surfaced through OTT-embedded shoppable content (Vidio, Netflix, Disney+ </td></tr>
-<tr><td><code>kycStatus</code></td><td>always</td><td>Current KYC status of this provider with the BPP platform. Only APPROVED and APPROVED_WITH_CAVEATS providers may publish</td></tr>
-<tr><td><code>kycLevel</code></td><td>always</td><td>KYC depth. Determines maximum transaction value, allowed payment methods, eligibility for Mall/Premium tiers. BASIC: NIB</td></tr>
-<tr><td><code>kycValidUntil</code></td><td>always</td><td>Expiry date of current KYC certification. Providers MUST renew before this date. BPPs MUST block publish_catalog after e</td></tr>
-<tr><td><code>kycEvidenceRef</code></td><td>optional</td><td>Opaque reference to KYC evidence bundle (encrypted off-network). Used by ION Central when audit required. Not a URL — in</td></tr>
-<tr><td><code>kycCaveats</code></td><td>conditional</td><td>When kycStatus is APPROVED_WITH_CAVEATS, these describe the outstanding items. Each caveat has a deadline (tracked off-c</td></tr>
-<tr><td><code>categoryLicenses</code></td><td>conditional</td><td>Category-specific operating licenses beyond NIB/NPWP. Examples: SIA for alcohol, SIKA for meat, Izin PBF for pharmacy, I</td></tr>
+<tr><td><code>invoicingModel</code></td><td>—</td><td>Whether the brand invoices centrally (one NPWP for all fulfilment centres) or each fulfilment centre invoices separately</td></tr>
+<tr><td><code>invoicingEntity</code></td><td>—</td><td>Legal entity name of the invoicing entity when invoicingModel is CENTRAL. This is the brand&#x27;s registered legal entity — </td></tr>
+<tr><td><code>storeStatus</code></td><td>—</td><td>Operational status of this provider location. OPEN: accepting orders normally. TEMPORARILY_CLOSED: closed for a defined </td></tr>
+<tr><td><code>operatingHours</code></td><td>—</td><td>Weekly operating schedule as a typed array. Each entry covers one timing type for a day range. Types: ORDER (when orders</td></tr>
+<tr><td><code>holidayCalendar</code></td><td>—</td><td>Future-dated holiday dates on which this location will not accept or fulfil orders. ISO 8601 date format. Empty array if</td></tr>
+<tr><td><code>temporaryClosureEnd</code></td><td>—</td><td>ISO 8601 datetime when temporary closure ends. Required when storeStatus is TEMPORARILY_CLOSED. Timezone must be include</td></tr>
+<tr><td><code>serviceabilityByCategory</code></td><td>—</td><td>Per-category serviceability polygon overrides. When a provider serves different delivery zones for different categories </td></tr>
+<tr><td><code>averagePreparationTime</code></td><td>—</td><td>Average time from order confirm to item ready for logistics pickup at this location. ISO 8601 duration. Used by BAP to c</td></tr>
+<tr><td><code>providerCategory</code></td><td>—</td><td>Category of this provider location. Used by BAP for display, filtering, and UI rendering decisions.</td></tr>
+<tr><td><code>nibRegistered</code></td><td>—</td><td>Whether this provider has a valid active NIB registered with OSS (Online Single Submission). ION Central validates NIB a</td></tr>
+<tr><td><code>trustedSellerBadge</code></td><td>—</td><td>Whether this provider has earned ION Trusted Seller status. Awarded by ION Central based on transaction volume, rating, </td></tr>
+<tr><td><code>handlingTimeMinutes</code></td><td>—</td><td>Time in minutes from order confirm to package ready for logistics. More precise than averagePreparationTime. Used for SL</td></tr>
+<tr><td><code>preferredLogisticsProvider</code></td><td>—</td><td>Preferred on-network logistics provider subscriber ID for this seller&#x27;s shipments. When marketplaceManagedLogistics=true</td></tr>
+<tr><td><code>marketplaceManagedLogistics</code></td><td>—</td><td>Whether this provider&#x27;s fulfilments use marketplace-managed logistics (Shopee Xpress, Tokopedia TokoCabang, Amazon MFN) </td></tr>
+<tr><td><code>liveCommerceEnabled</code></td><td>—</td><td>Whether this provider supports live commerce (Shopee Live, Tokopedia Play, TikTok Shop-style sessions). Providers with t</td></tr>
+<tr><td><code>liveCommerceStreamers</code></td><td>—</td><td>Subscriber IDs of authorised streamers who can feature this provider&#x27;s products in live sessions. Commission and settlem</td></tr>
+<tr><td><code>ottPartnerEnabled</code></td><td>—</td><td>Whether this provider allows its catalog to be surfaced through OTT-embedded shoppable content (Vidio, Netflix, Disney+ </td></tr>
+<tr><td><code>kycStatus</code></td><td>—</td><td>Current KYC status of this provider with the BPP platform. Only APPROVED and APPROVED_WITH_CAVEATS providers may publish</td></tr>
+<tr><td><code>kycLevel</code></td><td>—</td><td>KYC depth. Determines maximum transaction value, allowed payment methods, eligibility for Mall/Premium tiers. BASIC: NIB</td></tr>
+<tr><td><code>kycValidUntil</code></td><td>—</td><td>Expiry date of current KYC certification. Providers MUST renew before this date. BPPs MUST block publish_catalog after e</td></tr>
+<tr><td><code>kycEvidenceRef</code></td><td>—</td><td>Opaque reference to KYC evidence bundle (encrypted off-network). Used by ION Central when audit required. Not a URL — in</td></tr>
+<tr><td><code>kycCaveats</code></td><td>—</td><td>When kycStatus is APPROVED_WITH_CAVEATS, these describe the outstanding items. Each caveat has a deadline (tracked off-c</td></tr>
+<tr><td><code>categoryLicenses</code></td><td>—</td><td>Category-specific operating licenses beyond NIB/NPWP. Examples: SIA for alcohol, SIKA for meat, Izin PBF for pharmacy, I</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>trade/provider/v1</h1>
@@ -79,7 +79,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/trade/provider/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

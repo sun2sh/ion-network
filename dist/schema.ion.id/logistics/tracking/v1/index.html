@@ -42,16 +42,16 @@
 <h3>LogisticsTrackingAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/tracking/v1#LogisticsTrackingAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>trackingType</code></td><td>always</td><td>Mode of tracking offered. LIVE_GPS for hyperlocal real-time position. AWB_URL for parcel tracking on carrier&#x27;s own websi</td></tr>
-<tr><td><code>refreshIntervalSeconds</code></td><td>conditional</td><td>Recommended polling interval for LIVE_GPS and POLLING_API modes. Typical: 5-15 seconds for hyperlocal, 60+ for parcel.</td></tr>
-<tr><td><code>credentials</code></td><td>conditional</td><td>Authentication for WEBSOCKET or authenticated webhook</td></tr>
-<tr><td><code>webhookEvents</code></td><td>conditional</td><td>Events the BPP will push to webhook (if trackingType=WEBHOOK)</td></tr>
-<tr><td><code>currentLocation</code></td><td>conditional</td><td>Last known location snapshot at time of /on_track response. Primarily for LIVE_GPS.</td></tr>
-<tr><td><code>etaMinutes</code></td><td>conditional</td><td>Current ETA to next waypoint or destination</td></tr>
-<tr><td><code>routePolyline</code></td><td>optional</td><td>Encoded polyline of planned route (Google-style encoding)</td></tr>
-<tr><td><code>agentDetails</code></td><td>conditional</td><td>Agent details exposed based on offer.agentAssignmentModel and current performance state.</td></tr>
-<tr><td><code>trackingHandoffToCarrier</code></td><td>optional</td><td>True if tracking URL redirects to carrier&#x27;s own tracking page (common for LOG-PARCEL where AWB is carrier-native).</td></tr>
-<tr><td><code>carrierTrackingUrlPattern</code></td><td>optional</td><td>URL template for AWB_URL tracking. E.g. &quot;https://jne.co.id/tracking?awb={awbNumber}&quot;</td></tr>
+<tr><td><code>trackingType</code></td><td>—</td><td>Mode of tracking offered. LIVE_GPS for hyperlocal real-time position. AWB_URL for parcel tracking on carrier&#x27;s own websi</td></tr>
+<tr><td><code>refreshIntervalSeconds</code></td><td>—</td><td>Recommended polling interval for LIVE_GPS and POLLING_API modes. Typical: 5-15 seconds for hyperlocal, 60+ for parcel.</td></tr>
+<tr><td><code>credentials</code></td><td>—</td><td>Authentication for WEBSOCKET or authenticated webhook</td></tr>
+<tr><td><code>webhookEvents</code></td><td>—</td><td>Events the BPP will push to webhook (if trackingType=WEBHOOK)</td></tr>
+<tr><td><code>currentLocation</code></td><td>—</td><td>Last known location snapshot at time of /on_track response. Primarily for LIVE_GPS.</td></tr>
+<tr><td><code>etaMinutes</code></td><td>—</td><td>Current ETA to next waypoint or destination</td></tr>
+<tr><td><code>routePolyline</code></td><td>—</td><td>Encoded polyline of planned route (Google-style encoding)</td></tr>
+<tr><td><code>agentDetails</code></td><td>—</td><td>Agent details exposed based on offer.agentAssignmentModel and current performance state.</td></tr>
+<tr><td><code>trackingHandoffToCarrier</code></td><td>—</td><td>True if tracking URL redirects to carrier&#x27;s own tracking page (common for LOG-PARCEL where AWB is carrier-native).</td></tr>
+<tr><td><code>carrierTrackingUrlPattern</code></td><td>—</td><td>URL template for AWB_URL tracking. E.g. &quot;https://jne.co.id/tracking?awb={awbNumber}&quot;</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>tracking/v1 — Logistics Tracking Attributes</h1>
@@ -140,7 +140,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/tracking/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

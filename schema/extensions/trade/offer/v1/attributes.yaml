@@ -1,230 +1,199 @@
 openapi: 3.1.1
 info:
   title: ION Trade Offer Extension (v1)
-  description: >
-    Trade sector offer attributes. Terms of sale — cancellability, returnability,
-    policies, COD availability, consumer care contact, MOQ, promotion mechanics.
-    Attaches to: beckn:Offer.offerAttributes
-  version: 1.0.0
+  description: 'Trade sector offer attributes. Terms of sale — cancellability, returnability, policies, COD availability,
+    consumer care contact, MOQ, promotion mechanics. Attaches to: beckn:Offer.offerAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     TradeOfferAttributes:
       type: object
       title: Trade Offer Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:TradeOfferAttributes
+        '@context': ./context.jsonld
+        '@type': ion:TradeOfferAttributes
       x-beckn-attaches-to: Offer.offerAttributes
-
       properties:
-
-        # CANCELLATION
         cancellationPolicy:
           type: string
           enum:
-            - ion://policy/cancel.prepacked.free
-            - ion://policy/cancel.standard.until-dispatched
-            - ion://policy/cancel.mto.nofee-before-prepare
-            - ion://policy/cancel.standard.none
-            - ion://policy/cancel.flash-sale.none-after-confirm
-            - ion://policy/cancel.b2b.until-dispatched-15pct
-            - ion://policy/cancel.subscription.prorated-midcycle
-            - ion://policy/cancel.preorder.5d-before-release
-            - ion://policy/cancel.digital.before-pending-operator
-            - ion://policy/cancel.partial.refund-packed-threshold
-          description: >
-            ION standard cancellation policy IRI.
-            cancel.prepacked.free: buyer may cancel before packed at no fee.
-            cancel.mto.nofee.before_prepare: MTO, free cancellation before preparation starts.
-            cancel.none: no cancellation permitted after confirm.
-          example: ion://policy/cancel.prepacked.free
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1999 Pasal 19
+          - ion://policy/cancel.prepacked.free
+          - ion://policy/cancel.standard.until-dispatched
+          - ion://policy/cancel.mto.nofee-before-prepare
+          - ion://policy/cancel.standard.none
+          - ion://policy/cancel.flash-sale.none-after-confirm
+          - ion://policy/cancel.b2b.until-dispatched-15pct
+          - ion://policy/cancel.subscription.prorated-midcycle
+          - ion://policy/cancel.preorder.5d-before-release
+          - ion://policy/cancel.digital.before-pending-operator
+          - ion://policy/cancel.partial.refund-packed-threshold
+          description: 'ION standard cancellation policy IRI. cancel.prepacked.free: buyer may cancel before packed
+            at no fee. cancel.mto.nofee.before_prepare: MTO, free cancellation before preparation starts. cancel.none:
+            no cancellation permitted after confirm.
 
+            '
+          example: ion://policy/cancel.prepacked.free
+          x-ion-regulatory: UU 8/1999 Pasal 19
         cancellationAllowedReasons:
           type: array
           items:
             type: string
             enum:
-              - CHANGE_OF_MIND
-              - WRONG_ITEM_ORDERED
-              - ORDERED_WRONG_VARIANT
-              - FOUND_BETTER_PRICE
-              - DELIVERY_TOO_LONG
-              - INCORRECT_ADDRESS
-              - DUPLICATE_ORDER
-              - PAYMENT_METHOD_CHANGE
-              - ITEM_NO_LONGER_NEEDED
-              - SELLER_UNRESPONSIVE
-              - BUYER_FRAUD_SUSPECTED
-              - QUALITY_ISSUE_AT_PREVIEW
-          description: >
-            Seller-declared reasons for which buyer cancellation is accepted.
-            Only meaningful when cancellationPolicy is not cancel.none.
-          example:
             - CHANGE_OF_MIND
             - WRONG_ITEM_ORDERED
-          x-ion-mandatory: conditional
+            - ORDERED_WRONG_VARIANT
+            - FOUND_BETTER_PRICE
+            - DELIVERY_TOO_LONG
+            - INCORRECT_ADDRESS
+            - DUPLICATE_ORDER
+            - PAYMENT_METHOD_CHANGE
+            - ITEM_NO_LONGER_NEEDED
+            - SELLER_UNRESPONSIVE
+            - BUYER_FRAUD_SUSPECTED
+            - QUALITY_ISSUE_AT_PREVIEW
+          description: 'Seller-declared reasons for which buyer cancellation is accepted. Only meaningful when cancellationPolicy
+            is not cancel.none.
+
+            '
+          example:
+          - CHANGE_OF_MIND
+          - WRONG_ITEM_ORDERED
+          x-ion-conditional: true
           x-ion-condition: Required when cancellationPolicy is not cancel.none
-
-        # cancellationFee, cancellationFeeApplicableStates — REMOVED in v0.5
-        # Cancellation fee mechanics now live in the cancellationPolicy IRI
-        # terms document. See CHANGELOG v0.5 migration notes.
-
-        # RETURNS
         returnable:
           type: boolean
-          description: >
-            Whether the product can be returned after delivery. False for
-            perishables, personalised items, digital goods, and hygiene
-            products unless defective.
-          example: true
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1999 tentang Perlindungan Konsumen
+          description: 'Whether the product can be returned after delivery. False for perishables, personalised
+            items, digital goods, and hygiene products unless defective.
 
+            '
+          example: true
+          x-ion-regulatory: UU 8/1999 tentang Perlindungan Konsumen
         returnPolicy:
           type: string
           enum:
-            - ion://policy/return.standard.7d-sellerpays
-            - ion://policy/return.standard.14d-sellerpays
-            - ion://policy/return.standard.30d-sellerpays
-            - ion://policy/return.standard.7d-buyerpays
-            - ion://policy/return.fashion.7d-fit-only-sellerpays
-            - ion://policy/return.electronics.14d-unopened-or-defective-sellerpays
-            - ion://policy/return.highvalue.14d-inspection-sellerpays
-            - ion://policy/return.beauty.hygiene-nonreturnable
-            - ion://policy/return.pharmacy.nonreturnable
-            - ion://policy/return.grocery.sameday-defect-only
-            - ion://policy/return.agritech.perishable-defect-only
-            - ion://policy/return.jewelry.3d-tamper-seal-sellerpays
-            - ion://policy/return.books.14d-sealed-only
-            - ion://policy/return.custom.nonreturnable-defect-only
-            - ion://policy/return.standard.none
-          description: >
-            ION standard return policy IRI. Encodes window duration and
-            who pays return shipping.
+          - ion://policy/return.standard.7d-sellerpays
+          - ion://policy/return.standard.14d-sellerpays
+          - ion://policy/return.standard.30d-sellerpays
+          - ion://policy/return.standard.7d-buyerpays
+          - ion://policy/return.fashion.7d-fit-only-sellerpays
+          - ion://policy/return.electronics.14d-unopened-or-defective-sellerpays
+          - ion://policy/return.highvalue.14d-inspection-sellerpays
+          - ion://policy/return.beauty.hygiene-nonreturnable
+          - ion://policy/return.pharmacy.nonreturnable
+          - ion://policy/return.grocery.sameday-defect-only
+          - ion://policy/return.agritech.perishable-defect-only
+          - ion://policy/return.jewelry.3d-tamper-seal-sellerpays
+          - ion://policy/return.books.14d-sealed-only
+          - ion://policy/return.custom.nonreturnable-defect-only
+          - ion://policy/return.standard.none
+          description: 'ION standard return policy IRI. Encodes window duration and who pays return shipping.
+
+            '
           example: ion://policy/return.standard.7d-sellerpays
-          x-ion-mandatory: always
           x-ion-regulatory: UU 8/1999 Pasal 25; Permendag 19/M-DAG/PER/5/2009
-
-        # returnWindow — REMOVED in v0.5
-        # Source of truth is the returnPolicy IRI's terms document.
-        # Field 'returnWindowDays' lives there. See CHANGELOG v0.5.
-
-        # returnAllowedReasons — REMOVED in v0.5
-        # Source of truth is the returnPolicy IRI's returnReasonsAllowed field.
         sellerPickupReturn:
           type: boolean
-          description: >
-            Whether the seller arranges pickup for returns (true) or consumer
-            must arrange their own return shipping (false).
-          example: true
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when returnable is true
+          description: 'Whether the seller arranges pickup for returns (true) or consumer must arrange their own
+            return shipping (false).
 
-        # WARRANTY
+            '
+          example: true
+          x-ion-conditional: true
+          x-ion-condition: Required when returnable is true
         warrantyPolicy:
           type: string
           enum:
-            - ion://policy/warranty.manufacturer.1y-distance-service
-            - ion://policy/warranty.manufacturer.2y-distance-service
-            - ion://policy/warranty.manufacturer.3y-distance-service
-            - ion://policy/warranty.seller.1y
-            - ion://policy/warranty.seller.1y.replacement_only
-            - ion://policy/warranty.refurbished.30d-limited
-            - ion://policy/warranty.extended.paid-addon
-            - ion://policy/warranty.standard.none
+          - ion://policy/warranty.manufacturer.1y-distance-service
+          - ion://policy/warranty.manufacturer.2y-distance-service
+          - ion://policy/warranty.manufacturer.3y-distance-service
+          - ion://policy/warranty.seller.1y
+          - ion://policy/warranty.seller.1y.replacement_only
+          - ion://policy/warranty.refurbished.30d-limited
+          - ion://policy/warranty.extended.paid-addon
+          - ion://policy/warranty.standard.none
           description: ION standard warranty policy IRI.
           example: ion://policy/warranty.manufacturer.1y-distance-service
-          x-ion-mandatory: always
           x-ion-regulatory: UU 8/1999 Pasal 25; PP 36/2023
-
-        # DISPUTE
         disputePolicy:
           type: string
           enum:
-            - ion://policy/dispute.consumer.bpsk
-            - ion://policy/dispute.commercial.bani
-            - ion://policy/dispute.commercial.odr
-            - ion://policy/dispute.international.standard.uncitral
-            - ion://policy/dispute.b2g.lkpp
-          description: >
-            ION standard dispute resolution policy IRI.
-            dispute.consumer.bpsk: B2C — BPSK (Badan Penyelesaian Sengketa Konsumen).
-            dispute.commercial.bani: B2B — BANI arbitration.
-            dispute.commercial.odr: Online Dispute Resolution via ION platform.
-          example: ion://policy/dispute.consumer.bpsk
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1999 Pasal 45; UU 30/1999 tentang Arbitrase
+          - ion://policy/dispute.consumer.bpsk
+          - ion://policy/dispute.commercial.bani
+          - ion://policy/dispute.commercial.odr
+          - ion://policy/dispute.international.standard.uncitral
+          - ion://policy/dispute.b2g.lkpp
+          description: 'ION standard dispute resolution policy IRI. dispute.consumer.bpsk: B2C — BPSK (Badan Penyelesaian
+            Sengketa Konsumen). dispute.commercial.bani: B2B — BANI arbitration. dispute.commercial.odr: Online
+            Dispute Resolution via ION platform.
 
-        # FULFILLMENT
+            '
+          example: ion://policy/dispute.consumer.bpsk
+          x-ion-regulatory: UU 8/1999 Pasal 45; UU 30/1999 tentang Arbitrase
         timeToShip:
           type: string
-          description: >
-            Time from order confirm to when seller hands package to logistics.
-            ISO 8601 duration.
-          example: PT2H
-          x-ion-mandatory: always
+          description: 'Time from order confirm to when seller hands package to logistics. ISO 8601 duration.
 
+            '
+          example: PT2H
         availableOnCod:
           type: boolean
-          description: >
-            Whether Cash on Delivery is available for this product. Some
-            categories cannot be sold on COD (prescription medicine, alcohol,
-            tobacco, items above IDR 5,000,000).
-          example: true
-          x-ion-mandatory: always
+          description: 'Whether Cash on Delivery is available for this product. Some categories cannot be sold on
+            COD (prescription medicine, alcohol, tobacco, items above IDR 5,000,000).
 
-        # SELF PICKUP
+            '
+          example: true
         selfPickupOtp:
           type: boolean
-          description: >
-            Whether OTP verification is required when consumer picks up order.
-            If true, BPP generates deliveryOtp in performanceAttributes.
-          example: false
-          x-ion-mandatory: optional
+          description: 'Whether OTP verification is required when consumer picks up order. If true, BPP generates
+            deliveryOtp in performanceAttributes.
 
+            '
+          example: false
         selfPickupInstructions:
           type: string
           description: Instructions for self-pickup — counter number, floor, collection point.
           example: Ambil di counter F&B lantai 1, tunjukkan kode pesanan Anda.
-          x-ion-mandatory: optional
-
         proofOfDeliveryType:
           type: string
-          enum: [OTP, SIGNATURE, PHOTO, NONE]
+          enum:
+          - OTP
+          - SIGNATURE
+          - PHOTO
+          - NONE
           description: Type of delivery confirmation proof required.
           example: OTP
-          x-ion-mandatory: optional
-
-        # CONSUMER CARE
         contactDetailsConsumerCare:
           type: string
-          description: >
-            Consumer care contact in comma-separated format: name, email, phone.
-            Displayed to consumer for post-purchase support queries.
-          example: Customer Service,cs@toko.com,08001234567
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1999 tentang Perlindungan Konsumen Pasal 7
+          description: 'Consumer care contact in comma-separated format: name, email, phone. Displayed to consumer
+            for post-purchase support queries.
 
-        # DISPLAY
+            '
+          example: Customer Service,cs@toko.com,08001234567
+          x-ion-regulatory: UU 8/1999 tentang Perlindungan Konsumen Pasal 7
         displayLanguage:
           type: array
           items:
             type: string
-            enum: [id, en, ms, zh, ar, ta, ko, ja]
-          description: >
-            Languages in which this offer's catalog content is available.
-            "id" always present. "en" required for XB commerce pattern.
-          example:
+            enum:
             - id
             - en
-          x-ion-mandatory: always
-          x-ion-regulatory: ION Network Policy — language completeness validation
+            - ms
+            - zh
+            - ar
+            - ta
+            - ko
+            - ja
+          description: 'Languages in which this offer''s catalog content is available. "id" always present. "en"
+            required for XB commerce pattern.
 
-        # B2B
+            '
+          example:
+          - id
+          - en
+          x-ion-regulatory: ION Network Policy — language completeness validation
         minimumOrderQuantity:
           type: object
           additionalProperties: false
@@ -238,25 +207,29 @@ components:
               properties:
                 unit:
                   type: string
-                  enum: [GRAM, KILOGRAM, LITRE, MILLILITRE, PIECE, DOZEN]
+                  enum:
+                  - GRAM
+                  - KILOGRAM
+                  - LITRE
+                  - MILLILITRE
+                  - PIECE
+                  - DOZEN
                 value:
                   type: number
-          description: >
-            Minimum quantity for B2B wholesale. count for unit-based,
-            measure for weight/volume-based products.
+          description: 'Minimum quantity for B2B wholesale. count for unit-based, measure for weight/volume-based
+            products.
+
+            '
           example:
             count: 10
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for B2B wholesale commerce pattern
-
-        # LOGISTICS
         weightSlabs:
           type: array
           description: Weight-based pricing tiers for catalogued logistics offers.
           items:
             type: object
             additionalProperties: false
-            required: [minKg, maxKg, priceIDR]
             properties:
               minKg:
                 type: number
@@ -265,86 +238,98 @@ components:
                 type: number
               priceIDR:
                 type: integer
+            required:
+            - minKg
+            - maxKg
+            - priceIDR
           example:
-            - minKg: 0
-              maxKg: 5
-              priceIDR: 15000
-            - minKg: 5
-              maxKg: 10
-              priceIDR: 25000
-          x-ion-mandatory: conditional
+          - minKg: 0
+            maxKg: 5
+            priceIDR: 15000
+          - minKg: 5
+            maxKg: 10
+            priceIDR: 25000
+          x-ion-conditional: true
           x-ion-condition: Required for catalogued domestic logistics patterns
-
-        # PROMOTIONS
         offerType:
           type: string
-          enum: [LIST_PRICE, DISCOUNT, BUNDLE, BUY_X_GET_Y, CASHBACK, FREE_DELIVERY, VOUCHER]
+          enum:
+          - LIST_PRICE
+          - DISCOUNT
+          - BUNDLE
+          - BUY_X_GET_Y
+          - CASHBACK
+          - FREE_DELIVERY
+          - VOUCHER
           description: Type of commercial offer.
           example: DISCOUNT
-          x-ion-mandatory: optional
-
         priceModel:
           type: string
-          enum: [FIXED, DYNAMIC, TIERED]
+          enum:
+          - FIXED
+          - DYNAMIC
+          - TIERED
           description: How pricing is determined for this offer.
           example: FIXED
-          x-ion-mandatory: optional
-
         minBasketAmount:
           type: number
           description: Minimum basket value in IDR for offer to be valid.
           example: 50000
-          x-ion-mandatory: optional
-
         maxDiscountAmount:
           type: number
           description: Maximum discount cap in IDR for percentage offers.
           example: 20000
-          x-ion-mandatory: optional
-
         voucherCode:
           type: string
           description: Voucher or promo code to activate offer.
           example: HEMAT50
-          x-ion-mandatory: optional
-
         stackable:
           type: boolean
           description: Whether this offer can be combined with other active offers.
           default: false
-          x-ion-mandatory: optional
-
         usageLimitPerUser:
           type: integer
           minimum: 1
           description: Maximum times this offer can be used by a single user.
           example: 1
-          x-ion-mandatory: optional
-
         customerSegment:
           type: string
-          enum: [ALL, NEW_USER, LOYALTY, MEMBERSHIP, VERIFIED_SELLER]
+          enum:
+          - ALL
+          - NEW_USER
+          - LOYALTY
+          - MEMBERSHIP
+          - VERIFIED_SELLER
           description: Segment of customers eligible for this offer.
           example: ALL
-          x-ion-mandatory: optional
-
-        # Op-9 — Tiered payment method eligibility (v0.5, replaces flat enum)
         paymentMethodEligibility:
           type: array
-          description: >
-            Structured payment method eligibility. Each entry declares
-            minAmount/maxAmount constraints, required buyer tier, excluded
-            categories. BAP checks buyer context + order amount against
-            every entry; applies only those that pass all constraints.
-            Empty array means all methods eligible.
+          description: 'Structured payment method eligibility. Each entry declares minAmount/maxAmount constraints,
+            required buyer tier, excluded categories. BAP checks buyer context + order amount against every entry;
+            applies only those that pass all constraints. Empty array means all methods eligible.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [method]
             properties:
               method:
                 type: string
-                enum: [QRIS, VIRTUAL_ACCOUNT, EWALLET, COD, BANK_TRANSFER, BI_FAST, RTGS, SKN, BNPL, CREDIT_CARD, DEBIT_CARD, DIRECT_DEBIT, CREDIT_FACILITY, ESCROW]
+                enum:
+                - QRIS
+                - VIRTUAL_ACCOUNT
+                - EWALLET
+                - COD
+                - BANK_TRANSFER
+                - BI_FAST
+                - RTGS
+                - SKN
+                - BNPL
+                - CREDIT_CARD
+                - DEBIT_CARD
+                - DIRECT_DEBIT
+                - CREDIT_FACILITY
+                - ESCROW
               minAmount:
                 type: number
                 description: Minimum order value in IDR for this method to be eligible
@@ -355,7 +340,12 @@ components:
                 type: array
                 items:
                   type: string
-                  enum: [NEW, STANDARD, VERIFIED, PREMIUM, VIP]
+                  enum:
+                  - NEW
+                  - STANDARD
+                  - VERIFIED
+                  - PREMIUM
+                  - VIP
                 description: Buyer tier(s) eligible for this method
               requiresAddressVerification:
                 type: boolean
@@ -377,8 +367,8 @@ components:
               eligibilityNote:
                 type: string
                 description: Optional human-readable explanation
-          x-ion-mandatory: optional
-
+            required:
+            - method
         subsidyBreakup:
           type: object
           additionalProperties: false
@@ -393,49 +383,36 @@ components:
             brandSubsidy:
               type: number
               minimum: 0
-          x-ion-mandatory: optional
-
         startAt:
           type: string
           format: date-time
           description: When this promotional offer becomes active.
-          x-ion-mandatory: optional
-
         endAt:
           type: string
           format: date-time
           description: When this promotional offer expires.
-          x-ion-mandatory: optional
-
-        # Op-2 — PRICE SCHEDULE (v0.5)
         priceValidFrom:
           type: string
           format: date-time
-          description: >
-            Start of price validity window. Distinct from startAt (offer
-            availability window) — price may change mid-campaign while
-            offer remains active. Catalog TTL for offers with active
-            priceChangeSchedule SHOULD be <=30 seconds to avoid stale-price
-            surfacing on browsing surfaces.
-          x-ion-mandatory: optional
+          description: 'Start of price validity window. Distinct from startAt (offer availability window) — price
+            may change mid-campaign while offer remains active. Catalog TTL for offers with active priceChangeSchedule
+            SHOULD be <=30 seconds to avoid stale-price surfacing on browsing surfaces.
 
+            '
         priceValidUntil:
           type: string
           format: date-time
           description: End of price validity window.
-          x-ion-mandatory: optional
-
         priceChangeSchedule:
           type: array
-          description: >
-            Full price change timeline for a campaign. BAPs MUST render
-            countdown UI and compute correct price at transaction time.
-            Each entry defines a price valid for a window; entries MUST NOT
-            overlap. Sorted ascending by validFrom.
+          description: 'Full price change timeline for a campaign. BAPs MUST render countdown UI and compute correct
+            price at transaction time. Each entry defines a price valid for a window; entries MUST NOT overlap.
+            Sorted ascending by validFrom.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [validFrom, validUntil, priceValue]
             properties:
               validFrom:
                 type: string
@@ -449,93 +426,86 @@ components:
               phaseLabel:
                 type: string
                 description: Human label e.g. "Jam pertama harga hemat"
-                example: "First hour at flash price"
-          x-ion-mandatory: optional
-
-
-        # C1 — STOCK RESERVATION (new in v0.3)
+                example: First hour at flash price
+            required:
+            - validFrom
+            - validUntil
+            - priceValue
         reservationWindowSeconds:
           type: integer
           minimum: 0
           maximum: 3600
-          description: >
-            Seconds for which the BPP will hold availability and the on_select
-            price quote. Default 300. BPP soft-reserves at on_select, hard-reserves
-            at on_init. After window expires, availability is released and any
-            subsequent /confirm for this messageId returns ION-3006.
-          example: 300
-          x-ion-mandatory: optional
-          x-ion-default: 300
+          description: 'Seconds for which the BPP will hold availability and the on_select price quote. Default
+            300. BPP soft-reserves at on_select, hard-reserves at on_init. After window expires, availability is
+            released and any subsequent /confirm for this messageId returns ION-3006.
 
-        # C2 — FLASH SALE / OFFER STOCK CAPS (new in v0.3)
+            '
+          example: 300
+          x-ion-default: 300
         totalStockCap:
           type: integer
           minimum: 1
-          description: >
-            Absolute total quantity available under this offer. When reached,
-            all subsequent /select calls return ION-3008. Distinct from
-            resource.availability.maxOrderQty (per-order cap).
-          example: 100
-          x-ion-mandatory: optional
+          description: 'Absolute total quantity available under this offer. When reached, all subsequent /select
+            calls return ION-3008. Distinct from resource.availability.maxOrderQty (per-order cap).
 
+            '
+          example: 100
         perUserQuantityCap:
           type: integer
           minimum: 1
-          description: >
-            Maximum units a single buyer can purchase under this offer across
-            all transactions (enforced by BPP). Distinct from usageLimitPerUser
-            which is number of separate redemptions.
-          example: 2
-          x-ion-mandatory: optional
+          description: 'Maximum units a single buyer can purchase under this offer across all transactions (enforced
+            by BPP). Distinct from usageLimitPerUser which is number of separate redemptions.
 
+            '
+          example: 2
         isFlashSale:
           type: boolean
-          description: >
-            Signals this offer is a flash sale. BAP surfaces urgency UI;
-            reservationWindowSeconds SHOULD be short (60-180s).
-          default: false
-          x-ion-mandatory: optional
+          description: 'Signals this offer is a flash sale. BAP surfaces urgency UI; reservationWindowSeconds SHOULD
+            be short (60-180s).
 
+            '
+          default: false
         queueEnabled:
           type: boolean
-          description: >
-            Whether BPP uses a queue/throttle mechanism when demand exceeds
-            supply. When true, on_select may return queuePosition.
-          default: false
-          x-ion-mandatory: optional
+          description: 'Whether BPP uses a queue/throttle mechanism when demand exceeds supply. When true, on_select
+            may return queuePosition.
 
+            '
+          default: false
         queuePosition:
           type: integer
           minimum: 0
-          description: >
-            Consumer's current position in the purchase queue. 0 = at front.
-            Returned in on_select when queueEnabled=true.
-          x-ion-mandatory: conditional
-          x-ion-condition: Returned in on_select when queueEnabled=true
+          description: 'Consumer''s current position in the purchase queue. 0 = at front. Returned in on_select
+            when queueEnabled=true.
 
+            '
         estimatedWaitSeconds:
           type: integer
           minimum: 0
           description: Estimated wait time before this consumer reaches front of queue.
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Returned in on_select when queuePosition is present
-
-        # C3 — VOUCHER STACKING (replaces simple stackable boolean)
         stackingGroup:
           type: string
-          enum: [PLATFORM, SELLER, PAYMENT, BRAND, SHIPPING, CASHBACK]
-          description: >
-            Voucher stacking group. Vouchers from different groups stack by
-            default. Within a single group only one voucher can apply per order
-            unless stackingRules override. Replaces the ambiguous stackable flag.
-          x-ion-mandatory: optional
+          enum:
+          - PLATFORM
+          - SELLER
+          - PAYMENT
+          - BRAND
+          - SHIPPING
+          - CASHBACK
+          description: 'Voucher stacking group. Vouchers from different groups stack by default. Within a single
+            group only one voucher can apply per order unless stackingRules override. Replaces the ambiguous stackable
+            flag.
 
+            '
         stackingRules:
           type: object
           additionalProperties: false
-          description: >
-            Explicit voucher stacking rules. Used when offer has complex
-            combination logic beyond the default group rules.
+          description: 'Explicit voucher stacking rules. Used when offer has complex combination logic beyond the
+            default group rules.
+
+            '
           properties:
             mustCombineWith:
               type: array
@@ -550,142 +520,159 @@ components:
             maxDiscountWhenStacked:
               type: number
               description: Cap on total discount when multiple offers stack (IDR).
-          x-ion-mandatory: optional
-
-        # C5 — COD PRE-VERIFICATION (in on_select response, not catalog)
         codEligibilityForBuyer:
           type: boolean
-          description: >
-            BPP-evaluated COD eligibility for the specific buyer in this
-            transaction. Returned in on_select. Distinct from availableOnCod
-            which is offer-level availability. Allows BPP to decline COD for
-            new buyers, previous COD failures, high-value items exceeding
-            buyer's verified tier, etc.
-          x-ion-mandatory: conditional
-          x-ion-condition: Returned in on_select when availableOnCod=true
+          description: 'BPP-evaluated COD eligibility for the specific buyer in this transaction. Returned in on_select.
+            Distinct from availableOnCod which is offer-level availability. Allows BPP to decline COD for new buyers,
+            previous COD failures, high-value items exceeding buyer''s verified tier, etc.
 
+            '
         codEligibilityReason:
           type: string
           enum:
-            - ELIGIBLE
-            - NEW_BUYER
-            - PREVIOUS_COD_FAILURE
-            - ADDRESS_NOT_VERIFIED
-            - AMOUNT_EXCEEDS_LIMIT
-            - PINCODE_NOT_SERVICED_FOR_COD
-            - HIGH_RISK_CATEGORY
-            - OTP_VERIFICATION_REQUIRED
+          - ELIGIBLE
+          - NEW_BUYER
+          - PREVIOUS_COD_FAILURE
+          - ADDRESS_NOT_VERIFIED
+          - AMOUNT_EXCEEDS_LIMIT
+          - PINCODE_NOT_SERVICED_FOR_COD
+          - HIGH_RISK_CATEGORY
+          - OTP_VERIFICATION_REQUIRED
           description: Reason for the codEligibilityForBuyer decision.
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when codEligibilityForBuyer is declared
-
-        # H1.2 — RETURN EVIDENCE REQUIREMENTS
         returnEvidenceRequirement:
           type: string
           enum:
-            - NONE
-            - PHOTO_OPTIONAL
-            - PHOTO_REQUIRED
-            - VIDEO_UNBOXING_REQUIRED
-            - VIDEO_UNBOXING_AND_PHOTO
-            - PHYSICAL_INSPECTION
-          description: >
-            Evidence required from buyer when initiating a return.
-            VIDEO_UNBOXING_REQUIRED is standard for high-value electronics.
-            PHYSICAL_INSPECTION is used for high-value items (>IDR 10M) where
-            seller sends inspector before accepting return.
-          example: PHOTO_REQUIRED
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when returnable=true
+          - NONE
+          - PHOTO_OPTIONAL
+          - PHOTO_REQUIRED
+          - VIDEO_UNBOXING_REQUIRED
+          - VIDEO_UNBOXING_AND_PHOTO
+          - PHYSICAL_INSPECTION
+          description: 'Evidence required from buyer when initiating a return. VIDEO_UNBOXING_REQUIRED is standard
+            for high-value electronics. PHYSICAL_INSPECTION is used for high-value items (>IDR 10M) where seller
+            sends inspector before accepting return.
 
+            '
+          example: PHOTO_REQUIRED
         returnEvidenceMinPhotos:
           type: integer
           minimum: 1
           maximum: 10
           description: Minimum number of evidence photos required.
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when returnEvidenceRequirement includes PHOTO
-
-        # H5 — EXPANDED CANCELLATION REASONS (moved to branch enum, reference here)
-
-        # L1 — HANDLING TIME FOR NON-QSR
         handlingTimeHours:
           type: integer
           minimum: 0
-          description: >
-            Hours from order confirm to package ready for logistics.
-            Replaces QSR-only averagePreparationTime for non-food sellers.
-            Used for custom-print, made-to-measure, pre-order merchandise.
+          description: 'Hours from order confirm to package ready for logistics. Replaces QSR-only averagePreparationTime
+            for non-food sellers. Used for custom-print, made-to-measure, pre-order merchandise.
+
+            '
           example: 72
-          x-ion-mandatory: optional
-
-
-        # v0.4 — NEW POLICY CATEGORIES
         grievanceSlaPolicy:
           type: string
           enum:
-            - ion://policy/grievance-sla.consumer.standard
-            - ion://policy/grievance.sla.premium_mall
-            - ion://policy/grievance-sla.consumer.flash-critical
-            - ion://policy/grievance.sla.b2b_businesshours
-          description: >
-            ION Grievance SLA policy IRI. Declares response time, resolution
-            time, escalation path, and penalty consequences when SLA is breached.
-            Subject to marketplace minimum (grievance.sla.standard) for B2C;
-            marketplace-operated BAPs may enforce stricter policies on their sellers.
-            ION timer auto-escalates when SLAs are breached — no manual action needed.
-          example: ion://policy/grievance-sla.consumer.standard
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1999 Pasal 45; Permendag 50/2020 Pasal 6
+          - ion://policy/grievance-sla.consumer.standard
+          - ion://policy/grievance.sla.premium_mall
+          - ion://policy/grievance-sla.consumer.flash-critical
+          - ion://policy/grievance.sla.b2b_businesshours
+          description: 'ION Grievance SLA policy IRI. Declares response time, resolution time, escalation path,
+            and penalty consequences when SLA is breached. Subject to marketplace minimum (grievance.sla.standard)
+            for B2C; marketplace-operated BAPs may enforce stricter policies on their sellers. ION timer auto-escalates
+            when SLAs are breached — no manual action needed.
 
+            '
+          example: ion://policy/grievance-sla.consumer.standard
+          x-ion-regulatory: UU 8/1999 Pasal 45; Permendag 50/2020 Pasal 6
         paymentTermsPolicy:
           type: string
           enum:
-            - ion://policy/payment-terms.upfront.full
-            - ion://policy/payment.deposit.30pct.balance_on_delivery
-            - ion://policy/payment-terms.cod.full
-            - ion://policy/payment-terms.credit.net-7
-            - ion://policy/payment-terms.credit.net-30
-            - ion://policy/payment-terms.credit.net-60
-            - ion://policy/payment.installment.3mo
-            - ion://policy/payment-terms.subscription.monthly_autopay
-          description: >
-            Payment terms policy IRI. Declares when payment is collected,
-            which methods are accepted, whether deposit or credit terms apply,
-            and what the late-payment penalty is if applicable.
-            Must be compatible with the order's paymentRail and collectedBy.
-          example: ion://policy/payment-terms.upfront.full
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 7/2021 HPP; OJK POJK terkait metode pembayaran
+          - ion://policy/payment-terms.upfront.full
+          - ion://policy/payment.deposit.30pct.balance_on_delivery
+          - ion://policy/payment-terms.cod.full
+          - ion://policy/payment-terms.credit.net-7
+          - ion://policy/payment-terms.credit.net-30
+          - ion://policy/payment-terms.credit.net-60
+          - ion://policy/payment.installment.3mo
+          - ion://policy/payment-terms.subscription.monthly_autopay
+          description: 'Payment terms policy IRI. Declares when payment is collected, which methods are accepted,
+            whether deposit or credit terms apply, and what the late-payment penalty is if applicable. Must be compatible
+            with the order''s paymentRail and collectedBy.
 
+            '
+          example: ion://policy/payment-terms.upfront.full
+          x-ion-regulatory: UU 7/2021 HPP; OJK POJK terkait metode pembayaran
         penaltyPolicy:
           type: string
-          description: >
-            Penalty policy IRI. Normally inferred from seller's onboarding tier
-            (Standard/Mall/Premium) and other declared policies (return, cancellation,
-            grievance-sla). May be declared explicitly for per-offer overrides.
-            Sellers cannot select a penalty policy weaker than their tier minimum.
-          example: ion://policy/penalty.seller-sla-breach.standard
-          x-ion-mandatory: conditional
-          x-ion-condition: Auto-derived from tier + other policies; declare only for explicit override
+          description: 'Penalty policy IRI. Normally inferred from seller''s onboarding tier (Standard/Mall/Premium)
+            and other declared policies (return, cancellation, grievance-sla). May be declared explicitly for per-offer
+            overrides. Sellers cannot select a penalty policy weaker than their tier minimum.
 
+            '
+          example: ion://policy/penalty.seller-sla-breach.standard
+          x-ion-conditional: true
+          x-ion-condition: Auto-derived from tier + other policies; declare only for explicit override
         customTermsAddendum:
           type: string
           maxLength: 1000
-          description: >
-            Free-text addendum for edge cases (e.g. watchmaker offering
-            lifetime service). Supplements the declared policy IRIs but
-            cannot contradict them. If addendum contradicts base policy,
-            base policy wins and addendum is informational only.
-            BAP displays addendum below the structured policy terms.
-          example: "Garansi seumur hidup untuk mekanisme jam tangan mewah (terms & conditions apply - see seller page)."
-          x-ion-mandatory: optional
+          description: 'Free-text addendum for edge cases (e.g. watchmaker offering lifetime service). Supplements
+            the declared policy IRIs but cannot contradict them. If addendum contradicts base policy, base policy
+            wins and addendum is informational only. BAP displays addendum below the structured policy terms.
 
+            '
+          example: Garansi seumur hidup untuk mekanisme jam tangan mewah (terms & conditions apply - see seller
+            page).
       allOf:
-        - if:
-            properties:
-              returnable:
-                const: true
-            required: [returnable]
-          then:
-            required: [returnPolicy, sellerPickupReturn]
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes
+      - if:
+          properties:
+            returnable:
+              const: true
+          required:
+          - returnable
+        then:
+          required:
+          - returnPolicy
+          - sellerPickupReturn
+      - if:
+          properties:
+            availableOnCod:
+              const: 'true'
+          required:
+          - availableOnCod
+        then:
+          required:
+          - codEligibilityForBuyer
+      - if:
+          properties:
+            queueEnabled:
+              const: 'true'
+          required:
+          - queueEnabled
+        then:
+          required:
+          - queuePosition
+      - if:
+          properties:
+            returnable:
+              const: 'true'
+          required:
+          - returnable
+        then:
+          required:
+          - returnEvidenceRequirement
+      required:
+      - cancellationPolicy
+      - returnable
+      - returnPolicy
+      - warrantyPolicy
+      - disputePolicy
+      - timeToShip
+      - availableOnCod
+      - contactDetailsConsumerCare
+      - displayLanguage
+      - grievanceSlaPolicy
+      - paymentTermsPolicy
+      x-ion-closed-extensions: false

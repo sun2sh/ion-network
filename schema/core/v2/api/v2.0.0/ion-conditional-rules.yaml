@@ -1,0 +1,37 @@
+version: 1.0.0
+description: 'Cross-schema conditional requirements for ION. Each rule says: when the trigger field (somewhere
+  in the same Beckn *Attributes bag) takes a given value, the listed field on the named schema becomes
+  required. JSON Schema''s if/then/else cannot express these because the trigger field lives in a different
+  schema but ends up in the same composed Attributes bag at runtime. A network-level validator (ONIX)
+  is the right place to enforce these.'
+rules:
+- schema: LogisticsParticipantAddendum
+  field: driverLicenceCategory
+  triggerField: role
+  triggerValue: DRIVER
+  rawCondition: Required when role=DRIVER
+  enforcementLevel: Attributes-bag-composition
+- schema: LogisticsParticipantAddendum
+  field: driverLicenceNumber
+  triggerField: role
+  triggerValue: DRIVER
+  rawCondition: Required when role=DRIVER (LOG-RORO, LOG-FREIGHT, LOG-HYPERLOCAL)
+  enforcementLevel: Attributes-bag-composition
+- schema: LogisticsParticipantAddendum
+  field: ppjkLicenceNumber
+  triggerField: role
+  triggerValue: CUSTOMS_BROKER
+  rawCondition: Required when role=CUSTOMS_BROKER
+  enforcementLevel: Attributes-bag-composition
+- schema: TradeContractAttributes
+  field: codAmount
+  triggerField: paymentRail
+  triggerValue: COD
+  rawCondition: Required when paymentRail=COD
+  enforcementLevel: Attributes-bag-composition
+- schema: TradeContractAttributes
+  field: fakturPajakReference
+  triggerField: invoiceType
+  triggerValue: TAX_INVOICE
+  rawCondition: Required for PKP sellers (identity.pkpStatus=PKP) when invoiceType=TAX_INVOICE
+  enforcementLevel: Attributes-bag-composition

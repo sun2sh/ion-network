@@ -42,51 +42,51 @@
 <h3>LogisticsResourceAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/resource/v1#LogisticsResourceAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>serviceType</code></td><td>always</td><td>Broad category of what is being moved or stored</td></tr>
-<tr><td><code>quantity</code></td><td>always</td><td></td></tr>
-<tr><td><code>weight</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>dimensions</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>volumetricWeight</code></td><td>optional</td><td>Computed by BPP; carried in on_select if applicable</td></tr>
-<tr><td><code>totalVolume</code></td><td>optional</td><td>For freight bookings</td></tr>
-<tr><td><code>declaredValue</code></td><td>optional</td><td>Declared value for insurance and liability purposes. Mandatory when insurance is requested or value exceeds the provider</td></tr>
-<tr><td><code>insuranceRequested</code></td><td>optional</td><td></td></tr>
-<tr><td><code>fragile</code></td><td>optional</td><td></td></tr>
-<tr><td><code>stackable</code></td><td>optional</td><td></td></tr>
-<tr><td><code>hazmatClass</code></td><td>conditional</td><td>IATA/IMO/ADR dangerous goods primary class. See IATA DGR for air, IMO IMDG Code for ocean, UN ADR for road/rail.</td></tr>
-<tr><td><code>hazmatSubsidiaryClasses</code></td><td>optional</td><td>Additional risk classes for multi-hazard DG</td></tr>
-<tr><td><code>hazmatUnNumber</code></td><td>conditional</td><td>UN number (e.g. &quot;UN1950&quot;) — required for all DG shipments</td></tr>
-<tr><td><code>hazmatPackingGroup</code></td><td>conditional</td><td>Packing Group per IATA DGR / IMO IMDG</td></tr>
-<tr><td><code>hazmatProperShippingName</code></td><td>conditional</td><td>Proper Shipping Name (PSN) as listed in the applicable DGR. Must appear on all documents and outer packaging.</td></tr>
-<tr><td><code>hazmatNetQuantityPerPackage</code></td><td>conditional</td><td>Net quantity of dangerous substance per package</td></tr>
-<tr><td><code>hazmatNetExplosiveMass</code></td><td>conditional</td><td>Net Explosive Mass (NEM/NEQ) in kg — Class 1 only</td></tr>
-<tr><td><code>hazmatErgCode</code></td><td>conditional</td><td>Emergency Response Guide (ERG) code for first responders</td></tr>
-<tr><td><code>hazmatSegregationGroup</code></td><td>conditional</td><td>IMDG segregation group code (for mixed-DG ocean)</td></tr>
-<tr><td><code>hazmatPackagingInstruction</code></td><td>conditional</td><td>IATA PI number or IMDG P code specifying packaging used</td></tr>
-<tr><td><code>hazmatPackagingCertification</code></td><td>conditional</td><td>UN-certified packaging marking details</td></tr>
-<tr><td><code>hazmatOverpack</code></td><td>optional</td><td>True if DG packages are combined in an overpack</td></tr>
-<tr><td><code>hazmatLimitedQuantityExemption</code></td><td>optional</td><td>Shipment qualifies for LQ exemption (smaller documentation burden)</td></tr>
-<tr><td><code>hazmatExceptedQuantityExemption</code></td><td>optional</td><td>Shipment qualifies for EQ exemption</td></tr>
-<tr><td><code>hazmatAirTransportCode</code></td><td>conditional</td><td>PAX = allowed on passenger aircraft, CAO = Cargo Aircraft Only, FORBIDDEN_AIR = not allowed by air. Applies to air trans</td></tr>
-<tr><td><code>hazmatOceanStowageCategory</code></td><td>conditional</td><td>IMDG stowage category — applies to ocean transport</td></tr>
-<tr><td><code>hazmatShippersDeclaration</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>lithiumBattery</code></td><td>conditional</td><td>Lithium battery-specific fields — mandatory when UN3480/UN3481/UN3090/UN3091 is declared. Additional to standard hazmat </td></tr>
-<tr><td><code>temperatureRequirement</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>productCategory</code></td><td>optional</td><td>Product category for classification (Grocery, Electronics, Pharma, etc.)</td></tr>
-<tr><td><code>hsCodes</code></td><td>conditional</td><td>Harmonised System codes for cross-border shipments</td></tr>
-<tr><td><code>commercialInvoice</code></td><td>optional</td><td>For LOG-XB</td></tr>
-<tr><td><code>certificateOfOrigin</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>packingList</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>importLicence</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>cargoDescription</code></td><td>optional</td><td>Detailed cargo description for freight manifests</td></tr>
-<tr><td><code>cargoManifest</code></td><td>optional</td><td>Line-level cargo manifest for freight</td></tr>
-<tr><td><code>packagingType</code></td><td>optional</td><td></td></tr>
-<tr><td><code>vehicleDetails</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>vehicleRegistration</code></td><td>conditional</td><td>Vehicle registration plate number</td></tr>
-<tr><td><code>skuCount</code></td><td>conditional</td><td>Number of distinct SKUs</td></tr>
-<tr><td><code>storageCategory</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>skuManifest</code></td><td>optional</td><td>Per-SKU details for warehouse inbound</td></tr>
-<tr><td><code>maxWeight</code></td><td>optional</td><td>Maximum shipment weight the BPP accepts. Published in catalog.</td></tr>
-<tr><td><code>maxDimensions</code></td><td>conditional</td><td>Maximum shipment dimensions the BPP accepts. Published in catalog.</td></tr>
+<tr><td><code>serviceType</code></td><td>—</td><td>Broad category of what is being moved or stored</td></tr>
+<tr><td><code>quantity</code></td><td>—</td><td></td></tr>
+<tr><td><code>weight</code></td><td>—</td><td></td></tr>
+<tr><td><code>dimensions</code></td><td>—</td><td></td></tr>
+<tr><td><code>volumetricWeight</code></td><td>—</td><td>Computed by BPP; carried in on_select if applicable</td></tr>
+<tr><td><code>totalVolume</code></td><td>—</td><td>For freight bookings</td></tr>
+<tr><td><code>declaredValue</code></td><td>—</td><td>Declared value for insurance and liability purposes. Mandatory when insurance is requested or value exceeds the provider</td></tr>
+<tr><td><code>insuranceRequested</code></td><td>—</td><td></td></tr>
+<tr><td><code>fragile</code></td><td>—</td><td></td></tr>
+<tr><td><code>stackable</code></td><td>—</td><td></td></tr>
+<tr><td><code>hazmatClass</code></td><td>—</td><td>IATA/IMO/ADR dangerous goods primary class. See IATA DGR for air, IMO IMDG Code for ocean, UN ADR for road/rail.</td></tr>
+<tr><td><code>hazmatSubsidiaryClasses</code></td><td>—</td><td>Additional risk classes for multi-hazard DG</td></tr>
+<tr><td><code>hazmatUnNumber</code></td><td>—</td><td>UN number (e.g. &quot;UN1950&quot;) — required for all DG shipments</td></tr>
+<tr><td><code>hazmatPackingGroup</code></td><td>—</td><td>Packing Group per IATA DGR / IMO IMDG</td></tr>
+<tr><td><code>hazmatProperShippingName</code></td><td>—</td><td>Proper Shipping Name (PSN) as listed in the applicable DGR. Must appear on all documents and outer packaging.</td></tr>
+<tr><td><code>hazmatNetQuantityPerPackage</code></td><td>—</td><td>Net quantity of dangerous substance per package</td></tr>
+<tr><td><code>hazmatNetExplosiveMass</code></td><td>—</td><td>Net Explosive Mass (NEM/NEQ) in kg — Class 1 only</td></tr>
+<tr><td><code>hazmatErgCode</code></td><td>—</td><td>Emergency Response Guide (ERG) code for first responders</td></tr>
+<tr><td><code>hazmatSegregationGroup</code></td><td>—</td><td>IMDG segregation group code (for mixed-DG ocean)</td></tr>
+<tr><td><code>hazmatPackagingInstruction</code></td><td>—</td><td>IATA PI number or IMDG P code specifying packaging used</td></tr>
+<tr><td><code>hazmatPackagingCertification</code></td><td>—</td><td>UN-certified packaging marking details</td></tr>
+<tr><td><code>hazmatOverpack</code></td><td>—</td><td>True if DG packages are combined in an overpack</td></tr>
+<tr><td><code>hazmatLimitedQuantityExemption</code></td><td>—</td><td>Shipment qualifies for LQ exemption (smaller documentation burden)</td></tr>
+<tr><td><code>hazmatExceptedQuantityExemption</code></td><td>—</td><td>Shipment qualifies for EQ exemption</td></tr>
+<tr><td><code>hazmatAirTransportCode</code></td><td>—</td><td>PAX = allowed on passenger aircraft, CAO = Cargo Aircraft Only, FORBIDDEN_AIR = not allowed by air. Applies to air trans</td></tr>
+<tr><td><code>hazmatOceanStowageCategory</code></td><td>—</td><td>IMDG stowage category — applies to ocean transport</td></tr>
+<tr><td><code>hazmatShippersDeclaration</code></td><td>—</td><td></td></tr>
+<tr><td><code>lithiumBattery</code></td><td>—</td><td>Lithium battery-specific fields — mandatory when UN3480/UN3481/UN3090/UN3091 is declared. Additional to standard hazmat </td></tr>
+<tr><td><code>temperatureRequirement</code></td><td>—</td><td></td></tr>
+<tr><td><code>productCategory</code></td><td>—</td><td>Product category for classification (Grocery, Electronics, Pharma, etc.)</td></tr>
+<tr><td><code>hsCodes</code></td><td>—</td><td>Harmonised System codes for cross-border shipments</td></tr>
+<tr><td><code>commercialInvoice</code></td><td>—</td><td>For LOG-XB</td></tr>
+<tr><td><code>certificateOfOrigin</code></td><td>—</td><td></td></tr>
+<tr><td><code>packingList</code></td><td>—</td><td></td></tr>
+<tr><td><code>importLicence</code></td><td>—</td><td></td></tr>
+<tr><td><code>cargoDescription</code></td><td>—</td><td>Detailed cargo description for freight manifests</td></tr>
+<tr><td><code>cargoManifest</code></td><td>—</td><td>Line-level cargo manifest for freight</td></tr>
+<tr><td><code>packagingType</code></td><td>—</td><td></td></tr>
+<tr><td><code>vehicleDetails</code></td><td>—</td><td></td></tr>
+<tr><td><code>vehicleRegistration</code></td><td>—</td><td>Vehicle registration plate number</td></tr>
+<tr><td><code>skuCount</code></td><td>—</td><td>Number of distinct SKUs</td></tr>
+<tr><td><code>storageCategory</code></td><td>—</td><td></td></tr>
+<tr><td><code>skuManifest</code></td><td>—</td><td>Per-SKU details for warehouse inbound</td></tr>
+<tr><td><code>maxWeight</code></td><td>—</td><td>Maximum shipment weight the BPP accepts. Published in catalog.</td></tr>
+<tr><td><code>maxDimensions</code></td><td>—</td><td>Maximum shipment dimensions the BPP accepts. Published in catalog.</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>resource/v1 — Logistics Resource Attributes</h1>
@@ -220,7 +220,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/resource/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

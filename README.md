@@ -317,3 +317,20 @@ The composed spec `schema/core/v2/api/v2.0.0/ion-with-beckn.yaml` merges all thr
 ---
 
 *ION Network Specification — v0.5.2-draft — April 2026*
+
+
+---
+
+## v0.5.3-draft updates
+
+- **Style guide for pack authors:** [`docs/ION_Schema_Style_Guide.md`](docs/ION_Schema_Style_Guide.md)
+- **Verification tools:** `tools/verify_ion_yaml.py`, `tools/verify_ion_yaml_completeness.py`,
+  `tools/verify_ion_inventory.py`, `tools/audit_doc_against_beckn.py`
+- **Composed canonical spec:** `schema/core/v2/api/v2.0.0/ion.yaml`
+- **Cross-schema rules (for ONIX):** `schema/core/v2/api/v2.0.0/ion-conditional-rules.yaml`
+
+Run any verifier with no arguments to check the repo's compliance:
+```
+python3 tools/verify_ion_yaml.py
+python3 tools/verify_ion_yaml_completeness.py
+```

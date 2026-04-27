@@ -42,70 +42,70 @@
 <h3>LogisticsOfferAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/offer/v1#LogisticsOfferAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>serviceLevel</code></td><td>always</td><td></td></tr>
-<tr><td><code>transportMode</code></td><td>always</td><td></td></tr>
-<tr><td><code>routingTopology</code></td><td>conditional</td><td>Hub routing topology for LOG-PARCEL</td></tr>
-<tr><td><code>rateLogic</code></td><td>always</td><td></td></tr>
-<tr><td><code>zones</code></td><td>optional</td><td>Zone definitions for zone-based pricing</td></tr>
-<tr><td><code>weightTiers</code></td><td>optional</td><td>Weight-based rate tiers</td></tr>
-<tr><td><code>dimensionalWeightFactor</code></td><td>optional</td><td>Volumetric weight divisor (typically 5000 for air, 4000 for road)</td></tr>
-<tr><td><code>chargeableWeightRule</code></td><td>conditional</td><td>How chargeable weight is computed. MAX_ACTUAL_OR_VOLUMETRIC (default for air and LTL) means chargeable = max(actual, vol</td></tr>
-<tr><td><code>minimumChargeableAmount</code></td><td>conditional</td><td>Minimum freight charge regardless of weight. Air freight always has this (MAWB minimum). Some LTL carriers as well.</td></tr>
-<tr><td><code>fuelSurchargeFormula</code></td><td>optional</td><td>Formula for fuel surcharge computation (e.g. &quot;base * 0.08&quot;)</td></tr>
-<tr><td><code>rateModifiers</code></td><td>conditional</td><td>Additional charges beyond base rate. Each modifier is applied at quote time per its trigger and basis. Multiple modifier</td></tr>
-<tr><td><code>selectRequired</code></td><td>always</td><td>True if /select is required before /init for a firm quote. False if catalog rate is binding and /select may be skipped.</td></tr>
-<tr><td><code>quoteValidityWindow</code></td><td>optional</td><td>How long the /on_select quote is binding (ISO 8601 duration)</td></tr>
-<tr><td><code>pickupModels</code></td><td>conditional</td><td>Pickup scheduling models supported by this offer</td></tr>
-<tr><td><code>pickupWindowGranularityMinutes</code></td><td>conditional</td><td>Smallest pickup time window offered</td></tr>
-<tr><td><code>bulkPickupMaxShipments</code></td><td>conditional</td><td>Maximum shipments per bulk pickup batch</td></tr>
-<tr><td><code>sameDayPickupCutoffTime</code></td><td>conditional</td><td>Latest on-demand pickup booking time for same-day dispatch</td></tr>
-<tr><td><code>dropOffLocationsUrl</code></td><td>conditional</td><td>URL to LSP agent-point directory for DROP_OFF_AT_COUNTER</td></tr>
-<tr><td><code>cutoffs</code></td><td>conditional</td><td>Operational cut-off schedule. Each entry declares one cut-off. Multiple cut-offs per offer are common (e.g. booking cut-</td></tr>
-<tr><td><code>awbAllocationModel</code></td><td>conditional</td><td>How AWB numbers are allocated. LOG-PARCEL spine. BPP_ASSIGNED (default), BAP_PRE_ALLOCATED (enterprise block), HYBRID.</td></tr>
-<tr><td><code>awbBlockAllocationSupported</code></td><td>optional</td><td></td></tr>
-<tr><td><code>labelFormatsSupported</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>bulkApiSupported</code></td><td>optional</td><td>True if BPP accepts batched /confirm calls</td></tr>
-<tr><td><code>maxBulkBatchSize</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>apiRateLimitPerSecond</code></td><td>optional</td><td></td></tr>
-<tr><td><code>apiSlaCommitment</code></td><td>optional</td><td></td></tr>
-<tr><td><code>stateTimingCommitments</code></td><td>conditional</td><td>Per-state maximum dwell time and alert thresholds. Each entry applies to one state in the applicable state machine. When</td></tr>
-<tr><td><code>overallTatCommitment</code></td><td>conditional</td><td>End-to-end time commitment from PICKED_UP to DELIVERED (or equivalent terminal state per spine). This is the contract-le</td></tr>
-<tr><td><code>capacityModel</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>consolidationType</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>equipmentType</code></td><td>conditional</td><td>Specialised equipment when consolidationType requires it. Drayage often requires SIDELOADER or TILT_TRAY; project cargo </td></tr>
-<tr><td><code>scheduleType</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>agentAssignmentModel</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>maxDeliveryRadiusKm</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>liveTrackingEnabled</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>slotsAvailable</code></td><td>optional</td><td></td></tr>
-<tr><td><code>slotGranularityMinutes</code></td><td>conditional</td><td>Slot duration in minutes (e.g. 60, 120)</td></tr>
-<tr><td><code>slotWindowsOffered</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>availableOnCod</code></td><td>always</td><td></td></tr>
-<tr><td><code>maxCodAmount</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>codPolicy</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>codVerifiedReceiptOtpRequired</code></td><td>conditional</td><td>When true, an anti-fraud OTP is sent to the buyer separately and must be entered by the rider to confirm cash receipt. D</td></tr>
-<tr><td><code>codDenominationsAccepted</code></td><td>conditional</td><td>Currency denominations the rider can accept under this offer. Used when consignees must present close-to-exact amounts.</td></tr>
-<tr><td><code>codBuyerDailyLimit</code></td><td>conditional</td><td>Maximum total COD amount accepted from a single consignee per day across all shipments on this offer. Anti-fraud control</td></tr>
-<tr><td><code>codShipmentLimit</code></td><td>conditional</td><td>Maximum COD amount per single shipment on this offer.</td></tr>
-<tr><td><code>codHoldPeriodDays</code></td><td>conditional</td><td>Days the LSP holds collected cash before remittance to the BAP. Provides refund buffer for early returns. Typical: 3-5 d</td></tr>
-<tr><td><code>codReconciliationVariance</code></td><td>conditional</td><td>Acceptable variance (fraction) between sum of collected and remitted amounts at batch level — below this, reconciliation</td></tr>
-<tr><td><code>maxDeclaredValue</code></td><td>optional</td><td>Maximum declared value the BPP accepts</td></tr>
-<tr><td><code>insurancePolicy</code></td><td>optional</td><td>ION policy IRI for insurance coverage terms</td></tr>
-<tr><td><code>valueAddedServices</code></td><td>optional</td><td></td></tr>
-<tr><td><code>storageBillingUnit</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>minimumStorageTerm</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>vehicleCategoriesAccepted</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>sailingSchedule</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>crossingDuration</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>incotermsSupported</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>dutyAndTaxModel</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>cancellationPolicy</code></td><td>always</td><td></td></tr>
-<tr><td><code>claimPolicy</code></td><td>always</td><td></td></tr>
-<tr><td><code>slaPolicy</code></td><td>always</td><td></td></tr>
-<tr><td><code>evidencePolicy</code></td><td>always</td><td></td></tr>
-<tr><td><code>disputePolicy</code></td><td>always</td><td></td></tr>
-<tr><td><code>reAttemptPolicy</code></td><td>optional</td><td>Defines max attempts, attempt fees, and auto-RTO rules</td></tr>
-<tr><td><code>fwaApplicable</code></td><td>optional</td><td>Whether this offer accepts FWA-governed transactions</td></tr>
+<tr><td><code>serviceLevel</code></td><td>—</td><td></td></tr>
+<tr><td><code>transportMode</code></td><td>—</td><td></td></tr>
+<tr><td><code>routingTopology</code></td><td>—</td><td>Hub routing topology for LOG-PARCEL</td></tr>
+<tr><td><code>rateLogic</code></td><td>—</td><td></td></tr>
+<tr><td><code>zones</code></td><td>—</td><td>Zone definitions for zone-based pricing</td></tr>
+<tr><td><code>weightTiers</code></td><td>—</td><td>Weight-based rate tiers</td></tr>
+<tr><td><code>dimensionalWeightFactor</code></td><td>—</td><td>Volumetric weight divisor (typically 5000 for air, 4000 for road)</td></tr>
+<tr><td><code>chargeableWeightRule</code></td><td>—</td><td>How chargeable weight is computed. MAX_ACTUAL_OR_VOLUMETRIC (default for air and LTL) means chargeable = max(actual, vol</td></tr>
+<tr><td><code>minimumChargeableAmount</code></td><td>—</td><td>Minimum freight charge regardless of weight. Air freight always has this (MAWB minimum). Some LTL carriers as well.</td></tr>
+<tr><td><code>fuelSurchargeFormula</code></td><td>—</td><td>Formula for fuel surcharge computation (e.g. &quot;base * 0.08&quot;)</td></tr>
+<tr><td><code>rateModifiers</code></td><td>—</td><td>Additional charges beyond base rate. Each modifier is applied at quote time per its trigger and basis. Multiple modifier</td></tr>
+<tr><td><code>selectRequired</code></td><td>—</td><td>True if /select is required before /init for a firm quote. False if catalog rate is binding and /select may be skipped.</td></tr>
+<tr><td><code>quoteValidityWindow</code></td><td>—</td><td>How long the /on_select quote is binding (ISO 8601 duration)</td></tr>
+<tr><td><code>pickupModels</code></td><td>—</td><td>Pickup scheduling models supported by this offer</td></tr>
+<tr><td><code>pickupWindowGranularityMinutes</code></td><td>—</td><td>Smallest pickup time window offered</td></tr>
+<tr><td><code>bulkPickupMaxShipments</code></td><td>—</td><td>Maximum shipments per bulk pickup batch</td></tr>
+<tr><td><code>sameDayPickupCutoffTime</code></td><td>—</td><td>Latest on-demand pickup booking time for same-day dispatch</td></tr>
+<tr><td><code>dropOffLocationsUrl</code></td><td>—</td><td>URL to LSP agent-point directory for DROP_OFF_AT_COUNTER</td></tr>
+<tr><td><code>cutoffs</code></td><td>—</td><td>Operational cut-off schedule. Each entry declares one cut-off. Multiple cut-offs per offer are common (e.g. booking cut-</td></tr>
+<tr><td><code>awbAllocationModel</code></td><td>—</td><td>How AWB numbers are allocated. LOG-PARCEL spine. BPP_ASSIGNED (default), BAP_PRE_ALLOCATED (enterprise block), HYBRID.</td></tr>
+<tr><td><code>awbBlockAllocationSupported</code></td><td>—</td><td></td></tr>
+<tr><td><code>labelFormatsSupported</code></td><td>—</td><td></td></tr>
+<tr><td><code>bulkApiSupported</code></td><td>—</td><td>True if BPP accepts batched /confirm calls</td></tr>
+<tr><td><code>maxBulkBatchSize</code></td><td>—</td><td></td></tr>
+<tr><td><code>apiRateLimitPerSecond</code></td><td>—</td><td></td></tr>
+<tr><td><code>apiSlaCommitment</code></td><td>—</td><td></td></tr>
+<tr><td><code>stateTimingCommitments</code></td><td>—</td><td>Per-state maximum dwell time and alert thresholds. Each entry applies to one state in the applicable state machine. When</td></tr>
+<tr><td><code>overallTatCommitment</code></td><td>—</td><td>End-to-end time commitment from PICKED_UP to DELIVERED (or equivalent terminal state per spine). This is the contract-le</td></tr>
+<tr><td><code>capacityModel</code></td><td>—</td><td></td></tr>
+<tr><td><code>consolidationType</code></td><td>—</td><td></td></tr>
+<tr><td><code>equipmentType</code></td><td>—</td><td>Specialised equipment when consolidationType requires it. Drayage often requires SIDELOADER or TILT_TRAY; project cargo </td></tr>
+<tr><td><code>scheduleType</code></td><td>—</td><td></td></tr>
+<tr><td><code>agentAssignmentModel</code></td><td>—</td><td></td></tr>
+<tr><td><code>maxDeliveryRadiusKm</code></td><td>—</td><td></td></tr>
+<tr><td><code>liveTrackingEnabled</code></td><td>—</td><td></td></tr>
+<tr><td><code>slotsAvailable</code></td><td>—</td><td></td></tr>
+<tr><td><code>slotGranularityMinutes</code></td><td>—</td><td>Slot duration in minutes (e.g. 60, 120)</td></tr>
+<tr><td><code>slotWindowsOffered</code></td><td>—</td><td></td></tr>
+<tr><td><code>availableOnCod</code></td><td>—</td><td></td></tr>
+<tr><td><code>maxCodAmount</code></td><td>—</td><td></td></tr>
+<tr><td><code>codPolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>codVerifiedReceiptOtpRequired</code></td><td>—</td><td>When true, an anti-fraud OTP is sent to the buyer separately and must be entered by the rider to confirm cash receipt. D</td></tr>
+<tr><td><code>codDenominationsAccepted</code></td><td>—</td><td>Currency denominations the rider can accept under this offer. Used when consignees must present close-to-exact amounts.</td></tr>
+<tr><td><code>codBuyerDailyLimit</code></td><td>—</td><td>Maximum total COD amount accepted from a single consignee per day across all shipments on this offer. Anti-fraud control</td></tr>
+<tr><td><code>codShipmentLimit</code></td><td>—</td><td>Maximum COD amount per single shipment on this offer.</td></tr>
+<tr><td><code>codHoldPeriodDays</code></td><td>—</td><td>Days the LSP holds collected cash before remittance to the BAP. Provides refund buffer for early returns. Typical: 3-5 d</td></tr>
+<tr><td><code>codReconciliationVariance</code></td><td>—</td><td>Acceptable variance (fraction) between sum of collected and remitted amounts at batch level — below this, reconciliation</td></tr>
+<tr><td><code>maxDeclaredValue</code></td><td>—</td><td>Maximum declared value the BPP accepts</td></tr>
+<tr><td><code>insurancePolicy</code></td><td>—</td><td>ION policy IRI for insurance coverage terms</td></tr>
+<tr><td><code>valueAddedServices</code></td><td>—</td><td></td></tr>
+<tr><td><code>storageBillingUnit</code></td><td>—</td><td></td></tr>
+<tr><td><code>minimumStorageTerm</code></td><td>—</td><td></td></tr>
+<tr><td><code>vehicleCategoriesAccepted</code></td><td>—</td><td></td></tr>
+<tr><td><code>sailingSchedule</code></td><td>—</td><td></td></tr>
+<tr><td><code>crossingDuration</code></td><td>—</td><td></td></tr>
+<tr><td><code>incotermsSupported</code></td><td>—</td><td></td></tr>
+<tr><td><code>dutyAndTaxModel</code></td><td>—</td><td></td></tr>
+<tr><td><code>cancellationPolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>claimPolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>slaPolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>evidencePolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>disputePolicy</code></td><td>—</td><td></td></tr>
+<tr><td><code>reAttemptPolicy</code></td><td>—</td><td>Defines max attempts, attempt fees, and auto-RTO rules</td></tr>
+<tr><td><code>fwaApplicable</code></td><td>—</td><td>Whether this offer accepts FWA-governed transactions</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>offer/v1 — Logistics Offer Attributes</h1>
@@ -259,7 +259,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/offer/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

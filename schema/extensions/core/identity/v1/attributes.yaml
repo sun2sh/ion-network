@@ -1,103 +1,113 @@
 openapi: 3.1.1
 info:
   title: ION Identity Extension (v1)
-  description: >
-    Indonesian business KYC identifiers and licensing. Applies to all ION
-    sectors — every provider must declare their tax and business identity.
-    Attaches to: beckn:Provider.providerAttributes and beckn:Contract.contractAttributes
-  version: 1.0.0
+  description: 'Indonesian business KYC identifiers and licensing. Applies to all ION sectors — every provider must
+    declare their tax and business identity. Attaches to: beckn:Provider.providerAttributes and beckn:Contract.contractAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     IONBusinessIdentity:
       type: object
       title: Indonesia Business Identity
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:BusinessIdentity
+        '@context': ./context.jsonld
+        '@type': ion:BusinessIdentity
       x-beckn-attaches-to: Provider.providerAttributes (composed)
-
       properties:
-
         npwp:
           type: string
-          pattern: "^[0-9]{16}$"
-          description: >
-            Nomor Pokok Wajib Pajak — 16-digit tax identification number.
-            New format post-2024 (previously 15 digits). Required for all
-            registered sellers on ION. Validated against DJP registry.
-          example: "1234567890123456"
-          x-ion-mandatory: always
-          x-ion-regulatory: PMK 136/2023 tentang Perubahan atas PMK No 112/PMK.03/2022
+          pattern: ^[0-9]{16}$
+          description: 'Nomor Pokok Wajib Pajak — 16-digit tax identification number. New format post-2024 (previously
+            15 digits). Required for all registered sellers on ION. Validated against DJP registry.
 
+            '
+          example: '1234567890123456'
+          x-ion-regulatory: PMK 136/2023 tentang Perubahan atas PMK No 112/PMK.03/2022
         nib:
           type: string
-          pattern: "^[0-9]{13}$"
-          description: >
-            Nomor Induk Berusaha — 13-digit business registration number
-            issued by OSS (Online Single Submission). Mandatory for all ION
-            network participant sellers.
-          example: "1234567890123"
-          x-ion-mandatory: always
-          x-ion-regulatory: PP 5/2021 tentang Penyelenggaraan Perizinan Berusaha Berbasis Risiko
+          pattern: ^[0-9]{13}$
+          description: 'Nomor Induk Berusaha — 13-digit business registration number issued by OSS (Online Single
+            Submission). Mandatory for all ION network participant sellers.
 
+            '
+          example: '1234567890123'
+          x-ion-regulatory: PP 5/2021 tentang Penyelenggaraan Perizinan Berusaha Berbasis Risiko
         nikNumber:
           type: string
-          pattern: "^[0-9]{16}$"
-          description: >
-            Nomor Induk Kependudukan — 16-digit national identity number
-            from e-KTP. Required for individual (non-business) sellers.
-          example: "3271012345678901"
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for individual sellers (businessType=PERORANGAN)
-          x-ion-regulatory: UU 24/2013 tentang Administrasi Kependudukan
+          pattern: ^[0-9]{16}$
+          description: 'Nomor Induk Kependudukan — 16-digit national identity number from e-KTP. Required for individual
+            (non-business) sellers.
 
+            '
+          example: '3271012345678901'
+          x-ion-regulatory: UU 24/2013 tentang Administrasi Kependudukan
         pkpStatus:
           type: string
-          enum: [PKP, NON_PKP]
-          description: >
-            PKP = Pengusaha Kena Pajak (VAT-registered, can issue Faktur Pajak).
-            NON_PKP = non-VAT-registered (cannot issue Faktur Pajak).
-            PKP sellers are mandated once turnover exceeds IDR 4.8 billion/year.
-          example: PKP
-          x-ion-mandatory: always
-          x-ion-regulatory: UU 8/1983 tentang Pajak Pertambahan Nilai Pasal 3A
+          enum:
+          - PKP
+          - NON_PKP
+          description: 'PKP = Pengusaha Kena Pajak (VAT-registered, can issue Faktur Pajak). NON_PKP = non-VAT-registered
+            (cannot issue Faktur Pajak). PKP sellers are mandated once turnover exceeds IDR 4.8 billion/year.
 
+            '
+          example: PKP
+          x-ion-regulatory: UU 8/1983 tentang Pajak Pertambahan Nilai Pasal 3A
         legalEntityName:
           type: string
-          description: >
-            Registered business name as per OSS/notary deed.
-            For PT: "PT Nama Perusahaan Tbk".
-            For UD/CV: "UD Nama Usaha".
-            For individual: full name as per KTP.
-          example: PT Paragon Technology and Innovation
-          x-ion-mandatory: always
+          description: 'Registered business name as per OSS/notary deed. For PT: "PT Nama Perusahaan Tbk". For UD/CV:
+            "UD Nama Usaha". For individual: full name as per KTP.
 
+            '
+          example: PT Paragon Technology and Innovation
         businessType:
           type: string
-          enum: [PT, CV, UD, FIRMA, KOPERASI, YAYASAN, PERORANGAN, LAINNYA]
-          description: >
-            Legal entity type. PT=Limited company, CV=Commanditaire Vennootschap,
-            UD=Usaha Dagang, PERORANGAN=Individual.
-          example: PT
-          x-ion-mandatory: always
+          enum:
+          - PT
+          - CV
+          - UD
+          - FIRMA
+          - KOPERASI
+          - YAYASAN
+          - PERORANGAN
+          - LAINNYA
+          description: 'Legal entity type. PT=Limited company, CV=Commanditaire Vennootschap, UD=Usaha Dagang, PERORANGAN=Individual.
 
+            '
+          example: PT
         siupNumber:
           type: string
-          description: >
-            Surat Izin Usaha Perdagangan — business trade license.
-            Legacy field, being replaced by NIB under OSS but still referenced
-            by some regulatory frameworks.
-          example: SIUP.3201.001.2024
-          x-ion-mandatory: optional
+          description: 'Surat Izin Usaha Perdagangan — business trade license. Legacy field, being replaced by NIB
+            under OSS but still referenced by some regulatory frameworks.
 
+            '
+          example: SIUP.3201.001.2024
         spPIRTNumber:
           type: string
-          description: >
-            SP-P-IRT (Surat Pernyataan Pemilik) — small-scale food production
-            license for home industries. Required for UMKM food sellers who
-            do not have BPOM registration.
+          description: 'SP-P-IRT (Surat Pernyataan Pemilik) — small-scale food production license for home industries.
+            Required for UMKM food sellers who do not have BPOM registration.
+
+            '
           example: SPIRT.2064701011023
-          x-ion-mandatory: optional
-          x-ion-regulatory: PerBPOM 22/2018 tentang Pedoman Pemberian Sertifikat Produksi Pangan Industri Rumah Tangga
+          x-ion-regulatory: PerBPOM 22/2018 tentang Pedoman Pemberian Sertifikat Produksi Pangan Industri Rumah
+            Tangga
+      required:
+      - npwp
+      - nib
+      - pkpStatus
+      - legalEntityName
+      - businessType
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes
+      - if:
+          properties:
+            businessType:
+              const: PERORANGAN
+          required:
+          - businessType
+        then:
+          required:
+          - nikNumber
+      x-ion-closed-extensions: false

@@ -1,15 +1,14 @@
 openapi: 3.1.1
 info:
   title: ION Trade Resource Extension (v1)
-  description: >
-    Trade sector resource attributes. Covers all physical product types on ION.
-    Category-specific fields are conditional properties within this single schema.
-    Availability model: stock count is NEVER transmitted. Only availability signal.
-  version: 1.0.0
+  description: 'Trade sector resource attributes. Covers all physical product types on ION. Category-specific fields
+    are conditional properties within this single schema. Availability model: stock count is NEVER transmitted.
+    Only availability signal.
 
+    '
+  version: 1.0.0
 components:
   schemas:
-
     LocalisedText:
       type: object
       description: Language-keyed text. "id" always required. "en" required for XB pattern.
@@ -18,32 +17,23 @@ components:
         type: string
       properties:
         id:
-          x-ion-mandatory: optional
           type: string
         en:
-          x-ion-mandatory: optional
           type: string
-      required: [id]
       example:
         id: Nasi Goreng Spesial
         en: Special Fried Rice
-
+      required:
+      - id
     TradeResourceAttributes:
       type: object
       title: Trade Resource Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:TradeResourceAttributes
+        '@context': ./context.jsonld
+        '@type': ion:TradeResourceAttributes
       x-beckn-attaches-to: Resource.resourceAttributes
-
       properties:
-
-        # QUANTITY — Beckn Commitment.resources[*] requires `quantity` alongside `id`,
-        # but Resource itself does not define quantity. It lives here in resourceAttributes.
-        # For Trade: number of this SKU being ordered (1 iPhone, 3 shirts, 500g beras).
-        # For BUNDLE / COMPOSED resources: quantity of the parent bundle (bundle components
-        # declare their own quantities inside bundleComposition[*].quantity).
         quantity:
           type: object
           title: Quantity of this resource on the order line
@@ -56,98 +46,87 @@ components:
             unit:
               type: string
               enum:
-                - piece
-                - pack
-                - box
-                - carton
-                - kilogram
-                - gram
-                - litre
-                - millilitre
-                - subscription
-                - voucher
-                - topup
+              - piece
+              - pack
+              - box
+              - carton
+              - kilogram
+              - gram
+              - litre
+              - millilitre
+              - subscription
+              - voucher
+              - topup
               description: Unit of measure appropriate to what is being ordered
-          required: [value, unit]
-          x-ion-mandatory: always
-
-        # CATALOG STRUCTURE
-        # B-11 (v0.6) — resourceType split into two orthogonal dimensions.
-        # resourceStructure: how variants/composition are structured.
-        # resourceTangibility: physical vs digital nature.
-        # A DIGITAL_VOUCHER can be a BUNDLE (gift card bundle). A COMPOSED
-        # resource can be a DIGITAL_SUBSCRIPTION (streaming bundle with
-        # optional add-ons). Express both by setting each field independently.
+          required:
+          - value
+          - unit
         resourceStructure:
           type: string
-          enum: [PLAIN, VARIANT, WITH_EXTRAS, COMPOSED, BUNDLE]
-          description: >
-            PLAIN: single SKU, no choices.
-            VARIANT: one of several pre-defined options of a parent.
-            WITH_EXTRAS: base item with optional add-ons.
-            COMPOSED: base with mandatory and optional customisation groups.
-            BUNDLE: composite of multiple component resources (see bundleComposition).
-          example: COMPOSED
-          x-ion-mandatory: always
+          enum:
+          - PLAIN
+          - VARIANT
+          - WITH_EXTRAS
+          - COMPOSED
+          - BUNDLE
+          description: 'PLAIN: single SKU, no choices. VARIANT: one of several pre-defined options of a parent.
+            WITH_EXTRAS: base item with optional add-ons. COMPOSED: base with mandatory and optional customisation
+            groups. BUNDLE: composite of multiple component resources (see bundleComposition).
 
+            '
+          example: COMPOSED
         resourceTangibility:
           type: string
-          enum: [PHYSICAL, DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
-          description: >
-            PHYSICAL: tangible goods requiring logistics fulfilment.
-            DIGITAL_VOUCHER: voucher code, gift card, in-game currency (delivered electronically).
-            DIGITAL_TOP_UP: mobile pulsa, data package, utility bill top-up.
-            DIGITAL_SUBSCRIPTION: time-bound digital subscription access.
-          example: PHYSICAL
-          x-ion-mandatory: always
+          enum:
+          - PHYSICAL
+          - DIGITAL_VOUCHER
+          - DIGITAL_TOP_UP
+          - DIGITAL_SUBSCRIPTION
+          description: 'PHYSICAL: tangible goods requiring logistics fulfilment. DIGITAL_VOUCHER: voucher code,
+            gift card, in-game currency (delivered electronically). DIGITAL_TOP_UP: mobile pulsa, data package,
+            utility bill top-up. DIGITAL_SUBSCRIPTION: time-bound digital subscription access.
 
+            '
+          example: PHYSICAL
         parentResourceId:
           type: string
           description: ID of parent resource. Present on VARIANT and WITH_EXTRAS.
           example: PIZZA-MARGHERITA
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when resourceStructure IN [VARIANT, WITH_EXTRAS]
-
         isDefaultVariant:
           type: boolean
           description: Whether this is the default variant shown to consumer.
           example: true
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when resourceStructure = VARIANT
-
         variantGroup:
           type: object
           additionalProperties: false
-          required: [id, name, variantOn]
+          required:
+          - id
+          - name
+          - variantOn
           properties:
             id:
               type: string
               example: VG-SIZE
             name:
-              $ref: "#/components/schemas/LocalisedText"
+              $ref: '#/components/schemas/LocalisedText'
             variantOn:
               type: string
               description: The attribute that varies. e.g. size, colour, storage
               example: size
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when resourceStructure = VARIANT
-
-        # Op-3 — VARIANT MATRIX (v0.5)
-        # Alternative to exploding VARIANT SKUs when variant axes produce
-        # hundreds of combinations (e.g. 8 colors × 15 phone models × 2 materials).
-        # Declared on a parent PLAIN resource; combinations are generated by
-        # BPP at on_select time from the matrix axes.
         variantMatrix:
           type: object
           additionalProperties: false
-          description: >
-            Multi-axis variant declaration. Use instead of explicit VARIANT
-            resources when combinations are derivable. BPP MUST resolve the
-            specific variant at on_select and compute final price via
-            priceDeltaByCombination or per-axis priceDelta.
-            Only valid on parent resources with resourceStructure=PLAIN; child
-            VARIANT resources are not needed when this is declared.
-          required: [axes, combinationRules]
+          description: 'Multi-axis variant declaration. Use instead of explicit VARIANT resources when combinations
+            are derivable. BPP MUST resolve the specific variant at on_select and compute final price via priceDeltaByCombination
+            or per-axis priceDelta. Only valid on parent resources with resourceStructure=PLAIN; child VARIANT resources
+            are not needed when this is declared.
+
+            '
+          required:
+          - axes
+          - combinationRules
           properties:
             axes:
               type: array
@@ -156,24 +135,22 @@ components:
               items:
                 type: object
                 additionalProperties: false
-                required: [id, values]
                 properties:
                   id:
                     type: string
                     description: Axis identifier (size, color, storage, model, etc.)
                   label:
-                    $ref: "#/components/schemas/LocalisedText"
+                    $ref: '#/components/schemas/LocalisedText'
                   values:
                     type: array
                     items:
                       type: object
                       additionalProperties: false
-                      required: [id]
                       properties:
                         id:
                           type: string
                         label:
-                          $ref: "#/components/schemas/LocalisedText"
+                          $ref: '#/components/schemas/LocalisedText'
                         priceDelta:
                           type: number
                           description: IDR delta for this axis value (signed)
@@ -183,22 +160,27 @@ components:
                           description: Whether this specific axis value is currently sellable
                         resourceIdOverride:
                           type: string
-                          description: Optional mapping to an explicit VARIANT resource ID if this combination has its own SKU
+                          description: Optional mapping to an explicit VARIANT resource ID if this combination has
+                            its own SKU
+                      required:
+                      - id
+                required:
+                - id
+                - values
             combinationRules:
               type: object
               additionalProperties: false
-              required: [generateAllCombinations]
               properties:
                 generateAllCombinations:
                   type: boolean
                   description: If true, all permutations are valid. If false, combinations must be listed explicitly.
                 explicitCombinations:
                   type: array
-                  description: Required when generateAllCombinations=false. Each entry names axis-value pairs and the resulting final price.
+                  description: Required when generateAllCombinations=false. Each entry names axis-value pairs and
+                    the resulting final price.
                   items:
                     type: object
                     additionalProperties: false
-                    required: [axisValues, priceValue]
                     properties:
                       axisValues:
                         type: object
@@ -211,30 +193,39 @@ components:
                       available:
                         type: boolean
                         default: true
+                    required:
+                    - axisValues
+                    - priceValue
                 priceCalculationMode:
                   type: string
-                  enum: [SUM_AXIS_DELTAS, EXPLICIT_PRICE]
-                  description: >
-                    SUM_AXIS_DELTAS — final price = base offer price + sum of axis priceDeltas.
-                    EXPLICIT_PRICE — final price = priceValue from matching explicitCombinations entry.
-                  default: SUM_AXIS_DELTAS
-          x-ion-mandatory: optional
+                  enum:
+                  - SUM_AXIS_DELTAS
+                  - EXPLICIT_PRICE
+                  description: 'SUM_AXIS_DELTAS — final price = base offer price + sum of axis priceDeltas. EXPLICIT_PRICE
+                    — final price = priceValue from matching explicitCombinations entry.
 
+                    '
+                  default: SUM_AXIS_DELTAS
+              required:
+              - generateAllCombinations
         customisationGroups:
           type: array
           items:
             type: object
             additionalProperties: false
-            required: [id, name, selectionType, options]
             properties:
               id:
                 type: string
                 example: CG-SIZE
               name:
-                $ref: "#/components/schemas/LocalisedText"
+                $ref: '#/components/schemas/LocalisedText'
               selectionType:
                 type: string
-                enum: [SINGLE_REQUIRED, SINGLE_OPTIONAL, MULTIPLE_OPTIONAL, FIXED]
+                enum:
+                - SINGLE_REQUIRED
+                - SINGLE_OPTIONAL
+                - MULTIPLE_OPTIONAL
+                - FIXED
               minSelections:
                 type: integer
                 minimum: 0
@@ -245,120 +236,141 @@ components:
                 type: integer
               inputType:
                 type: string
-                enum: [select, text, number, date, boolean]
+                enum:
+                - select
+                - text
+                - number
+                - date
+                - boolean
                 default: select
               options:
                 type: array
                 items:
                   type: object
                   additionalProperties: false
-                  required: [id, label]
                   properties:
                     id:
                       type: string
                     label:
-                      $ref: "#/components/schemas/LocalisedText"
+                      $ref: '#/components/schemas/LocalisedText'
                     resourceId:
                       type: string
                     priceDelta:
                       type: object
                       additionalProperties: false
-                      required: [type, value]
+                      required:
+                      - type
+                      - value
                       properties:
                         type:
                           type: string
-                          enum: [FIXED, PERCENT]
+                          enum:
+                          - FIXED
+                          - PERCENT
                         value:
                           type: number
                     available:
                       type: boolean
                       default: true
-          x-ion-mandatory: conditional
+                  required:
+                  - id
+                  - label
+            required:
+            - id
+            - name
+            - selectionType
+            - options
+          x-ion-conditional: true
           x-ion-condition: Required when resourceStructure IN [COMPOSED, WITH_EXTRAS]
-
         menuCategory:
           type: object
           additionalProperties: false
-          required: [id, name]
+          required:
+          - id
+          - name
           properties:
             id:
               type: string
             name:
-              $ref: "#/components/schemas/LocalisedText"
+              $ref: '#/components/schemas/LocalisedText'
             sequence:
               type: integer
             imageUrl:
               type: string
               format: uri
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for F&B providers
-
         preparationTime:
           type: string
           description: ISO 8601 duration. Time from order confirm to item ready.
           example: PT20M
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for F&B and made-to-order items
-
         productCode:
           type: object
           additionalProperties: false
-          required: [type, value]
+          required:
+          - type
+          - value
           properties:
             type:
               type: string
-              enum: [GTIN, EAN, UPC, ISBN, ASIN, HSN, ION_SKU]
+              enum:
+              - GTIN
+              - EAN
+              - UPC
+              - ISBN
+              - ASIN
+              - HSN
+              - ION_SKU
             value:
               type: string
           example:
             type: GTIN
-            value: "8999999123456"
-          x-ion-mandatory: conditional
+            value: '8999999123456'
+          x-ion-conditional: true
           x-ion-condition: Required for FMCG, electronics, cross-border products
-
         images:
           type: array
           items:
             type: string
             format: uri
           description: First image is primary thumbnail. Additional images for gallery.
-          x-ion-mandatory: always
-
         itemRating:
           type: number
           minimum: 1
           maximum: 5
           description: Aggregate seller-maintained rating 1-5. Base items only.
           example: 4.3
-          x-ion-mandatory: optional
-
-        # isAvailable — REMOVED in v0.5 (was duplicative of availability.status)
-        # Availability is now derived solely from availability.status.
-        # OUT_OF_STOCK and DISCONTINUED are the hard off states.
-        # IN_STOCK, LOW_STOCK, PREORDER are on states.
-
         logisticsServiceType:
           type: string
-          enum: [DOMESTIC_SURFACE, DOMESTIC_AIR, HYPERLOCAL, INTERNATIONAL_AIR, INTERNATIONAL_OCEAN]
+          enum:
+          - DOMESTIC_SURFACE
+          - DOMESTIC_AIR
+          - HYPERLOCAL
+          - INTERNATIONAL_AIR
+          - INTERNATIONAL_OCEAN
           description: Logistics service type. Determines flow and performance states.
           example: HYPERLOCAL
-          x-ion-mandatory: always
-
-        # AVAILABILITY — signal only, never count
         availability:
           type: object
           additionalProperties: false
-          required: [status]
+          required:
+          - status
           properties:
             status:
               type: string
-              enum: [IN_STOCK, LOW_STOCK, OUT_OF_STOCK, PREORDER, DISCONTINUED]
-              description: >
-                IN_STOCK: adequate quantity available.
-                LOW_STOCK: limited — BAP may show urgency signal.
-                OUT_OF_STOCK: not available, no backorder.
-                PREORDER: can be pre-ordered before availability date.
+              enum:
+              - IN_STOCK
+              - LOW_STOCK
+              - OUT_OF_STOCK
+              - PREORDER
+              - DISCONTINUED
+              description: 'IN_STOCK: adequate quantity available. LOW_STOCK: limited — BAP may show urgency signal.
+                OUT_OF_STOCK: not available, no backorder. PREORDER: can be pre-ordered before availability date.
                 DISCONTINUED: permanently removed.
+
+                '
             nextAvailableAt:
               type: string
               format: date-time
@@ -377,11 +389,7 @@ components:
               type: boolean
               description: Seller may substitute with equivalent if this item unavailable.
               default: false
-          x-ion-mandatory: always
-
-        # IDENTITY
         identity:
-          x-ion-mandatory: optional
           type: object
           additionalProperties: false
           properties:
@@ -398,17 +406,14 @@ components:
               type: string
               description: Seller internal SKU
               example: PIZ-PEP-MED-CHT
-
-        # PHYSICAL
         physical:
-          x-ion-mandatory: optional
           type: object
           additionalProperties: false
           properties:
             colour:
               type: string
-              pattern: "^#[0-9A-Fa-f]{6}$"
-              example: "#FF5733"
+              pattern: ^#[0-9A-Fa-f]{6}$
+              example: '#FF5733'
             colourName:
               type: string
               description: Required when colour is specified
@@ -430,8 +435,6 @@ components:
               type: number
               minimum: 0
               example: 0.5
-
-        # PACKAGED GOODS DECLARATION
         packaged:
           type: object
           additionalProperties: false
@@ -439,30 +442,46 @@ components:
             netQuantity:
               type: object
               additionalProperties: false
-              required: [value, unit]
               properties:
                 value:
                   type: number
                 unit:
                   type: string
-                  enum: [GRAM, KILOGRAM, MILLILITRE, LITRE, PIECE, DOZEN, METER, CENTIMETER]
+                  enum:
+                  - GRAM
+                  - KILOGRAM
+                  - MILLILITRE
+                  - LITRE
+                  - PIECE
+                  - DOZEN
+                  - METER
+                  - CENTIMETER
               example:
                 value: 85
                 unit: GRAM
+              required:
+              - value
+              - unit
             manufacturerOrPacker:
               type: object
               additionalProperties: false
-              required: [type, name, address]
               properties:
                 type:
                   type: string
-                  enum: [MANUFACTURER, PACKER, IMPORTER]
+                  enum:
+                  - MANUFACTURER
+                  - PACKER
+                  - IMPORTER
                 name:
                   type: string
                   example: PT Indofood CBP Sukses Makmur Tbk
                 address:
                   type: string
                   example: Jl. Ancol Barat I No. 9-10, Jakarta Utara 14430
+              required:
+              - type
+              - name
+              - address
             manufacturePackingImportDate:
               type: object
               additionalProperties: false
@@ -476,7 +495,7 @@ components:
                   minimum: 2000
             monthYearOfManufacture:
               type: string
-              pattern: "^[0-9]{2}/[0-9]{4}$"
+              pattern: ^[0-9]{2}/[0-9]{4}$
               example: 04/2026
             expiryDate:
               type: string
@@ -489,14 +508,11 @@ components:
             hsnCode:
               type: string
               description: Harmonized System Nomenclature code
-              example: "1902.30"
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for packaged goods
+              example: '1902.30'
           x-ion-regulatory: PerBPOM 31/2018 tentang Label Pangan Olahan
-
-        # REGULATORY
+          x-ion-conditional: true
+          x-ion-condition: Required for packaged goods
         regulatory:
-          x-ion-mandatory: optional
           type: object
           additionalProperties: false
           properties:
@@ -505,29 +521,43 @@ components:
               items:
                 type: object
                 additionalProperties: false
-                required: [scheme, id]
                 properties:
                   scheme:
                     type: string
-                    enum: [BPOM_MD, BPOM_ML, BPOM_TR, MUI_HALAL, SNI, SP_PIRT, KEMENKES, SIUP]
+                    enum:
+                    - BPOM_MD
+                    - BPOM_ML
+                    - BPOM_TR
+                    - MUI_HALAL
+                    - SNI
+                    - SP_PIRT
+                    - KEMENKES
+                    - SIUP
                   id:
                     type: string
                   role:
                     type: string
-                    enum: [BRAND_OWNER, MANUFACTURER, IMPORTER, PACKER]
+                    enum:
+                    - BRAND_OWNER
+                    - MANUFACTURER
+                    - IMPORTER
+                    - PACKER
                   url:
                     type: string
                     format: uri
                   validUntil:
                     type: string
                     format: date
+                required:
+                - scheme
+                - id
             foodRegulatoryDeclaration:
               type: object
               additionalProperties: false
               properties:
                 nutritionalInfo:
                   type: string
-                  example: "Energi 350 kkal per 100g; Protein 10g; Lemak Total 5g"
+                  example: Energi 350 kkal per 100g; Protein 10g; Lemak Total 5g
                 additivesInfo:
                   type: string
                 ingredientsInfo:
@@ -543,7 +573,6 @@ components:
               items:
                 type: object
                 additionalProperties: false
-                required: [nutrient, value]
                 properties:
                   nutrient:
                     type: string
@@ -551,13 +580,25 @@ components:
                   value:
                     type: object
                     additionalProperties: false
-                    required: [unitCode, unitQuantity]
+                    required:
+                    - unitCode
+                    - unitQuantity
                     properties:
                       unitCode:
                         type: string
-                        enum: [G, MG, MCG, KCAL, KJ, IU, PERCENT]
+                        enum:
+                        - G
+                        - MG
+                        - MCG
+                        - KCAL
+                        - KJ
+                        - IU
+                        - PERCENT
                       unitQuantity:
                         type: number
+                required:
+                - nutrient
+                - value
             additives:
               type: array
               items:
@@ -566,7 +607,9 @@ components:
                 properties:
                   type:
                     type: string
-                    enum: [CONTAINS, FREE_FROM]
+                    enum:
+                    - CONTAINS
+                    - FREE_FROM
                   value:
                     type: string
             credentials:
@@ -574,7 +617,6 @@ components:
               items:
                 type: object
                 additionalProperties: false
-                required: [type, uri]
                 properties:
                   type:
                     type: string
@@ -586,31 +628,53 @@ components:
                   validUntil:
                     type: string
                     format: date
+                required:
+                - type
+                - uri
             backImage:
               type: string
               format: uri
               description: Back-of-pack statutory requirements image
-
-        # FOOD
         food:
           type: object
           additionalProperties: false
           properties:
             classification:
               type: string
-              enum: [VEG, NON_VEG, HALAL, EGG]
+              enum:
+              - VEG
+              - NON_VEG
+              - HALAL
+              - EGG
               example: HALAL
             allergens:
               type: array
               items:
                 type: string
-                enum: [GLUTEN, NUTS, DAIRY, EGGS, SOY, SHELLFISH, FISH, SESAME, SULPHITES, CELERY, MUSTARD, LUPIN]
+                enum:
+                - GLUTEN
+                - NUTS
+                - DAIRY
+                - EGGS
+                - SOY
+                - SHELLFISH
+                - FISH
+                - SESAME
+                - SULPHITES
+                - CELERY
+                - MUSTARD
+                - LUPIN
             cuisineType:
               type: string
               example: Padang
             spiceLevel:
               type: string
-              enum: [NONE, LOW, MEDIUM, HIGH, EXTRA_HOT]
+              enum:
+              - NONE
+              - LOW
+              - MEDIUM
+              - HIGH
+              - EXTRA_HOT
             freshProduce:
               type: object
               additionalProperties: false
@@ -621,10 +685,8 @@ components:
                 harvestDate:
                   type: string
                   format: date
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for food and beverage resources
-
-        # PREPARATION
         preparation:
           type: object
           additionalProperties: false
@@ -639,17 +701,20 @@ components:
               type: string
               description: ISO 8601 duration
               example: PT2H
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for F&B and perishable products
-
-        # FASHION
         fashion:
           type: object
           additionalProperties: false
           properties:
             gender:
               type: string
-              enum: [MALE, FEMALE, UNISEX, BOYS, GIRLS]
+              enum:
+              - MALE
+              - FEMALE
+              - UNISEX
+              - BOYS
+              - GIRLS
             size:
               type: string
               example: L
@@ -665,26 +730,55 @@ components:
               x-ion-regulatory: PerBSN SNI 0055:2009
             fitType:
               type: string
-              enum: [SLIM, REGULAR, OVERSIZED, RELAXED, ATHLETIC]
+              enum:
+              - SLIM
+              - REGULAR
+              - OVERSIZED
+              - RELAXED
+              - ATHLETIC
             sleeveType:
               type: string
-              enum: [SLEEVELESS, SHORT, THREE_QUARTER, FULL, NONE]
+              enum:
+              - SLEEVELESS
+              - SHORT
+              - THREE_QUARTER
+              - FULL
+              - NONE
             collarType:
               type: string
-              enum: [ROUND, V_NECK, POLO, SPREAD, MANDARIN, HOODIE, NONE]
+              enum:
+              - ROUND
+              - V_NECK
+              - POLO
+              - SPREAD
+              - MANDARIN
+              - HOODIE
+              - NONE
             occasion:
               type: string
-              enum: [CASUAL, FORMAL, ETHNIC, SPORTS, PARTY, BEACH, WORKWEAR]
+              enum:
+              - CASUAL
+              - FORMAL
+              - ETHNIC
+              - SPORTS
+              - PARTY
+              - BEACH
+              - WORKWEAR
             pattern:
               type: string
-              enum: [SOLID, PRINTED, STRIPED, CHECKED, EMBROIDERED, TIE_DYE, BATIK]
+              enum:
+              - SOLID
+              - PRINTED
+              - STRIPED
+              - CHECKED
+              - EMBROIDERED
+              - TIE_DYE
+              - BATIK
             careInstructions:
               type: string
               example: Cuci tangan, jangan diperas, jemur di tempat teduh
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for fashion and apparel products
-
-        # ELECTRONICS
         electronics:
           type: object
           additionalProperties: false
@@ -693,26 +787,37 @@ components:
               type: integer
             ramUnit:
               type: string
-              enum: [MB, GB]
+              enum:
+              - MB
+              - GB
               default: GB
             rom:
               type: integer
             romUnit:
               type: string
-              enum: [MB, GB, TB]
+              enum:
+              - MB
+              - GB
+              - TB
               default: GB
             storage:
               type: integer
             storageUnit:
               type: string
-              enum: [MB, GB, TB]
+              enum:
+              - MB
+              - GB
+              - TB
               default: GB
             storageCapacity:
               type: integer
               description: Appliance capacity. Fridge=litres, Washer=kg load
             storageCapacityUnit:
               type: string
-              enum: [LITRE, KG, CUBIC_FEET]
+              enum:
+              - LITRE
+              - KG
+              - CUBIC_FEET
             screenSize:
               type: number
               description: Screen size in inches
@@ -732,7 +837,15 @@ components:
               description: mAh
             osType:
               type: string
-              enum: [IOS, ANDROID, WINDOWS, MACOS, LINUX, TIZEN, WEBOS, OTHER]
+              enum:
+              - IOS
+              - ANDROID
+              - WINDOWS
+              - MACOS
+              - LINUX
+              - TIZEN
+              - WEBOS
+              - OTHER
             osVersion:
               type: string
               example: Android 14
@@ -740,7 +853,20 @@ components:
               type: array
               items:
                 type: string
-                enum: [WIFI, BLUETOOTH, NFC, USB_C, USB_A, HDMI, ETHERNET, LIGHTNING, MMWAVE_5G, SUB6_5G, 4G_LTE, 3G, IR_BLASTER]
+                enum:
+                - WIFI
+                - BLUETOOTH
+                - NFC
+                - USB_C
+                - USB_A
+                - HDMI
+                - ETHERNET
+                - LIGHTNING
+                - MMWAVE_5G
+                - SUB6_5G
+                - 4G_LTE
+                - 3G
+                - IR_BLASTER
             wattage:
               type: integer
               description: Power consumption watts
@@ -752,10 +878,8 @@ components:
               minimum: 1
               maximum: 5
               description: BSN energy efficiency star rating
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for electronics and appliance products
-
-        # BEAUTY
         beauty:
           type: object
           additionalProperties: false
@@ -768,26 +892,62 @@ components:
               example: niacinamide
             conscious:
               type: string
-              enum: [NATURAL, ORGANIC, VEGAN, CRUELTY_FREE, HALAL_COSMETICS]
+              enum:
+              - NATURAL
+              - ORGANIC
+              - VEGAN
+              - CRUELTY_FREE
+              - HALAL_COSMETICS
             preference:
               type: string
-              enum: [HERBAL, AYURVEDIC, CHEMICAL_FREE, FRAGRANCE_FREE, ALCOHOL_FREE]
+              enum:
+              - HERBAL
+              - AYURVEDIC
+              - CHEMICAL_FREE
+              - FRAGRANCE_FREE
+              - ALCOHOL_FREE
             formulation:
               type: string
-              enum: [LIQUID, CREAM, GEL, POWDER, SERUM, BALM, SPRAY, FOAM, STICK, SHEET]
+              enum:
+              - LIQUID
+              - CREAM
+              - GEL
+              - POWDER
+              - SERUM
+              - BALM
+              - SPRAY
+              - FOAM
+              - STICK
+              - SHEET
             skinType:
               type: string
-              enum: [ALL, NORMAL, OILY, DRY, COMBINATION, SENSITIVE]
+              enum:
+              - ALL
+              - NORMAL
+              - OILY
+              - DRY
+              - COMBINATION
+              - SENSITIVE
             hairType:
               type: string
-              enum: [ALL, NORMAL, OILY, DRY, DAMAGED, CURLY, STRAIGHT]
+              enum:
+              - ALL
+              - NORMAL
+              - OILY
+              - DRY
+              - DAMAGED
+              - CURLY
+              - STRAIGHT
             spf:
               type: integer
               minimum: 0
               example: 50
             gender:
               type: string
-              enum: [MALE, FEMALE, UNISEX]
+              enum:
+              - MALE
+              - FEMALE
+              - UNISEX
             volume:
               type: object
               additionalProperties: false
@@ -796,12 +956,13 @@ components:
                   type: number
                 unit:
                   type: string
-                  enum: [ML, G, OZ]
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for beauty and personal care products
+                  enum:
+                  - ML
+                  - G
+                  - OZ
           x-ion-regulatory: PerBPOM 23/2019 tentang Persyaratan Teknis Kosmetika
-
-        # AGRITECH
+          x-ion-conditional: true
+          x-ion-condition: Required for beauty and personal care products
         agritech:
           type: object
           additionalProperties: false
@@ -811,13 +972,21 @@ components:
               format: date
             produceGrade:
               type: string
-              enum: [PREMIUM, GRADE_A, GRADE_B, GRADE_C]
+              enum:
+              - PREMIUM
+              - GRADE_A
+              - GRADE_B
+              - GRADE_C
             mandiReferencePrice:
               type: number
               description: Government mandi reference price IDR/kg
             pesticideDeclaration:
               type: string
-              enum: [PESTICIDE_FREE, LOW_PESTICIDE, STANDARD, ORGANIC_CERTIFIED]
+              enum:
+              - PESTICIDE_FREE
+              - LOW_PESTICIDE
+              - STANDARD
+              - ORGANIC_CERTIFIED
             organicCertification:
               type: object
               additionalProperties: false
@@ -830,17 +999,25 @@ components:
             unitOfMeasure:
               type: object
               additionalProperties: false
-              required: [unit, value]
               properties:
                 unit:
                   type: string
-                  enum: [GRAM, KILOGRAM, LITRE, MILLILITRE, PIECE, DOZEN, BUNCH, IKAT]
+                  enum:
+                  - GRAM
+                  - KILOGRAM
+                  - LITRE
+                  - MILLILITRE
+                  - PIECE
+                  - DOZEN
+                  - BUNCH
+                  - IKAT
                 value:
                   type: number
-          x-ion-mandatory: conditional
+              required:
+              - unit
+              - value
+          x-ion-conditional: true
           x-ion-condition: Required for agritech and fresh produce
-
-        # PHARMACY
         pharmacy:
           type: object
           additionalProperties: false
@@ -849,7 +1026,16 @@ components:
               type: boolean
             dosageForm:
               type: string
-              enum: [TABLET, CAPSULE, SYRUP, INJECTION, OINTMENT, DROPS, INHALER, SUPPOSITORY, PATCH]
+              enum:
+              - TABLET
+              - CAPSULE
+              - SYRUP
+              - INJECTION
+              - OINTMENT
+              - DROPS
+              - INHALER
+              - SUPPOSITORY
+              - PATCH
             strength:
               type: string
               example: 500 mg
@@ -859,28 +1045,23 @@ components:
                 type: string
             coldChainRequired:
               type: boolean
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for pharmaceutical and OTC medicine
           x-ion-regulatory: PerBPOM Nomor 4 Tahun 2018
-
-        # INSTALLATION
+          x-ion-conditional: true
+          x-ion-condition: Required for pharmaceutical and OTC medicine
         installation:
           type: object
           additionalProperties: false
           properties:
-            required:
-              type: boolean
             providedBySeller:
               type: boolean
             notes:
               type: string
               example: Memerlukan instalasi profesional. Membutuhkan arus 220V khusus.
-          x-ion-mandatory: conditional
+            required:
+            - type
+          x-ion-conditional: true
           x-ion-condition: Required for appliances and furniture needing installation
-
-        # USAGE
         usage:
-          x-ion-mandatory: optional
           type: object
           additionalProperties: false
           properties:
@@ -890,9 +1071,9 @@ components:
               type: array
               items:
                 type: string
-              example: ["220V outlet", "36-inch doorway"]
-
-        # WARRANTY
+              example:
+              - 220V outlet
+              - 36-inch doorway
         warranty:
           type: object
           additionalProperties: false
@@ -903,133 +1084,139 @@ components:
               example: P2Y
             type:
               type: string
-              enum: [MANUFACTURER, SELLER, EXTENDED, NONE]
+              enum:
+              - MANUFACTURER
+              - SELLER
+              - EXTENDED
+              - NONE
             terms:
               type: string
               example: Garansi resmi 2 tahun. Tidak mencakup kerusakan fisik dan air.
             serviceCenter:
               type: string
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for electronics, appliances, consumer durables
           x-ion-regulatory: UU 8/1999 tentang Perlindungan Konsumen Pasal 25; PP 36/2023
-
-        # AGE RESTRICTION
+          x-ion-conditional: true
+          x-ion-condition: Required for electronics, appliances, consumer durables
         ageRestricted:
           type: boolean
           description: Whether product requires age verification at purchase
           default: false
-          x-ion-mandatory: always
-
         minAge:
           type: integer
           minimum: 0
           maximum: 21
           description: Minimum purchaser age when ageRestricted is true
           example: 18
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when ageRestricted is true
-
-        # COUNTRY OF ORIGIN
         countryOfOrigin:
           type: string
-          pattern: "^[A-Z]{3}$"
+          pattern: ^[A-Z]{3}$
           description: ISO 3166-1 alpha-3 country code
           example: IDN
-          x-ion-mandatory: always
           x-ion-regulatory: PerBPOM 31/2018 Pasal 36; Permendag 36/2023
-
-
-        # C4 — CANONICAL PRODUCT IDENTITY (for Buy Box across providers)
         canonicalId:
           type: string
-          description: >
-            Cross-provider product identity. Multiple providers selling the
-            same product share the same canonicalId. Enables Buy Box selection
-            on BAP side and cross-seller price comparison. GTIN preferred
+          description: 'Cross-provider product identity. Multiple providers selling the same product share the same
+            canonicalId. Enables Buy Box selection on BAP side and cross-seller price comparison. GTIN preferred
             when available; otherwise ION-assigned canonical ID via Atlas.
-          example: ION-CAN-ABC123XYZ
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for marketplace-eligible products (MP-IH, MP-IL)
 
+            '
+          example: ION-CAN-ABC123XYZ
+          x-ion-conditional: true
+          x-ion-condition: Required for marketplace-eligible products (MP-IH, MP-IL)
         featuredOfferEligible:
           type: boolean
-          description: >
-            Whether this offer is eligible for "featured offer" / Buy Box
-            selection. BPP declares eligibility; BAP runs selection algorithm.
-            Eligibility typically requires: verified seller, positive rating
-            history, standard return policy, Prime-equivalent SLA.
-          default: false
-          x-ion-mandatory: optional
+          description: 'Whether this offer is eligible for "featured offer" / Buy Box selection. BPP declares eligibility;
+            BAP runs selection algorithm. Eligibility typically requires: verified seller, positive rating history,
+            standard return policy, Prime-equivalent SLA.
 
+            '
+          default: false
         featuredOfferScore:
           type: number
           minimum: 0
           maximum: 1
-          description: >
-            BPP-computed score used by BAP Buy Box algorithm. Factors in price
-            competitiveness, rating, SLA reliability, stock depth. Decimal 0-1.
-          x-ion-mandatory: optional
+          description: 'BPP-computed score used by BAP Buy Box algorithm. Factors in price competitiveness, rating,
+            SLA reliability, stock depth. Decimal 0-1.
 
-        # L4 — TYPED IMAGES (not just URL array)
+            '
         imageSet:
           type: array
-          description: >
-            Structured images with role metadata. More expressive than the
-            flat images[] array. BAPs can render appropriate images per surface.
-            When imageSet is present, images[] may still exist for backward
+          description: 'Structured images with role metadata. More expressive than the flat images[] array. BAPs
+            can render appropriate images per surface. When imageSet is present, images[] may still exist for backward
             compatibility but imageSet is authoritative.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [url, role]
             properties:
               url:
                 type: string
                 format: uri
               role:
                 type: string
-                enum: [PRIMARY, GALLERY, SIZE_CHART, SPEC_SHEET, LIFESTYLE, UNBOXING, SIZE_FIT, USE_IN_CONTEXT, PACKAGING, BACK_OF_PACK, INGREDIENTS_LABEL, NUTRITION_FACTS]
+                enum:
+                - PRIMARY
+                - GALLERY
+                - SIZE_CHART
+                - SPEC_SHEET
+                - LIFESTYLE
+                - UNBOXING
+                - SIZE_FIT
+                - USE_IN_CONTEXT
+                - PACKAGING
+                - BACK_OF_PACK
+                - INGREDIENTS_LABEL
+                - NUTRITION_FACTS
               altText:
-                $ref: "#/components/schemas/LocalisedText"
+                $ref: '#/components/schemas/LocalisedText'
               sequence:
                 type: integer
               widthPx:
                 type: integer
               heightPx:
                 type: integer
-          x-ion-mandatory: optional
-
+            required:
+            - url
+            - role
         videos:
           type: array
           items:
             type: object
             additionalProperties: false
-            required: [url, role]
             properties:
               url:
                 type: string
                 format: uri
               role:
                 type: string
-                enum: [PRIMARY, UNBOXING, USE_IN_CONTEXT, SIZE_FIT, INSTALLATION_GUIDE, 360_VIEW, LIVE_REPLAY]
+                enum:
+                - PRIMARY
+                - UNBOXING
+                - USE_IN_CONTEXT
+                - SIZE_FIT
+                - INSTALLATION_GUIDE
+                - 360_VIEW
+                - LIVE_REPLAY
               durationSeconds:
                 type: integer
               thumbnailUrl:
                 type: string
                 format: uri
-          x-ion-mandatory: optional
-
-        # L6 — BUNDLE COMPOSITION
+            required:
+            - url
+            - role
         bundleComposition:
           type: array
-          description: >
-            Components of a bundle SKU. Required for bundle offers where
-            individual components carry their own regulatory registrations
-            (BPOM, POSTEL, TKDN, warranty).
+          description: 'Components of a bundle SKU. Required for bundle offers where individual components carry
+            their own regulatory registrations (BPOM, POSTEL, TKDN, warranty).
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [componentResourceId, quantity]
             properties:
               componentResourceId:
                 type: string
@@ -1049,16 +1236,18 @@ components:
               componentPrice:
                 type: number
                 description: Unbundled IDR price of component for break-up display
-          x-ion-mandatory: conditional
+            required:
+            - componentResourceId
+            - quantity
+          x-ion-conditional: true
           x-ion-condition: Required when offer.offerType=BUNDLE
-
-        # L7 — STRUCTURED BRAND
         brandIdentity:
           type: object
           additionalProperties: false
-          description: >
-            Structured brand identity. Replaces string-only identity.brand
-            for Official Store / Brand Registry programmes.
+          description: 'Structured brand identity. Replaces string-only identity.brand for Official Store / Brand
+            Registry programmes.
+
+            '
           properties:
             name:
               type: string
@@ -1072,76 +1261,71 @@ components:
               example: BRAND-CERT-SAMSUNG-2024
             officialStoreStatus:
               type: boolean
-              description: >
-                Whether this seller is the officially authorised brand store
-                on this marketplace. Validated against brand owner whitelist.
+              description: 'Whether this seller is the officially authorised brand store on this marketplace. Validated
+                against brand owner whitelist.
+
+                '
             authorisedResellerOf:
               type: array
               items:
                 type: string
               description: Brand names this seller is an authorised reseller for
-          x-ion-mandatory: optional
-
-        # L3 — SUB-NATIONAL ORIGIN (for Geographic Indications)
         regionOfOrigin:
           type: string
-          pattern: "^[A-Z]{3}-[A-Z0-9]{1,3}$"
-          description: >
-            ISO 3166-2 sub-national region code for geographic indication.
-            Required when product claims origin-protected status (Kopi Gayo
-            from Aceh IDN-AC, Beras Cianjur from West Java IDN-JB).
-          example: IDN-AC
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when product claims Geographic Indication status
-          x-ion-regulatory: UU 20/2016 tentang Merek dan Indikasi Geografis
+          pattern: ^[A-Z]{3}-[A-Z0-9]{1,3}$
+          description: 'ISO 3166-2 sub-national region code for geographic indication. Required when product claims
+            origin-protected status (Kopi Gayo from Aceh IDN-AC, Beras Cianjur from West Java IDN-JB).
 
+            '
+          example: IDN-AC
+          x-ion-regulatory: UU 20/2016 tentang Merek dan Indikasi Geografis
+          x-ion-conditional: true
+          x-ion-condition: Required when product claims Geographic Indication status
         geographicIndicationCert:
           type: string
-          description: >
-            Geographic Indication certificate number from DJKI
-            (Direktorat Jenderal Kekayaan Intelektual).
-          x-ion-mandatory: conditional
+          description: 'Geographic Indication certificate number from DJKI (Direktorat Jenderal Kekayaan Intelektual).
+
+            '
+          x-ion-conditional: true
           x-ion-condition: Required when regionOfOrigin is declared for GI products
-
-
-        # H3 — DIGITAL GOODS SUB-OBJECT (for DIGITAL_VOUCHER / DIGITAL_TOP_UP / DIGITAL_SUBSCRIPTION)
         digital:
           type: object
           additionalProperties: false
-          description: >
-            Digital goods attributes. Required for DIGITAL_VOUCHER,
-            DIGITAL_TOP_UP, and DIGITAL_SUBSCRIPTION resource types.
+          description: 'Digital goods attributes. Required for DIGITAL_VOUCHER, DIGITAL_TOP_UP, and DIGITAL_SUBSCRIPTION
+            resource types.
+
+            '
           properties:
             digitalCategory:
               type: string
               enum:
-                - MOBILE_PULSA
-                - MOBILE_DATA_PACKAGE
-                - ELECTRICITY_TOKEN
-                - WATER_BILL
-                - INTERNET_BILL
-                - PDAM_BILL
-                - PBB_TAX
-                - BPJS_PAYMENT
-                - GIFT_CARD
-                - GAME_VOUCHER
-                - STREAMING_VOUCHER
-                - FOOD_VOUCHER
-                - EWALLET_TOP_UP
-                - TRANSPORT_VOUCHER
-                - EDUCATION_VOUCHER
-                - OTHER
-              description: >
-                Type of digital good. MOBILE_PULSA/DATA covered by Indonesian
-                operator regulations; GAME_VOUCHER includes Mobile Legends,
-                Free Fire, Valorant, Genshin currencies; STREAMING_VOUCHER
+              - MOBILE_PULSA
+              - MOBILE_DATA_PACKAGE
+              - ELECTRICITY_TOKEN
+              - WATER_BILL
+              - INTERNET_BILL
+              - PDAM_BILL
+              - PBB_TAX
+              - BPJS_PAYMENT
+              - GIFT_CARD
+              - GAME_VOUCHER
+              - STREAMING_VOUCHER
+              - FOOD_VOUCHER
+              - EWALLET_TOP_UP
+              - TRANSPORT_VOUCHER
+              - EDUCATION_VOUCHER
+              - OTHER
+              description: 'Type of digital good. MOBILE_PULSA/DATA covered by Indonesian operator regulations;
+                GAME_VOUCHER includes Mobile Legends, Free Fire, Valorant, Genshin currencies; STREAMING_VOUCHER
                 for Netflix/Disney+ Hotstar/Spotify access codes.
+
+                '
             operatorOrIssuer:
               type: string
-              description: >
-                Issuing operator or brand. For MOBILE_PULSA: TELKOMSEL, XL,
-                INDOSAT, TRI, SMARTFREN. For ELECTRICITY_TOKEN: PLN.
-                For GAME_VOUCHER: Moonton, Garena, Riot, etc.
+              description: 'Issuing operator or brand. For MOBILE_PULSA: TELKOMSEL, XL, INDOSAT, TRI, SMARTFREN.
+                For ELECTRICITY_TOKEN: PLN. For GAME_VOUCHER: Moonton, Garena, Riot, etc.
+
+                '
               example: TELKOMSEL
             denomination:
               type: object
@@ -1155,23 +1339,31 @@ components:
                   default: IDR
                 unit:
                   type: string
-                  enum: [IDR, MB, GB, MINUTES, DIAMONDS, COINS, OTHER]
+                  enum:
+                  - IDR
+                  - MB
+                  - GB
+                  - MINUTES
+                  - DIAMONDS
+                  - COINS
+                  - OTHER
                   description: IDR for money-based; MB/GB for data; DIAMONDS/COINS for in-game
-              required: [value, unit]
+              required:
+              - value
+              - unit
             deliveryMethod:
               type: string
               enum:
-                - PUSH_TO_TARGET
-                - CODE_TO_BUYER
-                - ACCOUNT_CREDIT
-                - QR_VOUCHER
-              description: >
-                PUSH_TO_TARGET: delivered directly to consumer account
-                (pulsa to phone number, PLN token to meter, in-game currency
-                to game account).
-                CODE_TO_BUYER: redemption code sent to buyer to redeem later.
-                ACCOUNT_CREDIT: credited to buyer's wallet/account.
-                QR_VOUCHER: scannable QR redeemable at merchant.
+              - PUSH_TO_TARGET
+              - CODE_TO_BUYER
+              - ACCOUNT_CREDIT
+              - QR_VOUCHER
+              description: 'PUSH_TO_TARGET: delivered directly to consumer account (pulsa to phone number, PLN token
+                to meter, in-game currency to game account). CODE_TO_BUYER: redemption code sent to buyer to redeem
+                later. ACCOUNT_CREDIT: credited to buyer''s wallet/account. QR_VOUCHER: scannable QR redeemable
+                at merchant.
+
+                '
             target:
               type: object
               additionalProperties: false
@@ -1179,7 +1371,13 @@ components:
               properties:
                 type:
                   type: string
-                  enum: [MOBILE_NUMBER, CUSTOMER_ID, ACCOUNT_ID, EMAIL, METER_NUMBER, GAME_USER_ID]
+                  enum:
+                  - MOBILE_NUMBER
+                  - CUSTOMER_ID
+                  - ACCOUNT_ID
+                  - EMAIL
+                  - METER_NUMBER
+                  - GAME_USER_ID
                 value:
                   type: string
                 operatorValidationRequired:
@@ -1187,9 +1385,10 @@ components:
                   description: Whether BPP must verify target exists before accepting (e.g. mobile number inquiry)
             redemptionCode:
               type: string
-              description: >
-                Redemption code or voucher code. Returned in on_status[DELIVERED]
-                for CODE_TO_BUYER delivery. Must be encrypted in transit.
+              description: 'Redemption code or voucher code. Returned in on_status[DELIVERED] for CODE_TO_BUYER
+                delivery. Must be encrypted in transit.
+
+                '
             redemptionUrl:
               type: string
               format: uri
@@ -1201,55 +1400,82 @@ components:
             refundable:
               type: boolean
               default: false
-              description: >
-                Whether the digital good is refundable. Most pulsa/top-up is
-                non-refundable once delivered to target. Vouchers may be
-                refundable if unredeemed.
+              description: 'Whether the digital good is refundable. Most pulsa/top-up is non-refundable once delivered
+                to target. Vouchers may be refundable if unredeemed.
+
+                '
             cancellable:
               type: boolean
               default: false
               description: Whether cancellation is possible before delivery
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when resourceTangibility IN [DIGITAL_VOUCHER, DIGITAL_TOP_UP, DIGITAL_SUBSCRIPTION]
-
-
-        # Op-38 — DATA RESIDENCY (v0.5)
         dataResidency:
           type: string
-          enum: [DOMESTIC_ONLY, INTERNATIONAL_ALLOWED]
-          description: >
-            Data residency requirement for this resource. DOMESTIC_ONLY
-            means all PII and transaction data must be processed and stored
-            within Indonesia; BAPs with foreign data processing must skip
-            or refuse transactions for this resource.
-            Required for pharmacy, health data, financial services, and
-            regulated biometric categories.
+          enum:
+          - DOMESTIC_ONLY
+          - INTERNATIONAL_ALLOWED
+          description: 'Data residency requirement for this resource. DOMESTIC_ONLY means all PII and transaction
+            data must be processed and stored within Indonesia; BAPs with foreign data processing must skip or refuse
+            transactions for this resource. Required for pharmacy, health data, financial services, and regulated
+            biometric categories.
+
+            '
           example: DOMESTIC_ONLY
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for pharmacy, health-data, financial-services categories
           x-ion-regulatory: UU 27/2022 tentang Pelindungan Data Pribadi (PDP Law)
-
+          x-ion-conditional: true
+          x-ion-condition: Required for pharmacy, health-data, financial-services categories
       allOf:
-        - if:
-            properties:
-              resourceStructure:
-                enum: [VARIANT]
-            required: [resourceStructure]
-          then:
-            required: [parentResourceId, isDefaultVariant, variantGroup]
-
-        - if:
-            properties:
-              resourceStructure:
-                enum: [COMPOSED, WITH_EXTRAS]
-            required: [resourceStructure]
-          then:
-            required: [customisationGroups]
-
-        - if:
-            properties:
-              ageRestricted:
-                const: true
-            required: [ageRestricted]
-          then:
-            required: [minAge]
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes
+      - if:
+          properties:
+            resourceStructure:
+              enum:
+              - VARIANT
+          required:
+          - resourceStructure
+        then:
+          required:
+          - parentResourceId
+          - isDefaultVariant
+          - variantGroup
+      - if:
+          properties:
+            resourceStructure:
+              enum:
+              - COMPOSED
+              - WITH_EXTRAS
+          required:
+          - resourceStructure
+        then:
+          required:
+          - customisationGroups
+      - if:
+          properties:
+            ageRestricted:
+              const: true
+          required:
+          - ageRestricted
+        then:
+          required:
+          - minAge
+      - if:
+          properties:
+            resourceStructure:
+              const: VARIANT
+          required:
+          - resourceStructure
+        then:
+          required:
+          - isDefaultVariant
+          - variantGroup
+      required:
+      - quantity
+      - resourceStructure
+      - resourceTangibility
+      - images
+      - logisticsServiceType
+      - availability
+      - ageRestricted
+      - countryOfOrigin
+      x-ion-closed-extensions: false

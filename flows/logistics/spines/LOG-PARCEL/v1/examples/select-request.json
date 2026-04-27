@@ -13,8 +13,12 @@
     "timestamp": "2026-04-22T10:00:00.000Z",
     "ttl": "PT30S",
     "location": {
-      "city": { "code": "std:031" },
-      "country": { "code": "IDN" }
+      "city": {
+        "code": "std:031"
+      },
+      "country": {
+        "code": "IDN"
+      }
     },
     "schemaContext": [
       "https://schema.ion.id/logistics/v1/participant/context.jsonld",
@@ -70,6 +74,20 @@
             "lineId": "L1",
             "resourceId": "jne-parcel-service",
             "offerId": "jne-yes-nextday"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "jne-parcel-service"
+            }
+          ],
+          "offer": {
+            "id": "jne-yes-nextday"
           }
         }
       ],
@@ -101,11 +119,20 @@
             "@context": "https://schema.ion.id/logistics/v1/resource/context.jsonld",
             "@type": "ion:LogisticsResourceAttributes",
             "serviceType": "PARCEL",
-            "weight": { "value": 2.5, "unit": "kilogram" },
-            "dimensions": {
-              "length": 30, "width": 20, "height": 15, "unit": "centimeter"
+            "weight": {
+              "value": 2.5,
+              "unit": "kilogram"
             },
-            "declaredValue": { "amount": 500000, "currency": "IDR" },
+            "dimensions": {
+              "length": 30,
+              "width": 20,
+              "height": 15,
+              "unit": "centimeter"
+            },
+            "declaredValue": {
+              "amount": 500000,
+              "currency": "IDR"
+            },
             "insuranceRequested": true,
             "fragile": false,
             "productCategory": "ELECTRONICS"

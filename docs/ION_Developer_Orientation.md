@@ -91,6 +91,13 @@ Multiple packs compose at the field level. A single `resourceAttributes` object 
 {
   "resourceAttributes": {
 
+    "@context": [
+      "https://schema.ion.id/extensions/core/localization/v1/context.jsonld",
+      "https://schema.ion.id/extensions/core/product/v1/context.jsonld",
+      "https://schema.ion.id/extensions/trade/resource/v1/context.jsonld"
+    ],
+    "@type": "ion:ResourceAttributes",
+
     // ← core/localization/v1
     "name": { "id": "Nasi Goreng Spesial", "en": "Special Fried Rice" },
     "shortDesc": { "id": "Nasi goreng dengan ayam dan telur" },
@@ -489,9 +496,9 @@ The older snake_case format (`bap_id`, `transaction_id`, etc.) is Beckn v1.x and
 
 ### 17.3 Message wrapper — `contract`, not `order`
 
-Beckn v2.0 renamed the transaction object from `Order` to `Contract`. Every action message now carries a `contract` field:
+Beckn v2.0 renamed the transaction object from `Order` to `Contract`. Every action message now carries a `contract` field. **Schematic outline** (placeholders in `{ ... }` show structure, not values — see other docs in this folder for runnable payloads):
 
-```json
+```text
 {
   "context": { ... },
   "message": {

@@ -1,82 +1,76 @@
 openapi: 3.1.1
 info:
   title: ION Logistics Tracking Extension (v1)
-  description: >
-    Logistics sector tracking attributes. Attaches to the native
-    beckn:Tracking.trackingAttributes slot defined in Beckn 2.0.
-    Covers live GPS streaming, AWB tracking URLs, WebSocket endpoints,
-    and webhook-based tracking.
+  description: 'Logistics sector tracking attributes. Attaches to the native beckn:Tracking.trackingAttributes slot
+    defined in Beckn 2.0. Covers live GPS streaming, AWB tracking URLs, WebSocket endpoints, and webhook-based tracking.
     Attaches to: beckn:Tracking.trackingAttributes
-  version: 1.0.0
 
+    '
+  version: 1.0.0
 components:
   schemas:
     LogisticsTrackingAttributes:
       type: object
       title: Logistics Tracking Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:LogisticsTrackingAttributes
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsTrackingAttributes
       x-beckn-attaches-to: Tracking.trackingAttributes
-
       properties:
-
         trackingType:
           type: string
-          x-ion-mandatory: always
           enum:
-            - LIVE_GPS
-            - AWB_URL
-            - WEBHOOK
-            - WEBSOCKET
-            - POLLING_API
-          description: >
-            Mode of tracking offered. LIVE_GPS for hyperlocal real-time position.
-            AWB_URL for parcel tracking on carrier's own website. WEBHOOK for
-            event-driven push. WEBSOCKET for bidirectional streaming.
+          - LIVE_GPS
+          - AWB_URL
+          - WEBHOOK
+          - WEBSOCKET
+          - POLLING_API
+          description: 'Mode of tracking offered. LIVE_GPS for hyperlocal real-time position. AWB_URL for parcel
+            tracking on carrier''s own website. WEBHOOK for event-driven push. WEBSOCKET for bidirectional streaming.
             POLLING_API for request/response status queries.
 
+            '
         refreshIntervalSeconds:
           type: integer
-          x-ion-mandatory: conditional
-          description: >
-            Recommended polling interval for LIVE_GPS and POLLING_API modes.
-            Typical: 5-15 seconds for hyperlocal, 60+ for parcel.
+          description: 'Recommended polling interval for LIVE_GPS and POLLING_API modes. Typical: 5-15 seconds for
+            hyperlocal, 60+ for parcel.
 
+            '
+          x-ion-conditional: true
         credentials:
           type: object
-          x-ion-mandatory: conditional
           description: Authentication for WEBSOCKET or authenticated webhook
           properties:
             type:
               type: string
-              enum: [BEARER_TOKEN, API_KEY, SIGNED_URL_PARAM]
+              enum:
+              - BEARER_TOKEN
+              - API_KEY
+              - SIGNED_URL_PARAM
             value:
               type: string
             validUntil:
               type: string
               format: date-time
-
+          x-ion-conditional: true
         webhookEvents:
           type: array
-          x-ion-mandatory: conditional
           description: Events the BPP will push to webhook (if trackingType=WEBHOOK)
           items:
             type: string
             enum:
-              - STATE_CHANGE
-              - LOCATION_UPDATE
-              - SLA_BREACH_IMMINENT
-              - EXCEPTION
-              - DELIVERY_COMPLETE
-
+            - STATE_CHANGE
+            - LOCATION_UPDATE
+            - SLA_BREACH_IMMINENT
+            - EXCEPTION
+            - DELIVERY_COMPLETE
+          x-ion-conditional: true
         currentLocation:
           type: object
-          x-ion-mandatory: conditional
-          description: >
-            Last known location snapshot at time of /on_track response.
-            Primarily for LIVE_GPS.
+          description: 'Last known location snapshot at time of /on_track response. Primarily for LIVE_GPS.
+
+            '
           properties:
             latitude:
               type: number
@@ -92,23 +86,19 @@ components:
               description: Degrees from true north
             speedKmh:
               type: number
-
+          x-ion-conditional: true
         etaMinutes:
           type: integer
-          x-ion-mandatory: conditional
           description: Current ETA to next waypoint or destination
-
+          x-ion-conditional: true
         routePolyline:
           type: string
-          x-ion-mandatory: optional
           description: Encoded polyline of planned route (Google-style encoding)
-
         agentDetails:
           type: object
-          x-ion-mandatory: conditional
-          description: >
-            Agent details exposed based on offer.agentAssignmentModel and
-            current performance state.
+          description: 'Agent details exposed based on offer.agentAssignmentModel and current performance state.
+
+            '
           properties:
             name:
               type: string
@@ -126,17 +116,20 @@ components:
               type: array
               items:
                 type: string
-
+          x-ion-conditional: true
         trackingHandoffToCarrier:
           type: boolean
-          x-ion-mandatory: optional
-          description: >
-            True if tracking URL redirects to carrier's own tracking page
-            (common for LOG-PARCEL where AWB is carrier-native).
+          description: 'True if tracking URL redirects to carrier''s own tracking page (common for LOG-PARCEL where
+            AWB is carrier-native).
 
+            '
         carrierTrackingUrlPattern:
           type: string
-          x-ion-mandatory: optional
-          description: >
-            URL template for AWB_URL tracking. E.g.
-            "https://jne.co.id/tracking?awb={awbNumber}"
+          description: 'URL template for AWB_URL tracking. E.g. "https://jne.co.id/tracking?awb={awbNumber}"
+
+            '
+      required:
+      - trackingType
+      x-ion-closed-extensions: false
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes

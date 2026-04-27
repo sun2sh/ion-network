@@ -1,55 +1,45 @@
 openapi: 3.1.1
 info:
   title: ION Trade Commitment Extension (v1)
-  description: >
-    Trade sector commitment attributes. Per-line item details within a contract
-    — resource reference, offer reference, quantity, locked price, customisation
-    selections, and special instructions.
-    Entirely from Beckn v2.1 generalised model — not in dictionary v1.0.
-    Attaches to: beckn:Commitment.commitmentAttributes
-  version: 1.0.0
+  description: 'Trade sector commitment attributes. Per-line item details within a contract — resource reference,
+    offer reference, quantity, locked price, customisation selections, and special instructions. Entirely from Beckn
+    v2.1 generalised model — not in dictionary v1.0. Attaches to: beckn:Commitment.commitmentAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     TradeCommitmentAttributes:
       type: object
       title: Trade Commitment Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:TradeCommitmentAttributes
+        '@context': ./context.jsonld
+        '@type': ion:TradeCommitmentAttributes
       x-beckn-attaches-to: Commitment.commitmentAttributes
-
-      required: [lineId, resourceId, offerId, quantity]
-
       properties:
-
         lineId:
           type: string
-          description: >
-            Unique identifier for this commitment line within the contract.
-            Assigned by BAP at select. Persists through the contract lifecycle.
-            Used to reference specific lines in updates, cancellations, returns.
-          example: L01
-          x-ion-mandatory: always
+          description: 'Unique identifier for this commitment line within the contract. Assigned by BAP at select.
+            Persists through the contract lifecycle. Used to reference specific lines in updates, cancellations,
+            returns.
 
+            '
+          example: L01
         resourceId:
           type: string
-          description: >
-            ID of the resource being committed. References beckn:Resource.id
-            from the catalog. For VARIANT resources, this is the specific
-            variant ID, not the parent.
-          example: ITEM-001
-          x-ion-mandatory: always
+          description: 'ID of the resource being committed. References beckn:Resource.id from the catalog. For VARIANT
+            resources, this is the specific variant ID, not the parent.
 
+            '
+          example: ITEM-001
         offerId:
           type: string
-          description: >
-            ID of the offer under which this resource is being committed.
-            References beckn:Offer.id from the catalog.
-          example: OFFER-001
-          x-ion-mandatory: always
+          description: 'ID of the offer under which this resource is being committed. References beckn:Offer.id
+            from the catalog.
 
+            '
+          example: OFFER-001
         quantity:
           type: object
           additionalProperties: false
@@ -67,42 +57,50 @@ components:
               properties:
                 unit:
                   type: string
-                  enum: [GRAM, KILOGRAM, LITRE, MILLILITRE, PIECE, DOZEN, METER]
+                  enum:
+                  - GRAM
+                  - KILOGRAM
+                  - LITRE
+                  - MILLILITRE
+                  - PIECE
+                  - DOZEN
+                  - METER
                 value:
                   type: number
                   minimum: 0
-              required: [unit, value]
-          x-ion-mandatory: always
-
+              required:
+              - unit
+              - value
         price:
           type: object
           additionalProperties: false
-          description: >
-            Locked price for this commitment line as agreed at select.
-            Price is fixed at on_select and does not change unless a price
-            adjustment branch is triggered.
+          description: 'Locked price for this commitment line as agreed at select. Price is fixed at on_select and
+            does not change unless a price adjustment branch is triggered.
+
+            '
           properties:
             value:
               type: string
               description: IDR amount as string decimal
-              example: "89000"
+              example: '89000'
             currency:
               type: string
               const: IDR
               default: IDR
-          required: [value, currency]
-          x-ion-mandatory: conditional
+          required:
+          - value
+          - currency
+          x-ion-conditional: true
           x-ion-condition: Set by BPP at on_select
-
         customisationSelections:
           type: array
-          description: >
-            Buyer's selections from customisationGroups for COMPOSED and
-            WITH_EXTRAS resources. One entry per group selected.
+          description: 'Buyer''s selections from customisationGroups for COMPOSED and WITH_EXTRAS resources. One
+            entry per group selected.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [groupId, optionId]
             properties:
               groupId:
                 type: string
@@ -119,17 +117,29 @@ components:
                 properties:
                   type:
                     type: string
-                    enum: [FIXED, PERCENT]
+                    enum:
+                    - FIXED
+                    - PERCENT
                   value:
                     type: number
-          x-ion-mandatory: conditional
+            required:
+            - groupId
+            - optionId
+          x-ion-conditional: true
           x-ion-condition: Required for COMPOSED and WITH_EXTRAS resources
-
         specialInstructions:
           type: string
-          description: >
-            Per-line buyer note. e.g. "Extra crispy base", "No onion",
-            "Gift wrap this item separately". Visible to seller at fulfilment.
+          description: 'Per-line buyer note. e.g. "Extra crispy base", "No onion", "Gift wrap this item separately".
+            Visible to seller at fulfilment.
+
+            '
           maxLength: 500
           example: Tanpa bawang, tolong pedas ekstra.
-          x-ion-mandatory: optional
+      required:
+      - lineId
+      - resourceId
+      - offerId
+      - quantity
+      x-ion-closed-extensions: false
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes
