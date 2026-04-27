@@ -42,101 +42,101 @@
 <h3>PaymentDeclaration</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#PaymentDeclaration</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>method</code></td><td>always</td><td></td></tr>
-<tr><td><code>collectedBy</code></td><td>always</td><td>Which network participant collects payment from consumer.</td></tr>
-<tr><td><code>timing</code></td><td>always</td><td>When payment is collected relative to fulfilment.</td></tr>
-<tr><td><code>status</code></td><td>always</td><td></td></tr>
-<tr><td><code>amount</code></td><td>conditional</td><td>Payment amount in IDR</td></tr>
-<tr><td><code>currency</code></td><td>always</td><td></td></tr>
-<tr><td><code>paidAt</code></td><td>conditional</td><td>Timestamp of successful payment confirmation</td></tr>
-<tr><td><code>gatewayRef</code></td><td>conditional</td><td>Payment gateway transaction reference ID</td></tr>
-<tr><td><code>methodDetail</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>paymentRail</code></td><td>optional</td><td>Specific rail used for this payment. Enables downstream routing and reconciliation regardless of higher-level method. Ex</td></tr>
-<tr><td><code>paymentGatewayProvider</code></td><td>optional</td><td>Payment gateway aggregator used to route this payment. Declared per transaction. Implementations may use one or more of </td></tr>
-<tr><td><code>creditTerms</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>refund</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>invoice</code></td><td>optional</td><td></td></tr>
-<tr><td><code>processingFee</code></td><td>optional</td><td></td></tr>
+<tr><td><code>method</code></td><td>—</td><td></td></tr>
+<tr><td><code>collectedBy</code></td><td>—</td><td>Which network participant collects payment from consumer.</td></tr>
+<tr><td><code>timing</code></td><td>—</td><td>When payment is collected relative to fulfilment.</td></tr>
+<tr><td><code>status</code></td><td>—</td><td></td></tr>
+<tr><td><code>amount</code></td><td>—</td><td>Payment amount in IDR</td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>paidAt</code></td><td>—</td><td>Timestamp of successful payment confirmation</td></tr>
+<tr><td><code>gatewayRef</code></td><td>—</td><td>Payment gateway transaction reference ID</td></tr>
+<tr><td><code>methodDetail</code></td><td>—</td><td></td></tr>
+<tr><td><code>paymentRail</code></td><td>—</td><td>Specific rail used for this payment. Enables downstream routing and reconciliation regardless of higher-level method. Ex</td></tr>
+<tr><td><code>paymentGatewayProvider</code></td><td>—</td><td>Payment gateway aggregator used to route this payment. Declared per transaction. Implementations may use one or more of </td></tr>
+<tr><td><code>creditTerms</code></td><td>—</td><td></td></tr>
+<tr><td><code>refund</code></td><td>—</td><td></td></tr>
+<tr><td><code>invoice</code></td><td>—</td><td></td></tr>
+<tr><td><code>processingFee</code></td><td>—</td><td></td></tr>
 </tbody></table>
 <h3>QRIS</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#QRIS</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>qrisType</code></td><td>always</td><td>STATIC: single fixed QR, same for all transactions. DYNAMIC: per-transaction QR with embedded amount.</td></tr>
-<tr><td><code>merchantId</code></td><td>always</td><td>QRIS merchant identifier from acquiring bank</td></tr>
-<tr><td><code>nmid</code></td><td>optional</td><td>National Merchant ID assigned by Bank Indonesia</td></tr>
-<tr><td><code>terminalId</code></td><td>optional</td><td>Terminal/POS identifier for multi-terminal merchants</td></tr>
-<tr><td><code>qrisString</code></td><td>conditional</td><td>Full QRIS string for QR code rendering</td></tr>
-<tr><td><code>expiresAt</code></td><td>optional</td><td>Expiry for DYNAMIC QRIS. UTC (ISO 8601).</td></tr>
+<tr><td><code>qrisType</code></td><td>—</td><td>STATIC: single fixed QR, same for all transactions. DYNAMIC: per-transaction QR with embedded amount.</td></tr>
+<tr><td><code>merchantId</code></td><td>—</td><td>QRIS merchant identifier from acquiring bank</td></tr>
+<tr><td><code>nmid</code></td><td>—</td><td>National Merchant ID assigned by Bank Indonesia</td></tr>
+<tr><td><code>terminalId</code></td><td>—</td><td>Terminal/POS identifier for multi-terminal merchants</td></tr>
+<tr><td><code>qrisString</code></td><td>—</td><td>Full QRIS string for QR code rendering</td></tr>
+<tr><td><code>expiresAt</code></td><td>—</td><td>Expiry for DYNAMIC QRIS. UTC (ISO 8601).</td></tr>
 </tbody></table>
 <h3>VirtualAccount</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#VirtualAccount</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>bankCode</code></td><td>always</td><td>Bank issuing the virtual account</td></tr>
-<tr><td><code>vaNumber</code></td><td>always</td><td>Virtual account number to be paid to</td></tr>
-<tr><td><code>amount</code></td><td>optional</td><td>Amount encoded in VA (for fixed-amount VA)</td></tr>
-<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
-<tr><td><code>expiresAt</code></td><td>optional</td><td>VA expiry timestamp in UTC</td></tr>
+<tr><td><code>bankCode</code></td><td>—</td><td>Bank issuing the virtual account</td></tr>
+<tr><td><code>vaNumber</code></td><td>—</td><td>Virtual account number to be paid to</td></tr>
+<tr><td><code>amount</code></td><td>—</td><td>Amount encoded in VA (for fixed-amount VA)</td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>expiresAt</code></td><td>—</td><td>VA expiry timestamp in UTC</td></tr>
 </tbody></table>
 <h3>EWallet</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#EWallet</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>provider</code></td><td>always</td><td>E-wallet provider identifier</td></tr>
-<tr><td><code>accountRef</code></td><td>optional</td><td>Consumer&#x27;s wallet account reference (phone or wallet ID)</td></tr>
-<tr><td><code>amount</code></td><td>optional</td><td></td></tr>
-<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
-<tr><td><code>expiresAt</code></td><td>optional</td><td></td></tr>
-<tr><td><code>deepLink</code></td><td>optional</td><td>Deep link to open wallet app for payment</td></tr>
+<tr><td><code>provider</code></td><td>—</td><td>E-wallet provider identifier</td></tr>
+<tr><td><code>accountRef</code></td><td>—</td><td>Consumer&#x27;s wallet account reference (phone or wallet ID)</td></tr>
+<tr><td><code>amount</code></td><td>—</td><td></td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>expiresAt</code></td><td>—</td><td></td></tr>
+<tr><td><code>deepLink</code></td><td>—</td><td>Deep link to open wallet app for payment</td></tr>
 </tbody></table>
 <h3>CashOnDelivery</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#CashOnDelivery</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>collectionAmount</code></td><td>optional</td><td>Expected cash amount to collect from consumer</td></tr>
-<tr><td><code>collectionAmountCollected</code></td><td>conditional</td><td>Actual cash amount the carrier collected</td></tr>
-<tr><td><code>collectionTimestamp</code></td><td>conditional</td><td>UTC timestamp of cash handover at delivery</td></tr>
-<tr><td><code>collectionReceiptRef</code></td><td>optional</td><td>Receipt reference for the collected cash (scan, photo URL, or receipt ID)</td></tr>
-<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
-<tr><td><code>changeIssuedBy</code></td><td>optional</td><td>Who provides change to consumer</td></tr>
-<tr><td><code>maxCodAmount</code></td><td>optional</td><td>Maximum COD value allowed per ION network policy</td></tr>
-<tr><td><code>partialCollectionReason</code></td><td>conditional</td><td></td></tr>
+<tr><td><code>collectionAmount</code></td><td>—</td><td>Expected cash amount to collect from consumer</td></tr>
+<tr><td><code>collectionAmountCollected</code></td><td>—</td><td>Actual cash amount the carrier collected</td></tr>
+<tr><td><code>collectionTimestamp</code></td><td>—</td><td>UTC timestamp of cash handover at delivery</td></tr>
+<tr><td><code>collectionReceiptRef</code></td><td>—</td><td>Receipt reference for the collected cash (scan, photo URL, or receipt ID)</td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>changeIssuedBy</code></td><td>—</td><td>Who provides change to consumer</td></tr>
+<tr><td><code>maxCodAmount</code></td><td>—</td><td>Maximum COD value allowed per ION network policy</td></tr>
+<tr><td><code>partialCollectionReason</code></td><td>—</td><td></td></tr>
 </tbody></table>
 <h3>BankTransfer</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#BankTransfer</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>bankCode</code></td><td>optional</td><td>Recipient bank code</td></tr>
-<tr><td><code>accountNumber</code></td><td>optional</td><td>Recipient bank account number</td></tr>
-<tr><td><code>accountName</code></td><td>optional</td><td>Recipient account holder name</td></tr>
-<tr><td><code>transferType</code></td><td>optional</td><td></td></tr>
+<tr><td><code>bankCode</code></td><td>—</td><td>Recipient bank code</td></tr>
+<tr><td><code>accountNumber</code></td><td>—</td><td>Recipient bank account number</td></tr>
+<tr><td><code>accountName</code></td><td>—</td><td>Recipient account holder name</td></tr>
+<tr><td><code>transferType</code></td><td>—</td><td></td></tr>
 </tbody></table>
 <h3>BISettlement</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#BISettlement</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>settlementType</code></td><td>always</td><td>BI_FAST: real-time settlement, max IDR 250 million per transaction. RTGS: high-value same-day settlement, unlimited amou</td></tr>
-<tr><td><code>biRef</code></td><td>optional</td><td>BI clearing reference number</td></tr>
-<tr><td><code>settlementAt</code></td><td>optional</td><td>Settlement timestamp in UTC</td></tr>
-<tr><td><code>beneficiaryName</code></td><td>optional</td><td></td></tr>
-<tr><td><code>beneficiaryBank</code></td><td>optional</td><td></td></tr>
-<tr><td><code>beneficiaryAccount</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ifscEquivalent</code></td><td>optional</td><td>Indonesian equivalent — bank routing code</td></tr>
+<tr><td><code>settlementType</code></td><td>—</td><td>BI_FAST: real-time settlement, max IDR 250 million per transaction. RTGS: high-value same-day settlement, unlimited amou</td></tr>
+<tr><td><code>biRef</code></td><td>—</td><td>BI clearing reference number</td></tr>
+<tr><td><code>settlementAt</code></td><td>—</td><td>Settlement timestamp in UTC</td></tr>
+<tr><td><code>beneficiaryName</code></td><td>—</td><td></td></tr>
+<tr><td><code>beneficiaryBank</code></td><td>—</td><td></td></tr>
+<tr><td><code>beneficiaryAccount</code></td><td>—</td><td></td></tr>
+<tr><td><code>ifscEquivalent</code></td><td>—</td><td>Indonesian equivalent — bank routing code</td></tr>
 </tbody></table>
 <h3>BNPL</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#BNPL</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>provider</code></td><td>always</td><td>BNPL provider name</td></tr>
-<tr><td><code>tenure</code></td><td>optional</td><td>Repayment tenure in months</td></tr>
-<tr><td><code>installmentAmount</code></td><td>optional</td><td>Per-installment amount in IDR</td></tr>
-<tr><td><code>interestRate</code></td><td>optional</td><td>Monthly interest rate as decimal e.g. 0.02 = 2%</td></tr>
-<tr><td><code>totalRepayment</code></td><td>optional</td><td>Total repayment amount including interest</td></tr>
-<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
-<tr><td><code>firstPaymentDate</code></td><td>optional</td><td></td></tr>
+<tr><td><code>provider</code></td><td>—</td><td>BNPL provider name</td></tr>
+<tr><td><code>tenure</code></td><td>—</td><td>Repayment tenure in months</td></tr>
+<tr><td><code>installmentAmount</code></td><td>—</td><td>Per-installment amount in IDR</td></tr>
+<tr><td><code>interestRate</code></td><td>—</td><td>Monthly interest rate as decimal e.g. 0.02 = 2%</td></tr>
+<tr><td><code>totalRepayment</code></td><td>—</td><td>Total repayment amount including interest</td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>firstPaymentDate</code></td><td>—</td><td></td></tr>
 </tbody></table>
 <h3>CardPayment</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#CardPayment</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>cardType</code></td><td>always</td><td></td></tr>
-<tr><td><code>scheme</code></td><td>always</td><td></td></tr>
-<tr><td><code>maskedPan</code></td><td>optional</td><td>Last 4 digits of card for display</td></tr>
-<tr><td><code>bankIssuer</code></td><td>optional</td><td>Card-issuing bank name</td></tr>
-<tr><td><code>gatewayRef</code></td><td>optional</td><td>Payment gateway transaction reference</td></tr>
+<tr><td><code>cardType</code></td><td>—</td><td></td></tr>
+<tr><td><code>scheme</code></td><td>—</td><td></td></tr>
+<tr><td><code>maskedPan</code></td><td>—</td><td>Last 4 digits of card for display</td></tr>
+<tr><td><code>bankIssuer</code></td><td>—</td><td>Card-issuing bank name</td></tr>
+<tr><td><code>gatewayRef</code></td><td>—</td><td>Payment gateway transaction reference</td></tr>
 </tbody></table>
 <h3>CreditTerms</h3>
 <p class="iri">IRI: https://schema.ion.id/core/payment/v1#CreditTerms</p>
@@ -201,7 +201,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/payment/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

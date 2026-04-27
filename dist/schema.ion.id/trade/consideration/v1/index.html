@@ -42,13 +42,13 @@
 <h3>TradeConsiderationAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/trade/consideration/v1#TradeConsiderationAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>ppnRate</code></td><td>conditional</td><td>PPN (Pajak Pertambahan Nilai) rate applied to this consideration line. The applicable rate MUST be sourced from current </td></tr>
-<tr><td><code>ppnbmRate</code></td><td>conditional</td><td>PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods. Applied in addition to PPN. Applicable rate MUST be sou</td></tr>
-<tr><td><code>discountType</code></td><td>conditional</td><td>Whether the discount is a percentage of item price or a fixed IDR amount. Used on PROVIDER_BENEFIT and BUYER_BENEFIT con</td></tr>
-<tr><td><code>discountValue</code></td><td>conditional</td><td>Value of the discount. If discountType=PERCENT, this is a decimal e.g. 0.10 for 10%. If discountType=FIXED, this is an I</td></tr>
-<tr><td><code>breakupLineType</code></td><td>always</td><td>Canonical type for this consideration breakup line. ITEM: per-item price line. DELIVERY: shipping/delivery charge. TAX: </td></tr>
-<tr><td><code>totalAmount</code></td><td>always</td><td>Total amount for this consideration in IDR. For the final consideration record, this is the net payable amount after all</td></tr>
-<tr><td><code>currency</code></td><td>always</td><td>Always IDR for domestic ION transactions.</td></tr>
+<tr><td><code>ppnRate</code></td><td>—</td><td>PPN (Pajak Pertambahan Nilai) rate applied to this consideration line. The applicable rate MUST be sourced from current </td></tr>
+<tr><td><code>ppnbmRate</code></td><td>—</td><td>PPnBM (Pajak Penjualan atas Barang Mewah) rate for luxury goods. Applied in addition to PPN. Applicable rate MUST be sou</td></tr>
+<tr><td><code>discountType</code></td><td>—</td><td>Whether the discount is a percentage of item price or a fixed IDR amount. Used on PROVIDER_BENEFIT and BUYER_BENEFIT con</td></tr>
+<tr><td><code>discountValue</code></td><td>—</td><td>Value of the discount. If discountType=PERCENT, this is a decimal e.g. 0.10 for 10%. If discountType=FIXED, this is an I</td></tr>
+<tr><td><code>breakupLineType</code></td><td>—</td><td>Canonical type for this consideration breakup line. ITEM: per-item price line. DELIVERY: shipping/delivery charge. TAX: </td></tr>
+<tr><td><code>totalAmount</code></td><td>—</td><td>Total amount for this consideration in IDR. For the final consideration record, this is the net payable amount after all</td></tr>
+<tr><td><code>currency</code></td><td>—</td><td>Always IDR for domestic ION transactions.</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>trade/consideration/v1</h1>
@@ -63,7 +63,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/trade/consideration/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

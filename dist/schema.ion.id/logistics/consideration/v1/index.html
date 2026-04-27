@@ -42,35 +42,35 @@
 <h3>LogisticsConsiderationAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/consideration/v1#LogisticsConsiderationAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>breakup</code></td><td>always</td><td>Line-item financial breakdown. Each entry is one charge type.</td></tr>
-<tr><td><code>totalAmount</code></td><td>always</td><td></td></tr>
-<tr><td><code>currency</code></td><td>optional</td><td></td></tr>
-<tr><td><code>freightBase</code></td><td>optional</td><td>Base freight charge before surcharges</td></tr>
-<tr><td><code>fuelSurcharge</code></td><td>optional</td><td>Fuel surcharge amount (computed from offer&#x27;s fuelSurchargeFormula)</td></tr>
-<tr><td><code>fuelSurchargeRate</code></td><td>optional</td><td>Applied fuel surcharge rate</td></tr>
-<tr><td><code>codCharge</code></td><td>optional</td><td>COD collection fee charged by the LSP</td></tr>
-<tr><td><code>codAmountCollected</code></td><td>optional</td><td>Actual COD amount collected at delivery</td></tr>
-<tr><td><code>codRemittanceAmount</code></td><td>optional</td><td>Net amount remitted to BAP after COD charges</td></tr>
-<tr><td><code>codRemittanceBatchRef</code></td><td>optional</td><td></td></tr>
-<tr><td><code>codRemittanceTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>codRemittanceMethod</code></td><td>optional</td><td></td></tr>
-<tr><td><code>insurancePremium</code></td><td>optional</td><td></td></tr>
-<tr><td><code>insuranceCoverageAmount</code></td><td>optional</td><td>Amount covered by insurance per shipment</td></tr>
-<tr><td><code>dutyEstimate</code></td><td>optional</td><td>Estimated customs duty (from /on_select)</td></tr>
-<tr><td><code>taxEstimate</code></td><td>optional</td><td>Estimated import tax (from /on_select)</td></tr>
-<tr><td><code>actualDuty</code></td><td>optional</td><td>Actual customs duty (from import customs cleared event)</td></tr>
-<tr><td><code>actualTax</code></td><td>optional</td><td>Actual import tax applied</td></tr>
-<tr><td><code>revisedAmount</code></td><td>optional</td><td>BPP&#x27;s proposed revised total after weight discrepancy</td></tr>
-<tr><td><code>revisionBreakup</code></td><td>optional</td><td>Breakup of the revised amount</td></tr>
-<tr><td><code>weightDiffAdjustment</code></td><td>optional</td><td>Additional charge (or refund) from weight discrepancy resolution</td></tr>
-<tr><td><code>addressChangeSurcharge</code></td><td>optional</td><td>Surcharge when delivery zone changes due to address correction</td></tr>
-<tr><td><code>rescheduleFee</code></td><td>optional</td><td></td></tr>
-<tr><td><code>failedPickupFee</code></td><td>optional</td><td></td></tr>
-<tr><td><code>storageFee</code></td><td>optional</td><td>Periodic storage fee per billing cycle</td></tr>
-<tr><td><code>pickPackFee</code></td><td>optional</td><td>Per-unit pick and pack fee</td></tr>
-<tr><td><code>valueAddedServiceFee</code></td><td>optional</td><td>Aggregated value-added services charge</td></tr>
-<tr><td><code>ppnRate</code></td><td>optional</td><td>PPN (Pajak Pertambahan Nilai) rate applied to applicable charges. Source applicable rate from current DJP/PMK regulation</td></tr>
-<tr><td><code>ppnAmount</code></td><td>conditional</td><td>Computed PPN amount</td></tr>
+<tr><td><code>breakup</code></td><td>—</td><td>Line-item financial breakdown. Each entry is one charge type.</td></tr>
+<tr><td><code>totalAmount</code></td><td>—</td><td></td></tr>
+<tr><td><code>currency</code></td><td>—</td><td></td></tr>
+<tr><td><code>freightBase</code></td><td>—</td><td>Base freight charge before surcharges</td></tr>
+<tr><td><code>fuelSurcharge</code></td><td>—</td><td>Fuel surcharge amount (computed from offer&#x27;s fuelSurchargeFormula)</td></tr>
+<tr><td><code>fuelSurchargeRate</code></td><td>—</td><td>Applied fuel surcharge rate</td></tr>
+<tr><td><code>codCharge</code></td><td>—</td><td>COD collection fee charged by the LSP</td></tr>
+<tr><td><code>codAmountCollected</code></td><td>—</td><td>Actual COD amount collected at delivery</td></tr>
+<tr><td><code>codRemittanceAmount</code></td><td>—</td><td>Net amount remitted to BAP after COD charges</td></tr>
+<tr><td><code>codRemittanceBatchRef</code></td><td>—</td><td></td></tr>
+<tr><td><code>codRemittanceTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>codRemittanceMethod</code></td><td>—</td><td></td></tr>
+<tr><td><code>insurancePremium</code></td><td>—</td><td></td></tr>
+<tr><td><code>insuranceCoverageAmount</code></td><td>—</td><td>Amount covered by insurance per shipment</td></tr>
+<tr><td><code>dutyEstimate</code></td><td>—</td><td>Estimated customs duty (from /on_select)</td></tr>
+<tr><td><code>taxEstimate</code></td><td>—</td><td>Estimated import tax (from /on_select)</td></tr>
+<tr><td><code>actualDuty</code></td><td>—</td><td>Actual customs duty (from import customs cleared event)</td></tr>
+<tr><td><code>actualTax</code></td><td>—</td><td>Actual import tax applied</td></tr>
+<tr><td><code>revisedAmount</code></td><td>—</td><td>BPP&#x27;s proposed revised total after weight discrepancy</td></tr>
+<tr><td><code>revisionBreakup</code></td><td>—</td><td>Breakup of the revised amount</td></tr>
+<tr><td><code>weightDiffAdjustment</code></td><td>—</td><td>Additional charge (or refund) from weight discrepancy resolution</td></tr>
+<tr><td><code>addressChangeSurcharge</code></td><td>—</td><td>Surcharge when delivery zone changes due to address correction</td></tr>
+<tr><td><code>rescheduleFee</code></td><td>—</td><td></td></tr>
+<tr><td><code>failedPickupFee</code></td><td>—</td><td></td></tr>
+<tr><td><code>storageFee</code></td><td>—</td><td>Periodic storage fee per billing cycle</td></tr>
+<tr><td><code>pickPackFee</code></td><td>—</td><td>Per-unit pick and pack fee</td></tr>
+<tr><td><code>valueAddedServiceFee</code></td><td>—</td><td>Aggregated value-added services charge</td></tr>
+<tr><td><code>ppnRate</code></td><td>—</td><td>PPN (Pajak Pertambahan Nilai) rate applied to applicable charges. Source applicable rate from current DJP/PMK regulation</td></tr>
+<tr><td><code>ppnAmount</code></td><td>—</td><td>Computed PPN amount</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>consideration/v1 — Logistics Consideration Attributes</h1>
@@ -193,7 +193,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/consideration/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

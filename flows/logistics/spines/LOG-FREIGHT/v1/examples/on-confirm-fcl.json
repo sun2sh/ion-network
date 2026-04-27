@@ -78,6 +78,20 @@
             "sealNumber": "SL987654",
             "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
             "@type": "ion:LogisticsCommitmentAttributes"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "samudera-fcl-service"
+            }
+          ],
+          "offer": {
+            "id": "samudera-fcl-java-sulawesi"
           }
         }
       ],
@@ -101,30 +115,30 @@
             },
             "manifestVerified": false,
             "@context": "https://schema.ion.id/logistics/v1/performance/context.jsonld",
-            "@type": "ion:LogisticsPerformanceAttributes"
-          },
-          "stops": [
-            {
-              "type": "START",
-              "location": {
-                "address": {
-                  "name": "Pelabuhan Tanjung Priok",
-                  "city": "Jakarta Utara",
-                  "area_code": "14310"
+            "@type": "ion:LogisticsPerformanceAttributes",
+            "stops": [
+              {
+                "type": "START",
+                "location": {
+                  "address": {
+                    "name": "Pelabuhan Tanjung Priok",
+                    "city": "Jakarta Utara",
+                    "area_code": "14310"
+                  }
+                }
+              },
+              {
+                "type": "END",
+                "location": {
+                  "address": {
+                    "name": "Pelabuhan Makassar",
+                    "city": "Makassar",
+                    "area_code": "90111"
+                  }
                 }
               }
-            },
-            {
-              "type": "END",
-              "location": {
-                "address": {
-                  "name": "Pelabuhan Makassar",
-                  "city": "Makassar",
-                  "area_code": "90111"
-                }
-              }
-            }
-          ]
+            ]
+          }
         }
       ],
       "consideration": [
@@ -153,7 +167,13 @@
             "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
             "@type": "ion:LogisticsConsiderationAttributes"
           },
-          "id": "cons-001"
+          "id": "cons-001",
+          "status": {
+            "descriptor": {
+              "code": "QUOTED",
+              "shortDesc": "Consideration quoted"
+            }
+          }
         }
       ],
       "settlements": [

@@ -1,5 +1,77 @@
 # ION Network Specification — Changelog
 
+## v0.5.3-draft (2026-04-27)
+
+**Theme: OpenAPI/JSON-Schema standardisation pass.**
+
+This release is a no-wire-breaking compliance pass: every ION pack file is now
+structurally aligned with Beckn's posture, and every standard validator (and
+ONIX) sees the spec the same way.
+
+### Standardisation
+
+- **`x-ion-mandatory` removed.** 110 fields previously marked
+  `x-ion-mandatory: always` are now in standard `required: [...]` arrays on
+  their parent schemas. 28 conditional fields whose triggers live on the same
+  schema were converted to `if/then/else` blocks. 5 cross-schema conditionals
+  moved to the new `ion-conditional-rules.yaml` for ONIX-level enforcement.
+  225 conditional fields with narrative-only or empty condition text remain
+  marked `x-ion-conditional: true` pending source-content review by ION authors.
+
+- **`additionalProperties: true` on extension bags.** 23 ION pack schemas that
+  attach to Beckn `*Attributes` slots have been flipped to open
+  `additionalProperties: true`, restoring Beckn's open-Attributes design and
+  unblocking the Network Participant Overlay Schema (NPOS) layer. Each carries
+  the explicit `x-ion-closed-extensions: false` marker.
+
+- **`allOf` composition with `beckn:Attributes`.** Every ION pack that attaches
+  to a Beckn `*Attributes` slot now formally `allOf`s with
+  `beckn.yaml#/components/schemas/Attributes`. Validators automatically require
+  `@context` and `@type` on every ION pack instance.
+
+- **`@type` discriminator for array-of-Attributes entries.**
+  `IONSupportTicket` (which attaches to `Support.channels[*]`) now carries an
+  `x-ion-discriminator` block formalising the identification mechanism.
+
+- **`x-beckn-attaches-to` standardised.** The four legal forms are documented
+  in the new `docs/ION_Schema_Style_Guide.md`.
+
+### New artefacts
+
+- `schema/core/v2/api/v2.0.0/ion.yaml` is now the canonical composed file
+  carrying all L2/L3/L4/L5 content. Per-pack `attributes.yaml` files remain
+  standalone but mirror the composed view.
+- `schema/core/v2/api/v2.0.0/ion-conditional-rules.yaml` — machine-readable
+  cross-schema conditional rules for ONIX.
+- `docs/ION_Schema_Style_Guide.md` — authoritative style spec for pack authors.
+- `tools/verify_ion_yaml.py` — OAS structural verifier.
+- `tools/verify_ion_yaml_completeness.py` — completeness verifier.
+- `tools/verify_ion_inventory.py` — three-way inventory verifier with mutation tests.
+- `tools/audit_doc_against_beckn.py` — Beckn-shape verifier for documentation payloads.
+- `tools/build_ion_yaml.py` — composer that regenerates ion.yaml from per-pack files.
+
+### Breaking changes
+
+**None on the wire.** Every payload that validated against v0.5.2 still
+validates against v0.5.3. The changes are entirely structural cleanups in the
+specification documents themselves.
+
+### Documentation
+
+- `docs/ION_First_Transaction.md` corrected. The previous version had
+  ~10 Beckn-shape bugs (top-level `quantity` on `Resource`, `considerations`
+  vs `consideration`, missing `commitments` array, `@context` on the wrong
+  object, etc.). All fixed and verified by an automated audit script.
+
+### Migration
+
+Existing implementations need no changes. Implementations using the previous
+ION drafts are still compliant; the new files are additive (better validation,
+same wire format).
+
+---
+
+
 ## v0.5.2-draft (April 2026)
 
 **Theme: Logistics sector merge, five-layer clarity, and schema.ion.id vocabulary publishing.**

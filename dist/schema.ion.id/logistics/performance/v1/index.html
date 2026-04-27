@@ -42,93 +42,93 @@
 <h3>LogisticsPerformanceAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/performance/v1#LogisticsPerformanceAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>awbNumber</code></td><td>conditional</td><td>Air waybill or tracking number for parcel services</td></tr>
-<tr><td><code>bookingReference</code></td><td>conditional</td><td>Booking reference for hyperlocal services (replaces AWB)</td></tr>
-<tr><td><code>billOfLadingReference</code></td><td>conditional</td><td>Bill of lading reference for freight</td></tr>
-<tr><td><code>ticketReference</code></td><td>conditional</td><td>Boarding ticket reference for Ro-Ro</td></tr>
-<tr><td><code>storageContractReference</code></td><td>conditional</td><td>Warehouse storage reference number</td></tr>
-<tr><td><code>awbAllocationMode</code></td><td>conditional</td><td>Which AWB allocation mode was used for this shipment</td></tr>
-<tr><td><code>preAllocatedAwbBlockRef</code></td><td>conditional</td><td>Reference to the pre-allocated AWB block (BAP_PRE_ALLOCATED mode)</td></tr>
-<tr><td><code>pickupModel</code></td><td>conditional</td><td>Which pickup model BAP chose at /init</td></tr>
-<tr><td><code>requestedPickupDate</code></td><td>conditional</td><td>Requested pickup date (SCHEDULED_WINDOW, DAILY_PICKUP)</td></tr>
-<tr><td><code>requestedPickupWindow</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>confirmedPickupDate</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>confirmedPickupWindow</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>pickupBatchId</code></td><td>conditional</td><td>Groups multiple shipments under one bulk pickup trip. All shipments sharing the same pickupBatchId are collected by the </td></tr>
-<tr><td><code>pickupBatchShipmentCount</code></td><td>conditional</td><td>Total shipments in this pickup batch (informational)</td></tr>
-<tr><td><code>pickupAgentPointId</code></td><td>conditional</td><td>Agent point ID where DROP_OFF_AT_COUNTER was lodged</td></tr>
-<tr><td><code>pickupLodgementTimestamp</code></td><td>conditional</td><td>When consignor dropped shipment at the agent point / locker</td></tr>
-<tr><td><code>appliedCutoffs</code></td><td>conditional</td><td>Per-shipment resolved cut-off deadlines (absolute timestamps). Each entry is one cut-off resolved from the offer&#x27;s cutof</td></tr>
-<tr><td><code>shippingLabelUrl</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>shippingLabelFormat</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>shippingLabelBytes</code></td><td>conditional</td><td>Base64-encoded raw label bytes for ZPL/EPL direct printing</td></tr>
-<tr><td><code>routingTopology</code></td><td>optional</td><td>Confirmed routing topology for this shipment</td></tr>
-<tr><td><code>estimatedTAT</code></td><td>optional</td><td>Estimated time from pickup to delivery</td></tr>
-<tr><td><code>estimatedDeliveryTime</code></td><td>optional</td><td></td></tr>
-<tr><td><code>scheduledDeparture</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>scheduledArrival</code></td><td>optional</td><td></td></tr>
-<tr><td><code>pickupTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>deliveryTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>proofOfPickupType</code></td><td>optional</td><td></td></tr>
-<tr><td><code>proofOfPickup</code></td><td>optional</td><td></td></tr>
-<tr><td><code>proofOfDeliveryType</code></td><td>optional</td><td></td></tr>
-<tr><td><code>proofOfDelivery</code></td><td>optional</td><td></td></tr>
-<tr><td><code>deliveryOtp</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>trackingUrl</code></td><td>optional</td><td></td></tr>
-<tr><td><code>liveGps</code></td><td>optional</td><td>Real-time GPS for LOG-HYPERLOCAL</td></tr>
-<tr><td><code>lastScanTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>lastScanLocation</code></td><td>optional</td><td></td></tr>
-<tr><td><code>agentDetails</code></td><td>optional</td><td>Rider or agent identity. Exposed per agentAssignmentModel timing. Phone is always a proxy number.</td></tr>
-<tr><td><code>hubId</code></td><td>optional</td><td>Hub identifier for hub-event on_status updates</td></tr>
-<tr><td><code>legs</code></td><td>conditional</td><td>Per-leg detail for multi-modal freight journeys. Each leg has its own carrier attribution, booking reference, and status</td></tr>
-<tr><td><code>temperatureReading</code></td><td>optional</td><td></td></tr>
-<tr><td><code>coldChainIntegrityVerified</code></td><td>optional</td><td>True if temperature was within range throughout the journey</td></tr>
-<tr><td><code>actualWeight</code></td><td>optional</td><td>Weight measured by LSP at pickup or hub (may trigger weight-dispute branch)</td></tr>
-<tr><td><code>reservedCapacity</code></td><td>optional</td><td></td></tr>
-<tr><td><code>reservationHoldUntil</code></td><td>optional</td><td></td></tr>
-<tr><td><code>proposedDeparture</code></td><td>optional</td><td></td></tr>
-<tr><td><code>requestedDepartureDate</code></td><td>optional</td><td></td></tr>
-<tr><td><code>capacityConfirmed</code></td><td>optional</td><td></td></tr>
-<tr><td><code>manifestVerified</code></td><td>optional</td><td>True when cargo manifest is verified at loading</td></tr>
-<tr><td><code>loadingTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>departureTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>arrivalTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>requestedSailing</code></td><td>optional</td><td></td></tr>
-<tr><td><code>confirmedSailing</code></td><td>optional</td><td></td></tr>
-<tr><td><code>boardingWindow</code></td><td>optional</td><td></td></tr>
-<tr><td><code>boardingGate</code></td><td>optional</td><td></td></tr>
-<tr><td><code>customsHoldReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>customsResolutionPath</code></td><td>optional</td><td></td></tr>
-<tr><td><code>estimatedClearanceDuration</code></td><td>optional</td><td></td></tr>
-<tr><td><code>attemptNumber</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ndrReasonCode</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ndrTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>attemptsRemaining</code></td><td>optional</td><td></td></tr>
-<tr><td><code>buyerResolutionDeadline</code></td><td>optional</td><td></td></tr>
-<tr><td><code>valueAddedServicesSelected</code></td><td>optional</td><td></td></tr>
-<tr><td><code>expectedReceiptDate</code></td><td>optional</td><td></td></tr>
-<tr><td><code>inboundReceiptTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>receivedQuantities</code></td><td>optional</td><td></td></tr>
-<tr><td><code>inboundDiscrepancy</code></td><td>optional</td><td></td></tr>
-<tr><td><code>pickedSkus</code></td><td>optional</td><td></td></tr>
-<tr><td><code>warehouseLocationAllocated</code></td><td>optional</td><td></td></tr>
-<tr><td><code>capacityAllocated</code></td><td>optional</td><td></td></tr>
-<tr><td><code>inboundInstructions</code></td><td>optional</td><td></td></tr>
-<tr><td><code>transportContractReference</code></td><td>optional</td><td>Reference to the transport contract created when warehouse dispatches inventory on LOG-PARCEL, LOG-HYPERLOCAL, or LOG-FR</td></tr>
-<tr><td><code>readyToShip</code></td><td>conditional</td><td>True when the consignor / warehouse signals the shipment is packed, labelled, and ready for rider pickup.</td></tr>
-<tr><td><code>readyToShipTimestamp</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>readyToShipBy</code></td><td>conditional</td><td>Which party raised the RTS signal</td></tr>
-<tr><td><code>rtsPickupToken</code></td><td>conditional</td><td>Opaque token included in the RTS signal that the rider must present at pickup (verified against what the warehouse/consi</td></tr>
-<tr><td><code>parentWarehouseContractRef</code></td><td>conditional</td><td>For transport contracts spawned from a LOG-WAREHOUSE dispatch, reference to the parent warehouse contract. Used to trace</td></tr>
-<tr><td><code>parentWarehouseCommitmentRefs</code></td><td>conditional</td><td>Specific commitment line IDs from the parent warehouse contract</td></tr>
-<tr><td><code>dispatchOriginWarehouseBppId</code></td><td>conditional</td><td>ION subscriber ID of the warehouse BPP originating this dispatch. Needed when warehouse BPP and transport BPP are differ</td></tr>
-<tr><td><code>spawnedTransportContractRefs</code></td><td>conditional</td><td>For LOG-WAREHOUSE contracts, list of child transport contract IDs spawned from this storage contract. Populated as each </td></tr>
-<tr><td><code>rtsNotificationRouting</code></td><td>conditional</td><td>Routing metadata when the RTS signal must cross BPP boundaries. Warehouse BPP emits /on_status[READY_FOR_PICKUP] on the </td></tr>
-<tr><td><code>slaStatus</code></td><td>optional</td><td></td></tr>
-<tr><td><code>currentStateTimingStatus</code></td><td>conditional</td><td>Real-time timing status for the current performance state</td></tr>
-<tr><td><code>stateTimingHistory</code></td><td>optional</td><td>Historical record of state dwell durations. Populated progressively as the performance moves through its state machine. </td></tr>
-<tr><td><code>sustainabilityReport</code></td><td>conditional</td><td>Per-shipment carbon and sustainability metrics. Required for enterprise shippers with CSRD/ISSB disclosure obligations (</td></tr>
-<tr><td><code>hygieneProtocolApplied</code></td><td>optional</td><td></td></tr>
+<tr><td><code>awbNumber</code></td><td>—</td><td>Air waybill or tracking number for parcel services</td></tr>
+<tr><td><code>bookingReference</code></td><td>—</td><td>Booking reference for hyperlocal services (replaces AWB)</td></tr>
+<tr><td><code>billOfLadingReference</code></td><td>—</td><td>Bill of lading reference for freight</td></tr>
+<tr><td><code>ticketReference</code></td><td>—</td><td>Boarding ticket reference for Ro-Ro</td></tr>
+<tr><td><code>storageContractReference</code></td><td>—</td><td>Warehouse storage reference number</td></tr>
+<tr><td><code>awbAllocationMode</code></td><td>—</td><td>Which AWB allocation mode was used for this shipment</td></tr>
+<tr><td><code>preAllocatedAwbBlockRef</code></td><td>—</td><td>Reference to the pre-allocated AWB block (BAP_PRE_ALLOCATED mode)</td></tr>
+<tr><td><code>pickupModel</code></td><td>—</td><td>Which pickup model BAP chose at /init</td></tr>
+<tr><td><code>requestedPickupDate</code></td><td>—</td><td>Requested pickup date (SCHEDULED_WINDOW, DAILY_PICKUP)</td></tr>
+<tr><td><code>requestedPickupWindow</code></td><td>—</td><td></td></tr>
+<tr><td><code>confirmedPickupDate</code></td><td>—</td><td></td></tr>
+<tr><td><code>confirmedPickupWindow</code></td><td>—</td><td></td></tr>
+<tr><td><code>pickupBatchId</code></td><td>—</td><td>Groups multiple shipments under one bulk pickup trip. All shipments sharing the same pickupBatchId are collected by the </td></tr>
+<tr><td><code>pickupBatchShipmentCount</code></td><td>—</td><td>Total shipments in this pickup batch (informational)</td></tr>
+<tr><td><code>pickupAgentPointId</code></td><td>—</td><td>Agent point ID where DROP_OFF_AT_COUNTER was lodged</td></tr>
+<tr><td><code>pickupLodgementTimestamp</code></td><td>—</td><td>When consignor dropped shipment at the agent point / locker</td></tr>
+<tr><td><code>appliedCutoffs</code></td><td>—</td><td>Per-shipment resolved cut-off deadlines (absolute timestamps). Each entry is one cut-off resolved from the offer&#x27;s cutof</td></tr>
+<tr><td><code>shippingLabelUrl</code></td><td>—</td><td></td></tr>
+<tr><td><code>shippingLabelFormat</code></td><td>—</td><td></td></tr>
+<tr><td><code>shippingLabelBytes</code></td><td>—</td><td>Base64-encoded raw label bytes for ZPL/EPL direct printing</td></tr>
+<tr><td><code>routingTopology</code></td><td>—</td><td>Confirmed routing topology for this shipment</td></tr>
+<tr><td><code>estimatedTAT</code></td><td>—</td><td>Estimated time from pickup to delivery</td></tr>
+<tr><td><code>estimatedDeliveryTime</code></td><td>—</td><td></td></tr>
+<tr><td><code>scheduledDeparture</code></td><td>—</td><td></td></tr>
+<tr><td><code>scheduledArrival</code></td><td>—</td><td></td></tr>
+<tr><td><code>pickupTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>deliveryTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>proofOfPickupType</code></td><td>—</td><td></td></tr>
+<tr><td><code>proofOfPickup</code></td><td>—</td><td></td></tr>
+<tr><td><code>proofOfDeliveryType</code></td><td>—</td><td></td></tr>
+<tr><td><code>proofOfDelivery</code></td><td>—</td><td></td></tr>
+<tr><td><code>deliveryOtp</code></td><td>—</td><td></td></tr>
+<tr><td><code>trackingUrl</code></td><td>—</td><td></td></tr>
+<tr><td><code>liveGps</code></td><td>—</td><td>Real-time GPS for LOG-HYPERLOCAL</td></tr>
+<tr><td><code>lastScanTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>lastScanLocation</code></td><td>—</td><td></td></tr>
+<tr><td><code>agentDetails</code></td><td>—</td><td>Rider or agent identity. Exposed per agentAssignmentModel timing. Phone is always a proxy number.</td></tr>
+<tr><td><code>hubId</code></td><td>—</td><td>Hub identifier for hub-event on_status updates</td></tr>
+<tr><td><code>legs</code></td><td>—</td><td>Per-leg detail for multi-modal freight journeys. Each leg has its own carrier attribution, booking reference, and status</td></tr>
+<tr><td><code>temperatureReading</code></td><td>—</td><td></td></tr>
+<tr><td><code>coldChainIntegrityVerified</code></td><td>—</td><td>True if temperature was within range throughout the journey</td></tr>
+<tr><td><code>actualWeight</code></td><td>—</td><td>Weight measured by LSP at pickup or hub (may trigger weight-dispute branch)</td></tr>
+<tr><td><code>reservedCapacity</code></td><td>—</td><td></td></tr>
+<tr><td><code>reservationHoldUntil</code></td><td>—</td><td></td></tr>
+<tr><td><code>proposedDeparture</code></td><td>—</td><td></td></tr>
+<tr><td><code>requestedDepartureDate</code></td><td>—</td><td></td></tr>
+<tr><td><code>capacityConfirmed</code></td><td>—</td><td></td></tr>
+<tr><td><code>manifestVerified</code></td><td>—</td><td>True when cargo manifest is verified at loading</td></tr>
+<tr><td><code>loadingTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>departureTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>arrivalTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>requestedSailing</code></td><td>—</td><td></td></tr>
+<tr><td><code>confirmedSailing</code></td><td>—</td><td></td></tr>
+<tr><td><code>boardingWindow</code></td><td>—</td><td></td></tr>
+<tr><td><code>boardingGate</code></td><td>—</td><td></td></tr>
+<tr><td><code>customsHoldReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>customsResolutionPath</code></td><td>—</td><td></td></tr>
+<tr><td><code>estimatedClearanceDuration</code></td><td>—</td><td></td></tr>
+<tr><td><code>attemptNumber</code></td><td>—</td><td></td></tr>
+<tr><td><code>ndrReasonCode</code></td><td>—</td><td></td></tr>
+<tr><td><code>ndrTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>attemptsRemaining</code></td><td>—</td><td></td></tr>
+<tr><td><code>buyerResolutionDeadline</code></td><td>—</td><td></td></tr>
+<tr><td><code>valueAddedServicesSelected</code></td><td>—</td><td></td></tr>
+<tr><td><code>expectedReceiptDate</code></td><td>—</td><td></td></tr>
+<tr><td><code>inboundReceiptTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>receivedQuantities</code></td><td>—</td><td></td></tr>
+<tr><td><code>inboundDiscrepancy</code></td><td>—</td><td></td></tr>
+<tr><td><code>pickedSkus</code></td><td>—</td><td></td></tr>
+<tr><td><code>warehouseLocationAllocated</code></td><td>—</td><td></td></tr>
+<tr><td><code>capacityAllocated</code></td><td>—</td><td></td></tr>
+<tr><td><code>inboundInstructions</code></td><td>—</td><td></td></tr>
+<tr><td><code>transportContractReference</code></td><td>—</td><td>Reference to the transport contract created when warehouse dispatches inventory on LOG-PARCEL, LOG-HYPERLOCAL, or LOG-FR</td></tr>
+<tr><td><code>readyToShip</code></td><td>—</td><td>True when the consignor / warehouse signals the shipment is packed, labelled, and ready for rider pickup.</td></tr>
+<tr><td><code>readyToShipTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>readyToShipBy</code></td><td>—</td><td>Which party raised the RTS signal</td></tr>
+<tr><td><code>rtsPickupToken</code></td><td>—</td><td>Opaque token included in the RTS signal that the rider must present at pickup (verified against what the warehouse/consi</td></tr>
+<tr><td><code>parentWarehouseContractRef</code></td><td>—</td><td>For transport contracts spawned from a LOG-WAREHOUSE dispatch, reference to the parent warehouse contract. Used to trace</td></tr>
+<tr><td><code>parentWarehouseCommitmentRefs</code></td><td>—</td><td>Specific commitment line IDs from the parent warehouse contract</td></tr>
+<tr><td><code>dispatchOriginWarehouseBppId</code></td><td>—</td><td>ION subscriber ID of the warehouse BPP originating this dispatch. Needed when warehouse BPP and transport BPP are differ</td></tr>
+<tr><td><code>spawnedTransportContractRefs</code></td><td>—</td><td>For LOG-WAREHOUSE contracts, list of child transport contract IDs spawned from this storage contract. Populated as each </td></tr>
+<tr><td><code>rtsNotificationRouting</code></td><td>—</td><td>Routing metadata when the RTS signal must cross BPP boundaries. Warehouse BPP emits /on_status[READY_FOR_PICKUP] on the </td></tr>
+<tr><td><code>slaStatus</code></td><td>—</td><td></td></tr>
+<tr><td><code>currentStateTimingStatus</code></td><td>—</td><td>Real-time timing status for the current performance state</td></tr>
+<tr><td><code>stateTimingHistory</code></td><td>—</td><td>Historical record of state dwell durations. Populated progressively as the performance moves through its state machine. </td></tr>
+<tr><td><code>sustainabilityReport</code></td><td>—</td><td>Per-shipment carbon and sustainability metrics. Required for enterprise shippers with CSRD/ISSB disclosure obligations (</td></tr>
+<tr><td><code>hygieneProtocolApplied</code></td><td>—</td><td></td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>performance/v1 — Logistics Performance Attributes</h1>
@@ -256,7 +256,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/performance/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

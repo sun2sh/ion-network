@@ -20,7 +20,7 @@
         {
           "id": "tokocabang-bekasi",
           "descriptor": {
-            "name": "TokoCabang Bekasi \u2014 Fulfilment Centre"
+            "name": "TokoCabang Bekasi — Fulfilment Centre"
           },
           "participantAttributes": {
             "@context": "https://schema.ion.id/logistics/v1/participant/context.jsonld",
@@ -54,6 +54,27 @@
             "storageCategory": "HIGH_VALUE",
             "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
             "@type": "ion:LogisticsCommitmentAttributes"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "GMI-SKU-IPHONE-15-BLK-128",
+              "resourceAttributes": {
+                "@context": "https://schema.ion.id/extensions/logistics/resource/v1/context.jsonld",
+                "@type": "ion:LogisticsResourceAttributes",
+                "quantity": {
+                  "count": 500
+                }
+              }
+            }
+          ],
+          "offer": {
+            "id": "off-001"
           }
         },
         {
@@ -65,6 +86,27 @@
             "storageCategory": "HIGH_VALUE",
             "@context": "https://schema.ion.id/logistics/v1/commitment/context.jsonld",
             "@type": "ion:LogisticsCommitmentAttributes"
+          },
+          "status": {
+            "descriptor": {
+              "code": "ACTIVE",
+              "shortDesc": "Commitment active"
+            }
+          },
+          "resources": [
+            {
+              "id": "GMI-SKU-SAMSUNG-S24-WHT-256",
+              "resourceAttributes": {
+                "@context": "https://schema.ion.id/extensions/logistics/resource/v1/context.jsonld",
+                "@type": "ion:LogisticsResourceAttributes",
+                "quantity": {
+                  "count": 250
+                }
+              }
+            }
+          ],
+          "offer": {
+            "id": "off-002"
           }
         }
       ],
@@ -120,7 +162,13 @@
             "@context": "https://schema.ion.id/logistics/v1/consideration/context.jsonld",
             "@type": "ion:LogisticsConsiderationAttributes"
           },
-          "id": "cons-001"
+          "id": "cons-001",
+          "status": {
+            "descriptor": {
+              "code": "QUOTED",
+              "shortDesc": "Consideration quoted"
+            }
+          }
         }
       ],
       "settlements": [

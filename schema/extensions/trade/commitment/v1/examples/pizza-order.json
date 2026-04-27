@@ -1,9 +1,10 @@
 {
-  "@context": "https://schema.ion.id/trade/commitment/v1/context.jsonld",
-  "@type": "ion:TradeCommitmentAttributes",
-  "_comment": "Example: 2-line commitment — pizza + garlic bread",
-  "commitments": [
+  "_comment": "Pack example: contents of two Contract.commitments[i].commitmentAttributes — pizza + garlic bread. The wrapping 'commitmentInstances' shows two instances of the pack content; each individual object IS one commitmentAttributes bag.",
+  "_attachesTo": "Contract.commitments[].commitmentAttributes",
+  "commitmentInstances": [
     {
+      "@context": "https://schema.ion.id/extensions/trade/commitment/v1/context.jsonld",
+      "@type": "ion:TradeCommitmentAttributes",
       "lineId": "L01",
       "resourceId": "var_pep_med_classic",
       "offerId": "OFFER-PIZZA-001",
@@ -18,6 +19,8 @@
       "fulfillmentId": "PERF-001"
     },
     {
+      "@context": "https://schema.ion.id/extensions/trade/commitment/v1/context.jsonld",
+      "@type": "ion:TradeCommitmentAttributes",
       "lineId": "L02",
       "resourceId": "var_gbread_regular",
       "offerId": "OFFER-SIDES-001",

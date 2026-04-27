@@ -42,37 +42,37 @@
 <h3>LogisticsProviderAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/provider/v1#LogisticsProviderAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>catalogVersion</code></td><td>always</td><td>Semver catalog version. Incremented on every catalog publish. BAPs use this to detect changes and trigger allocation rec</td></tr>
-<tr><td><code>catalogPublishedAt</code></td><td>always</td><td>Timestamp when this catalog version was published</td></tr>
-<tr><td><code>catalogValidFrom</code></td><td>always</td><td>Timestamp from which this catalog&#x27;s offers are bindable. May be in the future for pre-announced rate changes.</td></tr>
-<tr><td><code>catalogValidUntil</code></td><td>optional</td><td>If present, catalog supersedes at this time. Typically absent — catalog remains valid until a newer version is published</td></tr>
-<tr><td><code>rateCardEffectiveFrom</code></td><td>optional</td><td>Sometimes rate card effective date differs from catalog publish date (e.g. publish new rates a week ahead of effective d</td></tr>
-<tr><td><code>rateCardEffectiveUntil</code></td><td>optional</td><td></td></tr>
-<tr><td><code>catalogChangelogUrl</code></td><td>optional</td><td>URL to human-readable changelog describing what changed vs prior version</td></tr>
-<tr><td><code>catalogDeltaReference</code></td><td>optional</td><td>Reference to the prior catalog version. BAPs can request delta from /catalog/pull?from={catalogDeltaReference} to get on</td></tr>
-<tr><td><code>nibRegistered</code></td><td>always</td><td>NIB (Nomor Induk Berusaha) business registration status</td></tr>
-<tr><td><code>nibNumber</code></td><td>conditional</td><td>NIB number for registered logistics entities</td></tr>
-<tr><td><code>siupNumber</code></td><td>conditional</td><td>SIUP (Surat Izin Usaha Perdagangan) trading licence number</td></tr>
-<tr><td><code>alfiMembership</code></td><td>optional</td><td>ALFI (Asosiasi Logistik dan Forwarder Indonesia) member status</td></tr>
-<tr><td><code>asperindoMembership</code></td><td>optional</td><td>ASPERINDO (express, postal, logistics association) member status</td></tr>
-<tr><td><code>providerCategory</code></td><td>always</td><td></td></tr>
-<tr><td><code>aggregatorModel</code></td><td>optional</td><td>True if this BPP aggregates capacity from multiple LSPs</td></tr>
-<tr><td><code>spinesSupported</code></td><td>always</td><td></td></tr>
-<tr><td><code>modesSupported</code></td><td>always</td><td></td></tr>
-<tr><td><code>coverage</code></td><td>always</td><td>Geographic coverage declarations</td></tr>
-<tr><td><code>coldChainCertified</code></td><td>optional</td><td>Cold chain handling capability</td></tr>
-<tr><td><code>coldChainTemperatureZones</code></td><td>conditional</td><td></td></tr>
-<tr><td><code>hazmatCertified</code></td><td>optional</td><td>Dangerous goods handling certification</td></tr>
-<tr><td><code>hazmatClasses</code></td><td>conditional</td><td>IATA/IMO dangerous goods classes supported</td></tr>
-<tr><td><code>highValueCapable</code></td><td>optional</td><td>Capable of handling high-declared-value shipments with enhanced security</td></tr>
-<tr><td><code>beaCukaiLicenceNumber</code></td><td>optional</td><td>PPJK (customs broker) licence for LOG-XB providers</td></tr>
-<tr><td><code>operatingHours</code></td><td>always</td><td></td></tr>
-<tr><td><code>holidayCalendar</code></td><td>optional</td><td>Dates when no service is provided</td></tr>
-<tr><td><code>pickupCutoffTimes</code></td><td>optional</td><td>Latest time to request pickup for same-day or next-day dispatch per corridor</td></tr>
-<tr><td><code>fleetType</code></td><td>optional</td><td></td></tr>
-<tr><td><code>maxDeliveryRadiusKm</code></td><td>optional</td><td>Maximum service radius for hyperlocal providers</td></tr>
-<tr><td><code>warehouseLocations</code></td><td>optional</td><td>For LOG-WAREHOUSE providers</td></tr>
-<tr><td><code>fwaApplicable</code></td><td>optional</td><td>Whether this provider accepts Framework Agreement-governed transactions</td></tr>
+<tr><td><code>catalogVersion</code></td><td>—</td><td>Semver catalog version. Incremented on every catalog publish. BAPs use this to detect changes and trigger allocation rec</td></tr>
+<tr><td><code>catalogPublishedAt</code></td><td>—</td><td>Timestamp when this catalog version was published</td></tr>
+<tr><td><code>catalogValidFrom</code></td><td>—</td><td>Timestamp from which this catalog&#x27;s offers are bindable. May be in the future for pre-announced rate changes.</td></tr>
+<tr><td><code>catalogValidUntil</code></td><td>—</td><td>If present, catalog supersedes at this time. Typically absent — catalog remains valid until a newer version is published</td></tr>
+<tr><td><code>rateCardEffectiveFrom</code></td><td>—</td><td>Sometimes rate card effective date differs from catalog publish date (e.g. publish new rates a week ahead of effective d</td></tr>
+<tr><td><code>rateCardEffectiveUntil</code></td><td>—</td><td></td></tr>
+<tr><td><code>catalogChangelogUrl</code></td><td>—</td><td>URL to human-readable changelog describing what changed vs prior version</td></tr>
+<tr><td><code>catalogDeltaReference</code></td><td>—</td><td>Reference to the prior catalog version. BAPs can request delta from /catalog/pull?from={catalogDeltaReference} to get on</td></tr>
+<tr><td><code>nibRegistered</code></td><td>—</td><td>NIB (Nomor Induk Berusaha) business registration status</td></tr>
+<tr><td><code>nibNumber</code></td><td>—</td><td>NIB number for registered logistics entities</td></tr>
+<tr><td><code>siupNumber</code></td><td>—</td><td>SIUP (Surat Izin Usaha Perdagangan) trading licence number</td></tr>
+<tr><td><code>alfiMembership</code></td><td>—</td><td>ALFI (Asosiasi Logistik dan Forwarder Indonesia) member status</td></tr>
+<tr><td><code>asperindoMembership</code></td><td>—</td><td>ASPERINDO (express, postal, logistics association) member status</td></tr>
+<tr><td><code>providerCategory</code></td><td>—</td><td></td></tr>
+<tr><td><code>aggregatorModel</code></td><td>—</td><td>True if this BPP aggregates capacity from multiple LSPs</td></tr>
+<tr><td><code>spinesSupported</code></td><td>—</td><td></td></tr>
+<tr><td><code>modesSupported</code></td><td>—</td><td></td></tr>
+<tr><td><code>coverage</code></td><td>—</td><td>Geographic coverage declarations</td></tr>
+<tr><td><code>coldChainCertified</code></td><td>—</td><td>Cold chain handling capability</td></tr>
+<tr><td><code>coldChainTemperatureZones</code></td><td>—</td><td></td></tr>
+<tr><td><code>hazmatCertified</code></td><td>—</td><td>Dangerous goods handling certification</td></tr>
+<tr><td><code>hazmatClasses</code></td><td>—</td><td>IATA/IMO dangerous goods classes supported</td></tr>
+<tr><td><code>highValueCapable</code></td><td>—</td><td>Capable of handling high-declared-value shipments with enhanced security</td></tr>
+<tr><td><code>beaCukaiLicenceNumber</code></td><td>—</td><td>PPJK (customs broker) licence for LOG-XB providers</td></tr>
+<tr><td><code>operatingHours</code></td><td>—</td><td></td></tr>
+<tr><td><code>holidayCalendar</code></td><td>—</td><td>Dates when no service is provided</td></tr>
+<tr><td><code>pickupCutoffTimes</code></td><td>—</td><td>Latest time to request pickup for same-day or next-day dispatch per corridor</td></tr>
+<tr><td><code>fleetType</code></td><td>—</td><td></td></tr>
+<tr><td><code>maxDeliveryRadiusKm</code></td><td>—</td><td>Maximum service radius for hyperlocal providers</td></tr>
+<tr><td><code>warehouseLocations</code></td><td>—</td><td>For LOG-WAREHOUSE providers</td></tr>
+<tr><td><code>fwaApplicable</code></td><td>—</td><td>Whether this provider accepts Framework Agreement-governed transactions</td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>provider/v1</h1>
@@ -94,7 +94,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/provider/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

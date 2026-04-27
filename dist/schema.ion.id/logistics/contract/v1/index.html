@@ -42,53 +42,53 @@
 <h3>LogisticsContractAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/logistics/contract/v1#LogisticsContractAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>fwaReference</code></td><td>optional</td><td>ION policy IRI of the Framework Agreement governing this transaction. When present, rates and policies are inherited fro</td></tr>
-<tr><td><code>parentContractReference</code></td><td>optional</td><td>Reference to a parent contract (e.g. warehouse contract that triggered this transport contract, or a capacity reservatio</td></tr>
-<tr><td><code>npwp</code></td><td>optional</td><td>NPWP tax ID of the consignor (B2B transactions)</td></tr>
-<tr><td><code>nib</code></td><td>optional</td><td>NIB business registration of the consignor (B2B transactions)</td></tr>
-<tr><td><code>invoicePreferences</code></td><td>optional</td><td></td></tr>
-<tr><td><code>withholdingTax</code></td><td>conditional</td><td>PPh 23 withholding applies to logistics services at 2% rate. The buyer (BAP or consignor) withholds this amount and remi</td></tr>
-<tr><td><code>ppnExemption</code></td><td>conditional</td><td>PPN Dibebaskan — VAT exemption for specific categories and zones. Common for bonded-zone and free-trade-zone transaction</td></tr>
-<tr><td><code>stampDuty</code></td><td>conditional</td><td>Bea Meterai Rp 10,000 applies to invoices over Rp 5,000,000. Required for contracts treated as formal legal documents.</td></tr>
-<tr><td><code>creditTermsDays</code></td><td>optional</td><td>Payment due within N days (for B2B credit-terms transactions)</td></tr>
-<tr><td><code>paymentDueDate</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ekycFormReference</code></td><td>optional</td><td>Reference to the eKYC form submission for B2B first transactions</td></tr>
-<tr><td><code>ekycStatus</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ekycVerificationTimestamp</code></td><td>optional</td><td></td></tr>
-<tr><td><code>ekycRejectionReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>cargoInsurance</code></td><td>conditional</td><td>Cargo insurance coverage details. Distinct from driver/vehicle insurance (covered under incident branch).</td></tr>
-<tr><td><code>disputeReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>disputeState</code></td><td>optional</td><td></td></tr>
-<tr><td><code>disputeResolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>claimType</code></td><td>optional</td><td></td></tr>
-<tr><td><code>claimDetail</code></td><td>optional</td><td></td></tr>
-<tr><td><code>claimAssessment</code></td><td>optional</td><td></td></tr>
-<tr><td><code>claimResolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>addressChangeReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>addressUnserviceableResolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>returnReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>returnItems</code></td><td>optional</td><td></td></tr>
-<tr><td><code>reverseContractReference</code></td><td>optional</td><td>Reference to the reverse/return contract created</td></tr>
-<tr><td><code>excursionDetail</code></td><td>optional</td><td></td></tr>
-<tr><td><code>excursionResolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>discrepancyDetail</code></td><td>optional</td><td></td></tr>
-<tr><td><code>disputeCounter</code></td><td>optional</td><td></td></tr>
-<tr><td><code>inventoryReleaseRequest</code></td><td>optional</td><td></td></tr>
-<tr><td><code>incoterms</code></td><td>optional</td><td></td></tr>
-<tr><td><code>incotermsVersion</code></td><td>optional</td><td></td></tr>
-<tr><td><code>incotermsNamedPlace</code></td><td>conditional</td><td>Named place per Incoterms (e.g. &quot;DDP Jakarta port&quot;)</td></tr>
-<tr><td><code>beaCukaiDeclaration</code></td><td>conditional</td><td>Indonesian customs declaration details — CEISA 4.0 integration</td></tr>
-<tr><td><code>inatradePermits</code></td><td>conditional</td><td>INATRADE (Indonesia National Single Window) permits. Required for regulated categories — food, pharma, electronics, chem</td></tr>
-<tr><td><code>lartasClassification</code></td><td>conditional</td><td>LARTAS (Larangan dan Pembatasan) classification. Indonesian customs maintains prohibited (LARANGAN) and restricted (PEMB</td></tr>
-<tr><td><code>aseanSingleWindowReference</code></td><td>conditional</td><td>ASW reference for intra-ASEAN shipments</td></tr>
-<tr><td><code>fumigationCertificate</code></td><td>conditional</td><td>Required when wood packaging is used (ISPM 15)</td></tr>
-<tr><td><code>phytosanitaryCertificate</code></td><td>conditional</td><td>Required for agricultural products per Karantina</td></tr>
-<tr><td><code>xbReturnDecision</code></td><td>optional</td><td></td></tr>
-<tr><td><code>cancellationReason</code></td><td>optional</td><td></td></tr>
-<tr><td><code>cancellationReasonCode</code></td><td>optional</td><td></td></tr>
-<tr><td><code>pickupFailedResolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>buyerResolutionDeadline</code></td><td>optional</td><td></td></tr>
-<tr><td><code>codPartialReason</code></td><td>optional</td><td></td></tr>
+<tr><td><code>fwaReference</code></td><td>—</td><td>ION policy IRI of the Framework Agreement governing this transaction. When present, rates and policies are inherited fro</td></tr>
+<tr><td><code>parentContractReference</code></td><td>—</td><td>Reference to a parent contract (e.g. warehouse contract that triggered this transport contract, or a capacity reservatio</td></tr>
+<tr><td><code>npwp</code></td><td>—</td><td>NPWP tax ID of the consignor (B2B transactions)</td></tr>
+<tr><td><code>nib</code></td><td>—</td><td>NIB business registration of the consignor (B2B transactions)</td></tr>
+<tr><td><code>invoicePreferences</code></td><td>—</td><td></td></tr>
+<tr><td><code>withholdingTax</code></td><td>—</td><td>PPh 23 withholding applies to logistics services at 2% rate. The buyer (BAP or consignor) withholds this amount and remi</td></tr>
+<tr><td><code>ppnExemption</code></td><td>—</td><td>PPN Dibebaskan — VAT exemption for specific categories and zones. Common for bonded-zone and free-trade-zone transaction</td></tr>
+<tr><td><code>stampDuty</code></td><td>—</td><td>Bea Meterai Rp 10,000 applies to invoices over Rp 5,000,000. Required for contracts treated as formal legal documents.</td></tr>
+<tr><td><code>creditTermsDays</code></td><td>—</td><td>Payment due within N days (for B2B credit-terms transactions)</td></tr>
+<tr><td><code>paymentDueDate</code></td><td>—</td><td></td></tr>
+<tr><td><code>ekycFormReference</code></td><td>—</td><td>Reference to the eKYC form submission for B2B first transactions</td></tr>
+<tr><td><code>ekycStatus</code></td><td>—</td><td></td></tr>
+<tr><td><code>ekycVerificationTimestamp</code></td><td>—</td><td></td></tr>
+<tr><td><code>ekycRejectionReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>cargoInsurance</code></td><td>—</td><td>Cargo insurance coverage details. Distinct from driver/vehicle insurance (covered under incident branch).</td></tr>
+<tr><td><code>disputeReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>disputeState</code></td><td>—</td><td></td></tr>
+<tr><td><code>disputeResolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>claimType</code></td><td>—</td><td></td></tr>
+<tr><td><code>claimDetail</code></td><td>—</td><td></td></tr>
+<tr><td><code>claimAssessment</code></td><td>—</td><td></td></tr>
+<tr><td><code>claimResolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>addressChangeReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>addressUnserviceableResolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>returnReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>returnItems</code></td><td>—</td><td></td></tr>
+<tr><td><code>reverseContractReference</code></td><td>—</td><td>Reference to the reverse/return contract created</td></tr>
+<tr><td><code>excursionDetail</code></td><td>—</td><td></td></tr>
+<tr><td><code>excursionResolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>discrepancyDetail</code></td><td>—</td><td></td></tr>
+<tr><td><code>disputeCounter</code></td><td>—</td><td></td></tr>
+<tr><td><code>inventoryReleaseRequest</code></td><td>—</td><td></td></tr>
+<tr><td><code>incoterms</code></td><td>—</td><td></td></tr>
+<tr><td><code>incotermsVersion</code></td><td>—</td><td></td></tr>
+<tr><td><code>incotermsNamedPlace</code></td><td>—</td><td>Named place per Incoterms (e.g. &quot;DDP Jakarta port&quot;)</td></tr>
+<tr><td><code>beaCukaiDeclaration</code></td><td>—</td><td>Indonesian customs declaration details — CEISA 4.0 integration</td></tr>
+<tr><td><code>inatradePermits</code></td><td>—</td><td>INATRADE (Indonesia National Single Window) permits. Required for regulated categories — food, pharma, electronics, chem</td></tr>
+<tr><td><code>lartasClassification</code></td><td>—</td><td>LARTAS (Larangan dan Pembatasan) classification. Indonesian customs maintains prohibited (LARANGAN) and restricted (PEMB</td></tr>
+<tr><td><code>aseanSingleWindowReference</code></td><td>—</td><td>ASW reference for intra-ASEAN shipments</td></tr>
+<tr><td><code>fumigationCertificate</code></td><td>—</td><td>Required when wood packaging is used (ISPM 15)</td></tr>
+<tr><td><code>phytosanitaryCertificate</code></td><td>—</td><td>Required for agricultural products per Karantina</td></tr>
+<tr><td><code>xbReturnDecision</code></td><td>—</td><td></td></tr>
+<tr><td><code>cancellationReason</code></td><td>—</td><td></td></tr>
+<tr><td><code>cancellationReasonCode</code></td><td>—</td><td></td></tr>
+<tr><td><code>pickupFailedResolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>buyerResolutionDeadline</code></td><td>—</td><td></td></tr>
+<tr><td><code>codPartialReason</code></td><td>—</td><td></td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>contract/v1 — Logistics Contract Attributes</h1>
@@ -220,7 +220,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/logistics/contract/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

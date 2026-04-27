@@ -1,12 +1,11 @@
 openapi: 3.1.1
 info:
   title: ION Tax Extension (v1)
-  description: >
-    Indonesian tax calculation and compliance. Covers PPN, PPnBM, PPh,
-    and tax exemption regimes. Applies to all ION sectors.
-    Attaches to: beckn:Consideration.considerationAttributes
-  version: 1.0.0
+  description: 'Indonesian tax calculation and compliance. Covers PPN, PPnBM, PPh, and tax exemption regimes. Applies
+    to all ION sectors. Attaches to: beckn:Consideration.considerationAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     IONTaxDetail:
@@ -14,89 +13,94 @@ components:
       title: Indonesia Tax Detail
       additionalProperties: false
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:TaxDetail
-      required: [taxRegime, taxCategory]
+        '@context': ./context.jsonld
+        '@type': ion:TaxDetail
       properties:
-
         taxRegime:
-          x-ion-mandatory: optional
           type: string
-          enum: [PPN, PPNBM, PPH22, PPH23, PPN_FINAL, EXEMPT]
-          description: >
-            PPN: Pajak Pertambahan Nilai (VAT), standard 11%.
-            PPNBM: Pajak Penjualan atas Barang Mewah (luxury goods tax).
-            PPH22: Income tax on import/certain transactions.
-            PPH23: Withholding tax on services.
-            PPN_FINAL: Final PPN for specific categories (e.g. certain construction).
-            EXEMPT: No tax applicable (basic foods, books, health services).
+          enum:
+          - PPN
+          - PPNBM
+          - PPH22
+          - PPH23
+          - PPN_FINAL
+          - EXEMPT
+          description: 'PPN: Pajak Pertambahan Nilai (VAT), standard 11%. PPNBM: Pajak Penjualan atas Barang Mewah
+            (luxury goods tax). PPH22: Income tax on import/certain transactions. PPH23: Withholding tax on services.
+            PPN_FINAL: Final PPN for specific categories (e.g. certain construction). EXEMPT: No tax applicable
+            (basic foods, books, health services).
+
+            '
           example: PPN
           x-ion-regulatory: UU 7/2021 tentang Harmonisasi Peraturan Perpajakan (HPP)
-
         taxCategory:
-          x-ion-mandatory: optional
           type: string
-          enum: [BKP, JKP, NON_BKP]
-          description: >
-            BKP: Barang Kena Pajak — taxable goods.
-            JKP: Jasa Kena Pajak — taxable services.
-            NON_BKP: Non-taxable goods or services.
+          enum:
+          - BKP
+          - JKP
+          - NON_BKP
+          description: 'BKP: Barang Kena Pajak — taxable goods. JKP: Jasa Kena Pajak — taxable services. NON_BKP:
+            Non-taxable goods or services.
+
+            '
           example: BKP
           x-ion-regulatory: UU 8/1983 tentang PPN Pasal 4
-
         taxRate:
           type: number
           minimum: 0
           maximum: 1
-          description: >
-            Tax rate as decimal fraction. The applicable rate MUST be sourced
-            from current Indonesian tax regulation (DJP / PMK), not hardcoded.
-            For reference, PPN standard is currently 0.11 (11%) per PMK 131/2024;
-            PPnBM rates vary by category (typical range 0.10 to 0.75).
-            This field documents the rate actually charged on this transaction.
-          example: 0.11
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when taxRegime is not EXEMPT
+          description: 'Tax rate as decimal fraction. The applicable rate MUST be sourced from current Indonesian
+            tax regulation (DJP / PMK), not hardcoded. For reference, PPN standard is currently 0.11 (11%) per PMK
+            131/2024; PPnBM rates vary by category (typical range 0.10 to 0.75). This field documents the rate actually
+            charged on this transaction.
 
+            '
+          example: 0.11
+          x-ion-conditional: true
+          x-ion-condition: Required when taxRegime is not EXEMPT
         taxAmount:
           type: number
           description: Calculated tax amount in IDR
           example: 9900
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required when taxRegime is not EXEMPT
-
         taxIncluded:
           type: boolean
-          description: >
-            Whether the tax amount is already included in the item price
-            (tax-inclusive pricing) or added on top (tax-exclusive).
-          example: true
-          x-ion-mandatory: always
+          description: 'Whether the tax amount is already included in the item price (tax-inclusive pricing) or
+            added on top (tax-exclusive).
 
+            '
+          example: true
         eFakturRef:
           type: string
           nullable: true
-          description: >
-            e-Invoice reference (Faktur Pajak) number from DJP e-Faktur system.
-            Format: XXX.XXX-YY.XXXXXXXX where XXX is kode faktur.
-            Only applicable for PKP sellers.
-          example: 010.000-26.00000001
-          x-ion-mandatory: optional
-          x-ion-regulatory: PMK 168/PMK.010/2023 tentang Faktur Pajak
+          description: 'e-Invoice reference (Faktur Pajak) number from DJP e-Faktur system. Format: XXX.XXX-YY.XXXXXXXX
+            where XXX is kode faktur. Only applicable for PKP sellers.
 
+            '
+          example: 010.000-26.00000001
+          x-ion-regulatory: PMK 168/PMK.010/2023 tentang Faktur Pajak
         taxBaseAmount:
           type: number
           description: The amount on which tax is calculated (before tax)
           example: 90000
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for proper tax computation trail
-
       allOf:
-        - if:
-            properties:
-              taxRegime:
-                not:
-                  enum: [EXEMPT]
-            required: [taxRegime]
-          then:
-            required: [taxRate, taxAmount, taxBaseAmount]
+      - if:
+          properties:
+            taxRegime:
+              not:
+                enum:
+                - EXEMPT
+          required:
+          - taxRegime
+        then:
+          required:
+          - taxRate
+          - taxAmount
+          - taxBaseAmount
+      required:
+      - taxRegime
+      - taxCategory
+      - taxIncluded

@@ -1,181 +1,168 @@
 openapi: 3.1.1
 info:
   title: ION Address Extension (v1)
-  description: >
-    Indonesian address subdivisions (provinsi/kabupaten/kecamatan/kelurahan/RT/RW).
-    Use ALONGSIDE Beckn core Address fields (streetAddress, addressLocality, postalCode, etc.).
-    Covers the full Indonesian administrative hierarchy below city level.
-
-    IMPORTANT — Beckn's Address schema is `additionalProperties: false` and has no
-    extension slot. This pack therefore does NOT attach to `Address` directly.
-    Instead, its fields are reused inside:
-      - `Participant.participantAttributes.addressDetail` (via core/participant/v1)
-      - `Provider.providerAttributes.availableAt[*].ionSubdivisions` (via sector provider packs)
-      - `Performance.performanceAttributes.stops[*].location.ionSubdivisions`
-
-    The Beckn `Address` object is used as-is for standard international fields.
+  description: "Indonesian address subdivisions (provinsi/kabupaten/kecamatan/kelurahan/RT/RW). Use ALONGSIDE Beckn\
+    \ core Address fields (streetAddress, addressLocality, postalCode, etc.). Covers the full Indonesian administrative\
+    \ hierarchy below city level.\nIMPORTANT — Beckn's Address schema is `additionalProperties: false` and has no\
+    \ extension slot. This pack therefore does NOT attach to `Address` directly. Instead, its fields are reused\
+    \ inside:\n  - `Participant.participantAttributes.addressDetail` (via core/participant/v1)\n  - `Provider.providerAttributes.availableAt[*].ionSubdivisions`\
+    \ (via sector provider packs)\n  - `Performance.performanceAttributes.stops[*].location.ionSubdivisions`\n\n\
+    The Beckn `Address` object is used as-is for standard international fields.\n"
   version: 1.0.0
-
 components:
   schemas:
     IONAddressSubdivisions:
       type: object
       title: Indonesia Address Subdivisions
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:AddressSubdivisions
-      # Reusable shape — embedded inside other ION Attributes bags, not attached to Beckn Address.
-      x-beckn-attaches-to: "(reusable shape — embedded inside participantAttributes.addressDetail, providerAttributes.availableAt[*].ionSubdivisions, performanceAttributes.stops[*].location.ionSubdivisions)"
-
+        '@context': ./context.jsonld
+        '@type': ion:AddressSubdivisions
+      x-beckn-attaches-to: (reusable shape — embedded inside participantAttributes.addressDetail, providerAttributes.availableAt[*].ionSubdivisions,
+        performanceAttributes.stops[*].location.ionSubdivisions)
       properties:
-
         provinsiCode:
           type: string
           enum:
-            - BPS-11  # Aceh
-            - BPS-12  # Sumatera Utara
-            - BPS-13  # Sumatera Barat
-            - BPS-14  # Riau
-            - BPS-15  # Jambi
-            - BPS-16  # Sumatera Selatan
-            - BPS-17  # Bengkulu
-            - BPS-18  # Lampung
-            - BPS-19  # Kepulauan Bangka Belitung
-            - BPS-21  # Kepulauan Riau
-            - BPS-31  # DKI Jakarta
-            - BPS-32  # Jawa Barat
-            - BPS-33  # Jawa Tengah
-            - BPS-34  # DI Yogyakarta
-            - BPS-35  # Jawa Timur
-            - BPS-36  # Banten
-            - BPS-51  # Bali
-            - BPS-52  # Nusa Tenggara Barat
-            - BPS-53  # Nusa Tenggara Timur
-            - BPS-61  # Kalimantan Barat
-            - BPS-62  # Kalimantan Tengah
-            - BPS-63  # Kalimantan Selatan
-            - BPS-64  # Kalimantan Timur
-            - BPS-65  # Kalimantan Utara
-            - BPS-71  # Sulawesi Utara
-            - BPS-72  # Sulawesi Tengah
-            - BPS-73  # Sulawesi Selatan
-            - BPS-74  # Sulawesi Tenggara
-            - BPS-75  # Gorontalo
-            - BPS-76  # Sulawesi Barat
-            - BPS-81  # Maluku
-            - BPS-82  # Maluku Utara
-            - BPS-91  # Papua Barat
-            - BPS-92  # Papua
-            - BPS-94  # Papua Selatan
-          description: >
-            Indonesian province code using BPS 2-digit numeric codes prefixed
-            with BPS-. 34 provinces. Used for serviceability, tax zone
-            determination, and logistics pricing.
-          example: BPS-31
-          x-ion-mandatory: always
-          x-ion-regulatory: Permendagri 72/2019 tentang Perubahan atas Permendagri 137/2017
+          - BPS-11
+          - BPS-12
+          - BPS-13
+          - BPS-14
+          - BPS-15
+          - BPS-16
+          - BPS-17
+          - BPS-18
+          - BPS-19
+          - BPS-21
+          - BPS-31
+          - BPS-32
+          - BPS-33
+          - BPS-34
+          - BPS-35
+          - BPS-36
+          - BPS-51
+          - BPS-52
+          - BPS-53
+          - BPS-61
+          - BPS-62
+          - BPS-63
+          - BPS-64
+          - BPS-65
+          - BPS-71
+          - BPS-72
+          - BPS-73
+          - BPS-74
+          - BPS-75
+          - BPS-76
+          - BPS-81
+          - BPS-82
+          - BPS-91
+          - BPS-92
+          - BPS-94
+          description: 'Indonesian province code using BPS 2-digit numeric codes prefixed with BPS-. 34 provinces.
+            Used for serviceability, tax zone determination, and logistics pricing.
 
+            '
+          example: BPS-31
+          x-ion-regulatory: Permendagri 72/2019 tentang Perubahan atas Permendagri 137/2017
         kabupatenCode:
           type: string
-          pattern: "^[0-9]{4}$"
-          description: >
-            BPS 4-digit kabupaten/kota code. 514 kabupaten and kota in
-            Indonesia. Used for granular serviceability and tax zone resolution.
-          example: "3171"
-          x-ion-mandatory: optional
-          x-ion-regulatory: Permendagri 72/2019
+          pattern: ^[0-9]{4}$
+          description: 'BPS 4-digit kabupaten/kota code. 514 kabupaten and kota in Indonesia. Used for granular
+            serviceability and tax zone resolution.
 
+            '
+          example: '3171'
+          x-ion-regulatory: Permendagri 72/2019
         kelurahan:
           type: string
-          description: >
-            Village or urban administrative zone (kelurahan/desa).
-            Required for precise last-mile delivery address.
-          example: Gambir
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for delivery addresses
+          description: 'Village or urban administrative zone (kelurahan/desa). Required for precise last-mile delivery
+            address.
 
+            '
+          example: Gambir
+          x-ion-conditional: true
+          x-ion-condition: Required for delivery addresses
         kecamatan:
           type: string
-          description: >
-            District or sub-city (kecamatan). Administrative level between
-            kabupaten and kelurahan.
-          example: Gambir
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for delivery addresses
+          description: 'District or sub-city (kecamatan). Administrative level between kabupaten and kelurahan.
 
+            '
+          example: Gambir
+          x-ion-conditional: true
+          x-ion-condition: Required for delivery addresses
         rt:
           type: string
-          description: >
-            Rukun Tetangga — neighborhood group, typically ~40 households.
-            Critical for last-mile delivery in Indonesia — riders use RT/RW
-            to locate specific houses in dense residential areas.
-          example: "02"
-          x-ion-mandatory: optional
+          description: 'Rukun Tetangga — neighborhood group, typically ~40 households. Critical for last-mile delivery
+            in Indonesia — riders use RT/RW to locate specific houses in dense residential areas.
 
+            '
+          example: '02'
         rw:
           type: string
-          description: >
-            Rukun Warga — association of RTs, typically ~400 people.
-            Used together with RT for precise address resolution.
-          example: "03"
-          x-ion-mandatory: optional
+          description: 'Rukun Warga — association of RTs, typically ~400 people. Used together with RT for precise
+            address resolution.
 
-        # M1 — EXTENDED ADDRESS FIELDS (v0.3)
+            '
+          example: '03'
         postalCode:
           type: string
-          pattern: "^[0-9]{5}$"
-          description: >
-            Indonesian kodepos (postal code). 5 digits. Distinct from Beckn
-            core area_code which conflates many country-specific codes.
-          example: "12190"
-          x-ion-mandatory: optional
-          x-ion-regulatory: PermenKomInfo — Standar Kodepos Nasional
+          pattern: ^[0-9]{5}$
+          description: 'Indonesian kodepos (postal code). 5 digits. Distinct from Beckn core area_code which conflates
+            many country-specific codes.
 
+            '
+          example: '12190'
+          x-ion-regulatory: PermenKomInfo — Standar Kodepos Nasional
         addressType:
           type: string
-          enum: [HOME, OFFICE, APARTMENT, BOARDING_HOUSE, WAREHOUSE, PO_BOX, PICKUP_POINT, OTHER]
-          description: >
-            Address classification. Affects delivery SLA and surcharges —
-            offices have restricted delivery hours, apartments require
-            lobby/concierge handling, warehouses accept larger shipments.
-            BOARDING_HOUSE (kost) is common in Indonesian urban delivery.
-          example: HOME
-          x-ion-mandatory: optional
+          enum:
+          - HOME
+          - OFFICE
+          - APARTMENT
+          - BOARDING_HOUSE
+          - WAREHOUSE
+          - PO_BOX
+          - PICKUP_POINT
+          - OTHER
+          description: 'Address classification. Affects delivery SLA and surcharges — offices have restricted delivery
+            hours, apartments require lobby/concierge handling, warehouses accept larger shipments. BOARDING_HOUSE
+            (kost) is common in Indonesian urban delivery.
 
+            '
+          example: HOME
         receiverInstructions:
           type: string
           maxLength: 500
-          description: >
-            Instructions for delivery receiver. Distinct from buyerInstructions
-            — used for gift orders where receiver != buyer, and for handover
-            preferences (leave at door, signature required, call first).
-          example: Tinggalkan di pos satpam apartemen. Jangan ketuk pintu.
-          x-ion-mandatory: optional
+          description: 'Instructions for delivery receiver. Distinct from buyerInstructions — used for gift orders
+            where receiver != buyer, and for handover preferences (leave at door, signature required, call first).
 
+            '
+          example: Tinggalkan di pos satpam apartemen. Jangan ketuk pintu.
         gpsAccuracyMeters:
           type: number
           minimum: 0
-          description: >
-            Accuracy of GPS coordinate in metres. Required for pin-point delivery
-            addresses in unaddressed areas (kampung, peri-urban). Affects agent
-            last-mile routing.
-          example: 10
-          x-ion-mandatory: optional
+          description: 'Accuracy of GPS coordinate in metres. Required for pin-point delivery addresses in unaddressed
+            areas (kampung, peri-urban). Affects agent last-mile routing.
 
+            '
+          example: 10
         landmark:
           type: string
-          description: >
-            Notable nearby landmark for finding the address. Common in
-            Indonesian urban delivery where street numbering is inconsistent.
-          example: Sebelah Indomaret, seberang masjid
-          x-ion-mandatory: optional
+          description: 'Notable nearby landmark for finding the address. Common in Indonesian urban delivery where
+            street numbering is inconsistent.
 
+            '
+          example: Sebelah Indomaret, seberang masjid
         blockUnit:
           type: string
-          description: >
-            Block/unit identifier for apartments and complexes. Beckn core
-            'door' captures house number; this captures block/floor/unit
-            where applicable.
+          description: 'Block/unit identifier for apartments and complexes. Beckn core ''door'' captures house number;
+            this captures block/floor/unit where applicable.
+
+            '
           example: Blok A3 Lantai 12 Unit 05
-          x-ion-mandatory: optional
+      required:
+      - provinsiCode
+      x-ion-closed-extensions: false
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes

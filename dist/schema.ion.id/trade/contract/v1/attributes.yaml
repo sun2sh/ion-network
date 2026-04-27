@@ -1,44 +1,39 @@
 openapi: 3.1.1
 info:
   title: ION Trade Contract Extension (v1)
-  description: >
-    Trade sector contract attributes. Order-level fields that lock at confirm —
-    fulfilling location, buyer instructions, gift, invoice preferences, credit
-    terms, subscription billing, Faktur Pajak reference, quote trail.
-    Attaches to: beckn:Contract.contractAttributes
-  version: 1.0.0
+  description: 'Trade sector contract attributes. Order-level fields that lock at confirm — fulfilling location,
+    buyer instructions, gift, invoice preferences, credit terms, subscription billing, Faktur Pajak reference, quote
+    trail. Attaches to: beckn:Contract.contractAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     TradeContractAttributes:
       type: object
       title: Trade Contract Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:TradeContractAttributes
+        '@context': ./context.jsonld
+        '@type': ion:TradeContractAttributes
       x-beckn-attaches-to: Contract.contractAttributes
-
       properties:
-
         fulfillingLocationId:
           type: string
-          description: >
-            ID of the specific fulfilment centre that will fulfil this order.
-            Populated by BPP at on_confirm after internal FC selection.
-            Present when provider has multiple FC locations.
-          example: FC-SBY-01
-          x-ion-mandatory: conditional
-          x-ion-condition: Present when provider has multiple fulfilment centres
+          description: 'ID of the specific fulfilment centre that will fulfil this order. Populated by BPP at on_confirm
+            after internal FC selection. Present when provider has multiple FC locations.
 
+            '
+          example: FC-SBY-01
+          x-ion-conditional: true
+          x-ion-condition: Present when provider has multiple fulfilment centres
         buyerInstructions:
           type: string
-          description: >
-            Free-text delivery instructions from buyer. e.g. "Leave at door",
-            "Call before arriving", "Do not ring bell after 9pm".
-          example: Titipkan ke satpam jika tidak ada di rumah.
-          x-ion-mandatory: optional
+          description: 'Free-text delivery instructions from buyer. e.g. "Leave at door", "Call before arriving",
+            "Do not ring bell after 9pm".
 
+            '
+          example: Titipkan ke satpam jika tidak ada di rumah.
         deliveryPreferences:
           type: object
           additionalProperties: false
@@ -51,17 +46,21 @@ components:
                 start:
                   type: string
                   format: date-time
-                  example: 2026-04-03T09:00:00+07:00
+                  example: 2026-04-03 09:00:00+07:00
                 end:
                   type: string
                   format: date-time
-                  example: 2026-04-03T13:00:00+07:00
-              required: [start, end]
+                  example: 2026-04-03 13:00:00+07:00
+              required:
+              - start
+              - end
             preferredPerformanceMode:
               type: string
-              enum: [DELIVERY, SELF_PICKUP, DINE_IN, CURBSIDE]
-          x-ion-mandatory: optional
-
+              enum:
+              - DELIVERY
+              - SELF_PICKUP
+              - DINE_IN
+              - CURBSIDE
         invoicePreferences:
           type: object
           additionalProperties: false
@@ -73,74 +72,87 @@ components:
               properties:
                 scheme:
                   type: string
-                  enum: [NPWP, NIK]
+                  enum:
+                  - NPWP
+                  - NIK
                   description: NPWP for businesses, NIK for individuals
                 value:
                   type: string
                   description: Tax ID number
                   example: 1234567890123456
-              required: [scheme, value]
+              required:
+              - scheme
+              - value
             invoiceType:
               type: string
-              enum: [RECEIPT, TAX_INVOICE, EINVOICE, SURAT_TAGIHAN, KOMERSIAL_INVOICE]
-              description: >
-                RECEIPT: simple receipt, no tax identity required.
-                TAX_INVOICE: Faktur Pajak, requires PKP seller and NPWP buyer.
-                EINVOICE: e-Faktur via DJP system.
-                SURAT_TAGIHAN: PKP seller to non-PKP buyer — commercial invoice, no input-tax claim rights.
-                KOMERSIAL_INVOICE: cross-border commercial invoice, bilingual layout.
-              example: TAX_INVOICE
-          x-ion-mandatory: optional
+              enum:
+              - RECEIPT
+              - TAX_INVOICE
+              - EINVOICE
+              - SURAT_TAGIHAN
+              - KOMERSIAL_INVOICE
+              description: 'RECEIPT: simple receipt, no tax identity required. TAX_INVOICE: Faktur Pajak, requires
+                PKP seller and NPWP buyer. EINVOICE: e-Faktur via DJP system. SURAT_TAGIHAN: PKP seller to non-PKP
+                buyer — commercial invoice, no input-tax claim rights. KOMERSIAL_INVOICE: cross-border commercial
+                invoice, bilingual layout.
 
+                '
+              example: TAX_INVOICE
         fakturPajakReference:
           type: string
-          description: >
-            Faktur Pajak (e-Invoice) reference number assigned by BPP after
-            contract confirm for PKP sellers. 16-digit DJP format.
-          example: 010.000-26.00000001
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for PKP sellers (identity.pkpStatus=PKP) when invoiceType=TAX_INVOICE
-          x-ion-regulatory: PMK 168/PMK.010/2023 tentang Faktur Pajak
+          description: 'Faktur Pajak (e-Invoice) reference number assigned by BPP after contract confirm for PKP
+            sellers. 16-digit DJP format.
 
+            '
+          example: 010.000-26.00000001
+          x-ion-regulatory: PMK 168/PMK.010/2023 tentang Faktur Pajak
+          x-ion-conditional-cross-schema: true
+          x-ion-condition: Required for PKP sellers (identity.pkpStatus=PKP) when invoiceType=TAX_INVOICE
         purchaseOrderReference:
           type: string
-          description: >
-            Buyer's Purchase Order number for B2B wholesale transactions.
-            Allows buyer to link ION contract to their internal PO system.
-          example: PO-2026-00456
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for B2B wholesale commerce patterns
+          description: 'Buyer''s Purchase Order number for B2B wholesale transactions. Allows buyer to link ION
+            contract to their internal PO system.
 
+            '
+          example: PO-2026-00456
+          x-ion-conditional: true
+          x-ion-condition: Required for B2B wholesale commerce patterns
         cancellationReasonCode:
           type: string
-          description: >
-            Standardised cancellation reason code when contract is cancelled.
-            Set by BPP on contract at time of cancellation.
-          enum:
-            - BUYER_REQUESTED
-            - SELLER_INITIATED
-            - ITEM_UNAVAILABLE
-            - PAYMENT_FAILED
-            - FRAUD_SUSPECTED
-            - REGULATORY_HOLD
-            - LOGISTICS_FAILURE
-            - FORCE_CANCEL_TAT_BREACH
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when contract status is CANCELLED
+          description: 'Standardised cancellation reason code when contract is cancelled. Set by BPP on contract
+            at time of cancellation.
 
+            '
+          enum:
+          - BUYER_REQUESTED
+          - SELLER_INITIATED
+          - ITEM_UNAVAILABLE
+          - PAYMENT_FAILED
+          - FRAUD_SUSPECTED
+          - REGULATORY_HOLD
+          - LOGISTICS_FAILURE
+          - FORCE_CANCEL_TAT_BREACH
+          x-ion-conditional: true
+          x-ion-condition: Required when contract status is CANCELLED
         quoteTrail:
           type: array
-          description: >
-            Trail of quote changes for price adjustment branch. Each entry
-            records a delta to the original confirmed quote.
+          description: 'Trail of quote changes for price adjustment branch. Each entry records a delta to the original
+            confirmed quote.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [type, id, currency, value]
             properties:
               type:
                 type: string
-                enum: [item, tax, delivery, discount, refund, adjustment]
+                enum:
+                - item
+                - tax
+                - delivery
+                - discount
+                - refund
+                - adjustment
               id:
                 type: string
                 description: Item ID or consideration ID this adjustment applies to
@@ -150,134 +162,136 @@ components:
               value:
                 type: string
                 description: Signed IDR amount. Negative for deductions, positive for additions.
-                example: "-5000"
+                example: '-5000'
               reason:
                 type: string
                 description: Human-readable reason for this adjustment
-          x-ion-mandatory: optional
-
+            required:
+            - type
+            - id
+            - currency
+            - value
         partialCancellationAllowed:
           type: boolean
           description: Whether individual items in a multi-item order can be cancelled.
           default: false
-          x-ion-mandatory: optional
-
         replacementPreferred:
           type: boolean
-          description: >
-            Whether buyer prefers replacement over refund in case of defective
-            or wrong item. Declared at confirm.
-          default: false
-          x-ion-mandatory: optional
+          description: 'Whether buyer prefers replacement over refund in case of defective or wrong item. Declared
+            at confirm.
 
+            '
+          default: false
         disputeWindowDays:
           type: integer
           minimum: 0
-          description: >
-            Number of days after delivery within which buyer may raise a dispute.
-            Defaults to ION network policy if not declared.
-          example: 7
-          x-ion-mandatory: optional
+          description: 'Number of days after delivery within which buyer may raise a dispute. Defaults to ION network
+            policy if not declared.
 
-        # B2B CREDIT
+            '
+          example: 7
         creditTermsDays:
           type: integer
           minimum: 0
-          description: >
-            Number of days credit extended to the buyer from delivery date.
-            0 = prepaid. Common values: 7, 14, 30, 45, 60, 90.
-          example: 30
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for B2B-CR commerce pattern
+          description: 'Number of days credit extended to the buyer from delivery date. 0 = prepaid. Common values:
+            7, 14, 30, 45, 60, 90.
 
+            '
+          example: 30
+          x-ion-conditional: true
+          x-ion-condition: Required for B2B-CR commerce pattern
         paymentDueDate:
           type: string
           format: date-time
-          description: >
-            Absolute datetime by which payment must be made for credit orders.
-            Computed from delivery date + creditTermsDays.
-          example: 2026-05-19T23:59:59+07:00
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when creditTermsDays > 0
+          description: 'Absolute datetime by which payment must be made for credit orders. Computed from delivery
+            date + creditTermsDays.
 
-        # SUBSCRIPTION
+            '
+          example: 2026-05-19 23:59:59+07:00
+          x-ion-conditional: true
+          x-ion-condition: Required when creditTermsDays > 0
         subscriptionBillingCycle:
           type: string
-          enum: [WEEKLY, FORTNIGHTLY, MONTHLY, QUARTERLY, ANNUAL]
+          enum:
+          - WEEKLY
+          - FORTNIGHTLY
+          - MONTHLY
+          - QUARTERLY
+          - ANNUAL
           description: Billing cycle for subscription commerce pattern.
           example: MONTHLY
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for B2C-SUB commerce pattern
-
         subscriptionNextBillingDate:
           type: string
           format: date-time
-          description: >
-            Date-time of next billing event. Updated by BPP after each
-            successful billing.
-          example: 2026-05-19T00:00:00+07:00
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for B2C-SUB commerce pattern
+          description: 'Date-time of next billing event. Updated by BPP after each successful billing.
 
-        # LOGISTICS LINKED CONTRACT
+            '
+          example: 2026-05-19 00:00:00+07:00
+          x-ion-conditional: true
+          x-ion-condition: Required for B2C-SUB commerce pattern
         linkedContractId:
           type: string
-          description: >
-            Reference to the Trade Contract this Logistics Contract serves.
-            Enables ION Central to trace causal relationship between trade
-            and logistics transactions.
-          example: TRD-2026-00012345
-          x-ion-mandatory: conditional
-          x-ion-condition: Required on all Logistics Contracts linked to a Trade fulfilment
+          description: 'Reference to the Trade Contract this Logistics Contract serves. Enables ION Central to trace
+            causal relationship between trade and logistics transactions.
 
-        # COD
+            '
+          example: TRD-2026-00012345
+          x-ion-conditional: true
+          x-ion-condition: Required on all Logistics Contracts linked to a Trade fulfilment
         codAmount:
           type: string
-          description: >
-            Total cash amount to be collected from consumer at delivery for
-            COD orders. String decimal in IDR.
-          example: "150000"
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when paymentRail=COD
+          description: 'Total cash amount to be collected from consumer at delivery for COD orders. String decimal
+            in IDR.
 
-        # CROSS-BORDER
+            '
+          example: '150000'
+          x-ion-conditional-cross-schema: true
+          x-ion-condition: Required when paymentRail=COD
         beaCukaiReference:
           type: string
-          description: >
-            Indonesian Customs (Bea Cukai) clearance reference number.
-            Required for all international inbound shipments.
+          description: 'Indonesian Customs (Bea Cukai) clearance reference number. Required for all international
+            inbound shipments.
+
+            '
           example: BC-2026-001234567
-          x-ion-mandatory: conditional
-          x-ion-condition: Required for INTERNATIONAL_AIR and INTERNATIONAL_OCEAN logistics
           x-ion-regulatory: UU 17/2006 tentang Kepabeanan; PMK 199/PMK.010/2019
-
-
-        # H2 — LIVE / SOCIAL COMMERCE CONTEXT
+          x-ion-conditional: true
+          x-ion-condition: Required for INTERNATIONAL_AIR and INTERNATIONAL_OCEAN logistics
         liveCommerceContext:
           type: object
           additionalProperties: false
-          description: >
-            Context for orders placed via live commerce or social commerce
-            (TikTok Shop, Shopee Live, Tokopedia Play, OTT-embedded commerce).
-            Required for B2C-LIVE spine. Enables revenue attribution to
+          description: 'Context for orders placed via live commerce or social commerce (TikTok Shop, Shopee Live,
+            Tokopedia Play, OTT-embedded commerce). Required for B2C-LIVE spine. Enables revenue attribution to
             streamer/affiliate and platform-specific settlement.
+
+            '
           properties:
             sourceChannel:
               type: string
-              enum: [LIVE_STREAM, SHORT_VIDEO, OTT_EMBEDDED, SOCIAL_POST, AFFILIATE_LINK, GROUP_BUY, SHOPPABLE_AD]
-              description: >
-                Entry point for the order. OTT_EMBEDDED = order placed from
-                within video streaming app (Netflix, Vidio, Disney+ Hotstar
-                shoppable content).
+              enum:
+              - LIVE_STREAM
+              - SHORT_VIDEO
+              - OTT_EMBEDDED
+              - SOCIAL_POST
+              - AFFILIATE_LINK
+              - GROUP_BUY
+              - SHOPPABLE_AD
+              description: 'Entry point for the order. OTT_EMBEDDED = order placed from within video streaming app
+                (Netflix, Vidio, Disney+ Hotstar shoppable content).
+
+                '
             liveSessionId:
               type: string
               description: Live session identifier when sourceChannel=LIVE_STREAM
               example: SHP-LIVE-2026-0419-8837
             streamerId:
               type: string
-              description: >
-                Creator/streamer subscriber ID for revenue attribution.
-                Streamer may earn commission separately from BPP/BAP.
+              description: 'Creator/streamer subscriber ID for revenue attribution. Streamer may earn commission
+                separately from BPP/BAP.
+
+                '
               example: streamer.ion.id/budi-gadget
             streamerCommissionPercent:
               type: number
@@ -291,7 +305,16 @@ components:
               description: Minutes into the live session when this product was pinned/featured
             ottPlatform:
               type: string
-              enum: [VIDIO, NETFLIX, DISNEY_PLUS_HOTSTAR, IFLIX, VIU, GENFLIX, WETV, YOUTUBE, OTHER]
+              enum:
+              - VIDIO
+              - NETFLIX
+              - DISNEY_PLUS_HOTSTAR
+              - IFLIX
+              - VIU
+              - GENFLIX
+              - WETV
+              - YOUTUBE
+              - OTHER
               description: OTT platform where shoppable content was served (for OTT_EMBEDDED)
             ottContentId:
               type: string
@@ -315,28 +338,27 @@ components:
             groupBuyActivated:
               type: boolean
               description: Whether group-buy discount has been unlocked
-          x-ion-mandatory: conditional
+          x-ion-conditional: true
           x-ion-condition: Required for B2C-LIVE spine; optional otherwise
-
-        # H6 — REFUND DESTINATION (enum, not free text)
         refundDestination:
           type: object
           additionalProperties: false
-          description: >
-            Where refund will be credited. When buyer does not specify, default
-            is ORIGINAL_PAYMENT_METHOD. Platform wallets often faster; store
-            credit used for partial refunds and goodwill.
-          required: [method]
+          description: 'Where refund will be credited. When buyer does not specify, default is ORIGINAL_PAYMENT_METHOD.
+            Platform wallets often faster; store credit used for partial refunds and goodwill.
+
+            '
+          required:
+          - method
           properties:
             method:
               type: string
               enum:
-                - ORIGINAL_PAYMENT_METHOD
-                - PLATFORM_WALLET
-                - BANK_TRANSFER
-                - LOYALTY_POINTS
-                - STORE_CREDIT
-                - VOUCHER
+              - ORIGINAL_PAYMENT_METHOD
+              - PLATFORM_WALLET
+              - BANK_TRANSFER
+              - LOYALTY_POINTS
+              - STORE_CREDIT
+              - VOUCHER
             walletId:
               type: string
               description: Required when method=PLATFORM_WALLET
@@ -354,30 +376,21 @@ components:
             loyaltyMultiplier:
               type: number
               description: Bonus multiplier when redeeming to loyalty points e.g. 1.1 = 10% bonus
-          x-ion-mandatory: optional
-
-
-        # M3 — SUBSCRIPTION EXTENSIONS
         subscriptionTrialDays:
           type: integer
           minimum: 0
           description: First N days free. Billing starts on day N+1.
-          x-ion-mandatory: optional
-
         subscriptionPauseType:
           type: string
-          enum: [ACTIVE, PAUSED_UNTIL_DATE, PAUSED_INDEFINITE]
+          enum:
+          - ACTIVE
+          - PAUSED_UNTIL_DATE
+          - PAUSED_INDEFINITE
           description: Current pause state for B2C-SUB orders
-          x-ion-mandatory: optional
-
         subscriptionPauseUntil:
           type: string
           format: date-time
           description: Date to automatically resume. Required when pauseType=PAUSED_UNTIL_DATE
-          x-ion-mandatory: conditional
-          x-ion-condition: Required when subscriptionPauseType=PAUSED_UNTIL_DATE
-
-        # M4 — GIFT DETAILS STRUCTURED
         giftingDetails:
           type: object
           additionalProperties: false
@@ -404,25 +417,25 @@ components:
             giftWrapOfferId:
               type: string
               description: Reference to the gift-wrap offer in consideration breakup
-          x-ion-mandatory: optional
-
-        # Op-10 — PAYMENT SCHEDULE (v0.5)
         paymentSchedule:
           type: array
-          description: >
-            Multi-milestone payment schedule for partial-payment offers
-            (down-payment + balance, milestone-based for services, etc.).
-            Used when paymentTermsPolicy references a schedule-based IRI.
-            Single-payment orders do not require this field.
-            Contract moves to COMPLETE only when all milestones are PAID.
+          description: 'Multi-milestone payment schedule for partial-payment offers (down-payment + balance, milestone-based
+            for services, etc.). Used when paymentTermsPolicy references a schedule-based IRI. Single-payment orders
+            do not require this field. Contract moves to COMPLETE only when all milestones are PAID.
+
+            '
           items:
             type: object
             additionalProperties: false
-            required: [milestone, amount, dueAt, status]
             properties:
               milestone:
                 type: string
-                enum: [AT_CONFIRM, ON_DISPATCH, ON_DELIVERY, POST_DELIVERY, ON_MILESTONE_EVENT]
+                enum:
+                - AT_CONFIRM
+                - ON_DISPATCH
+                - ON_DELIVERY
+                - POST_DELIVERY
+                - ON_MILESTONE_EVENT
                 description: Event that triggers this payment
               milestoneLabel:
                 type: string
@@ -440,7 +453,12 @@ components:
                 description: Absolute datetime when payment is due
               status:
                 type: string
-                enum: [PENDING, PAID, OVERDUE, WAIVED, FAILED]
+                enum:
+                - PENDING
+                - PAID
+                - OVERDUE
+                - WAIVED
+                - FAILED
               paidAt:
                 type: string
                 format: date-time
@@ -454,6 +472,22 @@ components:
                 type: integer
                 minimum: 0
                 description: Grace period before status becomes OVERDUE
-          x-ion-mandatory: conditional
+            required:
+            - milestone
+            - amount
+            - dueAt
+            - status
+          x-ion-conditional: true
           x-ion-condition: Required when paymentTermsPolicy is schedule-based
-
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes
+      - if:
+          properties:
+            subscriptionPauseType:
+              const: PAUSED_UNTIL_DATE
+          required:
+          - subscriptionPauseType
+        then:
+          required:
+          - subscriptionPauseUntil
+      x-ion-closed-extensions: false

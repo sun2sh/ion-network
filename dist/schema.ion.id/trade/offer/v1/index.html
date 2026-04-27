@@ -42,55 +42,55 @@
 <h3>TradeOfferAttributes</h3>
 <p class="iri">IRI: https://schema.ion.id/trade/offer/v1#TradeOfferAttributes</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>cancellationPolicy</code></td><td>always</td><td>ION standard cancellation policy IRI. cancel.prepacked.free: buyer may cancel before packed at no fee. cancel.mto.nofee.</td></tr>
-<tr><td><code>cancellationAllowedReasons</code></td><td>conditional</td><td>Seller-declared reasons for which buyer cancellation is accepted. Only meaningful when cancellationPolicy is not cancel.</td></tr>
-<tr><td><code>returnable</code></td><td>always</td><td>Whether the product can be returned after delivery. False for perishables, personalised items, digital goods, and hygien</td></tr>
-<tr><td><code>returnPolicy</code></td><td>always</td><td>ION standard return policy IRI. Encodes window duration and who pays return shipping.</td></tr>
-<tr><td><code>sellerPickupReturn</code></td><td>conditional</td><td>Whether the seller arranges pickup for returns (true) or consumer must arrange their own return shipping (false).</td></tr>
-<tr><td><code>warrantyPolicy</code></td><td>always</td><td>ION standard warranty policy IRI.</td></tr>
-<tr><td><code>disputePolicy</code></td><td>always</td><td>ION standard dispute resolution policy IRI. dispute.consumer.bpsk: B2C — BPSK (Badan Penyelesaian Sengketa Konsumen). di</td></tr>
-<tr><td><code>timeToShip</code></td><td>always</td><td>Time from order confirm to when seller hands package to logistics. ISO 8601 duration.</td></tr>
-<tr><td><code>availableOnCod</code></td><td>always</td><td>Whether Cash on Delivery is available for this product. Some categories cannot be sold on COD (prescription medicine, al</td></tr>
-<tr><td><code>selfPickupOtp</code></td><td>optional</td><td>Whether OTP verification is required when consumer picks up order. If true, BPP generates deliveryOtp in performanceAttr</td></tr>
-<tr><td><code>selfPickupInstructions</code></td><td>optional</td><td>Instructions for self-pickup — counter number, floor, collection point.</td></tr>
-<tr><td><code>proofOfDeliveryType</code></td><td>optional</td><td>Type of delivery confirmation proof required.</td></tr>
-<tr><td><code>contactDetailsConsumerCare</code></td><td>always</td><td>Consumer care contact in comma-separated format: name, email, phone. Displayed to consumer for post-purchase support que</td></tr>
-<tr><td><code>displayLanguage</code></td><td>always</td><td>Languages in which this offer&#x27;s catalog content is available. &quot;id&quot; always present. &quot;en&quot; required for XB commerce pattern</td></tr>
-<tr><td><code>minimumOrderQuantity</code></td><td>conditional</td><td>Minimum quantity for B2B wholesale. count for unit-based, measure for weight/volume-based products.</td></tr>
-<tr><td><code>weightSlabs</code></td><td>conditional</td><td>Weight-based pricing tiers for catalogued logistics offers.</td></tr>
-<tr><td><code>offerType</code></td><td>optional</td><td>Type of commercial offer.</td></tr>
-<tr><td><code>priceModel</code></td><td>optional</td><td>How pricing is determined for this offer.</td></tr>
-<tr><td><code>minBasketAmount</code></td><td>optional</td><td>Minimum basket value in IDR for offer to be valid.</td></tr>
-<tr><td><code>maxDiscountAmount</code></td><td>optional</td><td>Maximum discount cap in IDR for percentage offers.</td></tr>
-<tr><td><code>voucherCode</code></td><td>optional</td><td>Voucher or promo code to activate offer.</td></tr>
-<tr><td><code>stackable</code></td><td>optional</td><td>Whether this offer can be combined with other active offers.</td></tr>
-<tr><td><code>usageLimitPerUser</code></td><td>optional</td><td>Maximum times this offer can be used by a single user.</td></tr>
-<tr><td><code>customerSegment</code></td><td>optional</td><td>Segment of customers eligible for this offer.</td></tr>
-<tr><td><code>paymentMethodEligibility</code></td><td>optional</td><td>Structured payment method eligibility. Each entry declares minAmount/maxAmount constraints, required buyer tier, exclude</td></tr>
-<tr><td><code>subsidyBreakup</code></td><td>optional</td><td>Who funds the discount/promotion.</td></tr>
-<tr><td><code>startAt</code></td><td>optional</td><td>When this promotional offer becomes active.</td></tr>
-<tr><td><code>endAt</code></td><td>optional</td><td>When this promotional offer expires.</td></tr>
-<tr><td><code>priceValidFrom</code></td><td>optional</td><td>Start of price validity window. Distinct from startAt (offer availability window) — price may change mid-campaign while </td></tr>
-<tr><td><code>priceValidUntil</code></td><td>optional</td><td>End of price validity window.</td></tr>
-<tr><td><code>priceChangeSchedule</code></td><td>optional</td><td>Full price change timeline for a campaign. BAPs MUST render countdown UI and compute correct price at transaction time. </td></tr>
-<tr><td><code>reservationWindowSeconds</code></td><td>optional</td><td>Seconds for which the BPP will hold availability and the on_select price quote. Default 300. BPP soft-reserves at on_sel</td></tr>
-<tr><td><code>totalStockCap</code></td><td>optional</td><td>Absolute total quantity available under this offer. When reached, all subsequent /select calls return ION-3008. Distinct</td></tr>
-<tr><td><code>perUserQuantityCap</code></td><td>optional</td><td>Maximum units a single buyer can purchase under this offer across all transactions (enforced by BPP). Distinct from usag</td></tr>
-<tr><td><code>isFlashSale</code></td><td>optional</td><td>Signals this offer is a flash sale. BAP surfaces urgency UI; reservationWindowSeconds SHOULD be short (60-180s).</td></tr>
-<tr><td><code>queueEnabled</code></td><td>optional</td><td>Whether BPP uses a queue/throttle mechanism when demand exceeds supply. When true, on_select may return queuePosition.</td></tr>
-<tr><td><code>queuePosition</code></td><td>conditional</td><td>Consumer&#x27;s current position in the purchase queue. 0 = at front. Returned in on_select when queueEnabled=true.</td></tr>
-<tr><td><code>estimatedWaitSeconds</code></td><td>conditional</td><td>Estimated wait time before this consumer reaches front of queue.</td></tr>
-<tr><td><code>stackingGroup</code></td><td>optional</td><td>Voucher stacking group. Vouchers from different groups stack by default. Within a single group only one voucher can appl</td></tr>
-<tr><td><code>stackingRules</code></td><td>optional</td><td>Explicit voucher stacking rules. Used when offer has complex combination logic beyond the default group rules.</td></tr>
-<tr><td><code>codEligibilityForBuyer</code></td><td>conditional</td><td>BPP-evaluated COD eligibility for the specific buyer in this transaction. Returned in on_select. Distinct from available</td></tr>
-<tr><td><code>codEligibilityReason</code></td><td>conditional</td><td>Reason for the codEligibilityForBuyer decision.</td></tr>
-<tr><td><code>returnEvidenceRequirement</code></td><td>conditional</td><td>Evidence required from buyer when initiating a return. VIDEO_UNBOXING_REQUIRED is standard for high-value electronics. P</td></tr>
-<tr><td><code>returnEvidenceMinPhotos</code></td><td>conditional</td><td>Minimum number of evidence photos required.</td></tr>
-<tr><td><code>handlingTimeHours</code></td><td>optional</td><td>Hours from order confirm to package ready for logistics. Replaces QSR-only averagePreparationTime for non-food sellers. </td></tr>
-<tr><td><code>grievanceSlaPolicy</code></td><td>always</td><td>ION Grievance SLA policy IRI. Declares response time, resolution time, escalation path, and penalty consequences when SL</td></tr>
-<tr><td><code>paymentTermsPolicy</code></td><td>always</td><td>Payment terms policy IRI. Declares when payment is collected, which methods are accepted, whether deposit or credit term</td></tr>
-<tr><td><code>penaltyPolicy</code></td><td>conditional</td><td>Penalty policy IRI. Normally inferred from seller&#x27;s onboarding tier (Standard/Mall/Premium) and other declared policies </td></tr>
-<tr><td><code>customTermsAddendum</code></td><td>optional</td><td>Free-text addendum for edge cases (e.g. watchmaker offering lifetime service). Supplements the declared policy IRIs but </td></tr>
+<tr><td><code>cancellationPolicy</code></td><td>—</td><td>ION standard cancellation policy IRI. cancel.prepacked.free: buyer may cancel before packed at no fee. cancel.mto.nofee.</td></tr>
+<tr><td><code>cancellationAllowedReasons</code></td><td>—</td><td>Seller-declared reasons for which buyer cancellation is accepted. Only meaningful when cancellationPolicy is not cancel.</td></tr>
+<tr><td><code>returnable</code></td><td>—</td><td>Whether the product can be returned after delivery. False for perishables, personalised items, digital goods, and hygien</td></tr>
+<tr><td><code>returnPolicy</code></td><td>—</td><td>ION standard return policy IRI. Encodes window duration and who pays return shipping.</td></tr>
+<tr><td><code>sellerPickupReturn</code></td><td>—</td><td>Whether the seller arranges pickup for returns (true) or consumer must arrange their own return shipping (false).</td></tr>
+<tr><td><code>warrantyPolicy</code></td><td>—</td><td>ION standard warranty policy IRI.</td></tr>
+<tr><td><code>disputePolicy</code></td><td>—</td><td>ION standard dispute resolution policy IRI. dispute.consumer.bpsk: B2C — BPSK (Badan Penyelesaian Sengketa Konsumen). di</td></tr>
+<tr><td><code>timeToShip</code></td><td>—</td><td>Time from order confirm to when seller hands package to logistics. ISO 8601 duration.</td></tr>
+<tr><td><code>availableOnCod</code></td><td>—</td><td>Whether Cash on Delivery is available for this product. Some categories cannot be sold on COD (prescription medicine, al</td></tr>
+<tr><td><code>selfPickupOtp</code></td><td>—</td><td>Whether OTP verification is required when consumer picks up order. If true, BPP generates deliveryOtp in performanceAttr</td></tr>
+<tr><td><code>selfPickupInstructions</code></td><td>—</td><td>Instructions for self-pickup — counter number, floor, collection point.</td></tr>
+<tr><td><code>proofOfDeliveryType</code></td><td>—</td><td>Type of delivery confirmation proof required.</td></tr>
+<tr><td><code>contactDetailsConsumerCare</code></td><td>—</td><td>Consumer care contact in comma-separated format: name, email, phone. Displayed to consumer for post-purchase support que</td></tr>
+<tr><td><code>displayLanguage</code></td><td>—</td><td>Languages in which this offer&#x27;s catalog content is available. &quot;id&quot; always present. &quot;en&quot; required for XB commerce pattern</td></tr>
+<tr><td><code>minimumOrderQuantity</code></td><td>—</td><td>Minimum quantity for B2B wholesale. count for unit-based, measure for weight/volume-based products.</td></tr>
+<tr><td><code>weightSlabs</code></td><td>—</td><td>Weight-based pricing tiers for catalogued logistics offers.</td></tr>
+<tr><td><code>offerType</code></td><td>—</td><td>Type of commercial offer.</td></tr>
+<tr><td><code>priceModel</code></td><td>—</td><td>How pricing is determined for this offer.</td></tr>
+<tr><td><code>minBasketAmount</code></td><td>—</td><td>Minimum basket value in IDR for offer to be valid.</td></tr>
+<tr><td><code>maxDiscountAmount</code></td><td>—</td><td>Maximum discount cap in IDR for percentage offers.</td></tr>
+<tr><td><code>voucherCode</code></td><td>—</td><td>Voucher or promo code to activate offer.</td></tr>
+<tr><td><code>stackable</code></td><td>—</td><td>Whether this offer can be combined with other active offers.</td></tr>
+<tr><td><code>usageLimitPerUser</code></td><td>—</td><td>Maximum times this offer can be used by a single user.</td></tr>
+<tr><td><code>customerSegment</code></td><td>—</td><td>Segment of customers eligible for this offer.</td></tr>
+<tr><td><code>paymentMethodEligibility</code></td><td>—</td><td>Structured payment method eligibility. Each entry declares minAmount/maxAmount constraints, required buyer tier, exclude</td></tr>
+<tr><td><code>subsidyBreakup</code></td><td>—</td><td>Who funds the discount/promotion.</td></tr>
+<tr><td><code>startAt</code></td><td>—</td><td>When this promotional offer becomes active.</td></tr>
+<tr><td><code>endAt</code></td><td>—</td><td>When this promotional offer expires.</td></tr>
+<tr><td><code>priceValidFrom</code></td><td>—</td><td>Start of price validity window. Distinct from startAt (offer availability window) — price may change mid-campaign while </td></tr>
+<tr><td><code>priceValidUntil</code></td><td>—</td><td>End of price validity window.</td></tr>
+<tr><td><code>priceChangeSchedule</code></td><td>—</td><td>Full price change timeline for a campaign. BAPs MUST render countdown UI and compute correct price at transaction time. </td></tr>
+<tr><td><code>reservationWindowSeconds</code></td><td>—</td><td>Seconds for which the BPP will hold availability and the on_select price quote. Default 300. BPP soft-reserves at on_sel</td></tr>
+<tr><td><code>totalStockCap</code></td><td>—</td><td>Absolute total quantity available under this offer. When reached, all subsequent /select calls return ION-3008. Distinct</td></tr>
+<tr><td><code>perUserQuantityCap</code></td><td>—</td><td>Maximum units a single buyer can purchase under this offer across all transactions (enforced by BPP). Distinct from usag</td></tr>
+<tr><td><code>isFlashSale</code></td><td>—</td><td>Signals this offer is a flash sale. BAP surfaces urgency UI; reservationWindowSeconds SHOULD be short (60-180s).</td></tr>
+<tr><td><code>queueEnabled</code></td><td>—</td><td>Whether BPP uses a queue/throttle mechanism when demand exceeds supply. When true, on_select may return queuePosition.</td></tr>
+<tr><td><code>queuePosition</code></td><td>—</td><td>Consumer&#x27;s current position in the purchase queue. 0 = at front. Returned in on_select when queueEnabled=true.</td></tr>
+<tr><td><code>estimatedWaitSeconds</code></td><td>—</td><td>Estimated wait time before this consumer reaches front of queue.</td></tr>
+<tr><td><code>stackingGroup</code></td><td>—</td><td>Voucher stacking group. Vouchers from different groups stack by default. Within a single group only one voucher can appl</td></tr>
+<tr><td><code>stackingRules</code></td><td>—</td><td>Explicit voucher stacking rules. Used when offer has complex combination logic beyond the default group rules.</td></tr>
+<tr><td><code>codEligibilityForBuyer</code></td><td>—</td><td>BPP-evaluated COD eligibility for the specific buyer in this transaction. Returned in on_select. Distinct from available</td></tr>
+<tr><td><code>codEligibilityReason</code></td><td>—</td><td>Reason for the codEligibilityForBuyer decision.</td></tr>
+<tr><td><code>returnEvidenceRequirement</code></td><td>—</td><td>Evidence required from buyer when initiating a return. VIDEO_UNBOXING_REQUIRED is standard for high-value electronics. P</td></tr>
+<tr><td><code>returnEvidenceMinPhotos</code></td><td>—</td><td>Minimum number of evidence photos required.</td></tr>
+<tr><td><code>handlingTimeHours</code></td><td>—</td><td>Hours from order confirm to package ready for logistics. Replaces QSR-only averagePreparationTime for non-food sellers. </td></tr>
+<tr><td><code>grievanceSlaPolicy</code></td><td>—</td><td>ION Grievance SLA policy IRI. Declares response time, resolution time, escalation path, and penalty consequences when SL</td></tr>
+<tr><td><code>paymentTermsPolicy</code></td><td>—</td><td>Payment terms policy IRI. Declares when payment is collected, which methods are accepted, whether deposit or credit term</td></tr>
+<tr><td><code>penaltyPolicy</code></td><td>—</td><td>Penalty policy IRI. Normally inferred from seller&#x27;s onboarding tier (Standard/Mall/Premium) and other declared policies </td></tr>
+<tr><td><code>customTermsAddendum</code></td><td>—</td><td>Free-text addendum for edge cases (e.g. watchmaker offering lifetime service). Supplements the declared policy IRIs but </td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>trade/offer/v1</h1>
@@ -126,7 +126,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/trade/offer/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>

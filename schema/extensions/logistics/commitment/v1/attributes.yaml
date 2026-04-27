@@ -1,132 +1,101 @@
 openapi: 3.1.1
 info:
   title: ION Logistics Commitment Extension (v1)
-  description: >
-    Logistics sector commitment attributes. Defines line-item level
-    details within a logistics transaction — specific items, quantities,
-    handling instructions, and line identifiers.
-    Attaches to: beckn:Commitment.commitmentAttributes
-  version: 1.0.0
+  description: 'Logistics sector commitment attributes. Defines line-item level details within a logistics transaction
+    — specific items, quantities, handling instructions, and line identifiers. Attaches to: beckn:Commitment.commitmentAttributes
 
+    '
+  version: 1.0.0
 components:
   schemas:
     LogisticsCommitmentAttributes:
       type: object
       title: Logistics Commitment Attributes
-      additionalProperties: false
+      additionalProperties: true
       x-jsonld:
-        "@context": ./context.jsonld
-        "@type": ion:LogisticsCommitmentAttributes
+        '@context': ./context.jsonld
+        '@type': ion:LogisticsCommitmentAttributes
       x-beckn-attaches-to: Commitment.commitmentAttributes
-
       properties:
-
         lineId:
-          x-ion-mandatory: optional
           type: string
           description: Unique identifier for this commitment line
-
         resourceId:
-          x-ion-mandatory: optional
           type: string
           description: Reference to the resource (shipment, SKU, vehicle) in this line
-
         offerId:
-          x-ion-mandatory: optional
           type: string
           description: Offer this commitment is placed against
-
-        # SHIPMENT LINE LEVEL
         packageCount:
-          x-ion-mandatory: optional
           type: integer
           description: Number of packages in this commitment line
-
         totalWeight:
-          x-ion-mandatory: optional
           type: object
           properties:
             value:
               type: number
             unit:
               type: string
-              enum: [gram, kilogram, tonne]
-
+              enum:
+              - gram
+              - kilogram
+              - tonne
         totalVolume:
-          x-ion-mandatory: optional
           type: object
           properties:
             value:
               type: number
             unit:
               type: string
-              enum: [cbm, liter]
-
+              enum:
+              - cbm
+              - liter
         specialInstructions:
-          x-ion-mandatory: optional
           type: string
-          description: >
-            Free-text handling instructions for this shipment line.
-            Examples: "Do not stack", "This side up", "Refrigerate on arrival"
+          description: 'Free-text handling instructions for this shipment line. Examples: "Do not stack", "This
+            side up", "Refrigerate on arrival"
 
-        # FREIGHT LINE LEVEL
+            '
         containerReference:
-          x-ion-mandatory: optional
           type: string
           description: Container number for FCL freight commitments
-
         sealNumber:
-          x-ion-mandatory: optional
           type: string
           description: Container seal number
-
-        # WAREHOUSE LINE LEVEL
         skuId:
-          x-ion-mandatory: optional
           type: string
           description: SKU identifier for warehouse commitment lines
-
         quantity:
-          x-ion-mandatory: optional
           type: integer
           description: Quantity committed for this SKU
-
         lotNumber:
-          x-ion-mandatory: optional
           type: string
           description: Lot or batch number for traceability
-
         expiryDate:
-          x-ion-mandatory: optional
           type: string
           format: date
           description: Expiry date for perishable or pharma inventory
-
-        # CAPACITY COMMITMENT
         capacityUnits:
-          x-ion-mandatory: optional
           type: number
           description: Committed capacity units (kg, cbm, containers, pallets)
-
         capacityUnitType:
-          x-ion-mandatory: optional
           type: string
-          enum: [kg, cbm, container, pallet, truck]
-
+          enum:
+          - kg
+          - cbm
+          - container
+          - pallet
+          - truck
         requestedDepartureDate:
-          x-ion-mandatory: optional
           type: string
           format: date
           description: For freight — requested departure date for this commitment line
-
-        # VEHICLE (RO-RO)
         vehicleRegistration:
-          x-ion-mandatory: optional
           type: string
           description: Vehicle registration for LOG-RORO commitment lines
-
-        # CROSS-REFERENCE
         parentCommitmentId:
-          x-ion-mandatory: optional
           type: string
           description: Parent commitment reference for child transactions under a parent contract
+      x-ion-closed-extensions: false
+      allOf:
+      - $ref: https://raw.githubusercontent.com/beckn/protocol-specifications-v2/main/schema/core/v2/api/v2.0.0/beckn.yaml#/components/schemas/Attributes

@@ -42,23 +42,23 @@
 <h3>IONTicket</h3>
 <p class="iri">IRI: https://schema.ion.id/core/raise/v1#IONTicket</p>
 <table><thead><tr><th>Property</th><th>Mandatory</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>id</code></td><td>always</td><td>Ticket ID assigned by ION ticketing system.</td></tr>
-<tr><td><code>externalRef</code></td><td>optional</td><td>Reference ID in external ticketing system (Freshdesk/Jira/Zendesk ticket number)</td></tr>
-<tr><td><code>title</code></td><td>always</td><td>Short subject line for this ticket.</td></tr>
-<tr><td><code>description</code></td><td>always</td><td>Full description of the issue.</td></tr>
-<tr><td><code>type</code></td><td>always</td><td>NP_DISPUTE: BAP/BPP disagreement on transaction terms. POLICY_VIOLATION: participant violating ION network policy. SETTL</td></tr>
-<tr><td><code>priority</code></td><td>always</td><td>CRITICAL: network-wide impact or financial fraud. Escalated immediately. HIGH: significant impact on transactions. Respo</td></tr>
-<tr><td><code>raisedBy</code></td><td>always</td><td>Subscriber ID of the network participant raising the ticket.</td></tr>
-<tr><td><code>assignedTo</code></td><td>conditional</td><td>Subscriber ID of counterparty NP, or &quot;ION&quot; if raised to network operator.</td></tr>
-<tr><td><code>contractId</code></td><td>conditional</td><td>Related trade contract ID, if issue is transaction-specific.</td></tr>
-<tr><td><code>reconId</code></td><td>optional</td><td>Related reconciliation session ID, if issue is settlement-related.</td></tr>
-<tr><td><code>status</code></td><td>always</td><td>OPEN: ticket created, not yet acknowledged. ACKNOWLEDGED: assigned party has received and acknowledged. IN_PROGRESS: act</td></tr>
-<tr><td><code>thread</code></td><td>optional</td><td>Complete conversation trail for this ticket.</td></tr>
-<tr><td><code>resolution</code></td><td>optional</td><td></td></tr>
-<tr><td><code>sla</code></td><td>optional</td><td></td></tr>
-<tr><td><code>createdAt</code></td><td>always</td><td></td></tr>
-<tr><td><code>updatedAt</code></td><td>always</td><td></td></tr>
-<tr><td><code>resolvedAt</code></td><td>optional</td><td></td></tr>
+<tr><td><code>id</code></td><td>—</td><td>Ticket ID assigned by ION ticketing system.</td></tr>
+<tr><td><code>externalRef</code></td><td>—</td><td>Reference ID in external ticketing system (Freshdesk/Jira/Zendesk ticket number)</td></tr>
+<tr><td><code>title</code></td><td>—</td><td>Short subject line for this ticket.</td></tr>
+<tr><td><code>description</code></td><td>—</td><td>Full description of the issue.</td></tr>
+<tr><td><code>type</code></td><td>—</td><td>NP_DISPUTE: BAP/BPP disagreement on transaction terms. POLICY_VIOLATION: participant violating ION network policy. SETTL</td></tr>
+<tr><td><code>priority</code></td><td>—</td><td>CRITICAL: network-wide impact or financial fraud. Escalated immediately. HIGH: significant impact on transactions. Respo</td></tr>
+<tr><td><code>raisedBy</code></td><td>—</td><td>Subscriber ID of the network participant raising the ticket.</td></tr>
+<tr><td><code>assignedTo</code></td><td>—</td><td>Subscriber ID of counterparty NP, or &quot;ION&quot; if raised to network operator.</td></tr>
+<tr><td><code>contractId</code></td><td>—</td><td>Related trade contract ID, if issue is transaction-specific.</td></tr>
+<tr><td><code>reconId</code></td><td>—</td><td>Related reconciliation session ID, if issue is settlement-related.</td></tr>
+<tr><td><code>status</code></td><td>—</td><td>OPEN: ticket created, not yet acknowledged. ACKNOWLEDGED: assigned party has received and acknowledged. IN_PROGRESS: act</td></tr>
+<tr><td><code>thread</code></td><td>—</td><td>Complete conversation trail for this ticket.</td></tr>
+<tr><td><code>resolution</code></td><td>—</td><td></td></tr>
+<tr><td><code>sla</code></td><td>—</td><td></td></tr>
+<tr><td><code>createdAt</code></td><td>—</td><td></td></tr>
+<tr><td><code>updatedAt</code></td><td>—</td><td></td></tr>
+<tr><td><code>resolvedAt</code></td><td>—</td><td></td></tr>
 </tbody></table>
 
 <section class="readme"><h2>Pack README</h2><h1>ion-core/raise/v1</h1>
@@ -73,7 +73,7 @@
 <footer>
  Part of <a href="https://schema.ion.id/">schema.ion.id</a> — ION Network vocabulary.
  Built from <code>schema/extensions/core/raise/v1/</code> in the ion-network spec.
- Generated 2026-04-24 19:01 UTC.
+ Generated 2026-04-27 18:43 UTC.
 </footer>
 
 </body>
